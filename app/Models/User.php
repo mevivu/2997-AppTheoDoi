@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Admin\Support\Eloquent\Sluggable;
 use App\Enums\ActiveStatus;
-use App\Enums\Currency\Currency;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -116,15 +115,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-    public function bank(): BelongsTo
-    {
-        return $this->belongsTo(Bank::class, 'bank_id');
-    }
-
-    public function addresses(): HasMany
-    {
-        return $this->hasMany(Address::class);
-    }
 
     public function getJWTCustomClaims(): array
     {

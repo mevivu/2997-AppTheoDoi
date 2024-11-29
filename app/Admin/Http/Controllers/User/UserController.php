@@ -7,10 +7,9 @@ use App\Admin\Http\Requests\User\UserRequest;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Services\User\UserServiceInterface;
 use App\Admin\DataTables\User\UserDataTable;
-use App\Enums\Vehicle\VehicleType;
 use App\Traits\ResponseController;
 use Exception;
-use App\Enums\User\{CostStatus, Gender, UserStatus};
+use App\Enums\User\{Gender, UserStatus};
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -23,8 +22,9 @@ class UserController extends Controller
 
     public function __construct(
         UserRepositoryInterface $repository,
-        UserServiceInterface $service
-    ) {
+        UserServiceInterface    $service
+    )
+    {
 
         parent::__construct();
 
@@ -82,12 +82,9 @@ class UserController extends Controller
 
     public function store(UserRequest $request): RedirectResponse
     {
-
-        $response = $this->service->store($request);
-
-        return $this->handleResponse($response, $request, $this->route['index'], $this->route['edit']);
-
-
+        return $this->handleResponse($request, function ($request) {
+            return $this->service->store($request);
+        }, $this->route['index'], $this->route['edit']);
     }
 
     /**
@@ -112,19 +109,20 @@ class UserController extends Controller
 
     public function update(UserRequest $request): RedirectResponse
     {
-
-        $response = $this->service->update($request);
-
-        return $this->handleUpdateResponse($response);
-
-
+        return $this->handleUpdateResponse($request, function ($request) {
+            return $this->service->update($request);
+        });
     }
 
+    /**
+     * @throws Exception
+     */
     public function delete($id): RedirectResponse
     {
-        $response = $this->repository->findOrFail($id);
-        $response->update(['status' => UserStatus::Inactive->value]);
-        return $this->handleUpdateResponse($response);
+        return $this->handleDeleteResponse($id, function ($id) {
+            $response = $this->repository->findOrFail($id);
+            return $response->update(['status' => UserStatus::Inactive->value]);
+        });
     }
 
     protected function getActionMultiple(): array

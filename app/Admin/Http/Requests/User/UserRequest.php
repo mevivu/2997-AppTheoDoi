@@ -3,6 +3,8 @@
 namespace App\Admin\Http\Requests\User;
 
 use App\Admin\Http\Requests\BaseRequest;
+use App\Admin\Rules\EmailUnique;
+use App\Admin\Rules\PhoneUnique;
 use App\Enums\User\Gender;
 use App\Enums\User\UserStatus;
 use Illuminate\Validation\Rules\Enum;
@@ -21,10 +23,13 @@ class UserRequest extends BaseRequest
             'fullname' => ['required', 'string'],
             'phone' => [
                 'required',
-                'regex:/((09|03|07|08|05)+([0-9]{8})\b)/',
-                'unique:App\Models\User,phone'
+                new PhoneUnique(),
             ],
-            'email' => ['required', 'email', 'unique:App\Models\User,email'],
+            'email' => [
+                'required',
+                'email',
+                new EmailUnique(),
+            ],
             'password' => ['required', 'string', 'confirmed'],
             'address' => ['nullable'],
             'name' => ['nullable', 'string'],
@@ -42,11 +47,14 @@ class UserRequest extends BaseRequest
         return [
             'id' => ['required', 'exists:App\Models\User,id'],
             'fullname' => ['required', 'string'],
-            'email' => ['required', 'email', 'unique:App\Models\User,email,' . $this->id],
+            'email' => [
+                'required',
+                'email',
+                new EmailUnique($this->id),
+            ],
             'phone' => [
                 'required',
-                'regex:/((09|03|07|08|05)+([0-9]{8})\b)/',
-                'unique:App\Models\User,phone,' . $this->id
+                new PhoneUnique($this->id),
             ],
             'password' => ['nullable', 'string', 'confirmed'],
             'gender' => ['required', new Enum(Gender::class)],
