@@ -38,12 +38,12 @@ class UserService implements UserServiceInterface
     public function store(Request $request): object|false
     {
         $data = $request->validated();
-        $data['username'] = $data['email'];
         $data['code'] = $this->createCodeUser();
         $data['longitude'] = $request['lng'];
         $data['latitude'] = $request['lat'];
         $data['password'] = bcrypt($data['password']);
         $data['email'] = AESHelper::encrypt($data['email']);
+        $data['username'] = $data['email'];
         $data['phone'] = AESHelper::encrypt($data['phone']);
         $data['address'] = AESHelper::encrypt($data['address']);
         $roles = $data['roles'];
