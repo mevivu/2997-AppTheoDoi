@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ActiveStatus;
+use App\Enums\Exercise\ExerciseType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,7 +19,7 @@ return new class extends Migration {
             $table->string('name');
             $table->text('description')->nullable();
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
-            $table->string('exercise_type');
+            $table->enum('exercise_type', ExerciseType::getValues())->default(ExerciseType::PHYSICAL->value);
             $table->timestamps();
         });
     }
