@@ -2,12 +2,13 @@
 
 namespace App\Traits;
 
+use App\AES\AESHelper;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Auth;
 
 
 trait JwtService
@@ -45,9 +46,8 @@ trait JwtService
     public function loginUser(Request $request): JsonResponse
     {
         $this->login = $request->validated();
-
-        if ($this->resolve()) {
-            $user = Auth::user();
+        $user = $this->userRepository->findByField('email', AESHelper::decrypt($this->login['email']));
+        if ($user && Hash::check($this->login['password'], $user->password)) {
             $token = JWTAuth::fromUser($user);
             $refreshToken = $this->createRefreshToken($user);
             return $this->respondWithToken($token, $refreshToken, $user);
@@ -59,22 +59,7 @@ trait JwtService
         ], 401);
     }
 
-    public function loginStore(Request $request): JsonResponse
-    {
-        $this->login = $request->validated();
 
-        if ($this->resolve()) {
-            $store = Auth::guard(self::$GUARD_API_STORE)->user();
-            $token = JWTAuth::fromUser($store);
-            $refreshToken = $this->createRefreshToken($store);
-            return $this->respondWithToken($token, $refreshToken, $store);
-        }
-
-        return response()->json([
-            'status' => 401,
-            'message' => __('Thông tin đăng nhập chưa chính xác.')
-        ], 401);
-    }
 
     /**
      * Create refresh_token.
