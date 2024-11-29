@@ -31,7 +31,7 @@
         <div class="card-body p-2">
             <x-select name="status" :required="true">
                 @foreach ($status as $key => $value)
-                    <x-select-option :value="$key" :title="$value" :option="$response->status" />
+                    <x-select-option :value="$key" :title="$value" :option="$response->status->value" />
                 @endforeach
             </x-select>
         </div>
