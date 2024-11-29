@@ -22,3 +22,4 @@ yarn-error.log
 composer.lock
 /config/ckfinder.php
 /public/docs/api/v1/openapi.json
+firebase_credentials.json
