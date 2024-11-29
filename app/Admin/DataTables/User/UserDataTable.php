@@ -30,6 +30,8 @@ class UserDataTable extends BaseDataTable
             'editlink' => 'admin.users.datatable.editlink',
             'status' => 'admin.users.datatable.status',
             'active' => 'admin.users.datatable.active',
+            'email' => 'admin.users.datatable.email',
+            'phone' => 'admin.users.datatable.phone',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
@@ -72,6 +74,18 @@ class UserDataTable extends BaseDataTable
             'code' => $this->view['editlink'],
             'status' => $this->view['status'],
             'active' => $this->view['active'],
+            'email' => function($item){
+                return view($this->view['email'],
+                [
+                    'email' => $item->email
+                ])->render();
+            },
+            'phone' => function($item){
+                return view($this->view['phone'],
+                [
+                    'phone' => $item->phone
+                ])->render();
+            },
         ];
     }
 
@@ -91,6 +105,8 @@ class UserDataTable extends BaseDataTable
             'active',
             'checkbox',
             'code',
+            'email',
+            'phone',
         ];
     }
 

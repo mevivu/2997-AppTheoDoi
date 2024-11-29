@@ -11,6 +11,7 @@ use App\Enums\Notification\NotificationType;
 use App\Enums\VerifiedStatus;
 use App\Enums\Setting\SettingGroup;
 use App\Enums\ActiveStatus;
+use App\Enums\Child\ChildStatus;
 use App\Enums\User\{
     Gender,
     UserStatus,
@@ -30,6 +31,11 @@ return [
         ActiveStatus::Active->value => 'Hoạt động',
         ActiveStatus::Deleted->value => 'Đã xóa',
         ActiveStatus::Draft->value => 'Bản nháp',
+    ],
+    ChildStatus::class => [
+        ChildStatus::Active->value => 'Hoạt động',
+        ChildStatus::Draft->value => 'Bản nháp',
+        ChildStatus::Deleted->value => 'Đã xóa',
     ],
     Gender::class => [
         Gender::Male->value => 'Nam',

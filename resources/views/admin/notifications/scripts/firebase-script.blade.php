@@ -106,7 +106,7 @@
             }
 
             $.ajax({
-                url: `${urlHome}/admin/notifications/update-device-token`,
+                url: `${urlHome}/admin/thong-bao/update-device-token`,
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': token
@@ -169,7 +169,7 @@
             notifications?.forEach(function(notification) {
                 const timeDiff = timeSince(notification.created_at);
                 const notificationElement = `
-            <a href="${urlHome}/admin/notifications/edit/${notification.id}" class="dropdown-item d-flex justify-content-between message-item-{ notification.id }">
+            <a href="${urlHome}/admin/thong-bao/edit/${notification.id}" class="dropdown-item d-flex justify-content-between message-item-{ notification.id }">
                 ${notification.title}
                 <div class="text-muted small mt-1">${timeDiff}</div>
             </a>
@@ -186,7 +186,7 @@
         function reloadData() {
             const userId = getUserId();
             $.ajax({
-                url: urlHome + '/admin/notifications/not-read-admin?admin_id=' + userId,
+                url: urlHome + '/admin/thong-bao/not-read-admin?admin_id=' + userId,
                 type: 'GET',
                 success: function(data) {
                     renderNotifications(data.notifications);
@@ -204,7 +204,7 @@
 
         function updateNotificationStatus(userId) {
             $.ajax({
-                url: urlHome + '/admin/notifications/status',
+                url: urlHome + '/admin/thong-bao/status',
                 type: 'PATCH',
                 data: {
                     admin_id: userId

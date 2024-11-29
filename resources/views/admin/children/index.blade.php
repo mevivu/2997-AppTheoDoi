@@ -8,14 +8,14 @@
         <div class="container-xl">
             <div class="card">
                 <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách nhân viên') }}</h2>
-                    <x-link :href="route('admin.user.create')" class="btn btn-primary">
+                    <h2 class="mb-0">{{ __('Danh sách trẻ em') }}</h2>
+                    <x-link :href="route('admin.children.create')" class="btn btn-primary">
                         <i class="ti ti-plus"></i>
                         <span class="ms-1">@lang('add')</span>
                     </x-link>
                 </div>
                 <div class="card-body">
-                    <x-form id="formMultiple" :action="route('admin.user.multiple')" type="post" :validate="true">
+                    <x-form id="formMultiple" :action="route('admin.children.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">
                             <x-admin.partials.toggle-column-datatable />
                             @isset($actionMultiple)
