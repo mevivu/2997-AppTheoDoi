@@ -36,7 +36,7 @@ trait ResponseController
         } catch (Exception $e) {
             DB::rollback();
             $this->logError("Error during store or update operation", $e);
-            return back()->with('error', __('notifyError'));
+            return back()->with('error', $e->getMessage());
         }
     }
 
@@ -65,7 +65,7 @@ trait ResponseController
         } catch (Exception $e) {
             DB::rollback();
             $this->logError("Error during update operation", $e);
-            return back()->with('error', __('notifyFail'))->withInput();
+            return back()->with('error', $e->getMessage());
         }
     }
 
