@@ -32,8 +32,36 @@ return [
             ],
         ]
     ],
-
-
+    [
+        'title' => 'Bài tập',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-book"></i>',
+        'roles' => [],
+        'permissions' => ['createExercise', 'viewExercise', 'updateExercise', 'deleteExercise'],
+        'sub' => [
+            [
+                'title' => 'Thêm Bài tập',
+                'routeName' => 'admin.exercise.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createExercise'],
+            ],
+            [
+                'title' => 'Bài tập thể chất',
+                'routeName' => 'admin.exercise.physical',
+                'icon' => '<i class="ti ti-swimming"></i>',
+                'roles' => [],
+                'permissions' => ['viewExercise'],
+            ],
+            [
+                'title' => 'Bài tập sức mạnh',
+                'routeName' => 'admin.exercise.power',
+                'icon' => '<i class="ti ti-barbell"></i>',
+                'roles' => [],
+                'permissions' => ['viewExercise'],
+            ],
+        ]
+    ],
     [
         'title' => 'Khách hàng',
         'routeName' => null,

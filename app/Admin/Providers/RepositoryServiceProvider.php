@@ -15,7 +15,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Setting\SettingRepositoryInterface' => 'App\Admin\Repositories\Setting\SettingRepository',
         'App\Admin\Repositories\Notification\NotificationRepositoryInterface' => 'App\Admin\Repositories\Notification\NotificationRepository',
         'App\Admin\Repositories\Otp\OtpRepositoryInterface' => 'App\Admin\Repositories\Otp\OtpRepository',
-
+        'App\Admin\Repositories\Exercise\ExerciseRepositoryInterface' => 'App\Admin\Repositories\Exercise\ExerciseRepository',
     ];
 
     /**

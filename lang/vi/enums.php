@@ -11,6 +11,7 @@ use App\Enums\Notification\NotificationType;
 use App\Enums\VerifiedStatus;
 use App\Enums\Setting\SettingGroup;
 use App\Enums\ActiveStatus;
+use App\Enums\Exercise\ExerciseType;
 use App\Enums\User\{
     Gender,
     UserStatus,
@@ -19,7 +20,10 @@ use App\Enums\User\{
 };
 
 return [
-
+    ExerciseType::class => [
+        ExerciseType::PHYSICAL->value => 'Bài tập thể chất',
+        ExerciseType::POWER->value => 'Bài tập sức mạnh',
+    ],
     DeleteStatus::class => [
         DeleteStatus::Deleted->value => 'Đã xóa',
         DeleteStatus::NotDeleted->value => 'Chưa xóa',

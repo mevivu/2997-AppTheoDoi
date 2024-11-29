@@ -16,6 +16,30 @@ Route::controller(App\Admin\Http\Controllers\Auth\LoginController::class)
 
 Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
+    //Exercises
+    Route::controller(App\Admin\Http\Controllers\Exercise\ExerciseController::class)
+        ->prefix('/exercises')
+        ->as('exercise.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createExercise', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewExercise', 'auth:admin']], function () {
+                Route::get('/physical', 'physical')->name('physical');
+                Route::get('/power', 'power')->name('power');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+            Route::group(['middleware' => ['permission:updateExercise', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+            });
+
+            Route::group(['middleware' => ['permission:deleteExercise', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
 
     //Notification
     Route::controller(App\Admin\Http\Controllers\Notification\NotificationController::class)
