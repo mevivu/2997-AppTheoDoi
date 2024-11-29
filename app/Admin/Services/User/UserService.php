@@ -4,6 +4,7 @@ namespace App\Admin\Services\User;
 
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Traits\Roles;
+use App\AES\AESHelper;
 use App\Api\V1\Support\UseLog;
 use App\Enums\User\UserStatus;
 use Exception;
@@ -42,11 +43,14 @@ class UserService implements UserServiceInterface
             $data['longitude'] = $request['lng'];
             $data['latitude'] = $request['lat'];
             $data['password'] = bcrypt($data['password']);
+            $data['email'] = AESHelper::encrypt($data['email']);
+            $data['phone'] = AESHelper::encrypt($data['phone']);
+            $data['address'] = AESHelper::encrypt($data['address']);
+            $roles = $data['roles'];
             $user = $this->repository->create($data);
 
             $data['user_id'] = $user->id;
 
-            $roles = $data['roles'];
             //create role
             $this->repository->assignRoles($user, [$roles]);
 
@@ -67,6 +71,15 @@ class UserService implements UserServiceInterface
             $data = $request->validated();
             $data['longitude'] = $request['lng'];
             $data['latitude'] = $request['lat'];
+            if (isset($data['email'])) {
+                $data['email'] = AESHelper::encrypt($data['email']);
+            }
+            if (isset($data['phone'])) {
+                $data['phone'] = AESHelper::encrypt($data['phone']);
+            }
+            if (isset($data['address'])) {
+                $data['address'] = AESHelper::encrypt($data['address']);
+            }
             if (isset($data['password']) && $data['password']) {
                 $data['password'] = bcrypt($data['password']);
             } else {
@@ -90,6 +103,9 @@ class UserService implements UserServiceInterface
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function delete($id): object
     {
         return $this->repository->delete($id);
