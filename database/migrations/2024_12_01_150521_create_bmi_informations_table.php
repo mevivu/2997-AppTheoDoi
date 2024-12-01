@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\Child\ChildStatus;
+use App\Enums\ActiveStatus;
 use App\Enums\User\Gender;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -12,18 +12,15 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('children', function (Blueprint $table) {
+        Schema::create('bmi_informations', function (Blueprint $table) {
             $table->id();
-            $table->string('fullname');
-            $table->date('birthday')->nullable();
+            $table->integer('age');
+            $table->decimal('bmi', 10, 2);
             $table->enum('gender', Gender::getValues())->default(Gender::Other->value);
-            $table->enum('status', ChildStatus::getValues())->default(ChildStatus::Active->value);
-
+            $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
             $table->timestamps();
-
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
         });
     }
 
@@ -32,8 +29,8 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('children');
+        Schema::dropIfExists('bmi_informations');
     }
 };

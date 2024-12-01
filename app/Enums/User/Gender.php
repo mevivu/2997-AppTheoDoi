@@ -2,7 +2,6 @@
 
 namespace App\Enums\User;
 
-
 use App\Supports\Enum;
 
 enum Gender: int
@@ -13,4 +12,3 @@ enum Gender: int
     case Female = 2;
     case Other = 3;
 }
-

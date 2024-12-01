@@ -1,6 +1,48 @@
 <?php
 
 return [
+    'bmi' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'id' => [
+            'title' => 'ID',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'gender' => [
+            'title' => 'Giới tính',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'age' => [
+            'title' => 'Tuổi',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'bmi' => [
+            'title' => 'Chỉ số BMI tiêu chuẩn',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'status' => [
+            'title' => 'Trạng thái',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
     'exercise' => [
         'checkbox' => [
             'title' => 'choose',

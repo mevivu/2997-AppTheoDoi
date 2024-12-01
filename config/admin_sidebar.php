@@ -63,6 +63,29 @@ return [
         ]
     ],
     [
+        'title' => 'Thông tin BMI',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-info-circle"></i>',
+        'roles' => [],
+        'permissions' => ['createBMI', 'viewBMI', 'updateBMI', 'deleteBMI'],
+        'sub' => [
+            [
+                'title' => 'Thêm thông tin BMI',
+                'routeName' => 'admin.bmi.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createBMI'],
+            ],
+            [
+                'title' => 'DS thông tin BMI',
+                'routeName' => 'admin.bmi.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewBMI'],
+            ],
+        ]
+    ],
+    [
         'title' => 'Khách hàng',
         'routeName' => null,
         'icon' => '<i class="ti ti-users"></i>',
