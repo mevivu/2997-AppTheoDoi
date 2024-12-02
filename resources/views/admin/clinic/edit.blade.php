@@ -26,6 +26,7 @@
 @endpush
 
 @push('custom-js')
-
+    @include('admin.clinic.scripts.scripts')
+    @include('admin.clinic.scripts.address')
 
 @endpush

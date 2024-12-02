@@ -324,6 +324,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
     Route::prefix('/tim-kiem')->as('search.')->group(function () {
         Route::prefix('/select')->as('select.')->group(function () {
             Route::get('/user', [App\Admin\Http\Controllers\User\UserSearchSelectController::class, 'selectSearch'])->name('user');
+            Route::get('/clinic-types', [App\Admin\Http\Controllers\ClinicType\ClinicTypeSearchSelectController::class, 'selectSearch'])->name('clinicType');
         });
     });
 

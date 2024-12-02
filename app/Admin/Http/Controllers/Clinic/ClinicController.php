@@ -4,7 +4,7 @@ namespace App\Admin\Http\Controllers\Clinic;
 
 use App\Admin\DataTables\ClinicType\ClinicTypeDataTable;
 use App\Admin\Http\Controllers\Controller;
-use App\Admin\Http\Requests\ClinicType\ClinicTypeRequest;
+use App\Admin\Http\Requests\Clinic\ClinicRequest;
 use App\Admin\Repositories\Clinic\ClinicRepositoryInterface;
 use App\Admin\Repositories\District\DistrictRepository;
 use App\Admin\Repositories\Province\ProvinceRepositoryInterface;
@@ -31,12 +31,12 @@ class ClinicController extends Controller
 
 
     public function __construct(
-        ClinicRepositoryInterface $repository,
+        ClinicRepositoryInterface   $repository,
         ProvinceRepositoryInterface $provinceRepository,
-        DistrictRepository $districtRepository,
-        WardRepositoryInterface $wardRepository,
+        DistrictRepository          $districtRepository,
+        WardRepositoryInterface     $wardRepository,
 
-        ClinicServiceInterface    $service
+        ClinicServiceInterface      $service
     )
     {
 
@@ -98,7 +98,7 @@ class ClinicController extends Controller
         ]);
     }
 
-    public function store(ClinicTypeRequest $request): RedirectResponse
+    public function store(ClinicRequest $request): RedirectResponse
     {
         return $this->handleResponse($request, function ($request) {
             return $this->service->store($request);
@@ -112,10 +112,16 @@ class ClinicController extends Controller
     {
 
         $instance = $this->repository->findOrFail($id);
+        $provinces = $this->provinceRepository->getAll();
+        $district = $instance->district;
+        $ward = $instance->ward;
         return view(
             $this->view['edit'],
             [
                 'instance' => $instance,
+                'provinces' => $provinces,
+                'district' => $district,
+                'ward' => $ward,
                 'status' => ChildStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),
             ],
@@ -123,7 +129,7 @@ class ClinicController extends Controller
 
     }
 
-    public function update(ClinicTypeRequest $request): RedirectResponse
+    public function update(ClinicRequest $request): RedirectResponse
     {
         return $this->handleUpdateResponse($request, function ($request) {
             return $this->service->update($request);

@@ -274,5 +274,7 @@
     "clinic_type": "Loại phòng khám",
     "province": "Tỉnh",
     "district": "Quận",
-    "ward": "Phường"
+    "ward": "Phường",
+    "closing_time": "Giờ đóng cửa",
+    "opening_time": "Giờ mở cửa"
 }

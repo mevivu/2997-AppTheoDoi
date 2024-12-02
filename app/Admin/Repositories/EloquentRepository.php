@@ -53,6 +53,26 @@ abstract class EloquentRepository implements EloquentRepositoryInterface
     }
 
     /**
+     * Find a single record
+     *
+     * @param array $filter
+     * @param array $relations
+     * @return mixed
+     * @throws \Exception
+     */
+    public function findBy(array $filter, array $relations = [])
+    {
+
+        $this->instance = $this->model;
+
+        $this->applyFilters($filter);
+
+        $this->instance = $this->instance->with($relations)->first();
+
+        return $this->instance;
+    }
+
+    /**
      * Find records by a specific field.
      *
      * @param string $field The field to filter by.

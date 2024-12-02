@@ -3,6 +3,9 @@
 namespace App\Admin\Services\Clinic;
 
 use App\Admin\Repositories\Clinic\ClinicRepositoryInterface;
+use App\Admin\Repositories\District\DistrictRepositoryInterface;
+use App\Admin\Repositories\Province\ProvinceRepositoryInterface;
+use App\Admin\Repositories\Ward\WardRepositoryInterface;
 use App\Api\V1\Support\UseLog;
 use App\Enums\ActiveStatus;
 use Exception;
@@ -22,12 +25,24 @@ class ClinicSizeService implements ClinicServiceInterface
 
     protected ClinicRepositoryInterface $repository;
 
+    protected ProvinceRepositoryInterface $provinceRepository;
+
+    protected DistrictRepositoryInterface $districtRepository;
+
+    protected WardRepositoryInterface $wardRepository;
+
 
 
     public function __construct(
         ClinicRepositoryInterface $repository,
+        ProvinceRepositoryInterface $provinceRepository,
+        DistrictRepositoryInterface $districtRepository,
+        WardRepositoryInterface $wardRepository,
     ) {
         $this->repository = $repository;
+        $this->provinceRepository = $provinceRepository;
+        $this->districtRepository = $districtRepository;
+        $this->wardRepository = $wardRepository;
     }
 
     /**
@@ -36,6 +51,12 @@ class ClinicSizeService implements ClinicServiceInterface
     public function store(Request $request): object|false
     {
         $data = $request->validated();
+        $data['province_id'] = $this->provinceRepository
+            ->findByField('code',$data['province'])->id;
+        $data['district_id'] = $this->districtRepository
+            ->findByField('code',$data['district'])->id;
+        $data['ward_id'] = $this->wardRepository
+            ->findByField('code',$data['ward'])->id;
         return $this->repository->create($data);
     }
 

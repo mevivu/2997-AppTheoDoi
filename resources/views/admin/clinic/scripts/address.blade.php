@@ -1,7 +1,7 @@
 <script>
     $(document).ready(function () {
         function loadDistricts(provinceCode, selectedDistrictCode) {
-            var $districtSelect = $('select[name="district"]');
+            const $districtSelect = $('select[name="district"]');
 
             $districtSelect.prop('disabled', true);
             // $wardSelect.prop('disabled', true).html('<option value="">-- Chọn Phường/Xã --</option>');
@@ -29,7 +29,7 @@
         }
 
         function loadWards(districtCode) {
-            var $wardSelect = $('select[name="ward"]');
+            const $wardSelect = $('select[name="ward"]');
 
             $wardSelect.prop('disabled', true);
 

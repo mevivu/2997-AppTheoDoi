@@ -10,19 +10,11 @@ class UserRepository extends EloquentRepository implements UserRepositoryInterfa
 
     protected $select = [];
 
-    public function getModel(){
+    public function getModel(): string
+    {
         return User::class;
     }
 
-    public function findBy(array $data){
-        $this->getQueryBuilder();
-        foreach($data as $key => $value){
-            $this->instance = $this->instance->where($key, $value);
-        }
-        return $this->instance->firstOrFail();
-    }
-    public function updateObject($user, $data){
-        $user->update($data);
-        return $user;
-    }
+
+
 }
