@@ -86,6 +86,29 @@ return [
         ]
     ],
     [
+        'title' => 'Trẻ em',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-users"></i>',
+        'roles' => [],
+        'permissions' => ['createChildren', 'viewChildren', 'updateChildren', 'deleteChildren', 'createAddress'],
+        'sub' => [
+            [
+                'title' => 'add',
+                'routeName' => 'admin.children.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createChildren'],
+            ],
+            [
+                'title' => 'list',
+                'routeName' => 'admin.children.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewChildren'],
+            ]
+        ]
+    ],
+    [
         'title' => 'Vai trò',
         'routeName' => null,
         'icon' => '<i class="ti ti-user-check"></i>',

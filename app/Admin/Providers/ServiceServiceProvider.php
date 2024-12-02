@@ -12,6 +12,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\Role\RoleServiceInterface' => 'App\Admin\Services\Role\RoleService',
         'App\Admin\Services\Admin\AdminServiceInterface' => 'App\Admin\Services\Admin\AdminService',
         'App\Admin\Services\User\UserServiceInterface' => 'App\Admin\Services\User\UserService',
+        'App\Admin\Services\Children\ChildrenServiceInterface' => 'App\Admin\Services\Children\ChildrenService',
         'App\Admin\Services\Notification\NotificationServiceInterface' => 'App\Admin\Services\Notification\NotificationService',
         'App\Admin\Services\Exercise\ExerciseServiceInterface' => 'App\Admin\Services\Exercise\ExerciseService',
     ];

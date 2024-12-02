@@ -1,28 +1,30 @@
 <?php
 
-namespace App\Admin\Http\Controllers\User;
+namespace App\Admin\Http\Controllers\Children;
 
 use App\Admin\Http\Controllers\Controller;
-use App\Admin\Http\Requests\User\UserRequest;
-use App\Admin\Repositories\User\UserRepositoryInterface;
-use App\Admin\Services\User\UserServiceInterface;
-use App\Admin\DataTables\User\UserDataTable;
+use App\Admin\Http\Requests\Children\ChildrenRequest;
+use App\Admin\Repositories\Children\ChildrenRepositoryInterface;
+use App\Admin\Services\Children\ChildrenServiceInterface;
+use App\Admin\DataTables\Children\ChildrenDataTable;
 use App\Traits\ResponseController;
 use Exception;
-use App\Enums\User\{Gender, UserStatus};
+use App\Enums\Child\ChildStatus;
+use App\Enums\User\Gender;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
-class UserController extends Controller
+class ChildrenController extends Controller
 {
     use ResponseController;
 
     public function __construct(
-        UserRepositoryInterface $repository,
-        UserServiceInterface    $service
+        ChildrenRepositoryInterface $repository,
+        ChildrenServiceInterface    $service
     )
     {
 
@@ -37,34 +39,32 @@ class UserController extends Controller
     public function getView(): array
     {
         return [
-            'index' => 'admin.users.index',
-            'create' => 'admin.users.create',
-            'edit' => 'admin.users.edit',
-            'history' => 'admin.users.order.index',
+            'index' => 'admin.children.index',
+            'create' => 'admin.children.create',
+            'edit' => 'admin.children.edit',
         ];
     }
 
     public function getRoute(): array
     {
         return [
-            'index' => 'admin.user.index',
-            'create' => 'admin.user.create',
-            'edit' => 'admin.user.edit',
-            'delete' => 'admin.user.delete',
-            'history' => 'admin.users.history',
+            'index' => 'admin.children.index',
+            'create' => 'admin.children.create',
+            'edit' => 'admin.children.edit',
+            'delete' => 'admin.children.delete',
         ];
     }
 
-    public function index(UserDataTable $dataTable)
+    public function index(ChildrenDataTable $dataTable)
     {
         $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
             $this->view['index'],
             [
                 'gender' => Gender::asSelectArray(),
-                'status' => UserStatus::asSelectArray(),
+                'status' => ChildStatus::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
-                'breadcrumbs' => $this->crums->add(__('Nhân viên')),
+                'breadcrumbs' => $this->crums->add(__('children')),
             ]
 
         );
@@ -73,17 +73,15 @@ class UserController extends Controller
 
     public function create(): Factory|View|Application
     {
-        $roles = $this->repository->getAllRolesByGuardName('web');
-
         return view($this->view['create'], [
             'gender' => Gender::asSelectArray(),
-            'roles' => $roles,
-            'breadcrumbs' => $this->crums->add(__('Nhân viên'), route($this->route['index']))->add(__('add')),
+            'status' => ChildStatus::asSelectArray(),
+            'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('add')),
         ]);
     }
 
-    public function store(UserRequest $request): RedirectResponse
-    {
+    public function store(ChildrenRequest $request): RedirectResponse
+    {   
         return $this->handleResponse($request, function ($request) {
             return $this->service->store($request);
         }, $this->route['index'], $this->route['edit']);
@@ -96,21 +94,19 @@ class UserController extends Controller
     {
 
         $instance = $this->repository->findOrFail($id);
-        $roles = $this->repository->getAllRolesByGuardName('web');
         return view(
             $this->view['edit'],
             [
-                'user' => $instance,
+                'children' => $instance,
                 'gender' => Gender::asSelectArray(),
-                'status' => UserStatus::asSelectArray(),
-                'roles' => $roles,
-                'breadcrumbs' => $this->crums->add(__('Nhân viên'), route($this->route['index']))->add(__('edit')),
+                'status' => ChildStatus::asSelectArray(),
+                'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),
             ],
         );
 
     }
 
-    public function update(UserRequest $request): RedirectResponse
+    public function update(ChildrenRequest $request): RedirectResponse
     {
         return $this->handleUpdateResponse($request, function ($request) {
             return $this->service->update($request);
@@ -124,21 +120,21 @@ class UserController extends Controller
     {
         return $this->handleDeleteResponse($id, function ($id) {
             $response = $this->repository->findOrFail($id);
-            return $response->update(['status' => UserStatus::Inactive->value]);
+            return $response->update(['status' => ChildStatus::Deleted->value]);
         });
     }
 
     protected function getActionMultiple(): array
     {
         return [
-            'active' => UserStatus::Active->description(),
-            'inactive' => UserStatus::Inactive->description(),
-            'lock' => UserStatus::Lock->description()
+            'active' => ChildStatus::Active->description(),
+            'draft' => ChildStatus::Draft->description(),
+            'deleted' => ChildStatus::Deleted->description()
         ];
     }
 
     public function actionMultipleRecode(Request $request): RedirectResponse
-    {
+    {   
         $boolean = $this->service->actionMultipleRecode($request);
         if ($boolean) {
             return back()->with('success', __('notifySuccess'));
