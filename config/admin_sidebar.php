@@ -90,7 +90,7 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-users"></i>',
         'roles' => [],
-        'permissions' => ['createChildren', 'viewChildren', 'updateChildren', 'deleteChildren', 'createAddress'],
+        'permissions' => ['createChildren', 'viewChildren', 'updateChildren', 'deleteChildren'],
         'sub' => [
             [
                 'title' => 'add',
