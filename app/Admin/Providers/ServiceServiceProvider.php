@@ -16,6 +16,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\Notification\NotificationServiceInterface' => 'App\Admin\Services\Notification\NotificationService',
         'App\Admin\Services\Exercise\ExerciseServiceInterface' => 'App\Admin\Services\Exercise\ExerciseService',
         'App\Admin\Services\Bmi\BmiServiceInterface' => 'App\Admin\Services\Bmi\BmiService',
+        'App\Admin\Services\ClinicType\ClinicTypeServiceInterface' => 'App\Admin\Services\ClinicType\ClinicTypeSizeService',
     ];
     /**
      * Register services.

@@ -269,5 +269,6 @@
     "note": "Chú ý",
     "warehouse": "Kho hàng",
     "cancellation_reason": "Lý do huỷ",
-    "mass_discrepancy": "Khối lượng chênh lệnh"
+    "mass_discrepancy": "Khối lượng chênh lệnh",
+    "clinic": "Phòng khám"
 }

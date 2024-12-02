@@ -94,6 +94,30 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+    //Bmi
+    Route::controller(App\Admin\Http\Controllers\ClinicType\ClinicTypeController::class)
+        ->prefix('/clinic-types')
+        ->as('clinicType.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createClinicType', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewClinicType', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updateClinicType', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+            Route::group(['middleware' => ['permission:deleteClinicType', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
 
 
     //***** -- Module -- ******* //

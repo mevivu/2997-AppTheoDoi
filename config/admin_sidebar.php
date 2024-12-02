@@ -132,6 +132,52 @@ return [
         ]
     ],
     [
+        'title' => 'Trẻ em',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-users"></i>',
+        'roles' => [],
+        'permissions' => ['createChildren', 'viewChildren', 'updateChildren', 'deleteChildren'],
+        'sub' => [
+            [
+                'title' => 'add',
+                'routeName' => 'admin.children.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createChildren'],
+            ],
+            [
+                'title' => 'list',
+                'routeName' => 'admin.children.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewChildren'],
+            ]
+        ]
+    ],
+//    [
+//        'title' => 'clinic',
+//        'routeName' => null,
+//        'icon' => '<i class="ti ti-users"></i>',
+//        'roles' => [],
+//        'permissions' => ['createClinicType', 'viewClinicType', 'updateClinicType', 'deleteClinicType'],
+//        'sub' => [
+//            [
+//                'title' => 'add',
+//                'routeName' => 'admin.clinicType.create',
+//                'icon' => '<i class="ti ti-plus"></i>',
+//                'roles' => [],
+//                'permissions' => ['createClinicType'],
+//            ],
+//            [
+//                'title' => 'list',
+//                'routeName' => 'admin.clinicType.index',
+//                'icon' => '<i class="ti ti-list"></i>',
+//                'roles' => [],
+//                'permissions' => ['viewClinicType'],
+//            ]
+//        ]
+//    ],
+    [
         'title' => 'Vai trò',
         'routeName' => null,
         'icon' => '<i class="ti ti-user-check"></i>',
