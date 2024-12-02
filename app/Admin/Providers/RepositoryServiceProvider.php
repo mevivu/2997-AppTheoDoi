@@ -19,6 +19,11 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Exercise\ExerciseRepositoryInterface' => 'App\Admin\Repositories\Exercise\ExerciseRepository',
         'App\Admin\Repositories\Bmi\BmiRepositoryInterface' => 'App\Admin\Repositories\Bmi\BmiRepository',
         'App\Admin\Repositories\ClinicType\ClinicTypeRepositoryInterface' => 'App\Admin\Repositories\ClinicType\ClinicTypeRepository',
+        'App\Admin\Repositories\Clinic\ClinicRepositoryInterface' => 'App\Admin\Repositories\Clinic\ClinicRepository',
+        'App\Admin\Repositories\Province\ProvinceRepositoryInterface' => 'App\Admin\Repositories\Province\ProvinceRepository',
+        'App\Admin\Repositories\District\DistrictRepositoryInterface' => 'App\Admin\Repositories\District\DistrictRepository',
+        'App\Admin\Repositories\Ward\WardRepositoryInterface' => 'App\Admin\Repositories\Ward\WardRepository',
+
     ];
 
     /**

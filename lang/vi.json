@@ -270,5 +270,9 @@
     "warehouse": "Kho hàng",
     "cancellation_reason": "Lý do huỷ",
     "mass_discrepancy": "Khối lượng chênh lệnh",
-    "clinic": "Phòng khám"
+    "clinic": "Phòng khám",
+    "clinic_type": "Loại phòng khám",
+    "province": "Tỉnh",
+    "district": "Quận",
+    "ward": "Phường"
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Admin\Http\Controllers\Address\AddressController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [App\Admin\Http\Controllers\Home\HomeController::class, 'index']);
@@ -94,7 +95,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
-    //Bmi
+    //Clinic Type
     Route::controller(App\Admin\Http\Controllers\ClinicType\ClinicTypeController::class)
         ->prefix('/clinic-types')
         ->as('clinicType.')
@@ -118,6 +119,30 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+
+    //Clinic
+    Route::controller(App\Admin\Http\Controllers\Clinic\ClinicController::class)
+        ->prefix('/clinics')
+        ->as('clinic.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createClinic', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewClinic', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updateClinic', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+            Route::group(['middleware' => ['permission:deleteClinic', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
 
 
     //***** -- Module -- ******* //
@@ -266,6 +291,9 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
     });
+
+    Route::get('/address/districts', [AddressController::class, 'getDistrictsByProvince'])->name('districts');
+    Route::get('/address/wards', [AddressController::class, 'getWardsByDistrict'])->name('wards');
 
     //ckfinder
     Route::prefix('/quan-ly-file')->as('ckfinder.')->group(function () {

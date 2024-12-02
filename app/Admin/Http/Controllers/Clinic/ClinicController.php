@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Admin\Http\Controllers\ClinicType;
+namespace App\Admin\Http\Controllers\Clinic;
 
 use App\Admin\DataTables\ClinicType\ClinicTypeDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\ClinicType\ClinicTypeRequest;
-use App\Admin\Repositories\ClinicType\ClinicTypeRepositoryInterface;
-use App\Admin\Services\ClinicType\ClinicTypeServiceInterface;
+use App\Admin\Repositories\Clinic\ClinicRepositoryInterface;
+use App\Admin\Repositories\District\DistrictRepository;
+use App\Admin\Repositories\Province\ProvinceRepositoryInterface;
+use App\Admin\Repositories\Ward\WardRepositoryInterface;
+use App\Admin\Services\Clinic\ClinicServiceInterface;
 use App\Traits\ResponseController;
 use Exception;
 use App\Enums\Child\ChildStatus;
@@ -16,19 +19,34 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-class ClinicTypeController extends Controller
+class ClinicController extends Controller
 {
     use ResponseController;
 
+    private ProvinceRepositoryInterface $provinceRepository;
+
+    private DistrictRepository $districtRepository;
+
+    private WardRepositoryInterface $wardRepository;
+
+
     public function __construct(
-        ClinicTypeRepositoryInterface $repository,
-        ClinicTypeServiceInterface    $service
+        ClinicRepositoryInterface $repository,
+        ProvinceRepositoryInterface $provinceRepository,
+        DistrictRepository $districtRepository,
+        WardRepositoryInterface $wardRepository,
+
+        ClinicServiceInterface    $service
     )
     {
 
         parent::__construct();
 
         $this->repository = $repository;
+        $this->provinceRepository = $provinceRepository;
+        $this->districtRepository = $districtRepository;
+        $this->wardRepository = $wardRepository;
+
 
         $this->service = $service;
 
@@ -37,19 +55,19 @@ class ClinicTypeController extends Controller
     public function getView(): array
     {
         return [
-            'index' => 'admin.clinicType.index',
-            'create' => 'admin.clinicType.create',
-            'edit' => 'admin.clinicType.edit',
+            'index' => 'admin.clinic.index',
+            'create' => 'admin.clinic.create',
+            'edit' => 'admin.clinic.edit',
         ];
     }
 
     public function getRoute(): array
     {
         return [
-            'index' => 'admin.clinicType.index',
-            'create' => 'admin.clinicType.create',
-            'edit' => 'admin.clinicType.edit',
-            'delete' => 'admin.clinicType.delete',
+            'index' => 'admin.clinic.index',
+            'create' => 'admin.clinic.create',
+            'edit' => 'admin.clinic.edit',
+            'delete' => 'admin.clinic.delete',
         ];
     }
 
@@ -61,7 +79,7 @@ class ClinicTypeController extends Controller
             [
                 'status' => ChildStatus::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
-                'breadcrumbs' => $this->crums->add(__('clinic_type')),
+                'breadcrumbs' => $this->crums->add(__('clinic')),
             ]
 
         );
@@ -70,9 +88,12 @@ class ClinicTypeController extends Controller
 
     public function create(): Factory|View|Application
     {
+        $provinces = $this->provinceRepository->getAll();
+
         return view($this->view['create'], [
             'status' => ChildStatus::asSelectArray(),
-            'breadcrumbs' => $this->crums->add(__('clinic_type'),
+            'provinces' => $provinces,
+            'breadcrumbs' => $this->crums->add(__('clinic'),
                 route($this->route['index']))->add(__('add')),
         ]);
     }
@@ -96,7 +117,7 @@ class ClinicTypeController extends Controller
             [
                 'instance' => $instance,
                 'status' => ChildStatus::asSelectArray(),
-                'breadcrumbs' => $this->crums->add(__('clinic_type'), route($this->route['index']))->add(__('edit')),
+                'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),
             ],
         );
 
