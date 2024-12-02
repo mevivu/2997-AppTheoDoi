@@ -8,7 +8,7 @@
         <div class="container-xl">
             <div class="card">
                 <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách nhân viên') }}</h2>
+                    <h2 class="mb-0">{{ __('Danh sách khách hàng') }}</h2>
                     <x-link :href="route('admin.user.create')" class="btn btn-primary">
                         <i class="ti ti-plus"></i>
                         <span class="ms-1">@lang('add')</span>

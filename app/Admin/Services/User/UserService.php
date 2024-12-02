@@ -27,8 +27,7 @@ class UserService implements UserServiceInterface
 
     public function __construct(
         UserRepositoryInterface $repository,
-    )
-    {
+    ) {
         $this->repository = $repository;
     }
 
@@ -46,13 +45,12 @@ class UserService implements UserServiceInterface
         $data['username'] = $data['email'];
         $data['phone'] = AESHelper::encrypt($data['phone']);
         $data['address'] = AESHelper::encrypt($data['address']);
-        $roles = $data['roles'];
         $user = $this->repository->create($data);
 
         $data['user_id'] = $user->id;
 
         //create role
-        $this->repository->assignRoles($user, [$roles]);
+        $this->repository->assignRoles($user, [$this->getRoleCustomer()]);
         return $user;
     }
 
@@ -82,10 +80,7 @@ class UserService implements UserServiceInterface
 
         $user = $this->repository->update($data['id'], $data);
 
-        $roles = $data['roles'];
-        //create role
-        $this->repository->assignRoles($user, [$roles]);
-
+        $this->repository->assignRoles($user, [$this->getRoleCustomer()]);
         return $user;
     }
 

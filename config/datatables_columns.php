@@ -296,7 +296,7 @@ return [
             'visible' => false,
         ],
         'code' => [
-            'title' => 'Mã nhân viên',
+            'title' => 'Mã khách hàng',
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
@@ -353,7 +353,7 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
-        
+
         'birthday' => [
             'title' => 'birth-day',
             'addClass' => 'text-center align-middle',
