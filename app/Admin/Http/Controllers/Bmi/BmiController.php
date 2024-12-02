@@ -52,7 +52,8 @@ class BmiController extends Controller
         return $dataTable->render(
             $this->view['index'],
             [
-                'actionMultiple' => $this->getActionMultiple()
+                'actionMultiple' => $this->getActionMultiple(),
+                'breadcrumbs' => $this->crums->add('Danh sách BMI tiêu chuẩn'),
             ]
         );
     }
@@ -62,6 +63,7 @@ class BmiController extends Controller
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
             'gender' => Gender::asSelectArray(),
+            'breadcrumbs' => $this->crums->add('Danh sách BMI tiêu chuẩn', route($this->route['index']))->add('Thêm mới'),
         ]);
     }
 
@@ -86,6 +88,7 @@ class BmiController extends Controller
                 'response' => $response,
                 'status' => ActiveStatus::asSelectArray(),
                 'gender' => Gender::asSelectArray(),
+                'breadcrumbs' => $this->crums->add('Danh sách BMI tiêu chuẩn', route($this->route['index']))->add('Cập nhật'),
             ]
         );
 
