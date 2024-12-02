@@ -1,5 +1,5 @@
 
-<x-button.modal-confirm class="btn-icon" data-route="{{ route('admin.paperSize.delete', $id) }}">
+<x-button.modal-confirm class="btn-icon" data-route="{{ route('admin.clinicType.delete', $id) }}">
     <i class="ti ti-trash"></i>
 </x-button.modal-confirm>
 

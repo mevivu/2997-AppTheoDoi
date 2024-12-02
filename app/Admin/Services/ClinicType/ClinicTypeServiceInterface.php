@@ -15,4 +15,6 @@ interface ClinicTypeServiceInterface
 
     public function actionMultipleRecords(Request $request);
 
+
+
 }

@@ -2,15 +2,14 @@
 
 namespace App\Admin\Http\Controllers\ClinicType;
 
+use App\Admin\DataTables\ClinicType\ClinicTypeDataTable;
 use App\Admin\Http\Controllers\Controller;
-use App\Admin\Http\Requests\Children\ChildrenRequest;
+use App\Admin\Http\Requests\ClinicType\ClinicTypeRequest;
 use App\Admin\Repositories\ClinicType\ClinicTypeRepositoryInterface;
-use App\Admin\DataTables\Children\ChildrenDataTable;
 use App\Admin\Services\ClinicType\ClinicTypeServiceInterface;
 use App\Traits\ResponseController;
 use Exception;
 use App\Enums\Child\ChildStatus;
-use App\Enums\User\Gender;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -54,7 +53,7 @@ class ClinicTypeController extends Controller
         ];
     }
 
-    public function index(ChildrenDataTable $dataTable)
+    public function index(ClinicTypeDataTable $dataTable)
     {
         $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
@@ -72,13 +71,13 @@ class ClinicTypeController extends Controller
     public function create(): Factory|View|Application
     {
         return view($this->view['create'], [
-            'gender' => Gender::asSelectArray(),
             'status' => ChildStatus::asSelectArray(),
-            'breadcrumbs' => $this->crums->add(__('clinic'), route($this->route['index']))->add(__('add')),
+            'breadcrumbs' => $this->crums->add(__('clinic'),
+                route($this->route['index']))->add(__('add')),
         ]);
     }
 
-    public function store(ChildrenRequest $request): RedirectResponse
+    public function store(ClinicTypeRequest $request): RedirectResponse
     {
         return $this->handleResponse($request, function ($request) {
             return $this->service->store($request);
@@ -95,8 +94,7 @@ class ClinicTypeController extends Controller
         return view(
             $this->view['edit'],
             [
-                'children' => $instance,
-                'gender' => Gender::asSelectArray(),
+                'instance' => $instance,
                 'status' => ChildStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),
             ],
@@ -104,7 +102,7 @@ class ClinicTypeController extends Controller
 
     }
 
-    public function update(ChildrenRequest $request): RedirectResponse
+    public function update(ClinicTypeRequest $request): RedirectResponse
     {
         return $this->handleUpdateResponse($request, function ($request) {
             return $this->service->update($request);
@@ -131,9 +129,9 @@ class ClinicTypeController extends Controller
         ];
     }
 
-    public function actionMultipleRecode(Request $request): RedirectResponse
+    public function actionMultipleRecords(Request $request): RedirectResponse
     {
-        $boolean = $this->service->actionMultipleRecode($request);
+        $boolean = $this->service->actionMultipleRecords($request);
         if ($boolean) {
             return back()->with('success', __('notifySuccess'));
         }

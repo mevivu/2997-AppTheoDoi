@@ -8,7 +8,7 @@
                     <label class="control-label">@lang('Tên')</label>
                     <x-input type="text"
                              name="name"
-                             :value="$paper->name"
+                             :value="$instance->name"
                              :required="true"
                              :placeholder="__('name')"/>
                 </div>
@@ -17,39 +17,12 @@
             <!-- length -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('length')(cm)</label>
-                    <x-input name="length"
-                             type="number"
-                             min="1"
-                             :value="$paper->length"
+                    <label class="control-label">@lang('description')</label>
+                    <x-input name="description"
+                             type="text"
+                             :value="$instance->description"
                              :required="true"
                              :placeholder="__('length')"/>
-                </div>
-            </div>
-
-            <!-- width -->
-            <div class="col-12">
-                <div class="mb-3">
-                    <label class="control-label">@lang('width')(cm)</label>
-                    <x-input name="width"
-                             type="number"
-                             min="1"
-                             :value="$paper->width"
-                             :required="true"
-                             :placeholder="__('width')"/>
-                </div>
-            </div>
-
-            <!-- amount -->
-            <div class="col-12">
-                <div class="mb-3">
-                    <label class="control-label">@lang('Số lượng giấy')</label>
-                    <x-input name="amount"
-                             type="number"
-                             min="1"
-                             :value="$paper->amount"
-                             :required="true"
-                             :placeholder="__('Số lượng giấy')"/>
                 </div>
             </div>
 

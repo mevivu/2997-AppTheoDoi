@@ -7,7 +7,7 @@
     <div class="page-body">
         <div class="container-xl">
             <x-form :action="route('admin.clinicType.update')" type="put" :validate="true">
-                <x-input type="hidden" name="id" :value="$paper->id"/>
+                <x-input type="hidden" name="id" :value="$instance->id"/>
                 <div class="row justify-content-center">
                     @include('admin.clinicType.forms.edit-left')
                     @include('admin.clinicType.forms.edit-right')

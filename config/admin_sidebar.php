@@ -132,51 +132,28 @@ return [
         ]
     ],
     [
-        'title' => 'Trẻ em',
+        'title' => 'clinic',
         'routeName' => null,
         'icon' => '<i class="ti ti-users"></i>',
         'roles' => [],
-        'permissions' => ['createChildren', 'viewChildren', 'updateChildren', 'deleteChildren'],
+        'permissions' => ['createClinicType', 'viewClinicType', 'updateClinicType', 'deleteClinicType'],
         'sub' => [
             [
-                'title' => 'add',
-                'routeName' => 'admin.children.create',
+                'title' => 'Thêm loại phòng khám',
+                'routeName' => 'admin.clinicType.create',
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
-                'permissions' => ['createChildren'],
+                'permissions' => ['createClinicType'],
             ],
             [
                 'title' => 'list',
-                'routeName' => 'admin.children.index',
+                'routeName' => 'admin.clinicType.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
-                'permissions' => ['viewChildren'],
+                'permissions' => ['viewClinicType'],
             ]
         ]
     ],
-//    [
-//        'title' => 'clinic',
-//        'routeName' => null,
-//        'icon' => '<i class="ti ti-users"></i>',
-//        'roles' => [],
-//        'permissions' => ['createClinicType', 'viewClinicType', 'updateClinicType', 'deleteClinicType'],
-//        'sub' => [
-//            [
-//                'title' => 'add',
-//                'routeName' => 'admin.clinicType.create',
-//                'icon' => '<i class="ti ti-plus"></i>',
-//                'roles' => [],
-//                'permissions' => ['createClinicType'],
-//            ],
-//            [
-//                'title' => 'list',
-//                'routeName' => 'admin.clinicType.index',
-//                'icon' => '<i class="ti ti-list"></i>',
-//                'roles' => [],
-//                'permissions' => ['viewClinicType'],
-//            ]
-//        ]
-//    ],
     [
         'title' => 'Vai trò',
         'routeName' => null,
