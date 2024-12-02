@@ -22,9 +22,8 @@ class UserController extends Controller
 
     public function __construct(
         UserRepositoryInterface $repository,
-        UserServiceInterface    $service
-    )
-    {
+        UserServiceInterface $service
+    ) {
 
         parent::__construct();
 
@@ -64,7 +63,7 @@ class UserController extends Controller
                 'gender' => Gender::asSelectArray(),
                 'status' => UserStatus::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
-                'breadcrumbs' => $this->crums->add(__('Nhân viên')),
+                'breadcrumbs' => $this->crums->add(__('Khách hàng')),
             ]
 
         );
@@ -73,12 +72,9 @@ class UserController extends Controller
 
     public function create(): Factory|View|Application
     {
-        $roles = $this->repository->getAllRolesByGuardName('web');
-
         return view($this->view['create'], [
             'gender' => Gender::asSelectArray(),
-            'roles' => $roles,
-            'breadcrumbs' => $this->crums->add(__('Nhân viên'), route($this->route['index']))->add(__('add')),
+            'breadcrumbs' => $this->crums->add(__('Khách hàng'), route($this->route['index']))->add(__('add')),
         ]);
     }
 
@@ -96,15 +92,13 @@ class UserController extends Controller
     {
 
         $instance = $this->repository->findOrFail($id);
-        $roles = $this->repository->getAllRolesByGuardName('web');
         return view(
             $this->view['edit'],
             [
                 'user' => $instance,
                 'gender' => Gender::asSelectArray(),
                 'status' => UserStatus::asSelectArray(),
-                'roles' => $roles,
-                'breadcrumbs' => $this->crums->add(__('Nhân viên'), route($this->route['index']))->add(__('edit')),
+                'breadcrumbs' => $this->crums->add(__('Khách hàng'), route($this->route['index']))->add(__('edit')),
             ],
         );
 

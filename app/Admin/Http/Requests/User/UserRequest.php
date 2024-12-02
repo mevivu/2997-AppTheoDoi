@@ -38,7 +38,6 @@ class UserRequest extends BaseRequest
             'lat' => ['nullable'],
             'birthday' => ['nullable', 'date_format:Y-m-d'],
             'avatar' => ['nullable'],
-            'roles' => ['required', 'array'],
         ];
     }
 
@@ -63,7 +62,6 @@ class UserRequest extends BaseRequest
             'status' => ['required', new Enum(UserStatus::class)],
             'lng' => ['nullable'],
             'lat' => ['nullable'],
-            'roles' => ['required', 'array'],
             'address' => ['nullable'],
         ];
     }
