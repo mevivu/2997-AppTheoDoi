@@ -149,6 +149,16 @@ class SettingSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now()
             ],
+            [
+                'setting_key' => 'aes_secret_key',
+                'setting_name' => 'Khóa AES',
+                'plain_value' => 'CUrnm5Ba0siAos3fm8cQOsWfA1tx8Ct78lssJQhGNWnd3X6bPZryEFQt',
+                'type_input' => SettingTypeInput::Text,
+                'group' => SettingGroup::System,
+                'desc' => 'Khóa mã hóa AES cho ứng dụng.',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
 
         ]);
     }

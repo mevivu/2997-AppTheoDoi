@@ -2,14 +2,17 @@
 
 namespace App\AES;
 
+use App\Repositories\Setting\SettingRepositoryInterface;
+
 class AESHelper
 {
     protected static string $aesSecretKey;
 
     public static function getAESSecretKey(): string
     {
+        $setting = app(SettingRepositoryInterface::class);
         if (!isset(self::$aesSecretKey)) {
-            self::$aesSecretKey = env('AES_SECRET_KEY');
+            self::$aesSecretKey = $setting->findByField("setting_key", 'aes_secret_key')->plain_value;
         }
 
         return self::$aesSecretKey;

@@ -5,6 +5,7 @@ namespace App\Admin\DataTables\User;
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Traits\Roles;
+use App\AES\AESHelper;
 use App\Enums\User\UserActive;
 use App\Enums\User\UserStatus;
 use Illuminate\Database\Eloquent\Builder;
@@ -77,13 +78,13 @@ class UserDataTable extends BaseDataTable
             'email' => function($item){
                 return view($this->view['email'],
                 [
-                    'email' => $item->email
+                    'email' => AESHelper::decrypt($item->email)
                 ])->render();
             },
             'phone' => function($item){
                 return view($this->view['phone'],
                 [
-                    'phone' => $item->phone
+                    'phone' =>  AESHelper::decrypt($item->phone)
                 ])->render();
             },
         ];
