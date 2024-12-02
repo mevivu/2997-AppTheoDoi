@@ -78,10 +78,7 @@ class UserService implements UserServiceInterface
             unset($data['password']);
         }
 
-        $user = $this->repository->update($data['id'], $data);
-
-        $this->repository->assignRoles($user, [$this->getRoleCustomer()]);
-        return $user;
+        return $this->repository->update($data['id'], $data);
     }
 
     /**
