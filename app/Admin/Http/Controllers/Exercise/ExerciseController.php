@@ -60,7 +60,8 @@ class ExerciseController extends Controller
         return $dataTable->render(
             $this->view['physical'],
             [
-                'actionMultiple' => $this->getActionMultiple()
+                'actionMultiple' => $this->getActionMultiple(),
+                'breadcrums' => $this->crums->add('Danh sách bài tập thể lực'),
             ]
         );
     }
@@ -70,7 +71,8 @@ class ExerciseController extends Controller
         return $dataTable->render(
             $this->view['power'],
             [
-                'actionMultiple' => $this->getActionMultiple()
+                'actionMultiple' => $this->getActionMultiple(),
+                'breadcrums' => $this->crums->add('Danh sách bài tập sức mạnh'),
             ]
         );
     }
@@ -81,6 +83,7 @@ class ExerciseController extends Controller
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
             'types' => ExerciseType::asSelectArray(),
+            'breadcrumbs' => $this->crums->add('Bài tập')->add('Thêm mới'),
         ]);
     }
 
@@ -105,6 +108,7 @@ class ExerciseController extends Controller
                 'response' => $response,
                 'status' => ActiveStatus::asSelectArray(),
                 'types' => ExerciseType::asSelectArray(),
+                'breadcrumbs' => $this->crums->add('Bài tập')->add('Cập nhật'),
             ]
         );
 
