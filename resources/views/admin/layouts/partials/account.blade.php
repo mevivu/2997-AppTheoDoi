@@ -8,9 +8,11 @@
         </div>
     </a>
     <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-        <a href="{{ route('admin.profile.index') }}" class="dropdown-item">{{ __('Profile') }}</a>
-        <a href="{{ route('admin.password.index') }}" class="dropdown-item">{{ __('Đổi mật khẩu') }}</a>
-        <div class="dropdown-divider"></div>
-        <a href="#" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#modalLogout">{{ __('Đăng xuất') }}</a>
+        <div class="box-item-dropdown">
+            <a href="{{ route('admin.profile.index') }}" class="dropdown-item hover_title">{{ __('Profile') }}</a>
+            <a href="{{ route('admin.password.index') }}" class="dropdown-item hover_title">{{ __('Đổi mật khẩu') }}</a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item hover_title" data-bs-toggle="modal" data-bs-target="#modalLogout">{{ __('Đăng xuất') }}</a>
+        </div>
     </div>
 </div>

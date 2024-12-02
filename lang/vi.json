@@ -1,4 +1,7 @@
 {
+    "birth-day": "Ngày sinh",
+    "children": "Trẻ em",
+    "childrenList": "DS trẻ em",
     "reminder": "Lịch nhắc hẹn" ,
     "notifySuccess": "Thực hiện thành công.",
     "notifyFail": "Thực hiện không thành công.",

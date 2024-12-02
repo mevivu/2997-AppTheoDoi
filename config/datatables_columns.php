@@ -333,6 +333,50 @@ return [
             'addClass' => 'text-center align-middle'
         ],
     ],
+    'children' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+            'visible' => false,
+        ],
+        'fullname' => [
+            'title' => 'Họ tên trẻ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'user_id' => [
+            'title' => 'Cha/Mẹ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        
+        'birthday' => [
+            'title' => 'birth-day',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'gender' => [
+            'title' => 'gender',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'status' => [
+            'title' => 'status',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
 
     'slider' => [
         'name' => [

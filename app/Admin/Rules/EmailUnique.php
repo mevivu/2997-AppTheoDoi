@@ -3,8 +3,8 @@
 namespace App\Admin\Rules;
 
 use App\AES\AESHelper;
+use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Support\Facades\DB;
 
 class EmailUnique implements Rule
 {
@@ -22,8 +22,9 @@ class EmailUnique implements Rule
         if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
             return false;
         }
+        $encryptEmail = AESHelper::encrypt($value);
 
-        $query = DB::table('users')->where('email', AESHelper::decrypt($value));
+        $query = User::where('email', $encryptEmail);
         if ($this->ignoreId) {
             $query->where('id', '<>', $this->ignoreId);
         }

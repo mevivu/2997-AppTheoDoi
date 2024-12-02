@@ -67,7 +67,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
     //Notification
     Route::controller(App\Admin\Http\Controllers\Notification\NotificationController::class)
-        ->prefix('/notifications')
+        ->prefix('/thong-bao')
         ->as('notification.')
         ->group(function () {
             Route::get('/not-read-admin', 'getNotificationsForAdmin')->name('getNotificationAdmin');
@@ -112,7 +112,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
     //***** -- Module -- ******* //
 
     //***** -- Permission -- ******* //
-    Route::prefix('/permission')->as('permission.')->group(function () {
+    Route::prefix('/quyen')->as('permission.')->group(function () {
         Route::controller(App\Admin\Http\Controllers\Permission\PermissionController::class)->group(function () {
             Route::get('/them', 'create')->name('create');
             Route::get('/', 'index')->name('index');
@@ -126,7 +126,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
     //***** -- Permission -- ******* //
 
     //***** -- Role -- ******* //
-    Route::prefix('/role')->as('role.')->group(function () {
+    Route::prefix('/vai-tro')->as('role.')->group(function () {
         Route::controller(App\Admin\Http\Controllers\Role\RoleController::class)->group(function () {
 
             Route::group(['middleware' => ['permission:createRole', 'auth:admin']], function () {
@@ -151,7 +151,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
     //Settings
     Route::controller(App\Admin\Http\Controllers\Setting\SettingController::class)
-        ->prefix('/settings')
+        ->prefix('/cai-dat')
         ->as('setting.')
         ->group(function () {
             Route::group(['middleware' => ['permission:settingGeneral', 'auth:admin']], function () {
@@ -171,7 +171,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
 
     //user
-    Route::prefix('/users')->as('user.')->group(function () {
+    Route::prefix('/thanh-vien')->as('user.')->group(function () {
         Route::controller(App\Admin\Http\Controllers\User\UserController::class)->group(function () {
             Route::group(['middleware' => ['permission:createUser', 'auth:admin']], function () {
                 Route::get('/them', 'create')->name('create');
@@ -196,8 +196,33 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
     });
 
+    //children
+    Route::prefix('/quan-ly-tre-em')->as('children.')->group(function () {
+        Route::controller(App\Admin\Http\Controllers\Children\ChildrenController::class)->group(function () {
+            Route::group(['middleware' => ['permission:createChildren', 'auth:admin']], function () {
+                Route::get('/them', 'create')->name('create');
+                Route::post('/them', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewChildren', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/sua/{id}', 'edit')->name('edit');
+                Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
+
+            });
+
+            Route::group(['middleware' => ['permission:updateChildren', 'auth:admin']], function () {
+                Route::put('/sua', 'update')->name('update');
+            });
+
+            Route::group(['middleware' => ['permission:deleteChildren', 'auth:admin']], function () {
+                Route::delete('/xoa/{id}', 'delete')->name('delete');
+            });
+        });
+
+    });
+
     //admin
-    Route::prefix('/admins')->as('admin.')->group(function () {
+    Route::prefix('/quan-tri')->as('admin.')->group(function () {
         Route::controller(App\Admin\Http\Controllers\Admin\AdminController::class)->group(function () {
             Route::group(['middleware' => ['permission:createAdmin', 'auth:admin']], function () {
                 Route::get('/them', 'create')->name('create');
@@ -230,7 +255,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
     //auth
     Route::controller(App\Admin\Http\Controllers\Auth\ProfileController::class)
-        ->prefix('/profile')
+        ->prefix('/thong-tin-ca-nhan')
         ->as('profile.')
         ->group(function () {
             Route::get('/', 'index')->name('index');
@@ -238,13 +263,13 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         });
 
     Route::controller(App\Admin\Http\Controllers\Auth\ChangePasswordController::class)
-        ->prefix('/password')
+        ->prefix('/mat-khau')
         ->as('password.')
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::put('/', 'update')->name('update');
         });
-    Route::prefix('/search')->as('search.')->group(function () {
+    Route::prefix('/tim-kiem')->as('search.')->group(function () {
         Route::prefix('/select')->as('select.')->group(function () {
             Route::get('/user', [App\Admin\Http\Controllers\User\UserSearchSelectController::class, 'selectSearch'])->name('user');
         });
