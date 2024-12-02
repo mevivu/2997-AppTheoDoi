@@ -41,6 +41,30 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+    //Bmi
+    Route::controller(App\Admin\Http\Controllers\Bmi\BmiController::class)
+        ->prefix('/bmi')
+        ->as('bmi.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createBMI', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewBMI', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updateBMI', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+            Route::group(['middleware' => ['permission:deleteBMI', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
     //Notification
     Route::controller(App\Admin\Http\Controllers\Notification\NotificationController::class)
         ->prefix('/thong-bao')
