@@ -5,5 +5,6 @@ use App\Admin\Repositories\EloquentRepositoryInterface;
 
 interface WardRepositoryInterface extends EloquentRepositoryInterface
 {
+    public function searchAllLimit($keySearch = '', $districtId);
 
 }

@@ -46,7 +46,8 @@
                     <label class="control-label">
                         <i class="ti ti-clock"></i>
                         @lang('opening_time')</label>
-                    <x-input type="time" name="opening_time"
+                    <x-input type="time"
+                             name="opening_time"
                              :value="$instance->opening_time"
                              :required="true"
                              :placeholder="__('opening_time')" />
@@ -59,7 +60,8 @@
                     <label class="control-label">
                         <i class="ti ti-clock"></i>
                         @lang('closing_time')</label>
-                    <x-input type="time" name="closing_time"
+                    <x-input type="time"
+                             name="closing_time"
                              :value="$instance->closing_time"
                              :placeholder="__('closing_time')" />
                 </div>
@@ -90,7 +92,7 @@
                         </x-select>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label class="control-label">@lang('district')</label>
+                        <label class="control-label">@lang('district')/ Thành Phố</label>
                         <x-select name="district" data-district-code="{{ $instance->district->code }}" required>
                             <option value="{{ $district->code }}" {{ $district->code == $instance->district->code ? 'selected' : '' }}>
                                 {{ $district->name }}

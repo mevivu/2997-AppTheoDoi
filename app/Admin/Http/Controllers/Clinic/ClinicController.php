@@ -35,7 +35,6 @@ class ClinicController extends Controller
         ProvinceRepositoryInterface $provinceRepository,
         DistrictRepository          $districtRepository,
         WardRepositoryInterface     $wardRepository,
-
         ClinicServiceInterface      $service
     )
     {
@@ -46,8 +45,6 @@ class ClinicController extends Controller
         $this->provinceRepository = $provinceRepository;
         $this->districtRepository = $districtRepository;
         $this->wardRepository = $wardRepository;
-
-
         $this->service = $service;
 
     }

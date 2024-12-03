@@ -32,17 +32,27 @@ class ClinicSizeService implements ClinicServiceInterface
     protected WardRepositoryInterface $wardRepository;
 
 
-
     public function __construct(
-        ClinicRepositoryInterface $repository,
+        ClinicRepositoryInterface   $repository,
         ProvinceRepositoryInterface $provinceRepository,
         DistrictRepositoryInterface $districtRepository,
-        WardRepositoryInterface $wardRepository,
-    ) {
+        WardRepositoryInterface     $wardRepository,
+    )
+    {
         $this->repository = $repository;
         $this->provinceRepository = $provinceRepository;
         $this->districtRepository = $districtRepository;
         $this->wardRepository = $wardRepository;
+    }
+
+    private function prepareAddressData(array &$data): void
+    {
+        $data['province_id'] = $this->provinceRepository
+            ->findByField('code', $data['province'])->id;
+        $data['district_id'] = $this->districtRepository
+            ->findByField('code', $data['district'])->id;
+        $data['ward_id'] = $this->wardRepository
+            ->findByField('code', $data['ward'])->id;
     }
 
     /**
@@ -51,12 +61,7 @@ class ClinicSizeService implements ClinicServiceInterface
     public function store(Request $request): object|false
     {
         $data = $request->validated();
-        $data['province_id'] = $this->provinceRepository
-            ->findByField('code',$data['province'])->id;
-        $data['district_id'] = $this->districtRepository
-            ->findByField('code',$data['district'])->id;
-        $data['ward_id'] = $this->wardRepository
-            ->findByField('code',$data['ward'])->id;
+        $this->prepareAddressData($data);
         return $this->repository->create($data);
     }
 
@@ -67,6 +72,7 @@ class ClinicSizeService implements ClinicServiceInterface
     {
 
         $data = $request->validated();
+        $this->prepareAddressData($data);
         return $this->repository->update($data['id'], $data);
     }
 
