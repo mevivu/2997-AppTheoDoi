@@ -269,5 +269,14 @@
     "note": "Chú ý",
     "warehouse": "Kho hàng",
     "cancellation_reason": "Lý do huỷ",
-    "mass_discrepancy": "Khối lượng chênh lệnh"
+    "mass_discrepancy": "Khối lượng chênh lệnh",
+    "clinic": "Phòng khám",
+    "clinic_type": "Loại phòng khám",
+    "province": "Tỉnh",
+    "district": "Quận",
+    "ward": "Phường",
+    "closing_time": "Giờ đóng cửa",
+    "opening_time": "Giờ mở cửa",
+    "vaccination_schedule": "Lịch tiêm chủng",
+    "performed_on": "Ngày tiêm chủng"
 }

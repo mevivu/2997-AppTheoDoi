@@ -65,6 +65,30 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+    //Bmi
+    Route::controller(App\Admin\Http\Controllers\VaccinationSchedule\VaccinationScheduleController::class)
+        ->prefix('/vaccination-schedule')
+        ->as('vaccination.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createVaccinationSchedule', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewVaccinationSchedule', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updateVaccinationSchedule', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+            Route::group(['middleware' => ['permission:deleteVaccinationSchedule', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
     //Question group
     Route::controller(App\Admin\Http\Controllers\QuestionGroup\QuestionGroupController::class)
         ->prefix('/question-group')
@@ -144,6 +168,54 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+    //Clinic Type
+    Route::controller(App\Admin\Http\Controllers\ClinicType\ClinicTypeController::class)
+        ->prefix('/clinic-types')
+        ->as('clinicType.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createClinicType', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewClinicType', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updateClinicType', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+            Route::group(['middleware' => ['permission:deleteClinicType', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
+
+    //Clinic
+    Route::controller(App\Admin\Http\Controllers\Clinic\ClinicController::class)
+        ->prefix('/clinics')
+        ->as('clinic.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createClinic', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewClinic', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updateClinic', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+            Route::group(['middleware' => ['permission:deleteClinic', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
 
 
     //***** -- Module -- ******* //
@@ -322,6 +394,10 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
     Route::prefix('/tim-kiem')->as('search.')->group(function () {
         Route::prefix('/select')->as('select.')->group(function () {
             Route::get('/user', [App\Admin\Http\Controllers\User\UserSearchSelectController::class, 'selectSearch'])->name('user');
+            Route::get('/province', [App\Admin\Http\Controllers\Province\ProvinceSearchSelectController::class, 'selectSearch'])->name('province');
+            Route::get('/district', [App\Admin\Http\Controllers\District\DistrictSearchSelectController::class, 'selectSearch'])->name('district');
+            Route::get('/ward', [App\Admin\Http\Controllers\Ward\WardSearchSelectController::class, 'selectSearch'])->name('ward');
+            Route::get('/clinic-types', [App\Admin\Http\Controllers\ClinicType\ClinicTypeSearchSelectController::class, 'selectSearch'])->name('clinicType');
         });
     });
 

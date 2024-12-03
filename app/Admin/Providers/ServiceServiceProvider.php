@@ -16,8 +16,11 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\Notification\NotificationServiceInterface' => 'App\Admin\Services\Notification\NotificationService',
         'App\Admin\Services\Exercise\ExerciseServiceInterface' => 'App\Admin\Services\Exercise\ExerciseService',
         'App\Admin\Services\Bmi\BmiServiceInterface' => 'App\Admin\Services\Bmi\BmiService',
+        'App\Admin\Services\ClinicType\ClinicTypeServiceInterface' => 'App\Admin\Services\ClinicType\ClinicTypeSizeService',
+        'App\Admin\Services\Clinic\ClinicServiceInterface' => 'App\Admin\Services\Clinic\ClinicSizeService',
         'App\Admin\Services\QuestionGroup\QuestionGroupServiceInterface' => 'App\Admin\Services\QuestionGroup\QuestionGroupService',
         'App\Admin\Services\Question\QuestionServiceInterface' => 'App\Admin\Services\Question\QuestionService',
+        'App\Admin\Services\VaccinationSchedule\VaccinationScheduleServiceInterface' => 'App\Admin\Services\VaccinationSchedule\VaccinationScheduleSizeService',
     ];
     /**
      * Register services.
