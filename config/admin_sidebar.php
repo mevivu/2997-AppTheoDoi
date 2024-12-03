@@ -127,7 +127,7 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-users"></i>',
         'roles' => [],
-        'permissions' => ['createUser', 'viewUser', 'updateUser', 'deleteUser', 'createAddress'],
+        'permissions' => ['createUser', 'viewUser', 'updateUser', 'deleteUser'],
         'sub' => [
             [
                 'title' => 'add',
@@ -146,9 +146,32 @@ return [
         ]
     ],
     [
+        'title' => 'vaccination_schedule',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-calendar-bolt"></i>',
+        'roles' => [],
+        'permissions' => ['createVaccinationSchedule', 'viewVaccinationSchedule', 'updateVaccinationSchedule', 'deleteVaccinationSchedule'],
+        'sub' => [
+            [
+                'title' => 'add',
+                'routeName' => 'admin.vaccination.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createVaccinationSchedule'],
+            ],
+            [
+                'title' => 'list',
+                'routeName' => 'admin.vaccination.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewVaccinationSchedule'],
+            ]
+        ]
+    ],
+    [
         'title' => 'Trẻ em',
         'routeName' => null,
-        'icon' => '<i class="ti ti-users"></i>',
+        'icon' => '<i class="ti ti-baby-carriage"></i>',
         'roles' => [],
         'permissions' => ['createChildren', 'viewChildren', 'updateChildren', 'deleteChildren'],
         'sub' => [

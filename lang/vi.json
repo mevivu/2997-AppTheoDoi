@@ -276,5 +276,7 @@
     "district": "Quận",
     "ward": "Phường",
     "closing_time": "Giờ đóng cửa",
-    "opening_time": "Giờ mở cửa"
+    "opening_time": "Giờ mở cửa",
+    "vaccination_schedule": "Lịch tiêm chủng",
+    "performed_on": "Ngày tiêm chủng"
 }

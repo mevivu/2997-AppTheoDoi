@@ -65,6 +65,30 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+    //Bmi
+    Route::controller(App\Admin\Http\Controllers\VaccinationSchedule\VaccinationScheduleController::class)
+        ->prefix('/vaccination-schedule')
+        ->as('vaccination.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createVaccinationSchedule', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewVaccinationSchedule', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updateVaccinationSchedule', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+            Route::group(['middleware' => ['permission:deleteVaccinationSchedule', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
     //Question group
     Route::controller(App\Admin\Http\Controllers\QuestionGroup\QuestionGroupController::class)
         ->prefix('/question-group')

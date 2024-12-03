@@ -25,6 +25,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Ward\WardRepositoryInterface' => 'App\Admin\Repositories\Ward\WardRepository',
         'App\Admin\Repositories\QuestionGroup\QuestionGroupRepositoryInterface' => 'App\Admin\Repositories\QuestionGroup\QuestionGroupRepository',
         'App\Admin\Repositories\Question\QuestionRepositoryInterface' => 'App\Admin\Repositories\Question\QuestionRepository',
+        'App\Admin\Repositories\VaccinationSchedule\VaccinationScheduleRepositoryInterface' => 'App\Admin\Repositories\VaccinationSchedule\VaccinationScheduleRepository',
     ];
 
     /**
