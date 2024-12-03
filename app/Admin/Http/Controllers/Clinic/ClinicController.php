@@ -7,9 +7,9 @@ use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Clinic\ClinicRequest;
 use App\Admin\Repositories\Clinic\ClinicRepositoryInterface;
 use App\Admin\Services\Clinic\ClinicServiceInterface;
+use App\Enums\ActiveStatus;
 use App\Traits\ResponseController;
 use Exception;
-use App\Enums\Child\ChildStatus;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -60,7 +60,7 @@ class ClinicController extends Controller
         return $dataTable->render(
             $this->view['index'],
             [
-                'status' => ChildStatus::asSelectArray(),
+                'status' => ActiveStatus::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
                 'breadcrumbs' => $this->crums->add(__('clinic')),
             ]
@@ -71,7 +71,7 @@ class ClinicController extends Controller
     public function create(): Factory|View|Application
     {
         return view($this->view['create'], [
-            'status' => ChildStatus::asSelectArray(),
+            'status' => ActiveStatus::asSelectArray(),
             'breadcrumbs' => $this->crums->add(__('clinic'),
                 route($this->route['index']))->add(__('add')),
         ]);
@@ -95,7 +95,7 @@ class ClinicController extends Controller
             $this->view['edit'],
             [
                 'instance' => $instance,
-                'status' => ChildStatus::asSelectArray(),
+                'status' => ActiveStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),
             ],
         );
@@ -116,16 +116,16 @@ class ClinicController extends Controller
     {
         return $this->handleDeleteResponse($id, function ($id) {
             $response = $this->repository->findOrFail($id);
-            return $response->update(['status' => ChildStatus::Deleted->value]);
+            return $response->update(['status' => ActiveStatus::Deleted->value]);
         });
     }
 
     protected function getActionMultiple(): array
     {
         return [
-            'active' => ChildStatus::Active->description(),
-            'draft' => ChildStatus::Draft->description(),
-            'deleted' => ChildStatus::Deleted->description()
+            'active' => ActiveStatus::Active->description(),
+            'draft' => ActiveStatus::Draft->description(),
+            'deleted' => ActiveStatus::Deleted->description()
         ];
     }
 
