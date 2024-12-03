@@ -1,6 +1,5 @@
 <?php
 
-use App\Admin\Http\Controllers\Address\AddressController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [App\Admin\Http\Controllers\Home\HomeController::class, 'index']);
