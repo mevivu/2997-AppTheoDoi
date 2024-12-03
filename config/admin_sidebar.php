@@ -86,6 +86,43 @@ return [
         ]
     ],
     [
+        'title' => 'Câu hỏi',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-help-hexagon"></i>',
+        'roles' => [],
+        'permissions' => ['createQuestionGroup', 'viewQuestionGroup', 'updateQuestionGroup', 'deleteQuestionGroup'],
+        'sub' => [
+            [
+                'title' => 'Nhóm câu hỏi',
+                'routeName' => 'admin.question-group.index',
+                'icon' => '<i class="ti ti-category"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuestionGroup'],
+            ],
+            [
+                'title' => 'Câu hỏi IQ',
+                'routeName' => 'admin.question.iq',
+                'icon' => '<i class="ti ti-brain"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuestion'],
+            ],
+            [
+                'title' => 'Câu hỏi EQ',
+                'routeName' => 'admin.question.eq',
+                'icon' => '<i class="ti ti-heart"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuestion'],
+            ],
+            [
+                'title' => 'Câu hỏi AQ',
+                'routeName' => 'admin.question.aq',
+                'icon' => '<i class="ti ti-leaf"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuestion'],
+            ],
+        ]
+    ],
+    [
         'title' => 'Khách hàng',
         'routeName' => null,
         'icon' => '<i class="ti ti-users"></i>',
