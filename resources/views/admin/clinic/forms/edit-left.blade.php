@@ -78,37 +78,32 @@
                 </div>
             </div>
 
-            <div class="col-12">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label class="control-label">@lang('province')</label>
-                        <x-select name="province" :required="true" :selected="$instance->province->code">
-                            <x-select-option value="" :title="__('choose')"/>
-                            @foreach ($provinces  as $province)
-                                <x-select-option :value="$province->code"
-                                                 :title="__($province->name)"
-                                                 :selected="$province->code == $instance->province->code"/>
-                            @endforeach
-                        </x-select>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="control-label">@lang('district')/ Thành Phố</label>
-                        <x-select name="district" data-district-code="{{ $instance->district->code }}" required>
-                            <option value="{{ $district->code }}" {{ $district->code == $instance->district->code ? 'selected' : '' }}>
-                                {{ $district->name }}
-                            </option>
-
-                        </x-select>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="control-label">@lang('ward')</label>
-                        <x-select name="ward" required data-ward-code="{{ $instance->ward->code }}">
-                            <option value="{{ $ward->code }}" {{ $ward->code == $instance->ward->code ? 'selected' : '' }}>
-                                {{ $ward->name }}
-                            </option>
-                        </x-select>
-                    </div>
-                </div>
+            <div class="mb-3 col-12">
+                <label for=""><i class="ti ti-building"></i> {{ __('Tỉnh/Thành phố') }}</label>
+                <x-select name="province_id" id="province_id" class="select2-bs5-ajax"
+                          data-url="{{ route('admin.search.select.province') }}" :required="true">
+                    <x-select-option :option="$instance->province_id"
+                                     :value="$instance->province_id"
+                                     :title="$instance->province->name" />
+                </x-select>
+            </div>
+            <div class="mb-3 col-12">
+                <label for=""><i class="ti ti-building"></i> {{ __('Quận/Huyện') }}</label>
+                <x-select name="district_id" id="district_id" class="select2-bs5-ajax"
+                          data-url="{{ route('admin.search.select.district') }}" :required="true">
+                    <x-select-option :option="$instance->district_id"
+                                     :value="$instance->district_id"
+                                     :title="$instance->district->name" />
+                </x-select>
+            </div>
+            <div class="mb-3 col-12">
+                <label for=""><i class="ti ti-building"></i> {{ __('Phường/Xã') }}</label>
+                <x-select name="ward_id" id="ward_id" class="select2-bs5-ajax"
+                          data-url="{{ route('admin.search.select.ward') }}" :required="true">
+                    <x-select-option :option="$instance->ward_id"
+                                     :value="$instance->ward_id"
+                                     :title="$instance->ward->name" />
+                </x-select>
             </div>
 
         </div>

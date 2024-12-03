@@ -4,7 +4,6 @@
         let districtId;
 
         provinceId = $('#province_id').val();
-        console.log(provinceId)
         districtId = $('#district_id').val();
 
         let urlDistrict = "{{ route('admin.search.select.district') }}";

@@ -45,15 +45,6 @@ class ClinicSizeService implements ClinicServiceInterface
         $this->wardRepository = $wardRepository;
     }
 
-    private function prepareAddressData(array &$data): void
-    {
-        $data['province_id'] = $this->provinceRepository
-            ->findByField('code', $data['province'])->id;
-        $data['district_id'] = $this->districtRepository
-            ->findByField('code', $data['district'])->id;
-        $data['ward_id'] = $this->wardRepository
-            ->findByField('code', $data['ward'])->id;
-    }
 
     /**
      * @throws Exception
@@ -61,7 +52,6 @@ class ClinicSizeService implements ClinicServiceInterface
     public function store(Request $request): object|false
     {
         $data = $request->validated();
-        $this->prepareAddressData($data);
         return $this->repository->create($data);
     }
 
@@ -72,7 +62,6 @@ class ClinicSizeService implements ClinicServiceInterface
     {
 
         $data = $request->validated();
-        $this->prepareAddressData($data);
         return $this->repository->update($data['id'], $data);
     }
 
