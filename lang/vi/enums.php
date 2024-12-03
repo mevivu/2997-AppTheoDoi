@@ -8,6 +8,8 @@ use App\Enums\Notification\MessageType;
 use App\Enums\Notification\NotificationOption;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
+use App\Enums\Package\PackageStatus;
+use App\Enums\Package\PackageType;
 use App\Enums\VerifiedStatus;
 use App\Enums\Setting\SettingGroup;
 use App\Enums\ActiveStatus;
@@ -36,10 +38,23 @@ return [
         ActiveStatus::Deleted->value => 'Đã xóa',
         ActiveStatus::Draft->value => 'Bản nháp',
     ],
+
+    PackageStatus::class => [
+        PackageStatus::Active->value => 'Hoạt động',
+        PackageStatus::Deleted->value => 'Đã xóa',
+        PackageStatus::Draft->value => 'Bản nháp',
+    ],
     ChildStatus::class => [
         ChildStatus::Active->value => 'Hoạt động',
         ChildStatus::Draft->value => 'Bản nháp',
         ChildStatus::Deleted->value => 'Đã xóa',
+    ],
+    PackageType::class => [
+        PackageType::Trial->value => 'Dùng thử',
+        PackageType::OneMonth->value => '1 tháng',
+        PackageType::ThreeMonths->value => '3 tháng',
+        PackageType::SixMonths->value => '6 tháng',
+        PackageType::OneYear->value => '1 năm',
     ],
     Gender::class => [
         Gender::Male->value => 'Nam',
