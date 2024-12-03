@@ -6,6 +6,8 @@ use App\Enums\Package\PackageStatus;
 use App\Enums\Package\PackageType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /** Gói dịch vụ */
 class Package extends Model
@@ -35,6 +37,11 @@ class Package extends Model
         'status' => PackageStatus::class,
         'type' => PackageType::class,
     ];
+
+    public function userPackages(): HasMany
+    {
+        return $this->hasMany(UserPackage::class);
+    }
 
 
 
