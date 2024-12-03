@@ -292,9 +292,6 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         });
     });
 
-    Route::get('/address/districts', [AddressController::class, 'getDistrictsByProvince'])->name('districts');
-    Route::get('/address/wards', [AddressController::class, 'getWardsByDistrict'])->name('wards');
-
     //ckfinder
     Route::prefix('/quan-ly-file')->as('ckfinder.')->group(function () {
         Route::any('/ket-noi', '\CKSource\CKFinderBridge\Controller\CKFinderController@requestAction')

@@ -6,9 +6,6 @@ use App\Admin\DataTables\ClinicType\ClinicTypeDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Clinic\ClinicRequest;
 use App\Admin\Repositories\Clinic\ClinicRepositoryInterface;
-use App\Admin\Repositories\District\DistrictRepository;
-use App\Admin\Repositories\Province\ProvinceRepositoryInterface;
-use App\Admin\Repositories\Ward\WardRepositoryInterface;
 use App\Admin\Services\Clinic\ClinicServiceInterface;
 use App\Traits\ResponseController;
 use Exception;
@@ -23,18 +20,10 @@ class ClinicController extends Controller
 {
     use ResponseController;
 
-    private ProvinceRepositoryInterface $provinceRepository;
-
-    private DistrictRepository $districtRepository;
-
-    private WardRepositoryInterface $wardRepository;
 
 
     public function __construct(
         ClinicRepositoryInterface   $repository,
-        ProvinceRepositoryInterface $provinceRepository,
-        DistrictRepository          $districtRepository,
-        WardRepositoryInterface     $wardRepository,
         ClinicServiceInterface      $service
     )
     {
@@ -42,9 +31,6 @@ class ClinicController extends Controller
         parent::__construct();
 
         $this->repository = $repository;
-        $this->provinceRepository = $provinceRepository;
-        $this->districtRepository = $districtRepository;
-        $this->wardRepository = $wardRepository;
         $this->service = $service;
 
     }
@@ -109,16 +95,10 @@ class ClinicController extends Controller
     {
 
         $instance = $this->repository->findOrFail($id);
-        $provinces = $this->provinceRepository->getAll();
-        $district = $instance->district;
-        $ward = $instance->ward;
         return view(
             $this->view['edit'],
             [
                 'instance' => $instance,
-                'provinces' => $provinces,
-                'district' => $district,
-                'ward' => $ward,
                 'status' => ChildStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),
             ],
