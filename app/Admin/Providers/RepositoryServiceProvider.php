@@ -18,6 +18,8 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Otp\OtpRepositoryInterface' => 'App\Admin\Repositories\Otp\OtpRepository',
         'App\Admin\Repositories\Exercise\ExerciseRepositoryInterface' => 'App\Admin\Repositories\Exercise\ExerciseRepository',
         'App\Admin\Repositories\Bmi\BmiRepositoryInterface' => 'App\Admin\Repositories\Bmi\BmiRepository',
+        'App\Admin\Repositories\QuestionGroup\QuestionGroupRepositoryInterface' => 'App\Admin\Repositories\QuestionGroup\QuestionGroupRepository',
+        'App\Admin\Repositories\Question\QuestionRepositoryInterface' => 'App\Admin\Repositories\Question\QuestionRepository',
     ];
 
     /**
