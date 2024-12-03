@@ -1,20 +1,22 @@
 <?php
 
-namespace App\Admin\DataTables\ClinicType;
+namespace App\Admin\DataTables\Clinic;
 
 use App\Admin\DataTables\BaseDataTable;
+use App\Admin\Repositories\Clinic\ClinicRepositoryInterface;
 use App\Admin\Repositories\ClinicType\ClinicTypeRepositoryInterface;
 use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Builder;
 
-class ClinicTypeDataTable extends BaseDataTable
+class ClinicDataTable extends BaseDataTable
 {
     protected $nameTable = 'clinicTypeTable';
 
     protected array $actions = ['reset', 'reload'];
 
+
     public function __construct(
-        ClinicTypeRepositoryInterface $repository
+        ClinicRepositoryInterface $repository,
     ) {
 
         parent::__construct();
@@ -24,9 +26,10 @@ class ClinicTypeDataTable extends BaseDataTable
     public function setView(): void
     {
         $this->view = [
-            'action' => 'admin.clinicType.datatable.action',
-            'name' => 'admin.clinicType.datatable.name',
-            'status' => 'admin.clinicType.datatable.status',
+            'action' => 'admin.clinic.datatable.action',
+            'name' => 'admin.clinic.datatable.name',
+            'clinic_type_id' => 'admin.clinic.datatable.clinic_type_id',
+            'status' => 'admin.clinic.datatable.status',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
@@ -42,8 +45,8 @@ class ClinicTypeDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 2, 3];
-        $this->columnSearchDate = [3];
+        $this->columnAllSearch = [1, 2, 3,4];
+        $this->columnSearchDate = [4];
         $this->columnSearchSelect = [
             [
                 'column' => 2,
@@ -51,11 +54,25 @@ class ClinicTypeDataTable extends BaseDataTable
             ],
 
         ];
+//        $clinicTypeRepository = app(ClinicTypeRepositoryInterface::class);
+//
+//        $clinicTypes = $clinicTypeRepository->getAllClinicTypes()->map(function ($clinic) {
+//            return [$clinic->id => $clinic->name];
+//        });
+//
+//        $this->columnSearchSelect2 = [
+//            [
+//                'column' => 3,
+//                'data' => $clinicTypes
+//            ]
+//        ];
+
+
     }
 
     protected function setCustomColumns(): void
     {
-        $this->customColumns = config('datatables_columns.clinic_type', []);
+        $this->customColumns = config('datatables_columns.clinic', []);
     }
 
     protected function setCustomEditColumns(): void
@@ -65,6 +82,10 @@ class ClinicTypeDataTable extends BaseDataTable
             'name' => $this->view['name'],
             'status' => $this->view['status'],
             'checkbox' => $this->view['checkbox'],
+            'clinic_type_id' => function ($clinic) {
+                return $clinic->clinicType->name?? 'N/A';
+            },
+
         ];
     }
 
@@ -79,4 +100,16 @@ class ClinicTypeDataTable extends BaseDataTable
     {
         $this->customRawColumns = ['action', 'name', 'status', 'checkbox'];
     }
+    public function setCustomFilterColumns(): void
+    {
+        $this->customFilterColumns = [
+            'clinic_type_id' => function ($query, $keyword) {
+                $query->whereHas('clinicType', function ($subQuery) use ($keyword) {
+                    $subQuery->where('name', 'like', '%' . $keyword . '%');
+                });
+            },
+
+        ];
+    }
+
 }

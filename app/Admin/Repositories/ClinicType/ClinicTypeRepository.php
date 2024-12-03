@@ -19,10 +19,6 @@ class ClinicTypeRepository extends EloquentRepository implements ClinicTypeRepos
     {
         return ClinicType::class;
     }
-    public function getAll()
-    {
-        return $this->model->all();
-    }
 
     public function searchAllLimit($keySearch = '', $meta = [], $limit = 10)
     {
@@ -33,4 +29,16 @@ class ClinicTypeRepository extends EloquentRepository implements ClinicTypeRepos
         return $this->instance->limit($limit)->get();
     }
 
+    public function getFlatTree() {
+        $this->getQueryBuilder();
+        $this->instance = $this->instance->withDepth()
+            ->get()
+            ->toFlatTree();
+        return $this->instance;
+    }
+
+    public function getAllClinicTypes()
+    {
+        return $this->model->all(); // Lấy tất cả các bản ghi
+    }
 }

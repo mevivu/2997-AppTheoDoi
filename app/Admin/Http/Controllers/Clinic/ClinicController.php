@@ -2,7 +2,7 @@
 
 namespace App\Admin\Http\Controllers\Clinic;
 
-use App\Admin\DataTables\ClinicType\ClinicTypeDataTable;
+use App\Admin\DataTables\Clinic\ClinicDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Clinic\ClinicRequest;
 use App\Admin\Repositories\Clinic\ClinicRepositoryInterface;
@@ -54,7 +54,7 @@ class ClinicController extends Controller
         ];
     }
 
-    public function index(ClinicTypeDataTable $dataTable)
+    public function index(ClinicDataTable $dataTable)
     {
         $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
@@ -68,14 +68,10 @@ class ClinicController extends Controller
         );
     }
 
-
     public function create(): Factory|View|Application
     {
-        $provinces = $this->provinceRepository->getAll();
-
         return view($this->view['create'], [
             'status' => ChildStatus::asSelectArray(),
-            'provinces' => $provinces,
             'breadcrumbs' => $this->crums->add(__('clinic'),
                 route($this->route['index']))->add(__('add')),
         ]);

@@ -155,6 +155,13 @@ return [
                 'permissions' => ['createClinic'],
             ],
             [
+                'title' => 'DS  phòng khám',
+                'routeName' => 'admin.clinic.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewClinic'],
+            ],
+            [
                 'title' => 'DS loại phòng khám',
                 'routeName' => 'admin.clinicType.index',
                 'icon' => '<i class="ti ti-list"></i>',
