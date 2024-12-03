@@ -35,6 +35,7 @@ class UserController extends Controller
         $this->middleware('auth:api', ['except' => ['register']]);
     }
 
+
     /**
      * Đăng ký người dùng
      *
