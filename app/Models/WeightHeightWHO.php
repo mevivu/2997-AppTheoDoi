@@ -7,7 +7,7 @@ use App\Enums\User\Gender;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-/** Phòng khám */
+/** Thông tin cân nặng */
 class WeightHeightWHO extends Model
 {
     use HasFactory;
