@@ -86,6 +86,29 @@ return [
         ]
     ],
     [
+        'title' => 'Thông tin Weight Height',
+        'routeName' => 'admin.module.summary',
+        'icon' => '<i class="ti ti-info-circle"></i>',
+        'roles' => [],
+        'permissions' => ['createHeightWeight','viewHeightWeight','updateHeightWeight','deleteHeightWeight'],
+        'sub' => [
+            [
+                'title' => 'Thêm',
+                'routeName' => 'admin.weight-height-who.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createHeightWeight'],
+            ],
+            [
+                'title' => 'DS Thông tin',
+                'routeName' => 'admin.weight-height-who.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewHeightWeight'],
+            ]
+        ]
+    ],
+    [
         'title' => 'Câu hỏi',
         'routeName' => null,
         'icon' => '<i class="ti ti-help-hexagon"></i>',
@@ -353,5 +376,6 @@ return [
         'permissions' => ['mevivuDev'],
         'sub' => []
     ],
+
 
 ];
