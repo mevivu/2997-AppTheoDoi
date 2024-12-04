@@ -84,7 +84,7 @@ class WeightHeightWhoController extends BaseSearchSelectController
         return view($this->view['create'],[
             'status'=>ActiveStatus::asSelectArray(),
             'gender'=>Gender::asSelectArray(),
-            'breadcrumbs' => $this->crums->add('Danh sách Chiều cao cân nặng tiêu chuẩn', route($this->route['index']))->add('Thêm mới'),
+            'breadcrumbs' => $this->crums->add('Danh sách Chiều cao cân nặng theo tiêu chuẩn Who', route($this->route['index']))->add('Thêm mới'),
         ]);
 
     }
