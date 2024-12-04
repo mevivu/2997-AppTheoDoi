@@ -362,6 +362,38 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
     });
 
+    //sliders
+    Route::prefix('/sliders')->as('slider.')->group(function () {
+        Route::controller(App\Admin\Http\Controllers\Slider\SliderItemController::class)
+            ->as('item.')
+            ->group(function () {
+                Route::get('/{slider_id}/item/them', 'create')->name('create');
+                Route::get('/{slider_id}/item', 'index')->name('index');
+                Route::get('/item/sua/{id}', 'edit')->name('edit');
+                Route::put('/item/sua', 'update')->name('update');
+                Route::post('/item/them', 'store')->name('store');
+                Route::delete('/{slider_id}/item/xoa/{id}', 'delete')->name('delete');
+            });
+        Route::controller(App\Admin\Http\Controllers\Slider\SliderController::class)->group(function () {
+            Route::group(['middleware' => ['permission:createSlider', 'auth:admin']], function () {
+                Route::get('/them', 'create')->name('create');
+                Route::post('/them', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewSlider', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/sua/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updateSlider', 'auth:admin']], function () {
+                Route::put('/sua', 'update')->name('update');
+            });
+
+            Route::group(['middleware' => ['permission:deleteSlider', 'auth:admin']], function () {
+                Route::delete('/xoa/{id}', 'delete')->name('delete');
+            });
+        });
+    });
+
     //Post
     Route::prefix('/bai-viet')->as('post.')->group(function () {
         Route::controller(App\Admin\Http\Controllers\Post\PostController::class)->group(function () {

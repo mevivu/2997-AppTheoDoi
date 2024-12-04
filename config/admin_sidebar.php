@@ -33,6 +33,29 @@ return [
         ]
     ],
     [
+        'title' => 'Sliders',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-slideshow"></i>',
+        'roles' => [],
+        'permissions' => ['createSlider', 'viewSlider', 'updateSlider', 'deleteSlider'],
+        'sub' => [
+            [
+                'title' => 'Thêm Sliders',
+                'routeName' => 'admin.slider.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createSlider'],
+            ],
+            [
+                'title' => 'DS Sliders',
+                'routeName' => 'admin.slider.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewSlider'],
+            ],
+        ]
+    ],
+    [
         'title' => 'package',
         'routeName' => null,
         'icon' => '<i class="ti ti-package-import"></i>',

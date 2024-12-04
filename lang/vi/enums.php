@@ -14,6 +14,7 @@ use App\Enums\Package\PackageType;
 use App\Enums\Post\PostStatus;
 use App\Enums\PostCategory\PostCategoryStatus;
 use App\Enums\PriorityStatus;
+use App\Enums\Slider\SliderStatus;
 use App\Enums\VerifiedStatus;
 use App\Enums\Setting\SettingGroup;
 use App\Enums\ActiveStatus;
@@ -82,7 +83,10 @@ return [
         FeaturedStatus::Featured->value => 'Nổi bật',
         FeaturedStatus::Featureless->value => 'Không nổi bật'
     ],
-
+    SliderStatus::class => [
+        SliderStatus::Active => 'Hoạt động',
+        SliderStatus::Inactive => 'Ngưng hoạt động'
+    ],
     NotificationStatus::class => [
         NotificationStatus::READ->value => 'Đã đọc',
         NotificationStatus::NOT_READ->value => 'Chưa đọc',
