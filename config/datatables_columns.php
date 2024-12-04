@@ -102,6 +102,49 @@ return [
             'addClass' => 'text-center align-middle'
         ],
     ],
+    'WeightHeightWho'=>[
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'id' => [
+            'title' => 'ID',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'gender' => [
+            'title' => 'Giới tính',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+
+        'age' => [
+            'title' => 'Tuổi',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'month' => [
+            'title' => 'Tháng',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'status' => [
+            'title' => 'Trạng thái',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
     'vaccination_schedule' => [
         'checkbox' => [
             'title' => 'choose',

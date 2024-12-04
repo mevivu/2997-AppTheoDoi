@@ -27,6 +27,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Question\QuestionRepositoryInterface' => 'App\Admin\Repositories\Question\QuestionRepository',
         'App\Admin\Repositories\VaccinationSchedule\VaccinationScheduleRepositoryInterface' => 'App\Admin\Repositories\VaccinationSchedule\VaccinationScheduleRepository',
         'App\Admin\Repositories\Package\PackageRepositoryInterface' => 'App\Admin\Repositories\Package\PackageRepository',
+        'App\Admin\Repositories\WeightHeightWho\WeightHeightWhoRepositoryInterface'=>'App\Admin\Repositories\WeightHeightWho\WeightHeightWhoRepository',
     ];
 
     /**
