@@ -15,6 +15,8 @@ enum PackageType: string
     case OneYear = '12';
     case Trial = '0';
 
+    case Normal = 'normal';
+
     public function badge(): string
     {
         return match ($this) {
@@ -23,6 +25,7 @@ enum PackageType: string
             self::SixMonths => 'bg-gray-lt',
             self::OneYear => 'bg-pink-lt',
             self::Trial => 'bg-yellow-lt',
+            self::Normal => 'bg-orange-lt',
         };
     }
 
