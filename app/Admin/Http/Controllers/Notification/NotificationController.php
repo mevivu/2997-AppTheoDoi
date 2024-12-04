@@ -12,6 +12,7 @@ use App\Admin\Traits\Roles;
 use App\Enums\Notification\NotificationOption;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -78,6 +79,9 @@ class NotificationController extends Controller
         ]);
     }
 
+    /**
+     * @throws Exception
+     */
     public function edit($id): View|Application
     {
         $notification = $this->repository->findOrFail($id);
@@ -96,7 +100,7 @@ class NotificationController extends Controller
         return redirect()->route($this->route['index'])->with('success', __('notifySuccess'));
     }
 
-    public function store(NotificationRequest $request)
+    public function store(NotificationRequest $request): RedirectResponse
     {
         $this->service->store($request);
         return redirect()->route($this->route['index'])->with('success', __('notifySuccess'));
@@ -152,6 +156,9 @@ class NotificationController extends Controller
         return back()->with('error', __('notifyFail'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function delete($id): RedirectResponse
     {
         $this->repository->delete($id);

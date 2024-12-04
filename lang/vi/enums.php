@@ -84,7 +84,7 @@ return [
     ],
     NotificationType::class => [
         NotificationType::All->value => 'Thông báo tất cả',
-        NotificationType::Customer->value => 'Thông báo nhân viên',
+        NotificationType::Customer->value => 'Thông báo người dùng',
     ],
 
     UserRoles::class => [
