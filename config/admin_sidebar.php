@@ -33,6 +33,29 @@ return [
         ]
     ],
     [
+        'title' => 'package',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-package-import"></i>',
+        'roles' => [],
+        'permissions' => ['createPackage', 'viewPackage', 'updatePackage', 'deletePackage'],
+        'sub' => [
+            [
+                'title' => 'Thêm gói',
+                'routeName' => 'admin.package.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createPackage'],
+            ],
+            [
+                'title' => 'DS thông tin gói',
+                'routeName' => 'admin.package.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewPackage'],
+            ],
+        ]
+    ],
+    [
         'title' => 'Bài tập',
         'routeName' => null,
         'icon' => '<i class="ti ti-book"></i>',

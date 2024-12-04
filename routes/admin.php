@@ -65,6 +65,30 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+    //Package
+    Route::controller(App\Admin\Http\Controllers\Package\PackageController::class)
+        ->prefix('/packages')
+        ->as('package.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createPackage', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewPackage', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updatePackage', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+            Route::group(['middleware' => ['permission:deletePackage', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
     //Bmi
     Route::controller(App\Admin\Http\Controllers\VaccinationSchedule\VaccinationScheduleController::class)
         ->prefix('/vaccination-schedule')

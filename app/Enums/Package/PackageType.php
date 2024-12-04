@@ -5,15 +5,15 @@ namespace App\Enums\Package;
 
 use App\Supports\Enum;
 
-enum PackageType: int
+enum PackageType: string
 {
     use Enum;
 
-    case Trial = 0;
-    case OneMonth = 1;
-    case ThreeMonths = 3;
-    case SixMonths = 6;
-    case OneYear = 12;
+    case OneMonth = '1';
+    case ThreeMonths = '3';
+    case SixMonths = '6';
+    case OneYear = '12';
+    case Trial = '0';
 
     public function badge(): string
     {

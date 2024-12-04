@@ -21,6 +21,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\QuestionGroup\QuestionGroupServiceInterface' => 'App\Admin\Services\QuestionGroup\QuestionGroupService',
         'App\Admin\Services\Question\QuestionServiceInterface' => 'App\Admin\Services\Question\QuestionService',
         'App\Admin\Services\VaccinationSchedule\VaccinationScheduleServiceInterface' => 'App\Admin\Services\VaccinationSchedule\VaccinationScheduleSizeService',
+        'App\Admin\Services\Package\PackageServiceInterface' => 'App\Admin\Services\Package\PackageService',
     ];
     /**
      * Register services.

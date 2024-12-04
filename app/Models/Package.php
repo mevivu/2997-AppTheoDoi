@@ -6,7 +6,6 @@ use App\Enums\Package\PackageStatus;
 use App\Enums\Package\PackageType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /** Gói dịch vụ */
@@ -14,7 +13,7 @@ class Package extends Model
 {
     use HasFactory;
 
-    protected $table = 'clinics';
+    protected $table = 'packages';
 
     protected $fillable = [
         /* Tên gói dịch vụ */
@@ -23,10 +22,6 @@ class Package extends Model
         'price',
         /* Mô tả gói dịch vụ */
         'description',
-//        /* Ngày bắt đầu gói dịch vụ */
-//        'start_date',
-//        /* Ngày kết thúc gói dịch vụ */
-//        'end_date',
         /* Trạng thái của gói dịch vụ */
         'status',
         /* Loại gói dịch vụ (1 tháng, 3 tháng, 6 tháng, 1 năm) */
