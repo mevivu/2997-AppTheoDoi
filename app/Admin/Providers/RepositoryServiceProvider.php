@@ -28,6 +28,9 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\VaccinationSchedule\VaccinationScheduleRepositoryInterface' => 'App\Admin\Repositories\VaccinationSchedule\VaccinationScheduleRepository',
         'App\Admin\Repositories\Package\PackageRepositoryInterface' => 'App\Admin\Repositories\Package\PackageRepository',
         'App\Admin\Repositories\WeightHeightWho\WeightHeightWhoRepositoryInterface'=>'App\Admin\Repositories\WeightHeightWho\WeightHeightWhoRepository',
+        'App\Admin\Repositories\Post\PostRepositoryInterface' => 'App\Admin\Repositories\Post\PostRepository',
+        'App\Admin\Repositories\PostCategory\PostCategoryRepositoryInterface' => 'App\Admin\Repositories\PostCategory\PostCategoryRepository',
+
     ];
 
     /**
