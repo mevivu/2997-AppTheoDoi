@@ -171,9 +171,9 @@ return [
         ]
     ],
     [
-        'title' => 'Thông tin Weight Height',
+        'title' => 'Thông tin Who',
         'routeName' => 'admin.module.summary',
-        'icon' => '<i class="ti ti-info-circle"></i>',
+        'icon' => '<i class="ti ti-woman"></i>',
         'roles' => [],
         'permissions' => ['createHeightWeight','viewHeightWeight','updateHeightWeight','deleteHeightWeight'],
         'sub' => [
