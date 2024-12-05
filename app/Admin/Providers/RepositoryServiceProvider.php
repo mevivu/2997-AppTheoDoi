@@ -34,7 +34,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Slider\SliderItemRepositoryInterface' => 'App\Admin\Repositories\Slider\SliderItemRepository',
         'App\Admin\Services\Slider\SliderServiceInterface' => 'App\Admin\Services\Slider\SliderService',
         'App\Admin\Services\Slider\SliderItemServiceInterface' => 'App\Admin\Services\Slider\SliderItemService',
-
+        'App\Admin\Repositories\Answer\AnswerRepositoryInterface' => 'App\Admin\Repositories\Answer\AnswerRepository',
     ];
 
     /**

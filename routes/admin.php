@@ -162,23 +162,23 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->prefix('/question')
         ->as('question.')
         ->group(function () {
-            Route::group(['middleware' => ['permission:createQuestion', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:createQuestionGroup', 'auth:admin']], function () {
                 Route::get('/add', 'create')->name('create');
                 Route::post('/add', 'store')->name('store');
             });
-            Route::group(['middleware' => ['permission:viewQuestion', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:viewQuestionGroup', 'auth:admin']], function () {
                 Route::get('/iq', 'iq')->name('iq');
                 Route::get('/aq', 'aq')->name('aq');
                 Route::get('/eq', 'eq')->name('eq');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
 
-            Route::group(['middleware' => ['permission:updateQuestion', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:updateQuestionGroup', 'auth:admin']], function () {
                 Route::put('/edit', 'update')->name('update');
                 Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
             });
 
-            Route::group(['middleware' => ['permission:deleteQuestion', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:deleteQuestionGroup', 'auth:admin']], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });

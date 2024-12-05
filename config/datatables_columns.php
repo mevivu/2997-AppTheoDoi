@@ -16,7 +16,7 @@ return [
             'addClass' => 'text-center align-middle'
         ],
         'age' => [
-            'title' => 'Tuổi',
+            'title' => 'Độ tuổi phù hợp',
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
@@ -24,6 +24,48 @@ return [
             'title' => 'Trạng thái',
             'orderable' => false,
             'addClass' => 'text-center align-middle'
+        ],
+        'created_at' => [
+            'title' => 'Ngày tạo',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
+    'eq_aq_questions' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'question' => [
+            'title' => 'Câu hỏi',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'question_group_id' => [
+            'title' => 'Nhóm câu hỏi',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'status' => [
+            'title' => 'Trạng thái',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'created_at' => [
+            'title' => 'Ngày tạo',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
         ],
         'action' => [
             'title' => 'Thao tác',

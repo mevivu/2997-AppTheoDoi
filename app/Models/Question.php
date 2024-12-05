@@ -20,17 +20,6 @@ class Question extends Model
         'age',
         /* Câu hỏi */
         'question',
-
-        /* Câu trả lời đúng - Áp dụng cho IQ*/
-        'correct_answer',
-        /* Danh sách câu trả lời sai - Áp dụng cho IQ */
-        'wrong_answers',
-
-        /* Câu trả lời - Áp dụng cho EQ, AQ*/
-        'answers',
-        /* Điểm - Áp dụng cho EQ, AQ */
-        'score',
-
         /* Loại câu hỏi */
         'question_type',
         /* Trạng thái */
@@ -45,5 +34,10 @@ class Question extends Model
     public function group()
     {
         return $this->belongsTo(QuestionGroup::class, 'question_group_id', 'id');
+    }
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class, 'question_id', 'id');
     }
 }
