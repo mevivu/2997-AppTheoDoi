@@ -93,6 +93,13 @@ return [
         'permissions' => ['createQuestionGroup', 'viewQuestionGroup', 'updateQuestionGroup', 'deleteQuestionGroup'],
         'sub' => [
             [
+                'title' => 'Thêm câu hỏi',
+                'routeName' => 'admin.question.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createQuestionGroup'],
+            ],
+            [
                 'title' => 'Nhóm câu hỏi',
                 'routeName' => 'admin.question-group.index',
                 'icon' => '<i class="ti ti-category"></i>',
@@ -104,21 +111,21 @@ return [
                 'routeName' => 'admin.question.iq',
                 'icon' => '<i class="ti ti-brain"></i>',
                 'roles' => [],
-                'permissions' => ['viewQuestion'],
+                'permissions' => ['viewQuestionGroup'],
             ],
             [
                 'title' => 'Câu hỏi EQ',
                 'routeName' => 'admin.question.eq',
                 'icon' => '<i class="ti ti-heart"></i>',
                 'roles' => [],
-                'permissions' => ['viewQuestion'],
+                'permissions' => ['viewQuestionGroup'],
             ],
             [
                 'title' => 'Câu hỏi AQ',
                 'routeName' => 'admin.question.aq',
                 'icon' => '<i class="ti ti-leaf"></i>',
                 'roles' => [],
-                'permissions' => ['viewQuestion'],
+                'permissions' => ['viewQuestionGroup'],
             ],
         ]
     ],

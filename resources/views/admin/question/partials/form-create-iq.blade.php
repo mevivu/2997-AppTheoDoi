@@ -1,15 +1,15 @@
 <div class="row d-none" id="question_iq_group">
     <div class="col-md-6">
         <div class="mb-3">
-            <label class="control-label">{{ __('Tuổi') }}:</label>
-            <x-input type="number" min="0" name="age" :value="old('age')" :required="true" />
+            <label class="control-label">{{ __('Độ tuổi phù hợp') }}:</label>
+            <x-input type="number" min="0" name="question[age]" :value="old('question.age')" />
         </div>
     </div>
 
     <div class="col-md-6">
         <div class="mb-3">
             <label class="control-label">{{ __('Câu trả lời đúng') }}:</label>
-            <x-input type="text" name="correct_answer" :value="old('correct_answer')" :required="true" />
+            <x-input type="text" name="answer[correct_answer]" :value="old('answer.correct_answer')" />
         </div>
     </div>
     <div class="col-12" id="wrong_answers">
@@ -20,7 +20,6 @@
                 {{ __('Thêm câu trả lời sai') }}
             </span>
         </div>
-        <x-input type="text" name="wrong_answers[]" class="mb-3" :value="old('wrong_answer')" :placeholder="'Nhập câu trả lời sai'"
-            :required="true" />
+        <x-input type="text" name="answer[wrong_answers][]" class="mb-3" :placeholder="'Nhập câu trả lời sai'" />
     </div>
 </div>

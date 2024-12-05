@@ -8,9 +8,9 @@ use App\Enums\ActiveStatus;
 use App\Enums\Question\QuestionType;
 
 
-class IqQuestionDataTable extends BaseDataTable
+class AqEqQuestionDataTable extends BaseDataTable
 {
-    protected $nameTable = 'iqQuestionTable';
+    protected $nameTable = 'aqEqQuestionTable';
 
 
     public function __construct(
@@ -29,7 +29,7 @@ class IqQuestionDataTable extends BaseDataTable
             'status' => 'admin.question.datatable.status',
             'checkbox' => 'admin.common.checkbox',
             'question' => 'admin.question.datatable.question',
-            'answer' => 'admin.question.datatable.answer',
+            'question_group_id' => 'admin.question.datatable.question_group',
         ];
     }
 
@@ -42,21 +42,24 @@ class IqQuestionDataTable extends BaseDataTable
             [
                 'column' => 3,
                 'data' => ActiveStatus::asSelectArray()
-            ],
+            ]
         ];
 
         $this->columnSearchDate = [4];
-
     }
 
     public function query()
     {
-        return $this->repository->getByQueryBuilder(['question_type' => QuestionType::IQ->value]);
+        if (request()->route()->getName() == 'admin.question.eq') {
+            return $this->repository->getByQueryBuilder(['question_type' => QuestionType::EQ->value]);
+        } else {
+            return $this->repository->getByQueryBuilder(['question_type' => QuestionType::AQ->value]);
+        }
     }
 
     protected function setCustomColumns(): void
     {
-        $this->customColumns = config('datatables_columns.iq_questions', []);
+        $this->customColumns = config('datatables_columns.eq_aq_questions', []);
     }
 
     protected function setCustomEditColumns(): void
@@ -65,10 +68,12 @@ class IqQuestionDataTable extends BaseDataTable
             'status' => $this->view['status'],
             'checkbox' => $this->view['checkbox'],
             'question' => $this->view['question'],
-            'answer' => $this->view['answer'],
+            'question_group_id' => function ($query) {
+                return view($this->view['question_group_id'], ['question_group' => $query->group]);
+            },
             'created_at' => function ($query) {
                 return format_datetime($query->created_at);
-            }
+            },
         ];
     }
 
@@ -79,8 +84,19 @@ class IqQuestionDataTable extends BaseDataTable
         ];
     }
 
+    protected function setCustomFilterColumns()
+    {
+        $this->customFilterColumns = [
+            'question_group_id' => function ($query, $keyword) {
+                $query->whereHas('group', function ($subQuery) use ($keyword) {
+                    $subQuery->where('name', 'like', '%' . $keyword . '%');
+                });
+            },
+        ];
+    }
+
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['question', 'action', 'status', 'checkbox'];
+        $this->customRawColumns = ['question_group_id', 'question', 'action', 'status', 'checkbox'];
     }
 }

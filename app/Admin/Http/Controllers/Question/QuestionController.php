@@ -2,14 +2,15 @@
 
 namespace App\Admin\Http\Controllers\Question;
 
+use App\Admin\DataTables\Question\AqEqQuestionDataTable;
 use App\Admin\DataTables\Question\IqQuestionDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Question\QuestionRequest;
 use App\Admin\Repositories\Question\QuestionRepositoryInterface;
+use App\Admin\Repositories\QuestionGroup\QuestionGroupRepositoryInterface;
 use App\Admin\Services\Question\QuestionServiceInterface;
 use App\Enums\ActiveStatus;
 use App\Enums\Question\QuestionType;
-use App\Enums\User\Gender;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -20,12 +21,16 @@ use Illuminate\Http\Request;
 
 class QuestionController extends Controller
 {
+    protected $questionGroupRepository;
+
     public function __construct(
         QuestionRepositoryInterface $repository,
-        QuestionServiceInterface $service
+        QuestionGroupRepositoryInterface $questionGroupRepository,
+        QuestionServiceInterface $service,
     ) {
         parent::__construct();
         $this->repository = $repository;
+        $this->questionGroupRepository = $questionGroupRepository;
         $this->service = $service;
     }
 
@@ -36,7 +41,7 @@ class QuestionController extends Controller
             'eq' => 'admin.question.eq',
             'aq' => 'admin.question.aq',
             'create' => 'admin.question.create',
-            'edit' => 'admin.question.edit'
+            'edit' => 'admin.question.edit',
         ];
     }
 
@@ -63,11 +68,34 @@ class QuestionController extends Controller
         );
     }
 
+    public function eq(AqEqQuestionDataTable $dataTable)
+    {
+        return $dataTable->render(
+            $this->view['eq'],
+            [
+                'actionMultiple' => $this->getActionMultiple(),
+                'breadcrumbs' => $this->crums->add('Danh sách câu hỏi IQ'),
+            ]
+        );
+    }
+
+    public function aq(AqEqQuestionDataTable $dataTable)
+    {
+        return $dataTable->render(
+            $this->view['aq'],
+            [
+                'actionMultiple' => $this->getActionMultiple(),
+                'breadcrumbs' => $this->crums->add('Danh sách câu hỏi AQ'),
+            ]
+        );
+    }
+
     public function create(): Factory|View|Application
     {
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
             'types' => QuestionType::asSelectArray(),
+            'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
             'breadcrumbs' => $this->crums->add('Danh sách câu hỏi', route($this->route['iq']))->add('Thêm mới'),
         ]);
     }
@@ -87,10 +115,18 @@ class QuestionController extends Controller
     public function edit($id): Factory|View|Application
     {
         $response = $this->repository->findOrFail($id);
+        $correctAnswer = $response->answers->where('is_correct', true)->first();
+        $wrongAnswers = $response->answers->where('is_correct', false);
+        $answers = $response->answers;
+        $questionGroups = $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id');
         return view(
             $this->view['edit'],
             [
                 'response' => $response,
+                'correctAnswer' => $correctAnswer,
+                'wrongAnswers' => $wrongAnswers,
+                'answers' => $answers,
+                'questionGroups' => $questionGroups,
                 'status' => ActiveStatus::asSelectArray(),
                 'types' => QuestionType::asSelectArray(),
                 'breadcrumbs' => $this->crums->add('Danh sách câu hỏi', route($this->route['iq']))->add('Cập nhật'),
