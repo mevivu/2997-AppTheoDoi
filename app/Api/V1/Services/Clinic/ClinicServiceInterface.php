@@ -9,5 +9,5 @@ use Illuminate\Http\Request;
 interface ClinicServiceInterface
 {
 
-
+public function searchClinics(array $filters);
 }
