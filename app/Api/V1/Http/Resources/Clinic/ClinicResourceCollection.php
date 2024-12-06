@@ -1,10 +1,8 @@
 <?php
 
 namespace App\Api\V1\Http\Resources\Clinic;
-
-use App\Api\V1\Http\Resources\Notification\NotificationResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Carbon\Carbon;
+
 class ClinicResourceCollection extends ResourceCollection
 {
     public function toArray($request): array

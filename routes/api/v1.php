@@ -69,8 +69,8 @@ Route::controller(App\Api\V1\Http\Controllers\Setting\SettingController::class)
     });
 //***** -- Clinic -- ******* //
 Route::controller(App\Api\V1\Http\Controllers\Clinic\ClinicController::class)
-    ->prefix('/clinic')
+    ->prefix('/clinics')
     ->as('clinic.')
     ->group(function () {
-        Route::get('/search', 'searchClinics');
+        Route::get('/search', 'search');
     });

@@ -19,7 +19,7 @@ class ClinicRepository extends AdminRepository implements ClinicRepositoryInterf
      */
 
 
-    public function searchClinics(array $filters, int $limit = 10, int $page = 1)
+    public function search(array $filters, int $limit = 10, int $page = 1)
     {
         // TODO: Implement searchClinics() method.
         $query=$this->model->query();
