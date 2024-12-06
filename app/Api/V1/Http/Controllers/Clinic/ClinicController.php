@@ -6,7 +6,6 @@ use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Http\Requests\Clinic\ClinicRequest;
 use App\Api\V1\Http\Requests\Notification\NotificationRequest;
 use App\Api\V1\Http\Resources\Clinic\ClinicResourceCollection;
-use App\Api\V1\Http\Resources\Notification\NotificationResourceCollection;
 use App\Api\V1\Services\Clinic\ClinicServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
@@ -87,11 +86,11 @@ class ClinicController extends Controller
      *
      * @return JsonResponse
      */
-    public function searchClinics(ClinicRequest $request)
+    public function search(ClinicRequest $request)
     {
         try {
             $this->data = $request->validated();
-            $clinics = $this->service->searchClinics($this->data);
+            $clinics = $this->service->search($this->data);
             return $this->jsonResponseSuccess(new ClinicResourceCollection($clinics));
         }catch (\Exception $exception){
             $this->logError('Get Clinic notifications failed:', $exception);
