@@ -18,4 +18,10 @@ class NotificationRequest extends BaseRequest
             'limit' => ['nullable', 'integer', 'min:1'],
         ];
     }
+    protected function methodPut()
+    {
+        return[
+            'id'=>['required','exists:App\Models\Notification,id'],
+        ];
+    }
 }

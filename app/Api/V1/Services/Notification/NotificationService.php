@@ -2,8 +2,10 @@
 
 namespace App\Api\V1\Services\Notification;
 
+
 use App\Admin\Traits\Roles;
 
+use App\Api\V1\Repositories\Notification\NotificationRepository;
 use App\Api\V1\Repositories\Notification\NotificationRepositoryInterface;
 use App\Api\V1\Repositories\User\UserRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
@@ -33,14 +35,14 @@ class NotificationService implements NotificationServiceInterface
     }
 
     public function getNotificationByUser(Request $request): bool|object
-    {  
+    {
         try {
-            $data = $request->validated();  
+            $data = $request->validated();
             $userId = $this->getCurrentUserId();
             $limit = $data['limit'] ?? 10;
             $user = $this->repository->getNotificationByUserId("user_id", $userId, $limit);
             return $user;
-        } 
+        }
         catch (Exception $e) {
             $this->logError('Failed to process get user', $e);
             return false;
@@ -49,6 +51,31 @@ class NotificationService implements NotificationServiceInterface
     }
 
 
+    public function UpdateStatusIsRead(Request $request): bool
+    {
+        try {
+            $this->data=$request->validated();
+           $this->repository->update($this->data['id'], ["status"=>2]);
+           return 1;
+        }catch (Exception $e) {
+            return 0;
+        }
+    }
 
+    public function UpdateAllStatusIsRead(Request $request): bool
+    {
+        // TODO: Implement UpdateAllStatusIsRead() method.
+        try {
+            $response=$this->repository->GetNotificationIsNotRead($this->getCurrentUserId());
+            foreach ($response as $notification) {
+                $notification->status=2;
+                $notification->where("user_id",$this->getCurrentUserId())->update(["status"=>$notification->status]);
+            }
+            return 1;
+        }catch (Exception $e) {
+
+            return 0;
+        }
+    }
 }
 ;
