@@ -44,22 +44,22 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
     Route::controller(\App\Admin\Http\Controllers\WeightHeightWho\WeightHeightWhoController::class)
         ->prefix('/weight-height-who')
         ->as('weight-height-who.')
-        ->group(function (){
-           Route::group(['middleware' => ['permission:createHeightWeight', 'auth:admin']], function () {
-              Route::get('/add', 'create')->name('create');
-              Route::post('/add','store')->name('store');
-           });
-           Route::group(["middleware"=>['permission:viewHeightWeight', 'auth:admin']], function () {
-              Route::get('/','index')->name('index');
-              Route::get('/edit/{id}','edit')->name('edit');
-           });
-           Route::group(['middleware' => ['permission:updateHeightWeight', 'auth:admin']], function () {
-               Route::put('/edit', 'update')->name('update');
-               Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
-           });
-           Route::group(['middleware' => ['permission:deleteHeightWeight', 'auth:admin']], function () {
-               Route::delete('/delete/{id}', 'delete')->name('delete');
-           });
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createHeightWeight', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(["middleware" => ['permission:viewHeightWeight', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['permission:updateHeightWeight', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:deleteHeightWeight', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
         });
     //Bmi
     Route::controller(App\Admin\Http\Controllers\Bmi\BmiController::class)
@@ -257,6 +257,29 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
 
             Route::group(['middleware' => ['permission:deleteClinic', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
+    Route::controller(App\Admin\Http\Controllers\Expected\ExpectedController::class)
+        ->prefix('/expected')
+        ->as('expected.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createExpected', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewExpected', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updateExpected', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+            Route::group(['middleware' => ['permission:deleteExpected', 'auth:admin']], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
