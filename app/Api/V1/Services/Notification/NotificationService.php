@@ -56,7 +56,7 @@ class NotificationService implements NotificationServiceInterface
     {
         try {
             $this->data=$request->validated();
-           $this->repository->update($this->data['id'], ["status"=>2]);
+           $this->repository->update($this->data['id'], ["status"=>NotificationStatus::READ]);
            return 1;
         }catch (Exception $e) {
             return 0;
@@ -69,8 +69,8 @@ class NotificationService implements NotificationServiceInterface
         try {
             $response=$this->repository->getNotificationIsNotRead($this->getCurrentUserId());
             foreach ($response as $notification) {
-                $notification->status=2;
-                $notification->where("user_id",$this->getCurrentUserId())->update(["status"=>NotificationStatus::READ]);
+                $notification->status=NotificationStatus::READ;
+                $notification->where("user_id",$this->getCurrentUserId())->update(["status"=>$notification->status]);
             }
             return 1;
         }catch (Exception $e) {
