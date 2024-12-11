@@ -69,8 +69,8 @@ class NotificationService implements NotificationServiceInterface
         try {
             $response=$this->repository->getNotificationIsNotRead($this->getCurrentUserId());
             foreach ($response as $notification) {
-                $notification->status=NotificationStatus::READ;
-                $notification->update(["status"=>$notification->status]);
+
+                $notification->update(["status"=>NotificationStatus::READ]);
             }
             return true;
         }catch (Exception $e) {
