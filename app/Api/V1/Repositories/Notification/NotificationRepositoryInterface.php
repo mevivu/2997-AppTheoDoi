@@ -9,5 +9,5 @@ interface NotificationRepositoryInterface extends EloquentRepositoryInterface
 {
 
    public function getNotificationByUserId($role, $userId, $limit = 10);
-   public function GetNotificationIsNotRead($userId);
+   public function getNotificationIsNotRead($userId);
 }

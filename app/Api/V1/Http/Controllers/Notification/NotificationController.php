@@ -115,19 +115,26 @@ class NotificationController extends Controller
      */
     public function updateStatusRead(Request $request): JsonResponse
     {
-
-        $notification=$this->service->UpdateStatusIsRead($request);
-        if($notification){
-            return response()->json([
-                'status' => 200,
-                'message' => __('Thực hiện thành công.'),
-            ], 200);
-        }else{
+        try {
+            $notification=$this->service->updateStatusIsRead($request);
+            if($notification){
+                return response()->json([
+                    'status' => 200,
+                    'message' => __('Thực hiện thành công.'),
+                ], 200);
+            }else{
+                return response()->json([
+                    'status' => 500,
+                    'message' => __('Thực hiện Thất bại.'),
+                ],500);
+            }
+        }catch (Exception $e) {
             return response()->json([
                 'status' => 500,
                 'message' => __('Thực hiện Thất bại.'),
             ],500);
         }
+
     }
     /**
      * Cập nhật trạng thái Tất cả Thông báo
@@ -158,19 +165,28 @@ class NotificationController extends Controller
      */
     public function updateAllStatusReadAll(Request $request): JsonResponse
     {
-        $notification=$this->service->UpdateAllStatusIsRead($request);
-        if($notification){
-            return response()->json([
-                'status' => 200,
-                'message'=>__('Thực hiện thành công.'),
+        try {
+            $notification=$this->service->updateAllStatusIsRead($request);
+            if($notification){
+                return response()->json([
+                    'status' => 200,
+                    'message'=>__('Thực hiện thành công.'),
 
-            ],200);
-        }else{
+                ],200);
+            }else{
+                return response()->json([
+                    'status' => 500,
+                    'message'=>__('Thực hiện Thất bại.'),
+
+                ],500);
+            }
+        }catch (Exception $e) {
             return response()->json([
                 'status' => 500,
                 'message'=>__('Thực hiện Thất bại.'),
 
             ],500);
         }
+
     }
 }

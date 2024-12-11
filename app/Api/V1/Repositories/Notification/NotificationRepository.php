@@ -25,7 +25,7 @@ class NotificationRepository extends AdminArea implements NotificationRepository
         return false;
     }
 
-    public function GetNotificationIsNotRead($userId)
+    public function getNotificationIsNotRead($userId)
     {
         // TODO: Implement GetNotificationIsNotRead() method.
         return $this->model->where('user_id', $userId)->where('status',1)->get();

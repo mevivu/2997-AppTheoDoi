@@ -9,6 +9,7 @@ use App\Api\V1\Repositories\Notification\NotificationRepository;
 use App\Api\V1\Repositories\Notification\NotificationRepositoryInterface;
 use App\Api\V1\Repositories\User\UserRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
+use App\Enums\Notification\NotificationStatus;
 use App\Traits\NotifiesViaFirebase;
 use App\Api\V1\Support\UseLog;
 use Illuminate\Http\Request;
@@ -51,7 +52,7 @@ class NotificationService implements NotificationServiceInterface
     }
 
 
-    public function UpdateStatusIsRead(Request $request): bool
+    public function updateStatusIsRead(Request $request): bool
     {
         try {
             $this->data=$request->validated();
@@ -62,14 +63,14 @@ class NotificationService implements NotificationServiceInterface
         }
     }
 
-    public function UpdateAllStatusIsRead(Request $request): bool
+    public function updateAllStatusIsRead(Request $request): bool
     {
         // TODO: Implement UpdateAllStatusIsRead() method.
         try {
-            $response=$this->repository->GetNotificationIsNotRead($this->getCurrentUserId());
+            $response=$this->repository->getNotificationIsNotRead($this->getCurrentUserId());
             foreach ($response as $notification) {
                 $notification->status=2;
-                $notification->where("user_id",$this->getCurrentUserId())->update(["status"=>$notification->status]);
+                $notification->where("user_id",$this->getCurrentUserId())->update(["status"=>NotificationStatus::READ]);
             }
             return 1;
         }catch (Exception $e) {
