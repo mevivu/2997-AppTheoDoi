@@ -67,3 +67,10 @@ Route::controller(App\Api\V1\Http\Controllers\Setting\SettingController::class)
         Route::get('/c-delivery', 'c_delivery')->name('c_delivery');
         Route::get('/c-intercity', 'c_intercity')->name('c_intercity');
     });
+//***** -- Clinic -- ******* //
+Route::controller(App\Api\V1\Http\Controllers\Clinic\ClinicController::class)
+    ->prefix('/clinics')
+    ->as('clinic.')
+    ->group(function () {
+        Route::get('/search', 'search');
+    });

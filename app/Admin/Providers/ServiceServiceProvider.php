@@ -20,7 +20,12 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\Clinic\ClinicServiceInterface' => 'App\Admin\Services\Clinic\ClinicSizeService',
         'App\Admin\Services\QuestionGroup\QuestionGroupServiceInterface' => 'App\Admin\Services\QuestionGroup\QuestionGroupService',
         'App\Admin\Services\Question\QuestionServiceInterface' => 'App\Admin\Services\Question\QuestionService',
+        'App\Admin\Services\WeightHeightWho\WeightHeightWhoServiceInterface'=>'App\Admin\Services\WeightHeightWho\WeightHeightWhoService',
         'App\Admin\Services\VaccinationSchedule\VaccinationScheduleServiceInterface' => 'App\Admin\Services\VaccinationSchedule\VaccinationScheduleSizeService',
+        'App\Admin\Services\Package\PackageServiceInterface' => 'App\Admin\Services\Package\PackageService',
+        'App\Admin\Services\Post\PostServiceInterface' => 'App\Admin\Services\Post\PostService',
+        'App\Admin\Services\PostCategory\PostCategoryServiceInterface' => 'App\Admin\Services\PostCategory\PostCategoryService',
+
     ];
     /**
      * Register services.

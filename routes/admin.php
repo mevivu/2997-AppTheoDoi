@@ -40,7 +40,27 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
-
+    //WeightHeight
+    Route::controller(\App\Admin\Http\Controllers\WeightHeightWho\WeightHeightWhoController::class)
+        ->prefix('/weight-height-who')
+        ->as('weight-height-who.')
+        ->group(function (){
+           Route::group(['middleware' => ['permission:createHeightWeight', 'auth:admin']], function () {
+              Route::get('/add', 'create')->name('create');
+              Route::post('/add','store')->name('store');
+           });
+           Route::group(["middleware"=>['permission:viewHeightWeight', 'auth:admin']], function () {
+              Route::get('/','index')->name('index');
+              Route::get('/edit/{id}','edit')->name('edit');
+           });
+           Route::group(['middleware' => ['permission:updateHeightWeight', 'auth:admin']], function () {
+               Route::put('/edit', 'update')->name('update');
+               Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+           });
+           Route::group(['middleware' => ['permission:deleteHeightWeight', 'auth:admin']], function () {
+               Route::delete('/delete/{id}', 'delete')->name('delete');
+           });
+        });
     //Bmi
     Route::controller(App\Admin\Http\Controllers\Bmi\BmiController::class)
         ->prefix('/bmi')
@@ -61,6 +81,30 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
 
             Route::group(['middleware' => ['permission:deleteBMI', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
+    //Package
+    Route::controller(App\Admin\Http\Controllers\Package\PackageController::class)
+        ->prefix('/packages')
+        ->as('package.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createPackage', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewPackage', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updatePackage', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+            Route::group(['middleware' => ['permission:deletePackage', 'auth:admin']], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
@@ -317,6 +361,85 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         });
 
     });
+
+    //sliders
+    Route::prefix('/sliders')->as('slider.')->group(function () {
+        Route::controller(App\Admin\Http\Controllers\Slider\SliderItemController::class)
+            ->as('item.')
+            ->group(function () {
+                Route::get('/{slider_id}/item/them', 'create')->name('create');
+                Route::get('/{slider_id}/item', 'index')->name('index');
+                Route::get('/item/sua/{id}', 'edit')->name('edit');
+                Route::put('/item/sua', 'update')->name('update');
+                Route::post('/item/them', 'store')->name('store');
+                Route::delete('/{slider_id}/item/xoa/{id}', 'delete')->name('delete');
+            });
+        Route::controller(App\Admin\Http\Controllers\Slider\SliderController::class)->group(function () {
+            Route::group(['middleware' => ['permission:createSlider', 'auth:admin']], function () {
+                Route::get('/them', 'create')->name('create');
+                Route::post('/them', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewSlider', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/sua/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updateSlider', 'auth:admin']], function () {
+                Route::put('/sua', 'update')->name('update');
+            });
+
+            Route::group(['middleware' => ['permission:deleteSlider', 'auth:admin']], function () {
+                Route::delete('/xoa/{id}', 'delete')->name('delete');
+            });
+        });
+    });
+
+    //Post
+    Route::prefix('/bai-viet')->as('post.')->group(function () {
+        Route::controller(App\Admin\Http\Controllers\Post\PostController::class)->group(function () {
+
+            Route::group(['middleware' => ['permission:createPost', 'auth:admin']], function () {
+                Route::get('/them', 'create')->name('create');
+                Route::post('/them', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewPost', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/sua/{id}', 'edit')->name('edit');
+                Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
+            });
+
+            Route::group(['middleware' => ['permission:updatePost', 'auth:admin']], function () {
+                Route::put('/sua', 'update')->name('update');
+            });
+
+            Route::group(['middleware' => ['permission:deletePost', 'auth:admin']], function () {
+                Route::delete('/xoa/{id}', 'delete')->name('delete');
+            });
+        });
+    });
+
+    //Post category
+    Route::prefix('/danh-muc-bai-viet')->as('post_category.')->group(function () {
+        Route::controller(App\Admin\Http\Controllers\PostCategory\PostCategoryController::class)->group(function () {
+            Route::group(['middleware' => ['permission:createPostCategory', 'auth:admin']], function () {
+                Route::get('/them', 'create')->name('create');
+                Route::post('/them', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewPostCategory', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/sua/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updatePostCategory', 'auth:admin']], function () {
+                Route::put('/sua', 'update')->name('update');
+            });
+
+            Route::group(['middleware' => ['permission:deletePostCategory', 'auth:admin']], function () {
+                Route::delete('/xoa/{id}', 'delete')->name('delete');
+            });
+        });
+    });
+
 
     //children
     Route::prefix('/quan-ly-tre-em')->as('children.')->group(function () {

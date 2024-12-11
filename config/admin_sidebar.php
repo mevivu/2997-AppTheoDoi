@@ -33,6 +33,52 @@ return [
         ]
     ],
     [
+        'title' => 'Sliders',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-slideshow"></i>',
+        'roles' => [],
+        'permissions' => ['createSlider', 'viewSlider', 'updateSlider', 'deleteSlider'],
+        'sub' => [
+            [
+                'title' => 'Thêm Sliders',
+                'routeName' => 'admin.slider.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createSlider'],
+            ],
+            [
+                'title' => 'DS Sliders',
+                'routeName' => 'admin.slider.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewSlider'],
+            ],
+        ]
+    ],
+    [
+        'title' => 'package',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-package-import"></i>',
+        'roles' => [],
+        'permissions' => ['createPackage', 'viewPackage', 'updatePackage', 'deletePackage'],
+        'sub' => [
+            [
+                'title' => 'Thêm gói',
+                'routeName' => 'admin.package.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createPackage'],
+            ],
+            [
+                'title' => 'DS thông tin gói',
+                'routeName' => 'admin.package.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewPackage'],
+            ],
+        ]
+    ],
+    [
         'title' => 'Bài tập',
         'routeName' => null,
         'icon' => '<i class="ti ti-book"></i>',
@@ -63,6 +109,45 @@ return [
         ]
     ],
     [
+        'title' => 'Bài viết',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-article"></i>',
+        'roles' => [],
+        'permissions' =>
+            [
+                'createPost',
+                'viewPost',
+                'updatePost',
+                'deletePost',
+                'viewPostCategory',
+                'createPostCategory',
+                'updatePostCategory'
+            ],
+        'sub' => [
+            [
+                'title' => 'Thêm bài viết',
+                'routeName' => 'admin.post.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createPost'],
+            ],
+            [
+                'title' => 'DS bài viết',
+                'routeName' => 'admin.post.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewPost'],
+            ],
+            [
+                'title' => 'DS chuyên mục',
+                'routeName' => 'admin.post_category.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewPostCategory'],
+            ]
+        ]
+    ],
+    [
         'title' => 'Thông tin BMI',
         'routeName' => null,
         'icon' => '<i class="ti ti-info-circle"></i>',
@@ -83,6 +168,29 @@ return [
                 'roles' => [],
                 'permissions' => ['viewBMI'],
             ],
+        ]
+    ],
+    [
+        'title' => 'Thông tin Who',
+        'routeName' => 'admin.module.summary',
+        'icon' => '<i class="ti ti-woman"></i>',
+        'roles' => [],
+        'permissions' => ['createHeightWeight','viewHeightWeight','updateHeightWeight','deleteHeightWeight'],
+        'sub' => [
+            [
+                'title' => 'Thêm',
+                'routeName' => 'admin.weight-height-who.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createHeightWeight'],
+            ],
+            [
+                'title' => 'DS Thông tin',
+                'routeName' => 'admin.weight-height-who.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewHeightWeight'],
+            ]
         ]
     ],
     [
@@ -360,5 +468,6 @@ return [
         'permissions' => ['mevivuDev'],
         'sub' => []
     ],
+
 
 ];

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class QuestionGroup extends Model
 {
@@ -25,7 +26,7 @@ class QuestionGroup extends Model
         'status' => ActiveStatus::class,
     ];
 
-    public function questions()
+    public function questions(): HasMany
     {
         return $this->hasMany(Question::class, 'question_group_id', 'id');
     }

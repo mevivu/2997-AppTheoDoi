@@ -2,12 +2,19 @@
 
 use App\Enums\DefaultStatus;
 use App\Enums\DeleteStatus;
+use App\Enums\FeaturedStatus;
 use App\Enums\OpenStatus;
 use App\Enums\Module\ModuleStatus;
 use App\Enums\Notification\MessageType;
 use App\Enums\Notification\NotificationOption;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
+use App\Enums\Package\PackageStatus;
+use App\Enums\Package\PackageType;
+use App\Enums\Post\PostStatus;
+use App\Enums\PostCategory\PostCategoryStatus;
+use App\Enums\PriorityStatus;
+use App\Enums\Slider\SliderStatus;
 use App\Enums\VerifiedStatus;
 use App\Enums\Setting\SettingGroup;
 use App\Enums\ActiveStatus;
@@ -36,17 +43,50 @@ return [
         ActiveStatus::Deleted->value => 'Đã xóa',
         ActiveStatus::Draft->value => 'Bản nháp',
     ],
+
+    PackageStatus::class => [
+        PackageStatus::Active->value => 'Hoạt động',
+        PackageStatus::Deleted->value => 'Đã xóa',
+        PackageStatus::Draft->value => 'Bản nháp',
+    ],
     ChildStatus::class => [
         ChildStatus::Active->value => 'Hoạt động',
         ChildStatus::Draft->value => 'Bản nháp',
         ChildStatus::Deleted->value => 'Đã xóa',
+    ],
+    PackageType::class => [
+        PackageType::Trial->value => 'Dùng thử',
+        PackageType::OneMonth->value => '1 tháng',
+        PackageType::ThreeMonths->value => '3 tháng',
+        PackageType::SixMonths->value => '6 tháng',
+        PackageType::OneYear->value => '1 năm',
+        PackageType::Normal->value => 'Thường',
     ],
     Gender::class => [
         Gender::Male->value => 'Nam',
         Gender::Female->value => 'Nữ',
         Gender::Other->value => 'Khác',
     ],
-
+    PostCategoryStatus::class => [
+        PostCategoryStatus::Published => 'Đã xuất bản',
+        PostCategoryStatus::Draft => 'Bản nháp'
+    ],
+    PostStatus::class => [
+        PostStatus::Published->value => 'Đã xuất bản',
+        PostStatus::Draft->value => 'Bản nháp'
+    ],
+    PriorityStatus::class => [
+        PriorityStatus::Priority->value => 'Ưu tiên',
+        PriorityStatus::NotPriority->value => 'Không ưu tiên'
+    ],
+    FeaturedStatus::class => [
+        FeaturedStatus::Featured->value => 'Nổi bật',
+        FeaturedStatus::Featureless->value => 'Không nổi bật'
+    ],
+    SliderStatus::class => [
+        SliderStatus::Active => 'Hoạt động',
+        SliderStatus::Inactive => 'Ngưng hoạt động'
+    ],
     NotificationStatus::class => [
         NotificationStatus::READ->value => 'Đã đọc',
         NotificationStatus::NOT_READ->value => 'Chưa đọc',
@@ -68,7 +108,7 @@ return [
     ],
     NotificationType::class => [
         NotificationType::All->value => 'Thông báo tất cả',
-        NotificationType::Customer->value => 'Thông báo nhân viên',
+        NotificationType::Customer->value => 'Thông báo người dùng',
     ],
 
     UserRoles::class => [

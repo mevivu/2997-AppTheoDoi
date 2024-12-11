@@ -3,9 +3,7 @@
 namespace App\Models;
 
 use App\Admin\Support\Eloquent\Sluggable;
-use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -88,6 +86,11 @@ class User extends Authenticatable implements JWTSubject
         'status' => UserStatus::class,
 
     ];
+
+    public function userPackages(): HasMany
+    {
+        return $this->hasMany(UserPackage::class);
+    }
 
 
     public function roles(): BelongsToMany
