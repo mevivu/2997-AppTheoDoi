@@ -1,6 +1,46 @@
 <?php
 
 return [
+    'expected' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'id' => [
+            'title' => 'Xem thông tin',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'age' => [
+            'title' => 'Tuổi',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'height_expected' => [
+            'title' => 'Chiều cao dự kiến (cm)',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'weight_expected' => [
+            'title' => 'Cân nặng dự kiến (kg)',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'status' => [
+            'title' => 'Trạng thái',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
     'iq_questions' => [
         'checkbox' => [
             'title' => 'choose',
@@ -144,7 +184,7 @@ return [
             'addClass' => 'text-center align-middle'
         ],
     ],
-    'WeightHeightWho'=>[
+    'WeightHeightWho' => [
         'checkbox' => [
             'title' => 'choose',
             'orderable' => false,

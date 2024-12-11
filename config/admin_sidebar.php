@@ -175,7 +175,7 @@ return [
         'routeName' => 'admin.module.summary',
         'icon' => '<i class="ti ti-woman"></i>',
         'roles' => [],
-        'permissions' => ['createHeightWeight','viewHeightWeight','updateHeightWeight','deleteHeightWeight'],
+        'permissions' => ['createHeightWeight', 'viewHeightWeight', 'updateHeightWeight', 'deleteHeightWeight'],
         'sub' => [
             [
                 'title' => 'Thêm',
@@ -190,6 +190,29 @@ return [
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewHeightWeight'],
+            ]
+        ]
+    ],
+    [
+        'title' => 'Thông tin dự kiến',
+        'routeName' => 'admin.expected.index',
+        'icon' => '<i class="ti ti-award"></i>',
+        'roles' => [],
+        'permissions' => ['createExpected', 'viewExpected', 'updateExpected', 'deleteExpected'],
+        'sub' => [
+            [
+                'title' => 'Thêm',
+                'routeName' => 'admin.expected.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createExpected'],
+            ],
+            [
+                'title' => 'DS Thông tin',
+                'routeName' => 'admin.expected.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewExpected'],
             ]
         ]
     ],
