@@ -118,21 +118,13 @@ class NotificationController extends Controller
         try {
             $notification=$this->service->updateStatusIsRead($request);
             if($notification){
-                return response()->json([
-                    'status' => 200,
-                    'message' => __('Thực hiện thành công.'),
-                ], 200);
+               return  $this->jsonResponseSuccessNoData();
             }else{
-                return response()->json([
-                    'status' => 500,
-                    'message' => __('Thực hiện Thất bại.'),
-                ],500);
+                return $this->jsonResponseError();
             }
         }catch (Exception $e) {
-            return response()->json([
-                'status' => 500,
-                'message' => __('Thực hiện Thất bại.'),
-            ],500);
+            $this->logError('Get user notifications failed:', $e);
+            return $this->jsonResponseError('Get user notifications failed', 500);
         }
 
     }
@@ -168,24 +160,13 @@ class NotificationController extends Controller
         try {
             $notification=$this->service->updateAllStatusIsRead($request);
             if($notification){
-                return response()->json([
-                    'status' => 200,
-                    'message'=>__('Thực hiện thành công.'),
-
-                ],200);
+                return  $this->jsonResponseSuccessNoData();
             }else{
-                return response()->json([
-                    'status' => 500,
-                    'message'=>__('Thực hiện Thất bại.'),
-
-                ],500);
+                return $this->jsonResponseError();
             }
         }catch (Exception $e) {
-            return response()->json([
-                'status' => 500,
-                'message'=>__('Thực hiện Thất bại.'),
-
-            ],500);
+            $this->logError('Get user notifications failed:', $e);
+            return $this->jsonResponseError('Get user notifications failed', 500);
         }
 
     }
