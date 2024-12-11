@@ -21,6 +21,8 @@ Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationControlle
     ->as('notification.')
     ->group(function () {
         Route::get('/', 'index');
+        Route::put('/read','updateStatusRead')->name('updateStatusRead');
+        Route::post('/read-all','updateAllStatusReadAll')->name('updateAllStatusReadAll');
     });
 
 

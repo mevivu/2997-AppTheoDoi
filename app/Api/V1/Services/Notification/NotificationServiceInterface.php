@@ -11,4 +11,6 @@ interface NotificationServiceInterface
 {
 
     public function getNotificationByUser(Request $request): bool|object;
+    public function updateStatusIsRead(Request $request): bool;
+    public function updateAllStatusIsRead(Request $request): bool;
 }
