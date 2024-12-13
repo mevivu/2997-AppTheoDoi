@@ -2,7 +2,8 @@
 
 namespace App\Api\V1\Repositories\Notification;
 use \App\Admin\Repositories\Notification\NotificationRepository as AdminArea;
-use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
+
+use App\Enums\Notification\NotificationStatus;
 use App\Models\Notification;
 
 class NotificationRepository extends AdminArea implements NotificationRepositoryInterface
@@ -25,4 +26,9 @@ class NotificationRepository extends AdminArea implements NotificationRepository
         return false;
     }
 
+    public function getNotificationIsNotRead($userId)
+    {
+        // TODO: Implement GetNotificationIsNotRead() method.
+        return $this->model->where('user_id', $userId)->where('status',NotificationStatus::NOT_READ)->get();
+    }
 }

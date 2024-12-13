@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Api\V1\Http\Requests\Notification;
+namespace App\Api\V1\Http\Requests\Exercise;
 
 use App\Api\V1\Http\Requests\BaseRequest;
 
-class NotificationRequest extends BaseRequest
+class ExerciseRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -16,12 +16,8 @@ class NotificationRequest extends BaseRequest
         return [
             'page' => ['nullable', 'integer', 'min:1'],
             'limit' => ['nullable', 'integer', 'min:1'],
-        ];
-    }
-    protected function methodPut()
-    {
-        return[
-            'id'=>['required','exists:App\Models\Notification,id'],
+            'exercise_type' => ['nullable', 'string']
+
         ];
     }
 }
