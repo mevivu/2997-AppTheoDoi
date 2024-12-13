@@ -11,7 +11,6 @@ class ExerciseRepository extends AdminRepository implements ExerciseRepositoryIn
     /**
      * Lấy danh sách bài tập
      *
-
      * @param int $limit
      * @param int $page
      * @return \Illuminate\Pagination\LengthAwarePaginator

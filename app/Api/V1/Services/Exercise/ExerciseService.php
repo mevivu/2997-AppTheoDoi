@@ -27,7 +27,8 @@ class ExerciseService implements ExerciseServiceInterface
 
     public function __construct(
         ExerciseRepositoryInterface $repository,
-    ) {
+    )
+    {
         $this->repository = $repository;
     }
 
@@ -35,9 +36,9 @@ class ExerciseService implements ExerciseServiceInterface
     public function index(Request $request)
     {
         // TODO: Implement index() method.
-        $this->data=$request->validated();
-        $page=$this->data['page']??1;
-        $limit=$this->data['limit']??10;
-        return $this->repository->index($limit,$page);
+        $this->data = $request->validated();
+        $page = $this->data['page'] ?? 1;
+        $limit = $this->data['limit'] ?? 10;
+        return $this->repository->index($limit, $page);
     }
 }

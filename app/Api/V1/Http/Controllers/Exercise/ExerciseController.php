@@ -19,19 +19,20 @@ use Illuminate\Http\JsonResponse;
 /**
  * @group Bài tập
  */
-
 class ExerciseController extends Controller
 {
     use AuthServiceApi, Response, UseLog;
 
     public function __construct(
-       ExerciseRepositoryInterface $repository,
-        ExerciseServiceInterface $service
+        ExerciseRepositoryInterface $repository,
+        ExerciseServiceInterface    $service
 
-    ) {
+    )
+    {
         $this->repository = $repository;
         $this->service = $service;
     }
+
     /**
      * DS Exercise
      *
@@ -68,15 +69,17 @@ class ExerciseController extends Controller
      * *
      * * @return \Illuminate\Http\Response
      */
-    public function index(ExerciseRequest $request): JsonResponse{
+    public function index(ExerciseRequest $request): JsonResponse
+    {
         try {
             return $this->jsonResponseSuccess(new ExerciseResourceCollection($this->service->index($request)));
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->logError('Get Exercises failed:', $exception);
             return $this->jsonResponseError('Get Exercises failed', 500);
         }
 
-        }
+    }
+
     /**
      * Chi tiết bài tập
      *
@@ -101,13 +104,13 @@ class ExerciseController extends Controller
      * *
      * * @return \Illuminate\Http\Response
      */
-        public function detail($id)
-        {
-            try {
-                return $this->jsonResponseSuccess(new ExcersiseDetailCollection($this->repository->findOrFail($id)));
-            }catch (\Exception $exception){
-                $this->logError('Get detail Exercises failed:', $exception);
-                return $this->jsonResponseError('Get detail Exercises failed', 500);
-            }
+    public function detail($id)
+    {
+        try {
+            return $this->jsonResponseSuccess(new ExcersiseDetailCollection($this->repository->findOrFail($id)));
+        } catch (\Exception $exception) {
+            $this->logError('Get detail Exercises failed:', $exception);
+            return $this->jsonResponseError('Get detail Exercises failed', 500);
         }
+    }
 }
