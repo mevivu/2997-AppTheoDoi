@@ -16,6 +16,7 @@ class ExerciseRequest extends BaseRequest
         return [
             'page' => ['nullable', 'integer', 'min:1'],
             'limit' => ['nullable', 'integer', 'min:1'],
+            'exercise_type' => ['nullable', 'string']
 
         ];
     }

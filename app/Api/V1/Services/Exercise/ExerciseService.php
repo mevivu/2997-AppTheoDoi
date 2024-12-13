@@ -39,6 +39,7 @@ class ExerciseService implements ExerciseServiceInterface
         $this->data = $request->validated();
         $page = $this->data['page'] ?? 1;
         $limit = $this->data['limit'] ?? 10;
-        return $this->repository->index($limit, $page);
+        $type = $this->data['exercise_type'] ?? '';
+        return $this->repository->index($limit, $page, $type);
     }
 }

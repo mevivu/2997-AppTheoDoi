@@ -6,5 +6,5 @@ use App\Admin\Repositories\EloquentRepositoryInterface;
 
 interface ExerciseRepositoryInterface extends EloquentRepositoryInterface
 {
-    public function index(int $limit = 10, int $page = 1);
+    public function index(int $limit = 10, int $page = 1, string $type): mixed;
 }
