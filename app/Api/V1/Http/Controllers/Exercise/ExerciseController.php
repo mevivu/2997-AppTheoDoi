@@ -85,7 +85,8 @@ class ExerciseController extends Controller
      * Chi tiết bài tập
      *
      * lấy chi tiết  bài tập
-     *
+     * @pathParam id integer required
+     * ID
      * @response 200 {
      *    "status": 200,
      *    "message": "Thực hiện thành công.",
