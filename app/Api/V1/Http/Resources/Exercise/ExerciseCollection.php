@@ -21,11 +21,12 @@ class ExerciseCollection extends ResourceCollection
     public function toArray($request): array
     {
         return [
-            'Exercises' => $this->collection->map(function ($item) {
+            'exercises' => $this->collection->map(function ($item) {
                 $data = [
                     'id' => $item->id,
                     'name' => $item->name,
                     'status' => $item->status,
+                    'exercise_type'=>$item->exercise_type,
                 ];
                 return $data;
             }),
