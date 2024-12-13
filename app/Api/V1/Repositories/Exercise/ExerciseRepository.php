@@ -21,6 +21,6 @@ class ExerciseRepository extends AdminRepository implements ExerciseRepositoryIn
     public function index(int $limit = 10, int $page = 1)
     {
         // TODO: Implement index() method.
-        return $this->model->where('status',ActiveStatus::Active)->paginate($limit, ['*'], 'page', $page);
+        return $this->model->where('status', ActiveStatus::Active)->paginate($limit, ['*'], 'page', $page);
     }
 }
