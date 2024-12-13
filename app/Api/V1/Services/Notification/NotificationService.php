@@ -4,8 +4,6 @@ namespace App\Api\V1\Services\Notification;
 
 
 use App\Admin\Traits\Roles;
-
-use App\Api\V1\Repositories\Notification\NotificationRepository;
 use App\Api\V1\Repositories\Notification\NotificationRepositoryInterface;
 use App\Api\V1\Repositories\User\UserRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
@@ -75,6 +73,18 @@ class NotificationService implements NotificationServiceInterface
             return true;
         } catch (Exception $e) {
 
+            return false;
+        }
+    }
+
+    public function delete(Request $request): bool
+    {
+        // TODO: Implement delete() method.
+        $data = $request->validated();
+        try {
+            $this->repository->delete($data['id']);
+            return true;
+        } catch (\Exception $e) {
             return false;
         }
     }

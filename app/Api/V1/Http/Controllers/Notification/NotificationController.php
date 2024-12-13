@@ -6,17 +6,13 @@ use App\Admin\Http\Controllers\Controller;
 use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
 use App\Api\V1\Http\Requests\Notification\NotificationRequest;
 use App\Api\V1\Http\Resources\Notification\NotificationResourceCollection;
-use App\Api\V1\Http\Resources\Notification\NotificationResource;
-use App\Api\V1\Repositories\Notification\NotificationRepository;
-
+use App\Api\V1\Http\Resources\Notification\ShowNotificationResource;
 use App\Api\V1\Services\Notification\NotificationServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use Exception;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
-use \Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -170,5 +166,85 @@ class NotificationController extends Controller
             return $this->jsonResponseError('Get user notifications failed', 500);
         }
 
+    }
+
+    /**
+     * Chi tiết Thông báo
+     *
+     * lấy chi tiết  Thông báo
+     * @pathParam id integer required
+     * ID
+     * @response 200 {
+     *    "status": 200,
+     *    "message": "Thực hiện thành công.",
+     *    "data": [
+     *        {
+     *                   "id": 3,
+     *                  "title": "1",
+     *                  "message": "1",
+     *                  "status": 2,
+     *                  "read_at": "13-12-2024 14:07",
+     *                   "created_at": "30-10-2024 16:07"
+     *        }
+     *
+     *    ]
+     * }
+     * @response 500 {
+     *          "status": 500,
+     *         "message": "Get user notifications detail failed",
+     *  }
+     *
+     * @param \Illuminate\Http\Request $request
+     * *
+     * * @return \Illuminate\Http\Response
+     */
+    public function detail($id)
+    {
+        try {
+            return $this->jsonResponseSuccess(new ShowNotificationResource($this->repository->findOrFail($id)));
+        } catch (Exception $e) {
+            $this->logError('Get user notifications detail failed:', $e);
+            return $this->jsonResponseError('Get user notifications detail failed', 500);
+        }
+    }
+
+    /**
+     * Xóa Notification
+     *
+     * Xóa Notification một Notification theo id
+     *
+     * @headersParam X-TOKEN-ACCESS string
+     * token để lấy dữ liệu. Ví dụ: ijCCtggxLEkG3Yg8hNKZJvMM4EA1Rw4VjVvyIOb7
+     *
+     * @pathParam id integer required
+     * id Notification. Ví dụ: 1
+     *
+     *
+     * @response 200 {
+     *      "status": 200,
+     *      "message": "Thực hiện thành công."
+     * }
+     * @response 400 {
+     *      "status": 400,
+     *      "message": "Xóa thất bại."
+     * }
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function delete(NotificationRequest $request): JsonResponse
+    {
+        try {
+            $notification = $this->service->delete($request);
+            if ($notification) {
+                return $this->jsonResponseSuccessNoData();
+            } else {
+                return $this->jsonResponseError();
+            }
+        } catch (Exception $e) {
+            $this->logError('Delete user notifications failed:', $e);
+            return $this->jsonResponseError('Delete user notifications failed', 500);
+        }
     }
 }

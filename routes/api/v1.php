@@ -21,8 +21,10 @@ Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationControlle
     ->as('notification.')
     ->group(function () {
         Route::get('/', 'index');
+        Route::get('/detail/{id}', 'detail');
         Route::put('/read', 'updateStatusRead')->name('updateStatusRead');
         Route::post('/read-all', 'updateAllStatusReadAll')->name('updateAllStatusReadAll');
+        Route::delete('delete', 'delete')->name('delete');
     });
 Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::class)
     ->prefix('/exercises')
