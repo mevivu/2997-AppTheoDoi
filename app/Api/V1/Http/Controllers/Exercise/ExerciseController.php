@@ -5,9 +5,10 @@ namespace App\Api\V1\Http\Controllers\Exercise;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Http\Requests\Exercise\ExerciseRequest;
 
-use App\Api\V1\Http\Requests\Notification\NotificationRequest;
-use App\Api\V1\Http\Resources\Exercise\ExcersiseDetailCollection;
-use App\Api\V1\Http\Resources\Exercise\ExerciseResourceCollection;
+
+use App\Api\V1\Http\Resources\Exercise\ExerciseCollection;
+use App\Api\V1\Http\Resources\Exercise\ExerciseDetailCollection;
+
 use App\Api\V1\Repositories\Exercise\ExerciseRepositoryInterface;
 use App\Api\V1\Services\Exercise\ExerciseServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
@@ -72,7 +73,7 @@ class ExerciseController extends Controller
     public function index(ExerciseRequest $request): JsonResponse
     {
         try {
-            return $this->jsonResponseSuccess(new ExerciseResourceCollection($this->service->index($request)));
+            return $this->jsonResponseSuccess(new ExerciseCollection($this->service->index($request)));
         } catch (\Exception $exception) {
             $this->logError('Get Exercises failed:', $exception);
             return $this->jsonResponseError('Get Exercises failed', 500);
@@ -107,7 +108,7 @@ class ExerciseController extends Controller
     public function detail($id)
     {
         try {
-            return $this->jsonResponseSuccess(new ExcersiseDetailCollection($this->repository->findOrFail($id)));
+            return $this->jsonResponseSuccess(new ExerciseDetailCollection($this->repository->findOrFail($id)));
         } catch (\Exception $exception) {
             $this->logError('Get detail Exercises failed:', $exception);
             return $this->jsonResponseError('Get detail Exercises failed', 500);

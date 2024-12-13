@@ -15,7 +15,9 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Api\V1\Services\VehicleEntry\Import\Manual\VehicleEntryImportManualServiceInterface' => 'App\Api\V1\Services\VehicleEntry\Import\Manual\VehicleEntryImportManualService',
         'App\Api\V1\Services\VehicleEntry\Import\Vehicle\VehicleEntryImportVehicleServiceInterface' => 'App\Api\V1\Services\VehicleEntry\Import\Vehicle\VehicleEntryImportVehicleService',
         'App\Api\V1\Services\Clinic\ClinicServiceInterface' => 'App\Api\V1\Services\Clinic\ClinicService',
+        'App\Api\V1\Services\Exercise\ExerciseServiceInterface' => 'App\Api\V1\Services\Exercise\ExerciseService',
     ];
+
     /**
      * Register services.
      *
