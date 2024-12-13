@@ -21,15 +21,15 @@ Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationControlle
     ->as('notification.')
     ->group(function () {
         Route::get('/', 'index');
-        Route::put('/read', 'updateStatusRead')->name('updateStatusRead');
-        Route::post('/read-all', 'updateAllStatusReadAll')->name('updateAllStatusReadAll');
+        Route::put('/read','updateStatusRead')->name('updateStatusRead');
+        Route::post('/read-all','updateAllStatusReadAll')->name('updateAllStatusReadAll');
     });
 Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::class)
     ->prefix('/exercises')
     ->as('exercise.')
     ->group(function () {
         Route::get('/', 'index');
-        Route::get('/detail/{id}', 'detail');
+        Route::get('/detail/{id}','detail');
     });
 
 //auth
@@ -52,6 +52,7 @@ Route::prefix('users')->controller(UserController::class)
         Route::post('/update', 'update');
         Route::get('/recent-location', 'getRecentLocation');
     });
+
 
 
 Route::fallback(function () {
