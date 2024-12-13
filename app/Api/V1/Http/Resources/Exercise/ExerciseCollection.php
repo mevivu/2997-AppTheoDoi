@@ -6,9 +6,10 @@ use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use JsonSerializable;
 
-class ExerciseCollection extends JsonResource
+class ExerciseCollection extends ResourceCollection
 {
     /**
      * Transform the resource into an array.
@@ -17,12 +18,33 @@ class ExerciseCollection extends JsonResource
      * @return array|Arrayable|JsonSerializable
      * @throws Exception
      */
-    public function toArray($request): array|JsonSerializable|Arrayable
+    public function toArray($request): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'status' => $this->status
+            'Exercises' => $this->collection->map(function ($item) {
+                $data = [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'status' => $item->status,
+                ];
+                return $data;
+            }),
+            'links' => [
+                'first' => $this->url(1),
+                'last' => $this->url($this->lastPage()),
+                'prev' => $this->previousPageUrl(),
+                'next' => $this->nextPageUrl(),
+            ],
+            'meta' => [
+                'current_page' => $this->currentPage(),
+                'from' => $this->firstItem(),
+                'to' => $this->lastItem(),
+                'limit' => $this->perPage(),
+                'total' => $this->total(),
+                'count' => $this->count(),
+                'total_pages' => $this->lastPage(),
+            ],
         ];
     }
+
 }
