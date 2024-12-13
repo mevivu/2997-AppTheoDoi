@@ -32,6 +32,24 @@ Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::clas
         Route::get('/detail/{id}', 'detail');
     });
 
+//***** -- Post -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Post\PostController::class)
+    ->prefix('/posts')
+    ->as('post.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+    });
+
+//***** -- Slider -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Slider\SliderController::class)
+    ->prefix('/sliders')
+    ->as('slider.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+    });
+
 //auth
 Route::prefix('auth')->controller(AuthController::class)
     ->group(function () {
