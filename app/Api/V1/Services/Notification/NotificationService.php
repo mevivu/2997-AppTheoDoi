@@ -55,8 +55,8 @@ class NotificationService implements NotificationServiceInterface
     public function updateStatusIsRead(Request $request): bool
     {
         try {
-            $this->data=$request->validated();
-           $this->repository->update($this->data['id'], ["status"=>NotificationStatus::READ]);
+
+           $this->repository->update($request->id, ["status"=>NotificationStatus::READ]);
            return true;
         }catch (Exception $e) {
             return false;

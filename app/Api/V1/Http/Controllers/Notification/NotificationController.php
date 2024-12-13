@@ -90,7 +90,7 @@ class NotificationController extends Controller
      * Cập nhật trạng thái thông báo đã đọc
      *
      *
-     *@bodyParam id int required bài viết cần update. Example: 1
+     *  @bodyParam id int required bài viết cần update. Example: 1
      * @headersParam X-TOKEN-ACCESS string
      * token để lấy dữ liệu. Example: ijCCtggxLEkG3Yg8hNKZJvMM4EA1Rw4VjVvyIOb7
      *

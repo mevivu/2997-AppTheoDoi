@@ -3,6 +3,10 @@
 namespace App\Api\V1\Http\Requests\Exercise;
 
 use App\Api\V1\Http\Requests\BaseRequest;
+use App\Enums\Exercise\ExerciseType;
+
+use Google\Protobuf\EnumValue;
+use Illuminate\Validation\Rules\Enum;
 
 class ExerciseRequest extends BaseRequest
 {
@@ -16,7 +20,7 @@ class ExerciseRequest extends BaseRequest
         return [
             'page' => ['nullable', 'integer', 'min:1'],
             'limit' => ['nullable', 'integer', 'min:1'],
-            'exercise_type' => ['nullable', 'string']
+            'exercise_type' => ['nullable', new Enum(ExerciseType::class)],
 
         ];
     }

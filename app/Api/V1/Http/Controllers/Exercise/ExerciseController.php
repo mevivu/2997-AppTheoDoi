@@ -41,7 +41,9 @@ class ExerciseController extends Controller
      *
      * @headersParam X-TOKEN-ACCESS string
      * token để lấy dữ liệu. Example: ijCCtggxLEkG3Yg8hNKZJvMM4EA1Rw4VjVvyIOb7
-     *
+     * Kiểu bài tập (exercise_type) gồm:
+     * - physical: thuộc thể chất
+     * - power: thuộc sức mạnh
      * @queryParam page integer
      * Trang hiện tại, page > 0. Example: 1
      *
