@@ -28,8 +28,9 @@ class NotificationService implements NotificationServiceInterface
 
     public function __construct(
         NotificationRepositoryInterface $repository,
-        UserRepositoryInterface $userRepository,
-    ) {
+        UserRepositoryInterface         $userRepository,
+    )
+    {
         $this->repository = $repository;
         $this->userRepository = $userRepository;
 
@@ -43,8 +44,7 @@ class NotificationService implements NotificationServiceInterface
             $limit = $data['limit'] ?? 10;
             $user = $this->repository->getNotificationByUserId("user_id", $userId, $limit);
             return $user;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $this->logError('Failed to process get user', $e);
             return false;
         }
@@ -56,9 +56,9 @@ class NotificationService implements NotificationServiceInterface
     {
         try {
 
-           $this->repository->update($request->id, ["status"=>NotificationStatus::READ]);
-           return true;
-        }catch (Exception $e) {
+            $this->repository->update($request->id, ["status" => NotificationStatus::READ]);
+            return true;
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -67,16 +67,17 @@ class NotificationService implements NotificationServiceInterface
     {
         // TODO: Implement UpdateAllStatusIsRead() method.
         try {
-            $response=$this->repository->getNotificationIsNotRead($this->getCurrentUserId());
+            $response = $this->repository->getNotificationIsNotRead($this->getCurrentUserId());
             foreach ($response as $notification) {
 
-                $notification->update(["status"=>NotificationStatus::READ]);
+                $notification->update(["status" => NotificationStatus::READ]);
             }
             return true;
-        }catch (Exception $e) {
+        } catch (Exception $e) {
 
             return false;
         }
     }
 }
+
 ;

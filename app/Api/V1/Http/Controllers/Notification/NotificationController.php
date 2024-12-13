@@ -22,16 +22,16 @@ use Illuminate\Support\Facades\Log;
 /**
  * @group Thông báo
  */
-
 class NotificationController extends Controller
 {
     use AuthServiceApi, Response, UseLog;
 
     public function __construct(
         NotificationRepositoryInterface $repository,
-        NotificationServiceInterface $service
+        NotificationServiceInterface    $service
 
-    ) {
+    )
+    {
         $this->repository = $repository;
         $this->service = $service;
     }
@@ -86,11 +86,12 @@ class NotificationController extends Controller
             return $this->jsonResponseError('Get user notifications failed', 500);
         }
     }
+
     /**
      * Cập nhật trạng thái thông báo đã đọc
      *
      *
-     *  @bodyParam id int required bài viết cần update. Example: 1
+     * @bodyParam id int required bài viết cần update. Example: 1
      * @headersParam X-TOKEN-ACCESS string
      * token để lấy dữ liệu. Example: ijCCtggxLEkG3Yg8hNKZJvMM4EA1Rw4VjVvyIOb7
      *
@@ -116,18 +117,19 @@ class NotificationController extends Controller
     public function updateStatusRead(Request $request): JsonResponse
     {
         try {
-            $notification=$this->service->updateStatusIsRead($request);
-            if($notification){
-               return  $this->jsonResponseSuccessNoData();
-            }else{
+            $notification = $this->service->updateStatusIsRead($request);
+            if ($notification) {
+                return $this->jsonResponseSuccessNoData();
+            } else {
                 return $this->jsonResponseError();
             }
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->logError('Get user notifications failed:', $e);
             return $this->jsonResponseError('Get user notifications failed', 500);
         }
 
     }
+
     /**
      * Cập nhật trạng thái Tất cả Thông báo
      *
@@ -135,7 +137,6 @@ class NotificationController extends Controller
      * @headersParam X-TOKEN-ACCESS string
      * token để lấy dữ liệu. Example: ijCCtggxLEkG3Yg8hNKZJvMM4EA1Rw4VjVvyIOb7
      *
-
      *
      * @authenticated Authorization string required
      * access_token được cấp sau khi đăng nhập. Example: Bearer 1|WhUre3Td7hThZ8sNhivpt7YYSxJBWk17rdndVO8K
@@ -158,13 +159,13 @@ class NotificationController extends Controller
     public function updateAllStatusReadAll(Request $request): JsonResponse
     {
         try {
-            $notification=$this->service->updateAllStatusIsRead($request);
-            if($notification){
-                return  $this->jsonResponseSuccessNoData();
-            }else{
+            $notification = $this->service->updateAllStatusIsRead($request);
+            if ($notification) {
+                return $this->jsonResponseSuccessNoData();
+            } else {
                 return $this->jsonResponseError();
             }
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             $this->logError('Get user notifications failed:', $e);
             return $this->jsonResponseError('Get user notifications failed', 500);
         }
