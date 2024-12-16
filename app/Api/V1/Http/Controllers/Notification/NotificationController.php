@@ -4,6 +4,8 @@ namespace App\Api\V1\Http\Controllers\Notification;
 
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
+use App\Api\V1\Exception\BadRequestException;
+use App\Api\V1\Exception\NotFoundException;
 use App\Api\V1\Http\Requests\Notification\NotificationRequest;
 use App\Api\V1\Http\Resources\Notification\NotificationResourceCollection;
 use App\Api\V1\Http\Resources\Notification\ShowNotificationResource;
@@ -207,11 +209,12 @@ class NotificationController extends Controller
     {
         try {
             Validator::validateExists($this->repository, $id);
-            $response = $this->repository->findOrFail($id);
-            return $this->jsonResponseSuccess(new ShowNotificationResource($response));
-        } catch (Exception $e) {
-            $this->logError('Get user notifications detail failed:', $e);
-            return $this->jsonResponseError('Get user notifications detail failed', 500);
+            return $this->jsonResponseSuccess(new ShowNotificationResource($this->repository->findOrFail($id)));
+        } catch (NotFoundException|BadRequestException $e) {
+            return $this->jsonResponseError($e->getMessage());
+        } catch (Exception $exception) {
+            $this->logError('Get detail Exercises failed:', $exception);
+            return $this->jsonResponseError('Get detail Exercises failed', 500);
         }
     }
 
