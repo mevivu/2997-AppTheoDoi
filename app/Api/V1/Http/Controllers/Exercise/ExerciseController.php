@@ -3,6 +3,8 @@
 namespace App\Api\V1\Http\Controllers\Exercise;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Api\V1\Exception\BadRequestException;
+use App\Api\V1\Exception\NotFoundException;
 use App\Api\V1\Http\Requests\Exercise\ExerciseRequest;
 
 
@@ -14,6 +16,8 @@ use App\Api\V1\Services\Exercise\ExerciseServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
+use App\Api\V1\Validate\Validator;
+use Exception;
 use Illuminate\Http\JsonResponse;
 
 
@@ -68,15 +72,15 @@ class ExerciseController extends Controller
      *    ]
      * }
      *
-     * @param \Illuminate\Http\Request $request
-     * *
-     * * @return \Illuminate\Http\Response
+     * @param ExerciseRequest $request
+     *
+     * @return JsonResponse
      */
     public function index(ExerciseRequest $request): JsonResponse
     {
         try {
             return $this->jsonResponseSuccess(new ExerciseCollection($this->service->index($request)));
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->logError('Get Exercises failed:', $exception);
             return $this->jsonResponseError('Get Exercises failed', 500);
         }
@@ -104,15 +108,17 @@ class ExerciseController extends Controller
      *    ]
      * }
      *
-     * @param \Illuminate\Http\Request $request
-     * *
-     * * @return \Illuminate\Http\Response
+     * @param $id
+     * @return JsonResponse
      */
-    public function detail($id)
+    public function detail($id): JsonResponse
     {
         try {
+            Validator::validateExists($this->repository, $id);
             return $this->jsonResponseSuccess(new ExerciseDetailCollection($this->repository->findOrFail($id)));
-        } catch (\Exception $exception) {
+        } catch (NotFoundException|BadRequestException $e) {
+            return $this->jsonResponseError($e->getMessage());
+        } catch (Exception $exception) {
             $this->logError('Get detail Exercises failed:', $exception);
             return $this->jsonResponseError('Get detail Exercises failed', 500);
         }
