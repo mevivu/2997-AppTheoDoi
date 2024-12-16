@@ -9,6 +9,7 @@ use App\Api\V1\Http\Resources\Notification\NotificationResourceCollection;
 use App\Api\V1\Http\Resources\Notification\ShowNotificationResource;
 use App\Api\V1\Services\Notification\NotificationServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
+use App\Api\V1\Validate\Validator;
 use Exception;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
@@ -76,7 +77,12 @@ class NotificationController extends Controller
     {
         try {
             $response = $this->service->getNotificationByUser($request);
-            return $this->jsonResponseSuccess(new NotificationResourceCollection($response));
+            if ($response) {
+                return $this->jsonResponseSuccess(new NotificationResourceCollection($response));
+            } else {
+                return $this->jsonResponseError('Get user notifications failed', 500);
+            }
+
         } catch (Exception $e) {
             $this->logError('Get user notifications failed:', $e);
             return $this->jsonResponseError('Get user notifications failed', 500);
@@ -194,14 +200,15 @@ class NotificationController extends Controller
      *         "message": "Get user notifications detail failed",
      *  }
      *
-     * @param \Illuminate\Http\Request $request
-     * *
-     * * @return \Illuminate\Http\Response
+     * @param $id
+     * @return JsonResponse
      */
     public function detail($id)
     {
         try {
-            return $this->jsonResponseSuccess(new ShowNotificationResource($this->repository->findOrFail($id)));
+            Validator::validateExists($this->repository, $id);
+            $response = $this->repository->findOrFail($id);
+            return $this->jsonResponseSuccess(new ShowNotificationResource($response));
         } catch (Exception $e) {
             $this->logError('Get user notifications detail failed:', $e);
             return $this->jsonResponseError('Get user notifications detail failed', 500);
@@ -229,9 +236,8 @@ class NotificationController extends Controller
      *      "message": "Xóa thất bại."
      * }
      *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Http\Response
+     * @param NotificationRequest $request
+     * @return JsonResponse
      */
     public function delete(NotificationRequest $request): JsonResponse
     {

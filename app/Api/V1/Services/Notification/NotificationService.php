@@ -40,7 +40,8 @@ class NotificationService implements NotificationServiceInterface
             $data = $request->validated();
             $userId = $this->getCurrentUserId();
             $limit = $data['limit'] ?? 10;
-            $user = $this->repository->getNotificationByUserId("user_id", $userId, $limit);
+            $page = $data['page'] ?? 1;
+            $user = $this->repository->getNotificationByUserId("user_id", $userId, $limit, $page);
             return $user;
         } catch (Exception $e) {
             $this->logError('Failed to process get user', $e);

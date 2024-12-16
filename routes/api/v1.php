@@ -20,8 +20,8 @@ Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationControlle
     ->prefix('/notifications')
     ->as('notification.')
     ->group(function () {
-        Route::get('/', 'index');
-        Route::get('/detail/{id}', 'detail');
+        Route::get('/get-all', 'index');
+        Route::get('/{id}', 'detail');
         Route::put('/read', 'updateStatusRead')->name('updateStatusRead');
         Route::post('/read-all', 'updateAllStatusReadAll')->name('updateAllStatusReadAll');
         Route::delete('delete', 'delete')->name('delete');
