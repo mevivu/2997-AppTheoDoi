@@ -51,12 +51,12 @@ Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
     ->prefix('/children')
     ->as('child.')
     ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
         Route::post('/', 'store');
         Route::post('/update', 'update');
         Route::delete('/{id}', 'delete');
 
-//        Route::get('/', 'index');
-//        Route::get('/{id}', 'detail');
     });
 
 // Exercise

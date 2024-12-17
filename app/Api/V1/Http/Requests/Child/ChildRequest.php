@@ -9,6 +9,16 @@ use Illuminate\Validation\Rules\Enum;
 
 class ChildRequest extends BaseRequest
 {
+
+    protected function methodGet(): array
+    {
+        return [
+
+            'page' => ['required'],
+            'limit' => ['required'],
+        ];
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
