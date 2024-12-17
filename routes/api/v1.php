@@ -52,6 +52,9 @@ Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
     ->as('child.')
     ->group(function () {
         Route::post('/', 'store');
+        Route::post('/update', 'update');
+        Route::delete('/{id}', 'delete');
+
 //        Route::get('/', 'index');
 //        Route::get('/{id}', 'detail');
     });

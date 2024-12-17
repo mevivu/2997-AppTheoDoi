@@ -7,7 +7,7 @@ use App\Enums\Child\BornStatus;
 use App\Enums\User\Gender;
 use Illuminate\Validation\Rules\Enum;
 
-class ChildRequest extends BaseRequest
+class ChildUpdateRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -18,17 +18,6 @@ class ChildRequest extends BaseRequest
     {
         return [
 
-            'fullname' => ['required', 'string'],
-            'gender' => ['required', new Enum(Gender::class)],
-            'is_born' => ['required', new Enum(BornStatus::class)],
-            'birthday' => ['nullable', 'date_format:Y-m-d'],
-            'avatar' => ['nullable'],
-        ];
-    }
-
-    protected function methodPut(): array
-    {
-        return [
             'id' => ['required', 'exists:App\Models\Child,id'],
             'fullname' => ['required', 'string'],
             'gender' => ['required', new Enum(Gender::class)],
@@ -37,4 +26,6 @@ class ChildRequest extends BaseRequest
             'avatar' => ['nullable'],
         ];
     }
+
+
 }

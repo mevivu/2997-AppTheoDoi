@@ -50,4 +50,20 @@ class ChildService implements ChildServiceInterface
         }
         return $this->repository->create($data);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function update(Request $request): object
+    {
+        $data = $request->validated();
+        $child = $this->repository->find($data['id']);
+        $avatar = $data['avatar'];
+        if ($avatar) {
+            $data['avatar'] = $this->fileService
+                ->uploadAvatar('images/children', $avatar, $child->avatar);
+        }
+
+        return $this->repository->update($data['id'], $data);
+    }
 }
