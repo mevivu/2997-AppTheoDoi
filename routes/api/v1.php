@@ -33,7 +33,18 @@ Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::clas
         Route::get('/', 'index');
         Route::get('/detail/{id}', 'detail');
     });
-
+Route::controller(\App\Api\V1\Http\Controllers\Question\QuestionController::class)
+    ->prefix('/questions')
+    ->as('question.')
+    ->group(function () {
+        Route::get('/', 'index');
+    });
+Route::controller(\App\Api\V1\Http\Controllers\BMI\BMIController::class)
+    ->prefix('/bmis')
+    ->as('bmi.')
+    ->group(function () {
+        Route::get('/', 'index');
+    });
 //***** -- Post -- ******* //
 Route::controller(\App\Api\V1\Http\Controllers\Post\PostController::class)
     ->prefix('/posts')

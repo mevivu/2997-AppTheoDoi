@@ -16,6 +16,8 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\Setting\SettingRepositoryInterface' => 'App\Api\V1\Repositories\Setting\SettingRepository',
         'App\Api\V1\Repositories\Clinic\ClinicRepositoryInterface' => 'App\Api\V1\Repositories\Clinic\ClinicRepository',
         'App\Api\V1\Repositories\Exercise\ExerciseRepositoryInterface' => 'App\Api\V1\Repositories\Exercise\ExerciseRepository',
+        'App\Api\V1\Repositories\Question\QuestionRepositoryInterface' => 'App\Api\V1\Repositories\Question\QuestionRepository',
+        'App\Api\V1\Repositories\BMI\BMIRepositoryInterface' => 'App\Api\V1\Repositories\BMI\BMIRepository',
     ];
 
     /**
