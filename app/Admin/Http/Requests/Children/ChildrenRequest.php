@@ -3,6 +3,7 @@
 namespace App\Admin\Http\Requests\Children;
 
 use App\Admin\Http\Requests\BaseRequest;
+use App\Enums\Child\BornStatus;
 use App\Enums\User\Gender;
 use App\Enums\Child\ChildStatus;
 use Illuminate\Validation\Rules\Enum;
@@ -19,7 +20,7 @@ class ChildrenRequest extends BaseRequest
         return [
             'fullname' => ['required', 'string'],
             'gender' => ['required', new Enum(Gender::class)],
-            'status' => ['required', new Enum(ChildStatus::class)],
+            'is_born' => ['required', new Enum(BornStatus::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d'],
             'user_id' => ['required', 'exists:App\Models\User,id'],
         ];
@@ -34,6 +35,7 @@ class ChildrenRequest extends BaseRequest
             'gender' => ['required', new Enum(Gender::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d'],
             'status' => ['required', new Enum(ChildStatus::class)],
+            'is_born' => ['required', new Enum(BornStatus::class)],
         ];
     }
 }

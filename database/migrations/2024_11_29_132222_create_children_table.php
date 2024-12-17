@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Child\BornStatus;
 use App\Enums\Child\ChildStatus;
 use App\Enums\User\Gender;
 use Illuminate\Database\Migrations\Migration;
@@ -19,6 +20,8 @@ return new class extends Migration {
             $table->string('fullname');
             $table->date('birthday')->nullable();
             $table->enum('gender', Gender::getValues())->default(Gender::Other->value);
+            $table->enum('is_born', BornStatus::getValues())->default(BornStatus::Unborn->value);
+            $table->text('avatar')->nullable();
             $table->enum('status', ChildStatus::getValues())->default(ChildStatus::Active->value);
 
             $table->timestamps();

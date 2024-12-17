@@ -7,6 +7,7 @@ use App\Admin\Http\Requests\Children\ChildrenRequest;
 use App\Admin\Repositories\Children\ChildrenRepositoryInterface;
 use App\Admin\Services\Children\ChildrenServiceInterface;
 use App\Admin\DataTables\Children\ChildrenDataTable;
+use App\Enums\Child\BornStatus;
 use App\Traits\ResponseController;
 use Exception;
 use App\Enums\Child\ChildStatus;
@@ -76,12 +77,13 @@ class ChildrenController extends Controller
         return view($this->view['create'], [
             'gender' => Gender::asSelectArray(),
             'status' => ChildStatus::asSelectArray(),
+            'born' => BornStatus::asSelectArray(),
             'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('add')),
         ]);
     }
 
     public function store(ChildrenRequest $request): RedirectResponse
-    {   
+    {
         return $this->handleResponse($request, function ($request) {
             return $this->service->store($request);
         }, $this->route['index'], $this->route['edit']);
@@ -100,6 +102,7 @@ class ChildrenController extends Controller
                 'children' => $instance,
                 'gender' => Gender::asSelectArray(),
                 'status' => ChildStatus::asSelectArray(),
+                'born' => BornStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),
             ],
         );
@@ -134,7 +137,7 @@ class ChildrenController extends Controller
     }
 
     public function actionMultipleRecode(Request $request): RedirectResponse
-    {   
+    {
         $boolean = $this->service->actionMultipleRecode($request);
         if ($boolean) {
             return back()->with('success', __('notifySuccess'));

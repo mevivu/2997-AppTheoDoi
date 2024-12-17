@@ -15,14 +15,15 @@
         </div>
     </div>
 
+
     <div class="card mb-3">
         <div class="card-header">
             <span class="ti ti-status-change me-1"></span>
-            {{ __('status') }}
+            {{ __('Tình trạng') }}
         </div>
         <div class="card-body p-2">
-            <x-select name="status" :required="true">
-                @foreach ($status as $key => $value)
+            <x-select name="is_born" :required="true">
+                @foreach ($born as $key => $value)
                     <x-select-option :value="$key" :title="$value" />
                 @endforeach
             </x-select>

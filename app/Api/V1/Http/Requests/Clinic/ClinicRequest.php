@@ -11,7 +11,7 @@ class ClinicRequest extends BaseRequest
      *
      * @return array
      */
-    protected function methodGet()
+    protected function methodGet(): array
     {
         return [
             'page' => ['nullable', 'integer', 'min:1'],

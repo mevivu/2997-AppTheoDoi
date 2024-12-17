@@ -17,7 +17,8 @@ class ChildrenDataTable extends BaseDataTable
 
     public function __construct(
         ChildrenRepositoryInterface $repository
-    ) {
+    )
+    {
         $this->repository = $repository;
 
         parent::__construct();
@@ -61,7 +62,9 @@ class ChildrenDataTable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getQueryBuilder();
+        return $this->repository->getByQueryBuilder(
+            ['status' => ChildStatus::Active]
+        );
     }
 
     protected function setCustomColumns(): void
@@ -74,11 +77,11 @@ class ChildrenDataTable extends BaseDataTable
         $this->customEditColumns = [
             'status' => $this->view['status'],
             'fullname' => $this->view['fullname'],
-            'user_id' => function($children){
+            'user_id' => function ($children) {
                 return view($this->view['user'], [
                     'user' => $children->user
                 ])->render();
-            }, 
+            },
             'gender' => $this->view['gender'],
             'birthday' => '{{ date("d-m-Y", strtotime($birthday)) }}',
         ];
@@ -101,7 +104,7 @@ class ChildrenDataTable extends BaseDataTable
             'user_id',
             'fullname',
             'checkbox',
-         
+
         ];
     }
 
@@ -116,7 +119,7 @@ class ChildrenDataTable extends BaseDataTable
             'fullname' => function ($query, $keyword) {
                 $query->where('fullname', 'like', "%$keyword%");
             },
-      
+
         ];
     }
 }

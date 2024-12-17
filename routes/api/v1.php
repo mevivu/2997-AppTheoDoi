@@ -15,54 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//notification
-Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationController::class)
-    ->prefix('/notifications')
-    ->as('notification.')
-    ->group(function () {
-        Route::get('/get-all', 'index');
-        Route::get('/{id}', 'detail');
-        Route::put('/read', 'updateStatusRead')->name('updateStatusRead');
-        Route::post('/read-all', 'updateAllStatusReadAll')->name('updateAllStatusReadAll');
-        Route::delete('delete', 'delete')->name('delete');
-    });
-Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::class)
-    ->prefix('/exercises')
-    ->as('exercise.')
-    ->group(function () {
-        Route::get('/', 'index');
-        Route::get('/detail/{id}', 'detail');
-    });
-Route::controller(\App\Api\V1\Http\Controllers\Question\QuestionController::class)
-    ->prefix('/questions')
-    ->as('question.')
-    ->group(function () {
-        Route::get('/', 'index');
-    });
-Route::controller(\App\Api\V1\Http\Controllers\BMI\BMIController::class)
-    ->prefix('/bmis')
-    ->as('bmi.')
-    ->group(function () {
-        Route::get('/', 'index');
-    });
-//***** -- Post -- ******* //
-Route::controller(\App\Api\V1\Http\Controllers\Post\PostController::class)
-    ->prefix('/posts')
-    ->as('post.')
-    ->group(function () {
-        Route::get('/', 'index');
-        Route::get('/{id}', 'show');
-    });
-
-//***** -- Slider -- ******* //
-Route::controller(\App\Api\V1\Http\Controllers\Slider\SliderController::class)
-    ->prefix('/sliders')
-    ->as('slider.')
-    ->group(function () {
-        Route::get('/', 'index');
-        Route::get('/{id}', 'show');
-    });
-
 //auth
 Route::prefix('auth')->controller(AuthController::class)
     ->group(function () {
@@ -84,6 +36,79 @@ Route::prefix('users')->controller(UserController::class)
         Route::get('/recent-location', 'getRecentLocation');
     });
 
+//notification
+Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationController::class)
+    ->prefix('/notifications')
+    ->as('notification.')
+    ->group(function () {
+        Route::get('/get-all', 'index');
+        Route::get('/{id}', 'detail');
+        Route::put('/read', 'updateStatusRead');
+        Route::post('/read-all', 'updateAllStatusReadAll');
+        Route::delete('delete', 'delete');
+    });
+// Child
+Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::class)
+    ->prefix('/children')
+    ->as('child.')
+    ->group(function () {
+        Route::post('/', 'store');
+//        Route::get('/', 'index');
+//        Route::get('/{id}', 'detail');
+    });
+
+// Exercise
+Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::class)
+    ->prefix('/exercises')
+    ->as('exercise.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/detail/{id}', 'detail');
+    });
+
+//***** -- Clinic -- ******* //
+Route::controller(App\Api\V1\Http\Controllers\Clinic\ClinicController::class)
+    ->prefix('/clinics')
+    ->as('clinic.')
+    ->group(function () {
+        Route::get('/search', 'search');
+    });
+
+
+//***** -- Question -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Question\QuestionController::class)
+    ->prefix('/questions')
+    ->as('question.')
+    ->group(function () {
+        Route::get('/', 'index');
+    });
+
+//***** -- BMI -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\BMI\BMIController::class)
+    ->prefix('/bmis')
+    ->as('bmi.')
+    ->group(function () {
+        Route::get('/', 'index');
+    });
+
+//***** -- Post -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Post\PostController::class)
+    ->prefix('/posts')
+    ->as('post.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+    });
+
+//***** -- Slider -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Slider\SliderController::class)
+    ->prefix('/sliders')
+    ->as('slider.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+    });
+
 
 Route::fallback(function () {
     return response()->json([
@@ -98,17 +123,6 @@ Route::controller(App\Api\V1\Http\Controllers\Setting\SettingController::class)
     ->prefix('/settings')
     ->as('setting.')
     ->group(function () {
-        Route::get('/general', 'general')->name('general');
-        Route::get('/system', 'system')->name('system');
-        Route::get('/c-ride', 'c_ride')->name('c_ride');
-        Route::get('/c-car', 'c_car')->name('c_car');
-        Route::get('/c-delivery', 'c_delivery')->name('c_delivery');
-        Route::get('/c-intercity', 'c_intercity')->name('c_intercity');
-    });
-//***** -- Clinic -- ******* //
-Route::controller(App\Api\V1\Http\Controllers\Clinic\ClinicController::class)
-    ->prefix('/clinics')
-    ->as('clinic.')
-    ->group(function () {
-        Route::get('/search', 'search');
+        Route::get('/general', 'general');
+        Route::get('/system', 'system');
     });

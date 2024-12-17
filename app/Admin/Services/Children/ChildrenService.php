@@ -36,9 +36,8 @@ class ChildrenService implements ChildrenServiceInterface
      */
     public function store(Request $request): object|false
     {
-        $data = $request->validated();        
-        $children = $this->repository->create($data);
-        return $children;
+        $data = $request->validated();
+        return $this->repository->create($data);
     }
 
     /**
@@ -48,8 +47,7 @@ class ChildrenService implements ChildrenServiceInterface
     {
 
         $data = $request->validated();
-        $children = $this->repository->update($data['id'], $data);
-        return $children;
+        return $this->repository->update($data['id'], $data);
     }
 
     /**
