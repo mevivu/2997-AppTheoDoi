@@ -30,7 +30,6 @@ Route::prefix('auth')->controller(AuthController::class)
 //auth
 Route::prefix('users')->controller(UserController::class)
     ->group(function () {
-        Route::get('/configuration', 'configuration');
         Route::post('/register', 'register');
         Route::post('/update', 'update');
         Route::get('/recent-location', 'getRecentLocation');
@@ -48,7 +47,7 @@ Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationControlle
         Route::delete('delete', 'delete');
     });
 // Child
-Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::class)
+Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
     ->prefix('/children')
     ->as('child.')
     ->group(function () {

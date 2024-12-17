@@ -90,7 +90,7 @@ class UserController extends Controller
 
 
     /**
-     * Cập nhật thông tin người dùng
+     * Tạo mới
      *
      * API này cho phép người dùng cập nhật thông tin cá nhân của họ. Điều này bao gồm tên đầy đủ, số tài khoản ngân hàng, mã ngân hàng, số điện thoại và địa chỉ email.
      *
@@ -148,63 +148,5 @@ class UserController extends Controller
     }
 
 
-    /**
-     * Thông tin cấu hình tìm kiếm tài xế của khách hàng
-     *
-     * API lấy thông tin cấu hình user trả về các thông tin sau:
-     * - Cước phí:
-     *  + Thấp nhất: Lownest
-     *  + Cao nhất: Highest
-     * - Đời xe:
-     *  + Mới nhất: Newest
-     *  + Cũ nhất: Oldest
-     * - Đánh giá theo số sao trung bình của tài xế:
-     *  + Cao nhất: Highest
-     *  + Thấp nhất: Lownest
-     * - Giảm giá:
-     *  + Nhiều nhất: Most
-     *  + Ít nhất: Least
-     * - Khoảng cách:
-     *  + Gần nhất: Nearest
-     *  + Xa nhất: Farest
-     * - Loại xe:
-     *  + C_Ride (2 chỗ) : MOTORCYCLE
-     *  + C-Car (4 chỗ) : CAR_4
-     *  + C-Car (7 chỗ) : CAR_7
-     * - Thiết lập giá (price_setting_c_car): giá trị sẽ so sách với giá booking price của driver
-     *
-     * @headersParam X-TOKEN-ACCESS string
-     * token để lấy dữ liệu. Example: ijCCtggxLEkG3Yg8hNKZJvMM4EA1Rw4VjVvyIOb7
-     * @authenticated Authorization string required
-     * access_token được cấp sau khi đăng nhập. Example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAv
-     * Mjc5Mi1TRUUvYXBpL3YxL2F1dGgvbG9naW4iLCJpYXQiOjE3MjcwNjkyNDksImV4cCI6MTczMjI1MzI0OSwibmJmIjoxNzI3MDY5MjQ5LCJqdGkiOiJyZHQzY0JDRHNMRDlLbjBaIiwic3ViIjoiMTMiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.LemR4j1dMWtfUuI4br1ZskKWIeDtaVcMefYmaCmWiHs
-     * @response 200 {
-     *       "status": 200,
-     *       "message": "Thực hiện thành công.",
-     *       "data": {
-     *           "id": 13,
-     *           "cost_preference": "Lowest",
-     *           "rating_preference": "Highest",
-     *           "discount_preference": "Most",
-     *           "distance_preference": "Nearest",
-     *           "vehicle_type": "MOTORCYCLE",
-     *           "price_setting_c_car": 20000
-     *       }
-     *   }
-     *
-     * @return JsonResponse
-     */
-    public function configuration(): JsonResponse
-    {
-        try {
-            $userId = $this->getCurrentUserId();
-            $response = $this->repository->getConfiguration($userId);
-            return $this->jsonResponseSuccess(new UserConfigurationResource($response));
-        } catch (Exception $e) {
-
-            $this->logError('Get configuration failed:', $e);
-            return $this->jsonResponseError($e->getMessage(), 500);
-        }
-    }
 
 }
