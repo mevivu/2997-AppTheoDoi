@@ -194,6 +194,29 @@ return [
         ]
     ],
     [
+        'title' => 'Nhật ký toa thuốc',
+        'routeName' => 'admin.module.summary',
+        'icon' => '<i class="ti ti-woman"></i>',
+        'roles' => [],
+        'permissions' => ['createDiary', 'viewDiary', 'updateDiary', 'deleteDiary'],
+        'sub' => [
+            [
+                'title' => 'Thêm',
+                'routeName' => 'admin.weight-height-who.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createDiary'],
+            ],
+            [
+                'title' => 'DS Thông tin',
+                'routeName' => 'admin.weight-height-who.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewDiary'],
+            ]
+        ]
+    ],
+    [
         'title' => 'Thông tin dự kiến',
         'routeName' => 'admin.expected.index',
         'icon' => '<i class="ti ti-award"></i>',
