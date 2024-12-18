@@ -19,6 +19,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\Question\QuestionRepositoryInterface' => 'App\Api\V1\Repositories\Question\QuestionRepository',
         'App\Api\V1\Repositories\BMI\BMIRepositoryInterface' => 'App\Api\V1\Repositories\BMI\BMIRepository',
         'App\Api\V1\Repositories\Child\ChildRepositoryInterface' => 'App\Api\V1\Repositories\Child\ChildRepository',
+        'App\Api\V1\Repositories\Assessment\AssessmentRepositoryInterface' => 'App\Api\V1\Repositories\Assessment\AssessmentRepository',
     ];
 
     /**
