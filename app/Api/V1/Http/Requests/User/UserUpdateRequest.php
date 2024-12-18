@@ -23,14 +23,12 @@ class UserUpdateRequest extends BaseRequest
 
     protected function methodPost(): array
     {
-        $driver = $this->getCurrentDriver();
         return [
 
             'fullname' => ['required'],
-            'bank_account_number' => ['required'],
-            'bank_id' => ['required', 'exists:App\Models\Bank,id'],
             'phone' => [
-                'nullable', 'regex:/((09|03|07|08|05)+([0-9]{8})\b)/',
+                'nullable',
+                'regex:/((09|03|07|08|05)+([0-9]{8})\b)/',
                 Rule::unique('users', 'phone')->ignore($this->user()->id, 'id')
             ],
             'email' => [
@@ -39,9 +37,20 @@ class UserUpdateRequest extends BaseRequest
                 Rule::unique('users', 'email')->ignore($this->user()->id, 'id')
             ],
             'avatar' => ['nullable'],
-            'gender' => ['required', new Enum(Gender::class)],
+            'gender' => ['nullable', new Enum(Gender::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d'],
+        ];
+    }
 
+    public function messages()
+    {
+        return [
+            'fullname.required' => 'Tên không được để trống.',
+            'phone.regex' => 'Số điện thoại không đúng định dạng.',
+            'phone.unique' => 'Số điện thoại đã được sử dụng.',
+            'email.email' => 'Email không đúng định dạng.',
+            'email.unique' => 'Email đã được sử dụng.',
+            'birthday.date_format' => 'Ngày sinh không đúng định dạng.',
         ];
     }
 }

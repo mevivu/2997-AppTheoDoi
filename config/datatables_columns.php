@@ -661,11 +661,6 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
-        'active' => [
-            'title' => 'Admin xác nhận',
-            'addClass' => 'text-center align-middle',
-            'orderable' => false
-        ],
         'action' => [
             'title' => 'Thao tác',
             'orderable' => false,

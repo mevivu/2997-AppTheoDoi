@@ -6,7 +6,7 @@ use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Http\Requests\User\UserRegisterRequest;
 use App\Api\V1\Http\Requests\User\UserUpdateRequest;
 use App\Api\V1\Http\Resources\Auth\AuthResource;
-use App\Api\V1\Http\Resources\User\{ UserConfigurationResource};
+use App\Api\V1\Http\Resources\User\{UserConfigurationResource};
 use App\Api\V1\Repositories\User\UserRepositoryInterface;
 use App\Api\V1\Services\User\UserServiceInterface;
 use App\Api\V1\Support\Response;
@@ -90,14 +90,12 @@ class UserController extends Controller
 
 
     /**
-     * Tạo mới
+     * Cập nhật thông tin người dùng
      *
-     * API này cho phép người dùng cập nhật thông tin cá nhân của họ. Điều này bao gồm tên đầy đủ, số tài khoản ngân hàng, mã ngân hàng, số điện thoại và địa chỉ email.
+     * API này cho phép người dùng cập nhật thông tin cá nhân.
      *
      * @authenticated
      * @bodyParam fullname string required Tên đầy đủ mới của người dùng. Example: Jane Doe
-     * @bodyParam bank_account_number string required Số tài khoản ngân hàng mới. Example: 123456789
-     * @bodyParam bank_id int required ID của ngân hàng liên kết với tài khoản. Example: 1
      * @bodyParam phone string optional Số điện thoại mới của người dùng, phải là số điện thoại hợp lệ. Example: 0977123456
      * @bodyParam email string optional Địa chỉ email mới của người dùng. Example: newuser@example.com
      * @bodyParam avatar string optional Đường dẫn hình ảnh đại diện mới, nếu cập nhật. Example: http://example.com/avatar.jpg
@@ -110,8 +108,8 @@ class UserController extends Controller
      *     "data": {
      *         "id": 1,
      *         "fullname": "Jane Doe",
-     *         "bank_account_number": "123456789",
-     *         "bank_id": 1,
+     *         "gender": 1,
+     *         "birthday": "2024-12-12",
      *         "phone": "0977123456",
      *         "email": "newuser@example.com",
      *         "avatar": "http://example.com/avatar.jpg"

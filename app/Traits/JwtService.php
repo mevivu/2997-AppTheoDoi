@@ -47,6 +47,7 @@ trait JwtService
     {
         $this->login = $request->validated();
         $user = $this->userRepository->findByField('email', AESHelper::decrypt($this->login['email']));
+
         if ($user && Hash::check($this->login['password'], $user->password)) {
             $token = JWTAuth::fromUser($user);
             $refreshToken = $this->createRefreshToken($user);

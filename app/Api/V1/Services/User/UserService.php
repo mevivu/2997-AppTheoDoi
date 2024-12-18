@@ -5,6 +5,7 @@ namespace App\Api\V1\Services\User;
 use App\Admin\Repositories\Otp\OtpRepositoryInterface;
 use App\Admin\Services\File\FileService;
 use App\Admin\Traits\Roles;
+use App\AES\AESHelper;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Repositories\User\UserRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
@@ -52,10 +53,12 @@ class UserService implements UserServiceInterface
         try {
             $data = $request->validated();
 
-            $data['username'] = $data['phone'];
             $data['password'] = bcrypt($data['password']);
             $data['code'] = $this->createCodeUser();
-            $data['active'] = false;
+            $data['email'] = AESHelper::encrypt($data['email']);
+            $data['username'] = $data['email'];
+            $data['phone'] = AESHelper::encrypt($data['phone']);
+
             $user = $this->repository->create($data);
 
             DB::commit();
@@ -73,6 +76,7 @@ class UserService implements UserServiceInterface
         try {
             $data = $request->validated();
             $user = $this->getCurrentUser();
+            dd($user);
             $avatar = $data['avatar'] ?? null;
             if ($avatar) {
                 $data['avatar'] = $this->fileService->uploadAvatar('images/users', $avatar, $user->avatar);

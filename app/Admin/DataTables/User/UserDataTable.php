@@ -30,7 +30,6 @@ class UserDataTable extends BaseDataTable
             'action' => 'admin.users.datatable.action',
             'editlink' => 'admin.users.datatable.editlink',
             'status' => 'admin.users.datatable.status',
-            'active' => 'admin.users.datatable.active',
             'email' => 'admin.users.datatable.email',
             'phone' => 'admin.users.datatable.phone',
             'checkbox' => 'admin.common.checkbox',
@@ -40,16 +39,12 @@ class UserDataTable extends BaseDataTable
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4, 5, 6];
+        $this->columnAllSearch = [1, 2, 3, 4, 5];
 
         $this->columnSearchSelect = [
             [
                 'column' => 5,
                 'data' => UserStatus::asSelectArray()
-            ],
-            [
-                'column' => 6,
-                'data' => UserActive::asSelectArray()
             ],
         ];
     }
@@ -74,18 +69,21 @@ class UserDataTable extends BaseDataTable
         $this->customEditColumns = [
             'code' => $this->view['editlink'],
             'status' => $this->view['status'],
-            'active' => $this->view['active'],
-            'email' => function($item){
-                return view($this->view['email'],
-                [
-                    'email' => AESHelper::decrypt($item->email)
-                ])->render();
+            'email' => function ($item) {
+                return view(
+                    $this->view['email'],
+                    [
+                        'email' => AESHelper::decrypt($item->email)
+                    ]
+                )->render();
             },
-            'phone' => function($item){
-                return view($this->view['phone'],
-                [
-                    'phone' =>  AESHelper::decrypt($item->phone)
-                ])->render();
+            'phone' => function ($item) {
+                return view(
+                    $this->view['phone'],
+                    [
+                        'phone' => AESHelper::decrypt($item->phone)
+                    ]
+                )->render();
             },
         ];
     }
@@ -103,7 +101,6 @@ class UserDataTable extends BaseDataTable
         $this->customRawColumns = [
             'action',
             'status',
-            'active',
             'checkbox',
             'code',
             'email',
