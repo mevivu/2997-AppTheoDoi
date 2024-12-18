@@ -34,4 +34,9 @@ class Journal extends Model
     {
         return $this->belongsTo(Child::class);
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->child()->user();
+    }
 }
