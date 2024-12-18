@@ -182,7 +182,16 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
-
+    //Journals
+    Route::controller(\App\Admin\Http\Controllers\Journal\JournalController::class)
+        ->prefix('/nhat-ky')
+        ->as('journal.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:CreateJournal', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+        });
     //Notification
     Route::controller(App\Admin\Http\Controllers\Notification\NotificationController::class)
         ->prefix('/thong-bao')
@@ -356,7 +365,6 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::get('/user-shopping', 'userShopping')->name('user_shopping');
             Route::put('/update', 'update')->name('update');
         });
-
 
 
     //user
@@ -544,6 +552,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::get('/district', [App\Admin\Http\Controllers\District\DistrictSearchSelectController::class, 'selectSearch'])->name('district');
             Route::get('/ward', [App\Admin\Http\Controllers\Ward\WardSearchSelectController::class, 'selectSearch'])->name('ward');
             Route::get('/clinic-types', [App\Admin\Http\Controllers\ClinicType\ClinicTypeSearchSelectController::class, 'selectSearch'])->name('clinicType');
+            Route::get('/children',[\App\Admin\Http\Controllers\Children\ChildrenSelectController::class,'selectSearch'])->name('children');
         });
     });
 

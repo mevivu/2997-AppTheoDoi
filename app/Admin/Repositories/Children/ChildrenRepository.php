@@ -24,7 +24,7 @@ class ChildrenRepository extends EloquentRepository implements ChildrenRepositor
         return $this->model->all();
     }
 
-    public function searchAllLimit($keySearch = '', $meta = [], $select = ['id', 'fullname', 'phone'], $limit = 10, $role = 0)
+    public function searchAllLimit($keySearch = '', $meta = [], $select = ['id', 'fullname', 'gender'], $limit = 10, $role = 0)
     {
         $this->instance = $this->model->select($select);
         $this->getQueryBuilderFindByKey($keySearch);
@@ -39,10 +39,9 @@ class ChildrenRepository extends EloquentRepository implements ChildrenRepositor
     protected function getQueryBuilderFindByKey($key): void
     {
         $this->instance = $this->instance->where(function ($query) use ($key) {
-            return $query->where('username', 'LIKE', '%' . $key . '%')
-                ->orWhere('phone', 'LIKE', '%' . $key . '%')
-                ->orWhere('email', 'LIKE', '%' . $key . '%')
-                ->orWhere('fullname', 'LIKE', '%' . $key . '%');
+            return $query->where('fullname', 'LIKE', '%' . $key . '%')
+                ->orWhere('gender', 'LIKE', '%' . $key . '%');
+
         });
     }
 

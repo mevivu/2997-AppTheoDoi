@@ -10,6 +10,23 @@ return [
         'sub' => []
     ],
     [
+        'title' => 'Nhật ký',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-bell-check"></i>',
+        'roles' => [],
+        'permissions' => ['CreateJournal'],
+        'sub' => [
+            [
+                'title' => 'Thêm Nhật ký',
+                'routeName' => 'admin.journal.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['CreateJournal'],
+            ],
+
+        ]
+    ],
+    [
         'title' => 'notification',
         'routeName' => null,
         'icon' => '<i class="ti ti-bell-check"></i>',

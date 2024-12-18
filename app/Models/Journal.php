@@ -20,8 +20,8 @@ class Journal extends Model
         'content',
         /** Đường dẫn hình ảnh liên quan */
         'image',
-        /** ID người dùng liên quan */
-        'user_id',
+        /** ID trẻ em */
+        'child_id',
         /** Loại */
         'type'
     ];
