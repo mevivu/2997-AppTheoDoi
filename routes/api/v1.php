@@ -46,6 +46,15 @@ Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationControlle
         Route::post('/read-all', 'updateAllStatusReadAll');
         Route::delete('delete', 'delete');
     });
+
+// Assessment
+Route::controller(\App\Api\V1\Http\Controllers\Assessment\AssessmentController::class)
+    ->prefix('/assessment')
+    ->as('assessment.')
+    ->group(function () {
+        Route::get('/', 'index');
+
+    });
 // Child
 Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
     ->prefix('/children')
@@ -56,6 +65,15 @@ Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
         Route::post('/', 'store');
         Route::post('/update', 'update');
         Route::delete('/{id}', 'delete');
+
+    });
+
+// Package
+Route::controller(\App\Api\V1\Http\Controllers\Package\PackageController::class)
+    ->prefix('/packages')
+    ->as('package.')
+    ->group(function () {
+        Route::get('/', 'index');
 
     });
 

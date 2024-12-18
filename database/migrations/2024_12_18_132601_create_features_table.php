@@ -13,14 +13,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('diaries', function (Blueprint $table) {
+        Schema::create('features', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('content');
-            $table->text('image');
+            $table->text('description');
             $table->timestamps();
 
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('package_id')->constrained()->onDelete('cascade');
+
         });
     }
 
@@ -29,8 +28,8 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('diaries');
+        Schema::dropIfExists('features');
     }
 };
