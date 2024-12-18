@@ -3,7 +3,11 @@
 namespace App\Api\V1\Http\Controllers\Journal;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Api\V1\Exception\BadRequestException;
+use App\Api\V1\Exception\NotFoundException;
 use App\Api\V1\Http\Requests\Journal\JournalRequest;
+use App\Api\V1\Http\Requests\Journal\JournalUpdateRequest;
+use App\Api\V1\Http\Resources\Exercise\ExerciseDetailCollection;
 use App\Api\V1\Http\Resources\Journal\JournalCollection;
 use App\Api\V1\Http\Resources\Journal\JournalResource;
 use App\Api\V1\Repositories\Journal\JournalRepositoryInterface;
@@ -11,6 +15,7 @@ use App\Api\V1\Services\Journal\JournalServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
+use App\Api\V1\Validate\Validator;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -137,5 +142,97 @@ class JournalController extends Controller
         }
     }
 
+    /**
+     * Cập nhật Nhật Ký Cho Con
+     *
+     * API này cho phép người dùng cập nhật một nhật ký đã tồn tại.
+     * Người dùng phải xác thực để truy cập API này và chỉ có thể cập nhật nhật ký của mình.
+     *
+     * @authenticated
+     * @bodyParam title string optional Tiêu đề của nhật ký. Example: "Toa Thuốc Điều Chỉnh"
+     * @bodyParam content string optional Nội dung chi tiết của nhật ký. Example: "Đã thêm thông tin về liều lượng mới..."
+     * @bodyParam image string optional Đường dẫn hình ảnh mới liên quan đến nhật ký. Example: "/images/prescriptions/updated.jpg"
+     * @bodyParam id int required ID của nhật ký cần cập nhật. Example: 1
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Nhật ký đã được cập nhật thành công.",
+     *     "data": {
+     *         "id": 1,
+     *         "child_id": 1,
+     *         "title": "Toa Thuốc Điều Chỉnh",
+     *         "content": "Đã thêm thông tin về liều lượng mới...",
+     *         "image": "/images/prescriptions/updated.jpg",
+     *         "type": "prescription",
+     *         "created_at": "2024-01-01",
+     *         "updated_at": "2024-01-05"
+     *     }
+     * }
+     *
+     * @response 404 {
+     *     "status": 404,
+     *     "message": "Nhật ký không tìm thấy."
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống khi cập nhật nhật ký."
+     * }
+     *
+     * @param JournalUpdateRequest $request
+     * @return JsonResponse
+     */
+    public function update(JournalUpdateRequest $request): JsonResponse
+    {
+        try {
+            $response = $this->service->update($request);
+            return $this->jsonResponseSuccess(new JournalResource($response));
+        } catch (Exception $exception) {
+            $this->logError('Create prescription journal failed:', $exception);
+            return $this->jsonResponseError('Create prescription journal failed', 500);
+        }
+
+    }
+
+    /**
+     * Xóa Nhật Ký
+     *
+     * API này cho phép người dùng xóa một nhật ký đã tồn tại.
+     * Người dùng phải xác thực để truy cập API này và chỉ có thể xóa nhật ký của mình.
+     *
+     * @authenticated
+     * @urlParam id int required ID của nhật ký cần xóa. Example: 1
+     *
+     * @response 204 {
+     *     "status": 204,
+     *     "message": "Nhật ký đã được xóa thành công."
+     * }
+     *
+     * @response 404 {
+     *     "status": 404,
+     *     "message": "Nhật ký không tìm thấy."
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống khi xóa nhật ký."
+     * }
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function delete(int $id): JsonResponse
+    {
+        try {
+            Validator::validateExists($this->repository, $id);
+            $this->service->delete($id);
+            return $this->jsonResponseSuccessNoData();
+        } catch (NotFoundException|BadRequestException $e) {
+            return $this->jsonResponseError($e->getMessage());
+        } catch (Exception $exception) {
+            $this->logError('Deleted failed:', $exception);
+            return $this->jsonResponseError('Deleted failed', 500);
+        }
+    }
 
 }

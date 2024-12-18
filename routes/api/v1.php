@@ -83,7 +83,8 @@ Route::controller(\App\Api\V1\Http\Controllers\Journal\JournalController::class)
     ->group(function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
-
+        Route::post('/update', 'update');
+        Route::delete('/{id}', 'delete');
     });
 
 // Exercise
