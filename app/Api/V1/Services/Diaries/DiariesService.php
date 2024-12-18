@@ -56,11 +56,23 @@ class DiariesService implements DiariesServiceInterface
         $avatar = $data['image'];
         $data['user_id'] = $this->getCurrentUserId();
         if ($avatar) {
-            $data['avatar'] = $this->fileService
-                ->uploadAvatar('images/children', $avatar);
+            $data['image'] = $this->fileService
+                ->uploadAvatar('images/diaries', $avatar);
         }
         return $this->repository->create($data);
     }
 
+    public function update(Request $request): object
+    {
+        $data = $request->validated();
+        $child = $this->repository->find($data['id']);
+        $avatar = $data['image'];
+        if ($avatar != null) {
+            $data['image'] = $this->fileService
+                ->uploadAvatar('images/diaries', $avatar, $child->avatar);
+        }
+
+        return $this->repository->update($data['id'], $data);
+    }
 
 }

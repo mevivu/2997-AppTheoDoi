@@ -51,7 +51,9 @@ Route::controller(\App\Api\V1\Http\Controllers\Diaries\DiariesController::class)
     ->prefix('/diaries')
     ->as('diary.')
     ->group(function () {
-        Route::post('/','store');
+        Route::post('/', 'store');
+        Route::post("/update", 'update');
+        Route::delete("/{id}", 'delete');
     });
 // Child
 Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
