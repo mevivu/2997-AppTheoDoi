@@ -2,19 +2,18 @@
 
 namespace App\Admin\Http\Controllers\Journal;
 
+use App\Admin\DataTables\Journal\JournalDataTable;
 use App\Admin\Http\Controllers\Controller;
-use App\Admin\Http\Requests\Children\ChildrenRequest;
 use App\Admin\Http\Requests\Journal\JournalRequest;
 use App\Admin\Repositories\Journal\JournalRepositoryInterface;
-use App\Admin\DataTables\Children\ChildrenDataTable;
 use App\Admin\Services\Journal\JournalServiceInterface;
-use App\Enums\Child\BornStatus;
 use App\Enums\Journal\JournalType;
 use App\Traits\ResponseController;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 
 class JournalController extends Controller
@@ -38,22 +37,45 @@ class JournalController extends Controller
     public function getView(): array
     {
         return [
-            'index' => 'admin.children.index',
+            'index' => 'admin.journals.index',
             'create' => 'admin.journals.create',
-            'edit' => 'admin.children.edit',
+            'edit' => 'admin.journals.edit',
         ];
     }
 
     public function getRoute(): array
     {
         return [
-            'index' => 'admin.children.index',
+            'index' => 'admin.journal.index',
             'create' => 'admin.journal.create',
-            'edit' => 'admin.children.edit',
-            'delete' => 'admin.children.delete',
+            'edit' => 'admin.journal.edit',
+            'delete' => 'admin.journal.delete',
         ];
     }
 
+    public function edit($id): Factory|View|Application
+    {
+        $response = $this->repository->findOrFail($id);
+        return view(
+            $this->view['edit'],
+            [
+                'response' => $response,
+                'type' => JournalType::asSelectArray(),
+                'breadcrumbs' => $this->crums->add('DS Nhật ký', route($this->route['index']))->add('Cập nhật'),
+            ]
+        );
+    }
+
+    public function index(JournalDataTable $dataTable)
+    {
+        return $dataTable->render(
+            $this->view['index'],
+            [
+                'type' => JournalType::asSelectArray(),
+                'breadcrumbs' => $this->crums->add('Danh sách nhật ký'),
+            ]
+        );
+    }
 
     public function create(): Factory|View|Application
     {
@@ -62,13 +84,27 @@ class JournalController extends Controller
             'breadcrumbs' => $this->crums->add('DS nhật ký', route($this->route['index']))->add('Thêm'),
         ]);
     }
+
+    public function delete($id): RedirectResponse
+    {
+
+        $this->repository->delete($id);
+        return redirect()->back()->with('success', __('notifySuccess'));
+
+    }
+
+    public function update(JournalRequest $request)
+    {
+        $this->service->update($request);
+        return back()->with('success', __('notifySuccess'));
+    }
+
     public function store(JournalRequest $request)
     {
         $response = $this->service->store($request);
         if ($response) {
-            return to_route($this->route['create'], $response)->with('success', __('notifySuccess'));
+            return to_route($this->route['index'], $response)->with('success', __('notifySuccess'));
         }
         return back()->with('error', __('notifyFail'));
     }
-
 }

@@ -12,9 +12,9 @@ return [
     [
         'title' => 'Nhật ký',
         'routeName' => null,
-        'icon' => '<i class="ti ti-bell-check"></i>',
+        'icon' => '<i class="ti ti-external-link"></i>',
         'roles' => [],
-        'permissions' => ['CreateJournal'],
+        'permissions' => ['CreateJournal', 'viewJournal'],
         'sub' => [
             [
                 'title' => 'Thêm Nhật ký',
@@ -22,6 +22,13 @@ return [
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['CreateJournal'],
+            ],
+            [
+                'title' => 'DS Nhật ký',
+                'routeName' => 'admin.journal.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewJournal'],
             ],
 
         ]

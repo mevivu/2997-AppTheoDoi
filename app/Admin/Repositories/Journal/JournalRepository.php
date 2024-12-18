@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Admin\Repositories\Journal;
+
 use App\Admin\Repositories\EloquentRepository;
 use App\Models\Journal;
 
