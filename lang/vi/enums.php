@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Child\BornStatus;
 use App\Enums\DefaultStatus;
 use App\Enums\DeleteStatus;
 use App\Enums\FeaturedStatus;
@@ -37,7 +38,10 @@ return [
         DeleteStatus::NotDeleted->value => 'Chưa xóa',
     ],
 
-
+    BornStatus::class => [
+        BornStatus::Born->value => 'Đã sinh',
+        BornStatus::Unborn->value => 'Chưa sinh',
+    ],
     ActiveStatus::class => [
         ActiveStatus::Active->value => 'Hoạt động',
         ActiveStatus::Deleted->value => 'Đã xóa',

@@ -2,10 +2,7 @@
 
 namespace App\Api\V1\Services\Exercise;
 
-use App\Api\V1\Repositories\Clinic\ClinicRepositoryInterface;
-use App\Api\V1\Repositories\Exercise\ExerciseRepository;
 use App\Api\V1\Repositories\Exercise\ExerciseRepositoryInterface;
-use App\Api\V1\Services\Clinic\ClinicServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use Illuminate\Http\Request;

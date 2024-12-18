@@ -3,7 +3,6 @@
 namespace App\Api\V1\Repositories\Exercise;
 
 use App\Admin\Repositories\Exercise\ExerciseRepository as AdminRepository;
-use App\Api\V1\Repositories\Clinic\ClinicRepositoryInterface;
 use App\Enums\ActiveStatus;
 
 

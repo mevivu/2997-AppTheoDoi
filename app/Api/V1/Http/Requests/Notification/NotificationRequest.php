@@ -24,4 +24,9 @@ class NotificationRequest extends BaseRequest
             'id'=>['required','exists:App\Models\Notification,id'],
         ];
     }
+    protected function methodDelete(){
+        return[
+            'id'=>['required','exists:App\Models\Notification,id'],
+        ];
+    }
 }

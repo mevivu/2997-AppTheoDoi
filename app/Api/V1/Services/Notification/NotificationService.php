@@ -4,8 +4,6 @@ namespace App\Api\V1\Services\Notification;
 
 
 use App\Admin\Traits\Roles;
-
-use App\Api\V1\Repositories\Notification\NotificationRepository;
 use App\Api\V1\Repositories\Notification\NotificationRepositoryInterface;
 use App\Api\V1\Repositories\User\UserRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
@@ -28,8 +26,9 @@ class NotificationService implements NotificationServiceInterface
 
     public function __construct(
         NotificationRepositoryInterface $repository,
-        UserRepositoryInterface $userRepository,
-    ) {
+        UserRepositoryInterface         $userRepository,
+    )
+    {
         $this->repository = $repository;
         $this->userRepository = $userRepository;
 
@@ -41,10 +40,10 @@ class NotificationService implements NotificationServiceInterface
             $data = $request->validated();
             $userId = $this->getCurrentUserId();
             $limit = $data['limit'] ?? 10;
-            $user = $this->repository->getNotificationByUserId("user_id", $userId, $limit);
+            $page = $data['page'] ?? 1;
+            $user = $this->repository->getNotificationByUserId("user_id", $userId, $limit, $page);
             return $user;
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             $this->logError('Failed to process get user', $e);
             return false;
         }
@@ -55,10 +54,10 @@ class NotificationService implements NotificationServiceInterface
     public function updateStatusIsRead(Request $request): bool
     {
         try {
-            $this->data=$request->validated();
-           $this->repository->update($this->data['id'], ["status"=>NotificationStatus::READ]);
-           return true;
-        }catch (Exception $e) {
+
+            $this->repository->update($request->id, ["status" => NotificationStatus::READ]);
+            return true;
+        } catch (Exception $e) {
             return false;
         }
     }
@@ -67,16 +66,29 @@ class NotificationService implements NotificationServiceInterface
     {
         // TODO: Implement UpdateAllStatusIsRead() method.
         try {
-            $response=$this->repository->getNotificationIsNotRead($this->getCurrentUserId());
+            $response = $this->repository->getNotificationIsNotRead($this->getCurrentUserId());
             foreach ($response as $notification) {
 
-                $notification->update(["status"=>NotificationStatus::READ]);
+                $notification->update(["status" => NotificationStatus::READ]);
             }
             return true;
-        }catch (Exception $e) {
+        } catch (Exception $e) {
 
             return false;
         }
     }
+
+    public function delete(Request $request): bool
+    {
+        // TODO: Implement delete() method.
+        $data = $request->validated();
+        try {
+            $this->repository->delete($data['id']);
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 }
+
 ;

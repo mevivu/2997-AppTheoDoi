@@ -25,6 +25,7 @@ class ExerciseCollection extends ResourceCollection
                 $data = [
                     'id' => $item->id,
                     'name' => $item->name,
+                    'exercise_type' => $item->exercise_type,
 
                 ];
                 return $data;

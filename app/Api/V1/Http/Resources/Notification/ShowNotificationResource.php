@@ -22,7 +22,6 @@ class ShowNotificationResource extends JsonResource
             'title' => $this->title,
             'message' => $this->message,
             'status' => $this->status,
-            'type' => $this->type,
             'read_at' => format_datetime($this->read_at),
             'created_at' => format_datetime($this->created_at),
         ];
