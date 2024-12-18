@@ -46,7 +46,9 @@ trait JwtService
     public function loginUser(Request $request): JsonResponse
     {
         $this->login = $request->validated();
-        $user = $this->userRepository->findByField('email', AESHelper::decrypt($this->login['email']));
+        $emailEncrypted = AESHelper::encrypt($this->login['email']);
+
+        $user = $this->userRepository->findByField('email', $emailEncrypted);
 
         if ($user && Hash::check($this->login['password'], $user->password)) {
             $token = JWTAuth::fromUser($user);
