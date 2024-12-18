@@ -3,7 +3,7 @@
 namespace App\Api\V1\Http\Controllers\Assessment;
 
 use App\Admin\Http\Controllers\Controller;
-use App\Admin\Http\Requests\Assessment\AssessmentRequest;
+use App\Api\V1\Http\Requests\Assessment\AssessmentRequest;
 use App\Api\V1\Repositories\Assessment\AssessmentRepositoryInterface;
 use App\Api\V1\Services\Assessment\AssessmentServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;

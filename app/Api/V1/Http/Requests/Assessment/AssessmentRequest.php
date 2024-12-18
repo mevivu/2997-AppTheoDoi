@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Admin\Http\Requests\Assessment;
+namespace App\Api\V1\Http\Requests\Assessment;
 
 use App\Admin\Http\Requests\BaseRequest;
 

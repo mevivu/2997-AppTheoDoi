@@ -77,6 +77,16 @@ Route::controller(\App\Api\V1\Http\Controllers\Package\PackageController::class)
 
     });
 
+// Journal
+Route::controller(\App\Api\V1\Http\Controllers\Journal\JournalController::class)
+    ->prefix('/journals')
+    ->as('journal.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+
+    });
+
 // Exercise
 Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::class)
     ->prefix('/exercises')
