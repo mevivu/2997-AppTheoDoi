@@ -3,8 +3,7 @@
 namespace App\Admin\Http\Requests\Assessment;
 
 use App\Admin\Http\Requests\BaseRequest;
-use App\Enums\ActiveStatus;
-use Illuminate\Validation\Rules\Enum;
+
 
 
 class AssessmentRequest extends BaseRequest
@@ -17,7 +16,7 @@ class AssessmentRequest extends BaseRequest
     protected function methodGet(): array
     {
         return [
-            'child_id' => ['required', 'string', 'exists:children,id'],
+            'child_id' => ['required','numeric', 'exists:children,id'],
         ];
     }
 
