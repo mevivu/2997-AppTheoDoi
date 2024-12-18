@@ -68,6 +68,15 @@ Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
 
     });
 
+// Package
+Route::controller(\App\Api\V1\Http\Controllers\Package\PackageController::class)
+    ->prefix('/packages')
+    ->as('package.')
+    ->group(function () {
+        Route::get('/', 'index');
+
+    });
+
 // Exercise
 Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::class)
     ->prefix('/exercises')

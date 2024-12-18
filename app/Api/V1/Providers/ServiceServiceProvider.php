@@ -18,6 +18,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Api\V1\Services\Exercise\ExerciseServiceInterface' => 'App\Api\V1\Services\Exercise\ExerciseService',
         'App\Api\V1\Services\Child\ChildServiceInterface' => 'App\Api\V1\Services\Child\ChildService',
         'App\Api\V1\Services\Assessment\AssessmentServiceInterface' => 'App\Api\V1\Services\Assessment\AssessmentService',
+        'App\Api\V1\Services\Package\PackageServiceInterface' => 'App\Api\V1\Services\Package\PackageService',
     ];
 
     /**
