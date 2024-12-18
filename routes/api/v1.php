@@ -46,6 +46,15 @@ Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationControlle
         Route::post('/read-all', 'updateAllStatusReadAll');
         Route::delete('delete', 'delete');
     });
+
+// Assessment
+Route::controller(\App\Api\V1\Http\Controllers\Assessment\AssessmentController::class)
+    ->prefix('/assessment')
+    ->as('assessment.')
+    ->group(function () {
+        Route::get('/', 'index');
+
+    });
 // Child
 Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
     ->prefix('/children')
