@@ -56,7 +56,7 @@ class BMIController extends Controller
      *              "age": 23,
      *              "question": "7.00",
      *              "gender": 1
-     *       }
+     *        }
      *            ]
      * }
      *

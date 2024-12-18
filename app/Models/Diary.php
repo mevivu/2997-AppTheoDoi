@@ -11,7 +11,7 @@ class Diary extends Model
 {
     use HasFactory;
 
-    protected $table = 'diaries';
+    protected $table = 'Diaries';
 
     protected $fillable = [
         /** Tiêu đề */

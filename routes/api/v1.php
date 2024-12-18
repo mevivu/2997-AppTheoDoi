@@ -46,6 +46,13 @@ Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationControlle
         Route::post('/read-all', 'updateAllStatusReadAll');
         Route::delete('delete', 'delete');
     });
+//Diaries
+Route::controller(\App\Api\V1\Http\Controllers\Diaries\DiariesController::class)
+    ->prefix('/diaries')
+    ->as('diary.')
+    ->group(function () {
+        Route::post('/','store');
+    });
 // Child
 Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
     ->prefix('/children')
