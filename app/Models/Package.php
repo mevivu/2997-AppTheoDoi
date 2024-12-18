@@ -38,6 +38,11 @@ class Package extends Model
         return $this->hasMany(UserPackage::class);
     }
 
+    public function features(): HasMany
+    {
+        return $this->hasMany(Feature::class);
+    }
+
 
 
 }
