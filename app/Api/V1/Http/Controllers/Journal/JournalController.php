@@ -195,6 +195,58 @@ class JournalController extends Controller
     }
 
     /**
+     * Lấy chi tiết Nhật Ký
+     *
+     * API này cho phép người dùng lấy chi tiết của một nhật ký cụ thể dựa trên ID của nhật ký đó.
+     * Người dùng phải xác thực để truy cập API này.
+     *
+     * @authenticated
+     * @urlParam id int required ID của nhật ký cần xem chi tiết. Example: 1
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Chi tiết nhật ký.",
+     *     "data": {
+     *         "id": 1,
+     *         "child_id": 1,
+     *         "title": "Toa Thuốc Hàng Tuần",
+     *         "content": "Nội dung chi tiết của toa thuốc...",
+     *         "image": "/images/prescriptions/example.jpg",
+     *         "type": "prescription",
+     *         "created_at": "2024-01-01",
+     *         "updated_at": "2024-01-02"
+     *     }
+     * }
+     *
+     * @response 404 {
+     *     "status": 404,
+     *     "message": "Nhật ký không tìm thấy."
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống."
+     * }
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function show(int $id): JsonResponse
+    {
+        try {
+            Validator::validateExists($this->repository, $id);
+            $response = $this->repository->findOrFail($id);
+            return $this->jsonResponseSuccess(new JournalResource($response));
+        } catch (NotFoundException|BadRequestException $e) {
+            return $this->jsonResponseError($e->getMessage());
+        } catch (Exception $exception) {
+            $this->logError('Deleted failed:', $exception);
+            return $this->jsonResponseError('Deleted failed', 500);
+        }
+    }
+
+
+    /**
      * Xóa Nhật Ký
      *
      * API này cho phép người dùng xóa một nhật ký đã tồn tại.

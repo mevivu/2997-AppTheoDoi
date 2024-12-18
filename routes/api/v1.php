@@ -82,6 +82,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Journal\JournalController::class)
     ->as('journal.')
     ->group(function () {
         Route::get('/', 'index');
+        Route::get('/{id}', 'show');
         Route::post('/', 'store');
         Route::post('/update', 'update');
         Route::delete('/{id}', 'delete');
