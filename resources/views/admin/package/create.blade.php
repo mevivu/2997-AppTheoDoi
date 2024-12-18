@@ -28,5 +28,5 @@
 @endpush
 
 @push('custom-js')
-
+    @include('admin.package.scripts.script')
 @endpush

@@ -15,6 +15,7 @@ class UserSearchSelectController extends BaseSearchSelectController
 
     protected function selectResponse(): void
     {
+
         $this->instance = [
             'results' => UserSearchSelectResource::collection($this->instance)
         ];
