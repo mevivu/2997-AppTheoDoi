@@ -20,4 +20,13 @@ class UpdatePasswordRequest extends BaseRequest
             'password' => ['required', 'string', 'confirmed'],
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'old_password.required' => 'Mật khẩu cũ không được để trống.',
+            'password.required' => 'Mật khẩu mới không được để trống.',
+            'password.confirmed' => 'Mật khẩu mới không trùng khớp.',
+        ];
+    }
 }

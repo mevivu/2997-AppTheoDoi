@@ -58,7 +58,7 @@ class UserService implements UserServiceInterface
             $data['email'] = AESHelper::encrypt($data['email']);
             $data['username'] = $data['email'];
             $data['phone'] = AESHelper::encrypt($data['phone']);
-
+            $data['status'] = UserStatus::Active;
             $user = $this->repository->create($data);
 
             DB::commit();
@@ -76,11 +76,20 @@ class UserService implements UserServiceInterface
         try {
             $data = $request->validated();
             $user = $this->getCurrentUser();
-            dd($user);
+
             $avatar = $data['avatar'] ?? null;
             if ($avatar) {
                 $data['avatar'] = $this->fileService->uploadAvatar('images/users', $avatar, $user->avatar);
             }
+
+            if (!empty($data['email'])) {
+                $data['email'] = AESHelper::encrypt($data['email']);
+            }
+
+            if (!empty($data['phone'])) {
+                $data['phone'] = AESHelper::encrypt($data['phone']);
+            }
+
             $response = $this->repository->update($user->id, $data);
             DB::commit();
             return $response;
@@ -103,7 +112,7 @@ class UserService implements UserServiceInterface
                 return false;
             }
             if ($this->repository->emailExists($data['email'], $user->id)) {
-                throw new \Exception("Email already exists.");
+                throw new Exception("Email already exists.");
             }
 
             $response = $this->repository->update($user->id, $data);
@@ -137,6 +146,7 @@ class UserService implements UserServiceInterface
 
         $this->validateOtpCode($email, $otpCode);
 
+        $email = AESHelper::encrypt($email);
         $user = $this->repository->findByField('email', $email);
         $userData = [
             'status' => UserStatus::Active,
@@ -170,8 +180,13 @@ class UserService implements UserServiceInterface
         DB::beginTransaction();
         try {
             $data = $request->validated();
-            $user = $this->repository->findByField('email', $data['email']);
+
+            $email = AESHelper::encrypt($data['email']);
+            $user = $this->repository->findByField('email', value: $email);
+
             $data['password'] = bcrypt($data['password']);
+            $data['email'] = $email;
+
             $response = $this->repository->update($user->id, $data);
             DB::commit();
             return $response;
@@ -189,7 +204,9 @@ class UserService implements UserServiceInterface
     {
         $data = $request->validated();
         $user = $this->getCurrentUser();
+
         $data['password'] = bcrypt($data['password']);
+
         return $this->repository->update($user->id, $data);
     }
 }
