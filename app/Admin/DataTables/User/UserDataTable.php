@@ -102,9 +102,10 @@ class UserDataTable extends BaseDataTable
             'action' => $this->view['action'],
             'package_type' => function ($item) {
                 return view(
+
                     $this->view['package_type'],
                     [
-                        'package_type' => $item->userPackages->first()->type
+                        'package_type' => $item->userPackages->first()->current_type->value
                     ]
                 )->render();
             },
@@ -127,6 +128,13 @@ class UserDataTable extends BaseDataTable
 
     public function setCustomFilterColumns(): void
     {
-        //
+        $this->customFilterColumns = [
+
+            'package_type' => function ($query, $keyword) {
+                $query->whereHas('userPackages', function ($subQuery) use ($keyword) {
+                    $subQuery->where('current_type', 'like', '%' . $keyword . '%');
+                });
+            },
+        ];
     }
 }
