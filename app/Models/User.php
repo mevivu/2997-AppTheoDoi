@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Admin\Support\Eloquent\Sluggable;
+use App\Enums\Package\PackageStatus;
+use App\Enums\Package\PackageType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,7 +13,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use App\Enums\User\{ Gender, UserStatus};
+use App\Enums\User\{Gender, UserStatus};
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -118,7 +120,6 @@ class User extends Authenticatable implements JWTSubject
     }
 
 
-
     public function getJWTCustomClaims(): array
     {
         return [];
@@ -126,8 +127,16 @@ class User extends Authenticatable implements JWTSubject
 
     protected static function booted(): void
     {
+        // Tao package trial
         static::created(function ($user) {
-
+            $trialPackage = Package::getTrialPackage();
+            $user->userPackages()->create([
+                'package_id' => $trialPackage->id,
+                'start_date' => now(),
+                'end_date' => now()->addDays(14),
+                'status' => PackageStatus::Active,
+                'current_type' => PackageType::Trial
+            ]);
         });
     }
 }

@@ -325,13 +325,7 @@ return [
             'addClass' => 'text-center align-middle',
             'visible' => true
         ],
-        'action' => [
-            'title' => 'action',
-            'orderable' => false,
-            'exportable' => false,
-            'printable' => false,
-            'addClass' => 'text-center align-middle'
-        ],
+
     ],
     'clinic_type' => [
         'checkbox' => [
