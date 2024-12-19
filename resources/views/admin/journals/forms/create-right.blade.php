@@ -30,13 +30,4 @@
         </div>
     </div>
 
-    <div class="card mb-3">
-        <div class="card-header">
-            <span class="ti ti-photo me-1"></span>
-            @lang('avatar')
-        </div>
-        <div class="card-body p-2">
-            <x-input-image-ckfinder name="image" :value="old('image')" showImage="featureImage"/>
-        </div>
-    </div>
 </div>

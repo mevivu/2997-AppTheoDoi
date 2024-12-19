@@ -39,6 +39,19 @@
                 </div>
             </div>
 
+            {{--  image--}}
+            <div>
+                <div class="col-12">
+                    <div class="card-body p-2">
+                        <x-input-gallery-ckfinder name="image[]"
+                                                  type="multiple"
+                                                  label="Hình ảnh"
+                                                  :value="$response->image ? json_decode($response->image) : null"/>
+
+                    </div>
+                </div>
+            </div>
+
         </div>
 
     </div>

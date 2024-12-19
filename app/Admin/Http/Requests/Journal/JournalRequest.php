@@ -9,26 +9,28 @@ use Illuminate\Validation\Rules\Enum;
 
 class JournalRequest extends BaseRequest
 {
-    protected function methodPost()
+    protected function methodPost(): array
     {
         return [
             'child_id' => ['required', 'exists:App\Models\Child,id'],
             'title' => ['required', 'string'],
             'content' => ['required', 'string'],
-            'image' => ['nullable'],
             'type' => ['nullable', new Enum(JournalType::class)],
+            'image' => ['required', 'array', 'min:1'],
+            'image.*' => ['required', 'string', 'distinct', 'not_in:""'],
         ];
     }
 
-    protected function methodPut()
+    protected function methodPut(): array
     {
         return [
             'id' => ['required', 'exists:App\Models\Journal,id'],
             'child_id' => ['required', 'exists:App\Models\Child,id'],
             'title' => ['required', 'string'],
             'content' => ['required', 'string'],
-            'image' => ['nullable'],
             'type' => ['nullable', new Enum(JournalType::class)],
+            'image' => ['required', 'array', 'min:1'],
+            'image.*' => ['required', 'string', 'distinct', 'not_in:""'],
         ];
     }
 }
