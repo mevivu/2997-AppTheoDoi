@@ -48,6 +48,10 @@ class Package extends Model
         return self::where('type', PackageType::Trial)->first();
     }
 
+    public static function getNormalPackage(): ?self
+    {
+        return self::where('type', PackageType::Normal)->first();
+    }
 
 
 }

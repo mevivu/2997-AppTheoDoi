@@ -680,6 +680,11 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
+        'package_type' => [
+            'title' => 'type',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
         'action' => [
             'title' => 'Thao tác',
             'orderable' => false,
