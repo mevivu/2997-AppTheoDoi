@@ -22,6 +22,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\Assessment\AssessmentRepositoryInterface' => 'App\Api\V1\Repositories\Assessment\AssessmentRepository',
         'App\Api\V1\Repositories\Package\PackageRepositoryInterface' => 'App\Api\V1\Repositories\Package\PackageRepository',
         'App\Api\V1\Repositories\Journal\JournalRepositoryInterface' => 'App\Api\V1\Repositories\Journal\JournalRepository',
+        'App\Api\V1\Repositories\Pregnancy\PregnancyRepositoryInterface' => 'App\Api\V1\Repositories\Pregnancy\PregnancyRepository',
     ];
 
     /**

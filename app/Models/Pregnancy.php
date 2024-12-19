@@ -29,6 +29,8 @@ class Pregnancy extends Model
         'length',
         /** Chu vi đầu của em bé (cm) */
         'head_circumference',
+        /**  hình ảnh  */
+        'image',
         /** Trạng thái của thai kì */
         'status'
     ];

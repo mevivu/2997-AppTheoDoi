@@ -23,6 +23,7 @@ return new class extends Migration
             $table->float('weight')->nullable();
             $table->integer('length')->nullable();
             $table->integer('head_circumference')->nullable();
+            $table->text('image')->nullable();
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
 
             $table->timestamps();

@@ -21,7 +21,8 @@ class JournalRequest extends BaseRequest
             'page' => 'required|integer|min:1',
             'type' => ['required', new Enum(JournalType::class)],
             'child_id' => ['required','numeric', 'exists:children,id'],
-            'date' => 'required|date_format:Y-m-d',        ];
+            'date' => 'required|date_format:Y-m-d',
+        ];
     }
 
     protected function methodPost(): array
