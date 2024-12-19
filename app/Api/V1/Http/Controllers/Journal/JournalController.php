@@ -52,6 +52,7 @@ class JournalController extends Controller
      * @queryParam type string required Thể loại của nhật ký. Examples: moment
      * @queryParam limit int optional Số lượng nhật ký trên mỗi trang, mặc định là 10. Example: 10
      * @queryParam page int optional Trang cần hiển thị, mặc định là 1. Example: 1
+     * @queryParam date string required Ngày. Example: 2024-12-18
      *
      * @response 200 {
      *     "status": 200,

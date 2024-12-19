@@ -9,6 +9,7 @@ use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -45,10 +46,12 @@ class JournalService implements JournalServiceInterface
         $type = $data['type'];
         $limit = $data['limit'] ?? 10;
         $page = $data['page'] ?? 1;
+        $date = $data['date'];
         $query = $this->repository->getByQueryBuilder([
             'type' => $type,
             'child_id' => $data['child_id'],
         ]);
+        $query->whereDate('created_at', '=', $date);
         return $query->paginate($limit, ['*'], 'page', $page);
     }
 
