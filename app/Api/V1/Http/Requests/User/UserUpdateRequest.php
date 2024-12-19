@@ -2,12 +2,14 @@
 
 namespace App\Api\V1\Http\Requests\User;
 
+use App\AES\AESHelper;
 use App\Api\V1\Http\Requests\BaseRequest;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Enums\User\Gender;
 use Exception;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
+use App\Models\User;
 
 
 class UserUpdateRequest extends BaseRequest
@@ -29,12 +31,22 @@ class UserUpdateRequest extends BaseRequest
             'phone' => [
                 'nullable',
                 'regex:/((09|03|07|08|05)+([0-9]{8})\b)/',
-                Rule::unique('users', 'phone')->ignore($this->user()->id, 'id')
+                function ($attribute, $value, $fail) {
+                    $phone = AESHelper::encrypt($value);
+                    if (User::where('phone', $phone)->where('id', '!=', $this->user()->id)->exists()) {
+                        $fail('Số điện thoại đã được sử dụng.');
+                    }
+                }
             ],
             'email' => [
                 'nullable',
                 'email',
-                Rule::unique('users', 'email')->ignore($this->user()->id, 'id')
+                function ($attribute, $value, $fail) {
+                    $email = AESHelper::encrypt($value);
+                    if (User::where('email', $email)->where('id', '!=', $this->user()->id)->exists()) {
+                        $fail('Email đã được sử dụng.');
+                    }
+                }
             ],
             'avatar' => ['nullable'],
             'gender' => ['nullable', new Enum(Gender::class)],
