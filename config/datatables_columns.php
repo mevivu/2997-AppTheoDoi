@@ -41,6 +41,31 @@ return [
             'addClass' => 'text-center align-middle'
         ],
     ],
+    'journal' => [
+
+        'title' => [
+            'title' => 'Tiêu đề',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'child_id' => [
+            'title' => 'Trẻ em',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'type' => [
+            'title' => 'type',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
     'iq_questions' => [
         'checkbox' => [
             'title' => 'choose',

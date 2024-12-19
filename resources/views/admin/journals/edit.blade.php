@@ -1,16 +1,16 @@
 @extends('admin.layouts.master')
 @push('libs-css')
-<link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
-<link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
 @endpush
 @section('content')
     <div class="page-body">
         <div class="container-xl">
-            <x-form id="notificationForm" :action="route('admin.children.update')" type="put" :validate="true">
+            <x-form id="notificationForm" :action="route('admin.journal.update')" type="put" :validate="true">
                 <div class="row justify-content-center">
-                    <input type="hidden" name="id" value="{{ $children->id }}">
-                    @include('admin.children.forms.edit-left',['children' => $children ])
-                    @include('admin.children.forms.edit-right',['children' => $children ])
+                    <input type="hidden" name="id" value="{{ $response->id }}">
+                    @include('admin.journals.forms.edit-left')
+                    @include('admin.journals.forms.edit-right')
 
                 </div>
                 @include('admin.forms.actions-fixed')
@@ -30,5 +30,5 @@
 @endpush
 
 @push('custom-js')
-@include('admin.children.scripts.scripts')
+    @include('admin.journals.scripts.scripts')
 @endpush
