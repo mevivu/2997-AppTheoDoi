@@ -73,7 +73,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Package\PackageController::class)
     ->as('package.')
     ->group(function () {
         Route::get('/', 'index');
-
+        Route::post('/buy', 'purchasePackage');
     });
 
 // Journal
@@ -82,8 +82,22 @@ Route::controller(\App\Api\V1\Http\Controllers\Journal\JournalController::class)
     ->as('journal.')
     ->group(function () {
         Route::get('/', 'index');
+        Route::get('/{id}', 'show');
         Route::post('/', 'store');
+        Route::post('/update', 'update');
+        Route::delete('/{id}', 'delete');
+    });
 
+// Pregnancy
+Route::controller(\App\Api\V1\Http\Controllers\Pregnancy\PregnancyController::class)
+    ->prefix('/pregnancy')
+    ->as('pregnancy.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+        Route::post('/', 'store');
+        Route::post('/update', 'update');
+        Route::delete('/{id}', 'delete');
     });
 
 // Exercise

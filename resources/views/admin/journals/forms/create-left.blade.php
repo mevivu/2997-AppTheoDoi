@@ -10,7 +10,7 @@
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-article"></span>
                         {{ __('Tiêu đề') }}:</label>
-                    <x-input name="title" :value="old('title')" :required="true" placeholder="{{ __('Tiêu đề') }}" />
+                    <x-input name="title" :value="old('title')" :required="true" placeholder="{{ __('Tiêu đề') }}"/>
                 </div>
             </div>
 
@@ -19,7 +19,8 @@
                 <label class="control-label">
                     <span class="ti ti-user"></span>
                     @lang('Trẻ em'):</label>
-                <x-select class="select2-bs5-ajax" name="child_id" id="child_id" :data-url="route('admin.search.select.children')">
+                <x-select class="select2-bs5-ajax" name="child_id" id="child_id"
+                          :data-url="route('admin.search.select.children')">
                 </x-select>
             </div>
             <div class="col-12">
@@ -30,7 +31,18 @@
                 </div>
             </div>
 
+            {{--  image--}}
+            <div>
+                <div class="col-12">
+                    <div class="card-body p-2">
+                        <x-input-gallery-ckfinder name="image[]"
+                                                  type="multiple"
+                                                  label="Hình ảnh"/>
 
+
+                    </div>
+                </div>
+            </div>
 
         </div>
 

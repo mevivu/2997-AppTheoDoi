@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\AES\AESHelper;
+use App\Api\V1\Http\Resources\Package\AuthPackageResource;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -26,7 +27,8 @@ trait JwtService
             'status' => $user->status,
             'role' => $user->roles->pluck('name'),
             'permissions' => $user->getAllPermissions()->pluck('name'),
-            'expires_in' => $ttl * 60
+            'expires_in' => $ttl * 60,
+            'package' => new AuthPackageResource($user->userPackages->first())
         ]);
     }
 

@@ -2,11 +2,9 @@
 
 namespace App\Admin\Services\Journal;
 
-use App\Admin\Repositories\Children\ChildrenRepositoryInterface;
 use App\Admin\Repositories\Journal\JournalRepositoryInterface;
 use App\Admin\Traits\Roles;
 use App\Api\V1\Support\UseLog;
-use App\Enums\Child\ChildStatus;
 use Exception;
 use Illuminate\Http\Request;
 use App\Admin\Traits\Setup;
@@ -38,8 +36,30 @@ class JournalService implements JournalServiceInterface
     public function store(Request $request): object|false
     {
         $data = $request->validated();
+        $data['image'] = $data['image'] ? json_encode(explode(",", $data['image'][0])) : null;
+
         return $this->repository->create($data);
     }
 
 
+    /**
+     * @throws Exception
+     */
+    public function update(Request $request): object|bool
+    {
+
+        $data = $request->validated();
+        $data['image'] = $data['image'] ? json_encode(explode(",", $data['image'][0])) : null;
+
+        return $this->repository->update($data['id'], $data);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function delete($id): object
+    {
+        return $this->repository->delete($id);
+
+    }
 }

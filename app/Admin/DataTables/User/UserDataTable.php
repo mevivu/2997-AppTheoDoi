@@ -6,6 +6,7 @@ use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Traits\Roles;
 use App\AES\AESHelper;
+use App\Enums\Package\PackageType;
 use App\Enums\User\UserActive;
 use App\Enums\User\UserStatus;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,7 +19,8 @@ class UserDataTable extends BaseDataTable
 
     public function __construct(
         UserRepositoryInterface $repository
-    ) {
+    )
+    {
         $this->repository = $repository;
 
         parent::__construct();
@@ -32,6 +34,7 @@ class UserDataTable extends BaseDataTable
             'status' => 'admin.users.datatable.status',
             'email' => 'admin.users.datatable.email',
             'phone' => 'admin.users.datatable.phone',
+            'package_type' => 'admin.users.datatable.package_type',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
@@ -39,13 +42,18 @@ class UserDataTable extends BaseDataTable
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4, 5];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6];
 
         $this->columnSearchSelect = [
             [
                 'column' => 5,
                 'data' => UserStatus::asSelectArray()
             ],
+            [
+                'column' => 6,
+                'data' => PackageType::asSelectArray()
+            ],
+
         ];
     }
 
@@ -92,6 +100,15 @@ class UserDataTable extends BaseDataTable
     {
         $this->customAddColumns = [
             'action' => $this->view['action'],
+            'package_type' => function ($item) {
+                return view(
+
+                    $this->view['package_type'],
+                    [
+                        'package_type' => $item->userPackages->first()->current_type->value
+                    ]
+                )->render();
+            },
             'checkbox' => $this->view['checkbox'],
         ];
     }
@@ -105,11 +122,19 @@ class UserDataTable extends BaseDataTable
             'code',
             'email',
             'phone',
+            'package_type'
         ];
     }
 
     public function setCustomFilterColumns(): void
     {
-        //
+        $this->customFilterColumns = [
+
+            'package_type' => function ($query, $keyword) {
+                $query->whereHas('userPackages', function ($subQuery) use ($keyword) {
+                    $subQuery->where('current_type', 'like', '%' . $keyword . '%');
+                });
+            },
+        ];
     }
 }

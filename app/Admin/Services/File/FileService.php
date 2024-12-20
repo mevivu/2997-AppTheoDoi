@@ -188,5 +188,33 @@ class FileService
         return $data;
     }
 
+    /**
+     * Deletes images associated with model attributes.
+     *
+     * @param Model $model The model from which images will be deleted.
+     * @param array $attributes List of model attributes that contain image paths to delete.
+     * @return $this
+     */
+    public function deleteModelImages(Model $model, array $attributes): static
+    {
+        foreach ($attributes as $attribute) {
+            $imageData = $model[$attribute];
+
+            if (is_string($imageData) && Str::startsWith($imageData, '[')) {
+                $paths = json_decode($imageData, true);
+                if (is_array($paths)) {
+                    foreach ($paths as $path) {
+                        $this->delete($path);
+                    }
+                }
+            } else {
+                $this->delete($imageData);
+            }
+        }
+
+        return $this;
+    }
+
+
 
 }

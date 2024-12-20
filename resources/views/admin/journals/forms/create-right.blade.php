@@ -24,19 +24,10 @@
         <div class="card-body p-2">
             <x-select name="type" :required="true">
                 @foreach ($type as $key => $value)
-                    <x-select-option :value="$key" :title="$value" />
+                    <x-select-option :value="$key" :title="$value"/>
                 @endforeach
             </x-select>
         </div>
     </div>
 
-    <div class="card mb-3">
-        <div class="card-header">
-            <span class="ti ti-photo me-1"></span>
-            @lang('avatar')
-        </div>
-        <div class="card-body p-2">
-            <x-input-image-ckfinder name="image" :value="old('image')" showImage="featureImage"/>
-        </div>
-    </div>
 </div>

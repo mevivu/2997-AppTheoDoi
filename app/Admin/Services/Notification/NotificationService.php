@@ -5,8 +5,11 @@ namespace App\Admin\Services\Notification;
 use App\Admin\Repositories\Admin\AdminRepositoryInterface;
 use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
+use App\Admin\Repositories\UserPackage\UserPackageRepositoryInterface;
 use App\Admin\Traits\AuthService;
 use App\Admin\Traits\Roles;
+use App\Enums\ApprovalStatus;
+use App\Enums\Notification\MessageType;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
 use App\Enums\Notification\NotificationOption;
@@ -28,27 +31,32 @@ class NotificationService implements NotificationServiceInterface
      */
     protected $data;
 
-    protected $repository;
+    protected NotificationRepositoryInterface $repository;
     private AdminRepositoryInterface $adminRepository;
     private UserRepositoryInterface $userRepository;
 
+    private UserPackageRepositoryInterface $userPackageRepository;
+
     public function __construct(
         NotificationRepositoryInterface $repository,
-        UserRepositoryInterface $userRepository,
-        AdminRepositoryInterface $adminRepository,
-    ) {
+        UserRepositoryInterface         $userRepository,
+        AdminRepositoryInterface        $adminRepository,
+        UserPackageRepositoryInterface  $userPackageRepository
+    )
+    {
         $this->repository = $repository;
         $this->adminRepository = $adminRepository;
         $this->userRepository = $userRepository;
+        $this->userPackageRepository = $userPackageRepository;
     }
 
     /**
      * Lưu trữ thông báo và gửi đến những người nhận phù hợp.
      *
-     * @param Request $request  Yêu cầu chứa dữ liệu thông báo đã được kiểm duyệt.
+     * @param Request $request Yêu cầu chứa dữ liệu thông báo đã được kiểm duyệt.
      * @return bool True nếu thông báo được lưu trữ và gửi thành công, False nếu không.
      */
-    public function store(Request $request)
+    public function store(Request $request): bool
     {
         $this->data = $request->validated();
 
@@ -170,6 +178,8 @@ class NotificationService implements NotificationServiceInterface
         $this->data = $request->validated();
         $notification = $this->repository->findOrFail($request->id);
 
+        $this->handleApprovalPackage($notification, $this->data);
+
         $userId = $notification->user_id;
         $adminId = $notification->admin_id;
 
@@ -187,6 +197,43 @@ class NotificationService implements NotificationServiceInterface
         }
         return $this->repository->update($this->data['id'], $this->data);
     }
+
+    /**
+     * @throws Exception
+     */
+    private function handleApprovalPackage(mixed $notification, $data): void
+    {
+        if ($notification->type == MessageType::PAYMENT) {
+            if ($data['approval_status'] == ApprovalStatus::ACTIVE->value) {
+                $package = $notification->package;
+                $startDate = now();
+                $endDate = $startDate->copy()->add($package->type->duration());
+                $userPackage = $this->userPackageRepository
+                    ->findByField('user_id', $notification->user_id_attribute);
+                if ($userPackage) {
+                    $userPackage->update(
+                        [
+                            'package_id' => $notification->package_id,
+                            'start_date' => $startDate,
+                            'end_date' => $endDate,
+                            'current_type' => $package->type
+                        ]
+                    );
+                }
+                $notifications = $this->repository->getByQueryBuilder(
+                    [
+                        'package_id' => $notification->package_id,
+                        'user_id_attribute' => $notification->user_id_attribute
+                    ]
+                )
+                    ->where('created_at', $notification->created_at)->get();
+                foreach ($notifications as $notification) {
+                    $this->repository->update($notification->id, ['approval_status' => ApprovalStatus::ACTIVE]);
+                }
+            }
+        }
+    }
+
 
     /**
      * @throws Exception
@@ -281,4 +328,6 @@ class NotificationService implements NotificationServiceInterface
                 return false;
         }
     }
+
+
 }

@@ -79,7 +79,6 @@ class PackageDataTable extends BaseDataTable
     protected function setCustomAddColumns(): void
     {
         $this->customAddColumns = [
-            'action' => $this->view['action'],
         ];
     }
 

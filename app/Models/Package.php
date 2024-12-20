@@ -43,6 +43,15 @@ class Package extends Model
         return $this->hasMany(Feature::class);
     }
 
+    public static function getTrialPackage(): ?self
+    {
+        return self::where('type', PackageType::Trial)->first();
+    }
+
+    public static function getNormalPackage(): ?self
+    {
+        return self::where('type', PackageType::Normal)->first();
+    }
 
 
 }

@@ -4,6 +4,7 @@ namespace App\Enums\Package;
 
 
 use App\Supports\Enum;
+use DateInterval;
 
 enum PackageType: string
 {
@@ -26,6 +27,18 @@ enum PackageType: string
             self::OneYear => 'bg-pink-lt',
             self::Trial => 'bg-yellow-lt',
             self::Normal => 'bg-orange-lt',
+        };
+    }
+
+    public function duration(): DateInterval
+    {
+        return match ($this) {
+            self::OneMonth => new DateInterval('P1M'),
+            self::ThreeMonths => new DateInterval('P3M'),
+            self::SixMonths => new DateInterval('P6M'),
+            self::OneYear => new DateInterval('P1Y'),
+            self::Trial => new DateInterval('P14D'),
+            default => new DateInterval('P30D'),
         };
     }
 

@@ -20,6 +20,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Api\V1\Services\Assessment\AssessmentServiceInterface' => 'App\Api\V1\Services\Assessment\AssessmentService',
         'App\Api\V1\Services\Package\PackageServiceInterface' => 'App\Api\V1\Services\Package\PackageService',
         'App\Api\V1\Services\Journal\JournalServiceInterface' => 'App\Api\V1\Services\Journal\JournalService',
+        'App\Api\V1\Services\Pregnancy\PregnancyServiceInterface' => 'App\Api\V1\Services\Pregnancy\PregnancyService',
     ];
 
     /**
