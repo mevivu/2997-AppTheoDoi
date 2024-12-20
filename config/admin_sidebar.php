@@ -55,8 +55,24 @@ return [
                 'permissions' => ['createNotification'],
             ],
             [
-                'title' => 'DS thông báo',
+                'title' => 'Thông báo ADMIN',
                 'routeName' => 'admin.notification.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewNotification'],
+            ],
+
+            [
+                'title' => 'Thông báo Khách hàng',
+                'routeName' => 'admin.notification.user',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewNotification'],
+            ],
+
+            [
+                'title' => 'Yêu cầu xác nhận',
+                'routeName' => 'admin.notification.package',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewNotification'],

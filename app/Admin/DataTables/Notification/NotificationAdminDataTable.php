@@ -6,14 +6,15 @@ use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
 use App\Enums\Notification\NotificationStatus;
 
-class NotificationDataTable extends BaseDataTable
+class NotificationAdminDataTable extends BaseDataTable
 {
     protected $nameTable = 'notificationTable';
 
 
     public function __construct(
         NotificationRepositoryInterface $repository
-    ) {
+    )
+    {
         $this->repository = $repository;
 
         parent::__construct();
@@ -48,7 +49,12 @@ class NotificationDataTable extends BaseDataTable
 
     public function query()
     {
-        return $this->repository->getQueryBuilderOrderBy();
+        return $this->repository->getByQueryBuilder(
+            [
+                ['admin_id', '!=', null],
+                'package_id' => null
+            ]
+        );
     }
 
     protected function setCustomColumns(): void
@@ -79,7 +85,6 @@ class NotificationDataTable extends BaseDataTable
     {
         $this->customRawColumns = ['action', 'status', 'checkbox', 'user_id', 'admin_id', 'title'];
     }
-
 
 
 }

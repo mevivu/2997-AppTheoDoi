@@ -219,6 +219,8 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
             Route::group(['middleware' => ['permission:viewNotification', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
+                Route::get('/by-user', 'getNotificationByUser')->name('user');
+                Route::get('/by-package', 'getNotificationByPackage')->name('package');
                 Route::get('/edit/{id}', 'edit')->name('edit');
                 Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
             });
