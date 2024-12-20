@@ -11,14 +11,14 @@ enum PackageUserStatus: string
 
     case Active = 'active';
 
-    case Expired = 'expired';
+    case Pending = 'pending';
 
 
     public function badge(): string
     {
         return match ($this) {
             PackageUserStatus::Active => 'bg-green',
-            PackageUserStatus::Expired => 'bg-red',
+            PackageUserStatus::Pending => 'bg-red',
 
         };
     }

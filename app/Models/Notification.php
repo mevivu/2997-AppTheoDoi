@@ -20,6 +20,8 @@ class Notification extends Model
         'user_id',
         /** admin_id */
         'admin_id',
+        /** package_id */
+        'package_id',
         /** Tiêu đề thông báo */
         'title',
         /** Nội dung thông báo */
@@ -28,6 +30,8 @@ class Notification extends Model
         'status',
         /** Thời gian đọc */
         'read_at',
+        /** Hình ảnh xác nhận thanh toán */
+        'payment_confirmation_image'
     ];
 
     protected $casts = [
@@ -47,9 +51,9 @@ class Notification extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function bank(): BelongsTo
+    public function package(): BelongsTo
     {
-        return $this->belongsTo(Bank::class, 'bank_id');
+        return $this->belongsTo(Package::class, 'package_id');
     }
 
     // Cập nhật trạng thái của thông báo

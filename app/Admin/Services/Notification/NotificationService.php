@@ -28,7 +28,7 @@ class NotificationService implements NotificationServiceInterface
      */
     protected $data;
 
-    protected $repository;
+    protected NotificationRepositoryInterface $repository;
     private AdminRepositoryInterface $adminRepository;
     private UserRepositoryInterface $userRepository;
 
@@ -48,7 +48,7 @@ class NotificationService implements NotificationServiceInterface
      * @param Request $request  Yêu cầu chứa dữ liệu thông báo đã được kiểm duyệt.
      * @return bool True nếu thông báo được lưu trữ và gửi thành công, False nếu không.
      */
-    public function store(Request $request)
+    public function store(Request $request): bool
     {
         $this->data = $request->validated();
 

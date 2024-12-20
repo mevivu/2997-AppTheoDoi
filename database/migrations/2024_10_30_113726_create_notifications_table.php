@@ -20,12 +20,14 @@ return new class extends Migration
             $table->unsignedBigInteger('admin_id')->nullable();
             $table->string('title');
             $table->text('message');
+            $table->text('payment_confirmation_image')->nullable();
             $table->tinyInteger('status')->default(NotificationStatus::NOT_READ->value);
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->foreign('admin_id')->references('id')->on('admins')->onDelete('cascade');
+            $table->foreignId('package_id')->nullable()->constrained('packages')->onDelete('set null');
 
         });
     }

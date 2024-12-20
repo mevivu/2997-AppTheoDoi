@@ -103,12 +103,7 @@ return [
     ],
     MessageType::class => [
         MessageType::UNCLASSIFIED->value => 'Không phân loại',
-        MessageType::DEPOSIT->value => 'Thông báo nạp tiền',
-        MessageType::WITHDRAW->value => 'Thông báo rút tiền',
         MessageType::PAYMENT->value => 'Thanh toán',
-        MessageType::PAYMENT->value => 'Thanh toán',
-        MessageType::TEMPORARY_HOLD->value => 'Tạm giữ',
-        MessageType::REPORT->value => 'Báo cáo',
     ],
     NotificationType::class => [
         NotificationType::All->value => 'Thông báo tất cả',

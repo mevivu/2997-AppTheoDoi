@@ -73,7 +73,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Package\PackageController::class)
     ->as('package.')
     ->group(function () {
         Route::get('/', 'index');
-
+        Route::post('/buy', 'purchasePackage');
     });
 
 // Journal
