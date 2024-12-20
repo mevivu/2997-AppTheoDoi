@@ -100,6 +100,18 @@ Route::controller(\App\Api\V1\Http\Controllers\Pregnancy\PregnancyController::cl
         Route::delete('/{id}', 'delete');
     });
 
+// Rating
+Route::controller(\App\Api\V1\Http\Controllers\Rating\RatingController::class)
+    ->prefix('/ratings')
+    ->as('rating.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+        Route::post('/', 'store');
+        Route::post('/update', 'update');
+        Route::delete('/{id}', 'delete');
+    });
+
 // Exercise
 Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::class)
     ->prefix('/exercises')

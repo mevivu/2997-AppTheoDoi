@@ -278,13 +278,6 @@ return [
                 'permissions' => ['createQuestionGroup'],
             ],
             [
-                'title' => 'Nhóm câu hỏi',
-                'routeName' => 'admin.question-group.index',
-                'icon' => '<i class="ti ti-category"></i>',
-                'roles' => [],
-                'permissions' => ['viewQuestionGroup'],
-            ],
-            [
                 'title' => 'Câu hỏi IQ',
                 'routeName' => 'admin.question.iq',
                 'icon' => '<i class="ti ti-brain"></i>',
