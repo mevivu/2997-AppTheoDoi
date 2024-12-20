@@ -71,13 +71,14 @@ class PackageService implements PackageServiceInterface
     {
         $data = $request->validated();
         $user = $this->getCurrentUser();
+        $packageId = $data['id'];
         $image = $data['payment_confirmation_image'];
         if ($image) {
             $data['payment_confirmation_image'] = $this->fileService
                 ->uploadAvatar('images/package', $image);
         }
         $this->notificationService->sendCustomerPaymentNotification($user);
-        $this->notificationService->sendNotificationsPaymentToAdmins($user, $data['payment_confirmation_image']);
+        $this->notificationService->sendNotificationsPaymentToAdmins($user, $data['payment_confirmation_image'],$packageId);
         return true;
 
     }

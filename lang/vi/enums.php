@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ApprovalStatus;
 use App\Enums\Child\BornStatus;
 use App\Enums\DefaultStatus;
 use App\Enums\DeleteStatus;
@@ -108,6 +109,12 @@ return [
     NotificationType::class => [
         NotificationType::All->value => 'Thông báo tất cả',
         NotificationType::Customer->value => 'Thông báo người dùng',
+    ],
+
+    ApprovalStatus::class => [
+        ApprovalStatus::PENDING->value => 'Chưa duyệt',
+        ApprovalStatus::ACTIVE->value => 'Đã duyệt',
+        ApprovalStatus::REJECTED->value => 'Từ chối',
     ],
 
     UserRoles::class => [

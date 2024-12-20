@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ApprovalStatus;
 use App\Enums\Notification\MessageType;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\VerifiedStatus;
@@ -31,13 +32,20 @@ class Notification extends Model
         /** Thời gian đọc */
         'read_at',
         /** Hình ảnh xác nhận thanh toán */
-        'payment_confirmation_image'
+        'payment_confirmation_image',
+        /** Loại */
+        'type',
+        /** Trạng thái xác nhận */
+        'approval_status',
+        /** Lưu user_Id customer */
+        'user_id_attribute'
     ];
 
     protected $casts = [
         'status' => NotificationStatus::class,
         'type' => MessageType::class,
-        'is_verified' => VerifiedStatus::class
+        'is_verified' => VerifiedStatus::class,
+        'approval_status' => ApprovalStatus::class
     ];
 
 

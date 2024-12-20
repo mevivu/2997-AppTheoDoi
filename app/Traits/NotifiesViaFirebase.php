@@ -157,7 +157,7 @@ trait  NotifiesViaFirebase
         }
     }
 
-    public function sendNotificationsPaymentToAdmins($user, $image): void
+    public function sendNotificationsPaymentToAdmins($user, $image, $packageId): void
     {
         $adminRepository = app(AdminRepositoryInterface::class);
         $notificationRepository = app(NotificationRepositoryInterface::class);
@@ -173,7 +173,9 @@ trait  NotifiesViaFirebase
         foreach ($admins as $admin) {
             $notificationRepository->create([
                 'admin_id' => $admin->id,
+                'user_id_attribute' => $user->id,
                 'title' => $title,
+                'package_id' => $packageId,
                 'message' => $body,
                 'type' => MessageType::PAYMENT,
                 'payment_confirmation_image' => $image

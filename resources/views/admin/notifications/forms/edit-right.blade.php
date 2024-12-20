@@ -30,4 +30,39 @@
             </x-select>
         </div>
     </div>
+    @if($notification->type == MessageType::PAYMENT)
+        <div class="card mb-3">
+            <div class="card-header gap-1">
+                <i class="ti ti-settings-cancel"></i>
+                @lang('ADMIN xác nhận')
+            </div>
+            <div class="card-body p-2">
+                <x-select class="select2-bs5-ajax" name="approval_status"
+                          :value="old('status')"
+                          :required="true">
+                    @foreach ($approval_status as $key => $value)
+                        <x-select-option :option="$notification->approval_status->value" :value="$key" :title="__($value)" />
+                    @endforeach
+                </x-select>
+            </div>
+        </div>
+    @endif
+
+    @if($notification->type == MessageType::PAYMENT)
+        <!-- payment_confirmation_image -->
+        <div class="col-12">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <span class="ti ti-photo me-1"></span>
+                    @lang('avatar')
+                </div>
+                <div class="card-body p-2">
+                    <x-input-image-ckfinder name="payment_confirmation_image" showImage="avatar" class="img-fluid" :value="$notification->payment_confirmation_image" />
+                </div>
+            </div>
+        </div>
+    @endif
+
+
+
 </div>
