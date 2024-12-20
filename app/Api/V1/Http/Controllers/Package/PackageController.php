@@ -3,6 +3,8 @@
 namespace App\Api\V1\Http\Controllers\Package;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Api\V1\Http\Requests\Package\PackageRequest;
+use App\Api\V1\Http\Resources\Package\UserPackageResource;
 use App\Api\V1\Repositories\Package\PackageRepositoryInterface;
 use App\Api\V1\Services\Package\PackageServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
@@ -73,6 +75,50 @@ class PackageController extends Controller
             return $this->jsonResponseError('Get  packages failed', 500);
         }
 
+    }
+
+    /**
+     * Mua gói dịch vụ
+     *
+     * API này cho phép người dùng mua một gói dịch vụ. Người dùng cần được xác thực và phải cung cấp ID của gói dịch vụ muốn mua.
+     *
+     * @authenticated
+     *
+     * @bodyParam package_id int required ID của gói dịch vụ muốn mua.
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Mua gói dịch vụ thành công."
+     * }
+     *
+     * @response 400 {
+     *     "status": 400,
+     *     "message": "Thông tin không hợp lệ."
+     * }
+     *
+     * @response 404 {
+     *     "status": 404,
+     *     "message": "Gói dịch vụ không tồn tại."
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống khi mua gói dịch vụ."
+     * }
+     *
+     * @param PackageRequest $request
+     * @return JsonResponse
+     */
+    public function purchasePackage(PackageRequest $request): JsonResponse
+    {
+
+        try {
+            $this->service->purchasePackage($request);
+            return $this->jsonResponseSuccessNoData();
+        } catch (Exception $exception) {
+            $this->logError('Purchase package failed:', $exception);
+            return $this->jsonResponseError('Purchase package failed', 500);
+        }
     }
 
 

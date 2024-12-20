@@ -3,6 +3,7 @@
 namespace App\Admin\Http\Requests\Notification;
 
 use App\Admin\Http\Requests\BaseRequest;
+use App\Enums\ApprovalStatus;
 use App\Enums\Notification\MessageType;
 use App\Enums\Notification\NotificationOption;
 use App\Enums\Notification\NotificationStatus;
@@ -39,6 +40,7 @@ class NotificationRequest extends BaseRequest
             'title' => ['required', 'string'],
             'message' => ['required'],
             'status' => ['required', new Enum(NotificationStatus::class)],
+            'approval_status' => ['required', new Enum(ApprovalStatus::class)],
         ];
     }
 

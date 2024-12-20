@@ -6,7 +6,6 @@ use App\Admin\Repositories\Admin\AdminRepositoryInterface;
 use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
 use App\Enums\Notification\MessageType;
 use App\Mail\AdminNotificationMail;
-use App\Models\Driver;
 use App\Models\User;
 use App\Repositories\Setting\SettingRepositoryInterface;
 use Exception;
@@ -158,6 +157,34 @@ trait  NotifiesViaFirebase
         }
     }
 
+    public function sendNotificationsPaymentToAdmins($user, $image, $packageId): void
+    {
+        $adminRepository = app(AdminRepositoryInterface::class);
+        $notificationRepository = app(NotificationRepositoryInterface::class);
+        $title = config('notifications.admin_approval_required.title');
+        $message = config('notifications.admin_approval_required.message');
+        $body = str_replace('{fullname}', $user->fullname, $message);
+        $admins = $adminRepository->getAll();
+        $deviceTokens = $admins->pluck('device_token')->filter()->all();
+        if (!empty($deviceTokens)) {
+            $this->sendFirebaseNotification($deviceTokens, null, $title, $body);
+        }
+
+        foreach ($admins as $admin) {
+            $notificationRepository->create([
+                'admin_id' => $admin->id,
+                'user_id_attribute' => $user->id,
+                'title' => $title,
+                'package_id' => $packageId,
+                'message' => $body,
+                'type' => MessageType::PAYMENT,
+                'payment_confirmation_image' => $image
+            ]);
+
+        }
+
+    }
+
     public function sendFirebaseNotificationsToAdmins(string $title, string $body): void
     {
         $adminRepository = app(AdminRepositoryInterface::class);
@@ -165,37 +192,6 @@ trait  NotifiesViaFirebase
         $deviceTokens = $admins->pluck('device_token')->filter()->all();
         if (!empty($deviceTokens)) {
             $this->sendFirebaseNotification($deviceTokens, null, $title, $body);
-        }
-    }
-
-    /**
-     * Sends a Firebase notification to a driver.
-     *
-     * @param mixed $driver The driver object containing user details.
-     * @param string $title The title of the notification.
-     * @param string $body The body of the notification.
-     * @throws Exception
-     */
-    public function sendFirebaseNotificationToDriver(Driver $driver, string $title, string $body, ?MessageType $type = null): void
-    {
-        $notificationRepository = app(NotificationRepositoryInterface::class);
-
-        $deviceToken = $driver->user->device_token;
-
-        $notificationData = [
-            'driver_id' => $driver->id,
-            'title' => $title,
-            'message' => $body
-        ];
-
-        if (!is_null($type)) {
-            $notificationData['type'] = $type;
-        }
-
-        $notification = $notificationRepository->create($notificationData);
-
-        if (!empty($deviceToken)) {
-            $this->sendFirebaseNotification([$deviceToken], null, $title, $body, $notification->id);
         }
     }
 

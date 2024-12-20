@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ApprovalStatus;
 use App\Enums\Child\BornStatus;
 use App\Enums\DefaultStatus;
 use App\Enums\DeleteStatus;
@@ -108,16 +109,17 @@ return [
     ],
     MessageType::class => [
         MessageType::UNCLASSIFIED->value => 'Không phân loại',
-        MessageType::DEPOSIT->value => 'Thông báo nạp tiền',
-        MessageType::WITHDRAW->value => 'Thông báo rút tiền',
         MessageType::PAYMENT->value => 'Thanh toán',
-        MessageType::PAYMENT->value => 'Thanh toán',
-        MessageType::TEMPORARY_HOLD->value => 'Tạm giữ',
-        MessageType::REPORT->value => 'Báo cáo',
     ],
     NotificationType::class => [
         NotificationType::All->value => 'Thông báo tất cả',
         NotificationType::Customer->value => 'Thông báo người dùng',
+    ],
+
+    ApprovalStatus::class => [
+        ApprovalStatus::PENDING->value => 'Chưa duyệt',
+        ApprovalStatus::ACTIVE->value => 'Đã duyệt',
+        ApprovalStatus::REJECTED->value => 'Từ chối',
     ],
 
     UserRoles::class => [

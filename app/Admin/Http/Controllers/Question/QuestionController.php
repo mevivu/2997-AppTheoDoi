@@ -115,16 +115,14 @@ class QuestionController extends Controller
     public function edit($id): Factory|View|Application
     {
         $response = $this->repository->findOrFail($id);
-        $correctAnswer = $response->answers->where('is_correct', true)->first();
-        $wrongAnswers = $response->answers->where('is_correct', false);
+        $iqAnswers = $response->answers;
         $answers = $response->answers;
         $questionGroups = $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id');
         return view(
             $this->view['edit'],
             [
                 'response' => $response,
-                'correctAnswer' => $correctAnswer,
-                'wrongAnswers' => $wrongAnswers,
+                'iq_answers' => $iqAnswers,
                 'answers' => $answers,
                 'questionGroups' => $questionGroups,
                 'status' => ActiveStatus::asSelectArray(),

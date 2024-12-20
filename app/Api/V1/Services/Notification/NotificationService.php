@@ -3,11 +3,14 @@
 namespace App\Api\V1\Services\Notification;
 
 
+use App\Admin\Repositories\Admin\AdminRepositoryInterface;
 use App\Admin\Traits\Roles;
 use App\Api\V1\Repositories\Notification\NotificationRepositoryInterface;
 use App\Api\V1\Repositories\User\UserRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
+use App\Enums\Notification\MessageType;
 use App\Enums\Notification\NotificationStatus;
+use App\Models\User;
 use App\Traits\NotifiesViaFirebase;
 use App\Api\V1\Support\UseLog;
 use Illuminate\Http\Request;
@@ -22,15 +25,19 @@ class NotificationService implements NotificationServiceInterface
 
     protected NotificationRepositoryInterface $repository;
 
+    protected AdminRepositoryInterface $adminRepository;
+
     private UserRepositoryInterface $userRepository;
 
     public function __construct(
         NotificationRepositoryInterface $repository,
         UserRepositoryInterface         $userRepository,
+        AdminRepositoryInterface        $adminRepository
     )
     {
         $this->repository = $repository;
         $this->userRepository = $userRepository;
+        $this->adminRepository = $adminRepository;
 
     }
 
@@ -89,6 +96,34 @@ class NotificationService implements NotificationServiceInterface
             return false;
         }
     }
+
+    /**
+     * @throws Exception
+     */
+    public function sendApprovalNotificationToAdmin(User $user): void
+    {
+        $title = config('notifications.package_purchase_pending.title');
+        $bodyTemplate = config('notifications.package_purchase_pending.message');
+        $body = str_replace('{fullname}', $user->fullname, $bodyTemplate);
+        $admins = $this->adminRepository->getAll();
+        $deviceTokens = $admins->pluck('device_token')->filter()->all();
+        if (!empty($deviceTokens)) {
+            $this->sendFirebaseNotification($deviceTokens, null, $title, $body);
+        }
+
+    }
+
+
+    public function sendCustomerPaymentNotification(User $user): void
+    {
+        $title = config('notifications.package_purchase_pending.title');
+        $bodyTemplate = config('notifications.package_purchase_pending.message');
+        $body = str_replace('{fullname}', $user->fullname, $bodyTemplate);
+        $this->sendFirebaseNotificationToUser($user, $title, $body, MessageType::UNCLASSIFIED);
+
+    }
+
+
 }
 
-;
+

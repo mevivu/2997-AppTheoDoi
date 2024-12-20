@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\Package\PackageStatus;
 use App\Enums\Package\PackageType;
+use App\Enums\Package\PackageUserStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,7 +34,7 @@ class UserPackage extends Model
     ];
     protected $casts = [
 
-        'status' => PackageStatus::class,
+        'status' => PackageUserStatus::class,
         'current_type' => PackageType::class,
     ];
 

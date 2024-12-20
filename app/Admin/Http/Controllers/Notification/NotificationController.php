@@ -9,6 +9,7 @@ use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Services\Notification\NotificationServiceInterface;
 use App\Admin\Traits\Roles;
+use App\Enums\ApprovalStatus;
 use App\Enums\Notification\NotificationOption;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
@@ -90,6 +91,7 @@ class NotificationController extends Controller
             'types' => NotificationType::asSelectArray(),
             'options' => NotificationOption::asSelectArray(),
             'status' => NotificationStatus::asSelectArray(),
+            'approval_status' => ApprovalStatus::asSelectArray(),
             'breadcrumbs' => $this->crums->add(__('notifications'), route($this->route['index']))->add(__('edit'))
         ]);
     }
