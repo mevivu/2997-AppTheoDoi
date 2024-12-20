@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('tag', 255)->nullable();
             $table->string('result')->nullable();
             $table->enum('type', QuestionType::getValues())->default(QuestionType::EQ->value);
+            $table->foreignId('child_id')->nullable()->constrained('children')->onDelete('cascade');
             $table->timestamps();
         });
     }

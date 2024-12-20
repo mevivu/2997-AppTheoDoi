@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Enums\Child\ChildStatus;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Child extends Model
 {
@@ -43,6 +44,11 @@ class Child extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(Rating::class, 'child_id');
     }
 
     protected static function boot(): void
