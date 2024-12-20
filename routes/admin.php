@@ -192,7 +192,8 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::post('/add', 'store')->name('store');
             });
             Route::group(['middleware'=>['permission:viewJournal', 'auth:admin']], function () {
-                Route::get('/', 'index')->name('index');
+                Route::get('/prescription', 'prescription')->name('prescription');
+                Route::get('/moment','moment')->name('moment');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
             Route::group(['middleware' => ['permission:updateJournal', 'auth:admin']], function () {

@@ -23,10 +23,13 @@ class Journal extends Model
         /** ID trẻ em */
         'child_id',
         /** Loại */
-        'type'
+        'type',
+
     ];
+
     protected $casts = [
-        'type' => JournalType::class
+        'type' => JournalType::class,
+
     ];
 
 

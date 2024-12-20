@@ -11,7 +11,7 @@ use App\Enums\Journal\JournalType;
 use App\Enums\User\Gender;
 use Illuminate\Database\Eloquent\Builder;
 
-class JournalDataTable extends BaseDataTable
+class JournalPrescriptionDataTable extends BaseDataTable
 {
     protected $nameTable = 'JournalTable';
 
@@ -30,7 +30,6 @@ class JournalDataTable extends BaseDataTable
         $this->view = [
             'title'=>'admin.journals.datatable.title',
             'child'=>'admin.journals.datatable.child',
-            'type'=>'admin.journals.datatable.type',
             'action' => 'admin.journals.datatable.action',
 
         ];
@@ -39,20 +38,11 @@ class JournalDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [0, 1];
+        $this->columnAllSearch = [0, 1,2];
 
-        $this->columnSearchDate = [3];
+        $this->columnSearchDate = [2];
 
-        $this->columnSearchSelect = [
-            [
-                'column' => 4,
-                'data' => Gender::asSelectArray()
-            ],
-            [
-                'column' => 5,
-                'data' => ChildStatus::asSelectArray()
-            ],
-        ];
+
     }
 
 
@@ -63,24 +53,38 @@ class JournalDataTable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getQueryBuilderOrderBy();
+        return $this->repository->getByQueryBuilder(['type'=>JournalType::Prescription]);
     }
 
     protected function setCustomColumns(): void
     {
         $this->customColumns = config('datatables_columns.journal', []);
     }
+    public function setCustomFilterColumns(): void
+    {
+        $this->customFilterColumns = [
+            'child_id' => function ($query, $keyword) {
+                $query->whereHas('child', function ($subQuery) use ($keyword) {
+                    $subQuery->where('fullname', 'like', "%$keyword%");
+                });
+            },
+            'title' => function ($query, $keyword) {
+                $query->where('title', 'like', "%$keyword%");
+            },
 
+        ];
+    }
     protected function setCustomEditColumns(): void
     {
         $this->customEditColumns = [
-            'type' => $this->view['type'],
+
             'title' => $this->view['title'],
             'child_id' => function ($children) {
                 return view($this->view['child'], [
                     'child' => $children->child,
                 ])->render();
             },
+            'created_at' => '{{ date("d-m-Y", strtotime($created_at)) }}',
 
         ];
     }

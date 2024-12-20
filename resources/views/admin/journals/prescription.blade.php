@@ -8,8 +8,8 @@
         <div class="container-xl">
             <div class="card">
                 <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách nhật ký') }}</h2>
-                    <x-link :href="route('admin.journal.create')" class="btn btn-primary">
+                    <h2 class="mb-0">{{ __('Danh sách nhật ký đơn thuốc') }}</h2>
+                    <x-link :href="route('admin.journal.create',['back' => 'prescription'])" class="btn btn-primary">
                         <i class="ti ti-plus"></i>
                         <span class="ms-1">@lang('add')</span>
                     </x-link>

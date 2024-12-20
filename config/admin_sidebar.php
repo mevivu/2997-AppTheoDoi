@@ -24,12 +24,19 @@ return [
                 'permissions' => ['CreateJournal'],
             ],
             [
-                'title' => 'DS Nhật ký',
-                'routeName' => 'admin.journal.index',
-                'icon' => '<i class="ti ti-list"></i>',
+                'title' => 'Nhật ký đơn thuốc',
+                'routeName' => 'admin.journal.prescription',
+                'icon' => '<i class="ti ti-pill"></i>',
                 'roles' => [],
                 'permissions' => ['viewJournal'],
             ],
+            [
+                'title' => 'Nhật ký Khoảng khắc',
+                'routeName' => 'admin.journal.moment',
+                'icon' => '<i class="ti ti-comet"></i>',
+                'roles' => [],
+                'permissions' => ['viewJournal'],
+            ]
 
         ]
     ],

@@ -16,6 +16,7 @@ use App\Enums\Package\PackageType;
 use App\Enums\Post\PostStatus;
 use App\Enums\PostCategory\PostCategoryStatus;
 use App\Enums\PriorityStatus;
+use App\Enums\Journal\JournalType;
 use App\Enums\Slider\SliderStatus;
 use App\Enums\VerifiedStatus;
 use App\Enums\Setting\SettingGroup;
@@ -58,6 +59,10 @@ return [
         ChildStatus::Active->value => 'Hoạt động',
         ChildStatus::Draft->value => 'Bản nháp',
         ChildStatus::Deleted->value => 'Đã xóa',
+    ],
+    JournalType::class => [
+      JournalType::Prescription->value=>"Đơn thuốc",
+        JournalType::Moment->value=>"khoảnh khắc"
     ],
     PackageType::class => [
         PackageType::Trial->value => 'Dùng thử',

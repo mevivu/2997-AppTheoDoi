@@ -1,6 +1,6 @@
-@php 
-    use App\AES\AESHelper; 
-    use Carbon\Carbon; 
+@php
+    use App\AES\AESHelper;
+    use Carbon\Carbon;
 
     $birthday = Carbon::parse($children->birthday)->format('Y-m-d');
 @endphp
@@ -15,8 +15,8 @@
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
                     <label class="control-label">{{ __('Họ và tên') }}:</label>
-                    <x-input name="fullname" :value="old('fullname')" :required="true" 
-                    placeholder="{{ __('Họ và tên') }}" 
+                    <x-input name="fullname" :value="old('fullname')" :required="true"
+                    placeholder="{{ __('Họ và tên') }}"
                     value="{{ $children->fullname }}"/>
                 </div>
             </div>
@@ -25,8 +25,8 @@
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
                     <label class="control-label">{{ __('Ngày sinh') }}:</label>
-                    <x-input type="date" name="birthday" :value="old('birthday')" 
-                    :required="true" placeholder="{{ __('Ngày sinh') }}" 
+                    <x-input type="date" name="birthday" :value="old('birthday')"
+                    :required="true" placeholder="{{ __('Ngày sinh') }}"
                     value="{{ $birthday }}"/>
                 </div>
             </div>
@@ -47,13 +47,13 @@
                 <label class="control-label">
                     <span class="ti ti-user"></span>
                     @lang('Cha/mẹ'):</label>
-                <x-select class="select2-bs5-ajax" 
-                          name="user_id" 
-                          id="user_id" 
+                <x-select class="select2-bs5-ajax"
+                          name="user_id"
+                          id="user_id"
                           :data-url="route('admin.search.select.user')">
-                    <x-select-option 
-                        :option="$children->user_id" 
-                        :value="$children->user_id" 
+                    <x-select-option
+                        :option="$children->user_id"
+                        :value="$children->user_id"
                         :title="$children->user->fullname . '-' . AESHelper::decrypt($children->user->phone)"
                         :selected="old('user_id') ? (old('user_id') == $children->user_id) : true"
                     />
