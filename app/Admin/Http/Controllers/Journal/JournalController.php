@@ -2,7 +2,8 @@
 
 namespace App\Admin\Http\Controllers\Journal;
 
-use App\Admin\DataTables\Journal\JournalDataTable;
+use App\Admin\DataTables\Journal\JournalMomentDataTable;
+use App\Admin\DataTables\Journal\JournalPrescriptionDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Journal\JournalRequest;
 use App\Admin\Repositories\Journal\JournalRepositoryInterface;
@@ -37,7 +38,8 @@ class JournalController extends Controller
     public function getView(): array
     {
         return [
-            'index' => 'admin.journals.index',
+            'prescription' => 'admin.journals.prescription',
+            'moment'=> 'admin.journals.moment',
             'create' => 'admin.journals.create',
             'edit' => 'admin.journals.edit',
         ];
@@ -65,14 +67,24 @@ class JournalController extends Controller
             ]
         );
     }
-
-    public function index(JournalDataTable $dataTable)
+    public function moment(JournalMomentDataTable $datatable)
     {
-        return $dataTable->render(
-            $this->view['index'],
+        return $datatable->render(
+            $this->view['moment'],
             [
                 'type' => JournalType::asSelectArray(),
-                'breadcrumbs' => $this->crums->add('Danh sách nhật ký'),
+                'breadcrumbs' => $this->crums->add('Danh sách nhật ký khoảnh khắc'),
+            ]
+        );
+    }
+
+    public function prescription(JournalPrescriptionDataTable $dataTable)
+    {
+        return $dataTable->render(
+            $this->view['prescription'],
+            [
+                'type' => JournalType::asSelectArray(),
+                'breadcrumbs' => $this->crums->add('Danh sách nhật ký đơn thuốc'),
             ]
         );
     }
@@ -81,7 +93,7 @@ class JournalController extends Controller
     {
         return view($this->view['create'], [
             'type' => JournalType::asSelectArray(),
-            'breadcrumbs' => $this->crums->add('DS nhật ký', route($this->route['index']))->add('Thêm'),
+            'breadcrumbs' => $this->crums->add('DS nhật ký')->add('Thêm'),
         ]);
     }
 
@@ -103,7 +115,7 @@ class JournalController extends Controller
     {
         $response = $this->service->store($request);
         if ($response) {
-            return to_route($this->route['index'], $response)->with('success', __('notifySuccess'));
+            return to_route($this->route['edit'], $response)->with('success', __('notifySuccess'));
         }
         return back()->with('error', __('notifyFail'));
     }

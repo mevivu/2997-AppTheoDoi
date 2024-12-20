@@ -5,7 +5,7 @@
         </div>
         <div class="row card-body">
 
-            <!-- Fullname -->
+            <!-- Title -->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
                     <label class="control-label">{{ __('Tiêu đề') }}:</label>
@@ -14,7 +14,7 @@
                              value="{{ $response->title }}"/>
                 </div>
             </div>
-
+            <!-- children -->
             <div class="col-md-6 col-sm-12">
                 <label class="control-label">
                     <span class="ti ti-user"></span>

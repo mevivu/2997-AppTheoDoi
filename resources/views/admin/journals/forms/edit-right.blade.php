@@ -7,7 +7,19 @@
             <div class="w-100 d-flex align-items-center h-100 gap-2">
                 <x-button.submit :title="__('save')" name="submitter" value="save"
                                  class="flex-column gap-1 text-wrap p-2 flex-grow-1" />
-                <x-link :href="route('admin.journal.index')" class="w-50 btn btn-outline" :title="'Quay lại'" />
+                @if ($response->exercise_type == \App\Enums\Journal\JournalType::Prescription)
+                    <x-link :href="route('admin.journal.prescription')" class="btn btn-outline w-50">
+                        {{ __('Quay lại') }}
+                    </x-link>
+                @elseif($response->exercise_type == \App\Enums\Journal\JournalType::Moment)
+                    <x-link :href="route('admin.journal.moment')" class="btn btn-outline w-50">
+                        {{ __('Quay lại') }}
+                    </x-link>
+                @else
+                    <x-link :href="route('admin.journal.prescription')" class="btn btn-outline w-50">
+                        {{ __('Quay lại') }}
+                    </x-link>
+                @endif
             </div>
         </div>
     </div>

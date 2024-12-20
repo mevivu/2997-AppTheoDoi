@@ -53,8 +53,8 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
-        'type' => [
-            'title' => 'type',
+        'created_at'=>[
+            'title' => 'Ngày tạo',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
