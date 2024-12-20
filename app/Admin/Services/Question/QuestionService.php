@@ -7,6 +7,7 @@ use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Enums\Question\QuestionType;
 use Illuminate\Http\Request;
 use App\Enums\ActiveStatus;
+use Illuminate\Support\Facades\DB;
 
 class QuestionService implements QuestionServiceInterface
 {
@@ -39,20 +40,15 @@ class QuestionService implements QuestionServiceInterface
     protected function addIqQuestion($data, $question)
     {
         $question_id = $question->id;
-        $correctAnswer = $data['answer']['correct_answer'];
-        $wrongAnswers = $data['answer']['wrong_answers'];
 
-        $this->answerRepository->create([
-            'question_id' => $question_id,
-            'answer' => $correctAnswer,
-            'is_correct' => true,
-        ]);
+        $answers = $data['answer']['iq_answers'];
+        $isCorrect = $data['answer']['is_correct'];
 
-        foreach ($wrongAnswers as $answer) {
+        foreach ($answers as $index => $answer) {
             $this->answerRepository->create([
                 'question_id' => $question_id,
                 'answer' => $answer,
-                'is_correct' => false,
+                'is_correct' => isset($isCorrect[$index]) && $isCorrect[$index] == '1' ? true : false,
             ]);
         }
 
@@ -96,43 +92,34 @@ class QuestionService implements QuestionServiceInterface
     {
         $data['answer']['question_id'] = $question->id;
 
-        $correctAnswer = $data['answer']['correct_answer'];
-        $correctAnswerId = $data['answer']['correct_answer_id'];
+        $answers = $data['answer']['iq_answers'];
+        $isCorrect = $data['answer']['is_correct'];
 
-        // Cập nhật câu trả lời đúng
-        $this->answerRepository->update($correctAnswerId, [
-            'answer' => $correctAnswer,
-            'is_correct' => true,
+        $existingAnswers = $this->answerRepository->getByQueryBuilder([
             'question_id' => $data['answer']['question_id'],
-        ]);
-
-        $existingWrongAnswers = $this->answerRepository->getByQueryBuilder([
-            'question_id' => $data['answer']['question_id'],
-            'is_correct' => false,
         ])->get();
 
-        // Xử lý các câu trả lời sai
-        foreach ($data['answer']['wrong_answers'] as $wrongAnswerId => $wrongAnswer) {
-            $existingAnswer = $this->answerRepository->find($wrongAnswerId);
+        foreach ($answers as $answerId => $answer) {
+            $existingAnswer = $existingAnswers->where('id', $answerId)->first();
 
             if ($existingAnswer) {
-                $this->answerRepository->update($wrongAnswerId, [
-                    'answer' => $wrongAnswer,
-                    'is_correct' => false,
+                $this->answerRepository->update($answerId, [
+                    'answer' => $answer,
+                    'is_correct' => isset($isCorrect[$answerId]) && $isCorrect[$answerId] == '1' ? true : false,
                     'question_id' => $data['answer']['question_id'],
                 ]);
             } else {
                 $this->answerRepository->create([
-                    'answer' => $wrongAnswer,
-                    'is_correct' => false,
+                    'answer' => $answer,
+                    'is_correct' => isset($isCorrect[$answerId]) && $isCorrect[$answerId] == '1' ? true : false,
                     'question_id' => $data['answer']['question_id'],
                 ]);
             }
         }
 
-        foreach ($existingWrongAnswers as $wrongAnswer) {
-            if (!isset($data['answer']['wrong_answers'][$wrongAnswer->id])) {
-                $this->answerRepository->delete($wrongAnswer->id);
+        foreach ($existingAnswers as $existingAnswer) {
+            if (!isset($answers[$existingAnswer->id])) {
+                $this->answerRepository->delete($existingAnswer->id);
             }
         }
     }

@@ -19,8 +19,9 @@ class QuestionRequest extends BaseRequest
 
         if ($this->input('question.question_type') == QuestionType::IQ->value) {
             $this->validate['question.age'] = ['required', 'numeric'];
-            $this->validate['answer.correct_answer'] = ['required'];
-            $this->validate['answer.wrong_answers'] = ['required', 'array'];
+            $this->validate['answer.iq_answers'] = ['required', 'array'];
+            $this->validate['answer.iq_answers.*'] = ['required'];
+            $this->validate['answer.is_correct'] = ['required'];
         }
 
         if ($this->input('question.question_type') == QuestionType::EQ->value || $this->input('question.question_type') == QuestionType::AQ->value) {
@@ -43,9 +44,10 @@ class QuestionRequest extends BaseRequest
 
         if ($this->input('question.question_type') == QuestionType::IQ->value) {
             $this->validate['question.age'] = ['required', 'numeric'];
-            $this->validate['answer.correct_answer_id'] = ['required', 'numeric', 'exists:App\Models\Answer,id'];
-            $this->validate['answer.correct_answer'] = ['required'];
-            $this->validate['answer.wrong_answers'] = ['required', 'array'];
+            $this->validate['answer.iq_answers_ids'] = ['required', 'array'];
+            $this->validate['answer.iq_answers'] = ['required', 'array'];
+            $this->validate['answer.iq_answers.*'] = ['required'];
+            $this->validate['answer.is_correct'] = ['required'];
         }
 
         if ($this->input('question.question_type') == QuestionType::EQ->value || $this->input('question.question_type') == QuestionType::AQ->value) {
@@ -74,6 +76,9 @@ class QuestionRequest extends BaseRequest
             'answers.array' => "Đáp án phải là mảng",
             'score.required' => "Vui lòng nhập điểm",
             'score.numeric' => "Điểm phải là số",
+            'answer.iq_answers.required' => "Vui lòng nhập ít nhất 1 đáp án",
+            'answer.iq_answers.array' => "Đáp án phải là mảng",
+            'answer.iq_answers.*.required' => "Vui lòng nhập đáp án",
         ];
     }
 }

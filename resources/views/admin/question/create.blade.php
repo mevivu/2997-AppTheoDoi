@@ -4,7 +4,7 @@
 @section('content')
     <div class="page-body">
         <div class="container-xl">
-            <x-form :action="route('admin.question.store')" type="post" :validate="true">
+            <x-form :action="route('admin.question.store')" type="post" :validate="true" id="form_create_question">
                 <div class="row justify-content-center">
                     @include('admin.question.forms.create-left')
                     @include('admin.question.forms.create-right')
