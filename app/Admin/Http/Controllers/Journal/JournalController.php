@@ -63,7 +63,7 @@ class JournalController extends Controller
             [
                 'response' => $response,
                 'type' => JournalType::asSelectArray(),
-                'breadcrumbs' => $this->crums->add('DS Nhật ký', route($this->route['index']))->add('Cập nhật'),
+                'breadcrumbs' => $this->crums->add('DS nhật ký')->add('Cập nhật'),
             ]
         );
     }
