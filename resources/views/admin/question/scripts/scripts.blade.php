@@ -13,9 +13,11 @@
 
         $('#add_wrong_answer').click(function() {
             let html = `
-                <div class="d-flex align-items-center justify-content-between gap-3 position-relative mb-3">
-                    <x-input type="text" name="answer[wrong_answers][]" :placeholder="'Nhập câu trả lời sai'" :required="true" />
-                    <button type="button" class="btn btn-danger remove_wrong_answer">
+                <div class="d-flex align-items-center justify-content-start gap-2 position-relative mb-3">
+                        <input type="hidden" name="answer[is_correct][]" value="0"/>
+                        <input type="checkbox" name="answer[is_correct][]" class="form-check-input" value="1" onchange="toggleCheckbox(this)"/>
+                        <x-input type="text" name="answer[iq_answers][]" :placeholder="'Nhập nội dung câu trả lời'" />
+                     <button type="button" class="btn btn-danger remove_wrong_answer">
                         <i class="ti ti-x fs-2"></i>
                     </button>
                 </div>
@@ -44,4 +46,9 @@
             $(this).parent().remove();
         });
     });
+
+    function toggleCheckbox(checkbox) {
+        const hiddenInput = checkbox.previousElementSibling;
+        hiddenInput.disabled = checkbox.checked;
+    }
 </script>

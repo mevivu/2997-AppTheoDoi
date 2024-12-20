@@ -16,7 +16,7 @@
 
     <div class="col-12" id="answers">
         <div class="d-flex align-items-center justify-content-between">
-            <label class="control-label">{{ __('Câu trả lời:') }}:</label>
+            <label class="control-label">{{ __('Câu trả lời:') }}</label>
             <span class="text-primary cursor-pointer" id="add_answer">
                 <i class="ti ti-plus"></i>
                 {{ __('Thêm câu trả lời') }}
