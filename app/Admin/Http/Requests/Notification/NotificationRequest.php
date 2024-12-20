@@ -4,11 +4,8 @@ namespace App\Admin\Http\Requests\Notification;
 
 use App\Admin\Http\Requests\BaseRequest;
 use App\Enums\ApprovalStatus;
-use App\Enums\Notification\MessageType;
-use App\Enums\Notification\NotificationOption;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
-use App\Enums\VerifiedStatus;
 use Illuminate\Validation\Rules\Enum;
 
 class NotificationRequest extends BaseRequest
@@ -29,7 +26,6 @@ class NotificationRequest extends BaseRequest
             'admin_id' => ['nullable'],
             'title' => ['required', 'string'],
             'message' => ['required'],
-            'status' => ['required', new Enum(NotificationStatus::class)],
         ];
     }
 

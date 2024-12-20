@@ -16,22 +16,5 @@
         </div>
     </div>
 
-    <div class="card mb-3">
-        <div class="card-header gap-1">
-            <i class="ti ti-settings-cancel"></i>
-            @lang('status')
-        </div>
-        <div class="card-body p-2">
-            <x-select name="status" :required="true">
-                @foreach ($status as $key => $value)
-                    @if ($key == 1)
-                        <x-select-option :value="$key" :title="$value" selected />
-                    @else
-                        <x-select-option :value="$key" :title="$value" />
-                    @endif
-                @endforeach
-            </x-select>
-        </div>
-    </div>
 
 </div>

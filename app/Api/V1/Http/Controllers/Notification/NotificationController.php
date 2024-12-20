@@ -239,21 +239,20 @@ class NotificationController extends Controller
      *      "message": "Xóa thất bại."
      * }
      *
-     * @param NotificationRequest $request
+     * @param int $id
      * @return JsonResponse
      */
-    public function delete(NotificationRequest $request): JsonResponse
+    public function delete(int $id): JsonResponse
     {
         try {
-            $notification = $this->service->delete($request);
-            if ($notification) {
-                return $this->jsonResponseSuccessNoData();
-            } else {
-                return $this->jsonResponseError();
-            }
-        } catch (Exception $e) {
-            $this->logError('Delete user notifications failed:', $e);
-            return $this->jsonResponseError('Delete user notifications failed', 500);
+            Validator::validateExists($this->repository, $id);
+            $this->service->delete($id);
+            return $this->jsonResponseSuccessNoData();
+        } catch (NotFoundException|BadRequestException $e) {
+            return $this->jsonResponseError($e->getMessage());
+        } catch (Exception $exception) {
+            $this->logError('Deleted failed:', $exception);
+            return $this->jsonResponseError('Deleted failed', 500);
         }
     }
 }

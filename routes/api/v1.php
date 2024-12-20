@@ -43,7 +43,7 @@ Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationControlle
         Route::get('/{id}', 'detail');
         Route::put('/read', 'updateStatusRead');
         Route::post('/read-all', 'updateAllStatusReadAll');
-        Route::delete('delete', 'delete');
+        Route::delete('/{id}', 'delete');
     });
 
 // Assessment
