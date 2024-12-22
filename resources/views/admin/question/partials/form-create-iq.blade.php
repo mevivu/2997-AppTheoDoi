@@ -15,10 +15,14 @@
             </span>
         </div>
         <div class="d-flex align-items-center justify-content-start gap-2 mb-3">
-            <input type="hidden" name="answer[is_correct][]" value="0" />
-            <input type="checkbox" name="answer[is_correct][]" class="form-check-input" value="1"
+            <input type="hidden" name="answer[is_correct][][0]" value="0" />
+            <input type="radio" name="answer[is_correct][][0]" class="form-check-input" value="1"
                 onchange="toggleCheckbox(this)" />
             <x-input type="text" name="answer[iq_answers][]" :placeholder="'Nhập nội dung câu trả lời'" />
         </div>
+
+        <script>
+            let question_id = 0
+        </script>
     </div>
 </div>
