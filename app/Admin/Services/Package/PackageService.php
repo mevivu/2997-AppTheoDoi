@@ -25,8 +25,7 @@ class PackageService implements PackageServiceInterface
 
     public function __construct(
         PackageRepositoryInterface $repository,
-    )
-    {
+    ) {
         $this->repository = $repository;
 
     }
@@ -39,6 +38,7 @@ class PackageService implements PackageServiceInterface
     {
         $data = $request->validated();
         $data['status'] = PackageStatus::Draft;
+        $data['description'] = json_encode($data['description']);
         return $this->repository->create($data);
     }
 
@@ -47,8 +47,8 @@ class PackageService implements PackageServiceInterface
      */
     public function update(Request $request): object|bool
     {
-
         $data = $request->validated();
+        $data['description'] = json_encode($data['description']);
         return $this->repository->update($data['id'], $data);
     }
 

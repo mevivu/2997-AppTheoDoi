@@ -7,7 +7,7 @@
     <div class="page-body">
         <div class="container-xl">
             <x-form :action="route('admin.package.update')" type="put" :validate="true">
-                <x-input type="hidden" name="id" :value="$instance->id"/>
+                <x-input type="hidden" name="id" :value="$instance->id" />
                 <div class="row justify-content-center">
                     @include('admin.package.forms.edit-left')
                     @include('admin.package.forms.edit-right')
@@ -26,6 +26,5 @@
 @endpush
 
 @push('custom-js')
-
-
+    @include('admin.package.scripts.script')
 @endpush
