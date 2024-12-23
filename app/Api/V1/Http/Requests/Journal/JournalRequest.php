@@ -17,11 +17,11 @@ class JournalRequest extends BaseRequest
     protected function methodGet(): array
     {
         return [
-            'limit' => 'required|integer|min:1',
-            'page' => 'required|integer|min:1',
+            'limit' => 'nullable|integer|min:1',
+            'page' => 'nullable|integer|min:1',
             'type' => ['required', new Enum(JournalType::class)],
-            'child_id' => ['required','numeric', 'exists:children,id'],
-            'date' => 'required|date_format:Y-m-d',
+            'child_id' => ['required', 'numeric', 'exists:children,id'],
+            'date' => 'nullable|date_format:d-m-Y',
         ];
     }
 

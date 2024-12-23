@@ -45,7 +45,7 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-pennant"></i>',
         'roles' => [],
-        'permissions' => ['createPregnancy', 'viewPregnancy','viewPregnancy','updatePregnancy'],
+        'permissions' => ['createPregnancy', 'viewPregnancy', 'viewPregnancy', 'updatePregnancy'],
         'sub' => [
             [
                 'title' => 'Thêm Thai kì',
@@ -476,6 +476,36 @@ return [
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewRole'],
+            ]
+        ]
+    ],
+    [
+        'title' => 'Hỗ trợ khách hàng',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-lifebuoy"></i>',
+        'roles' => [],
+        'permissions' => ['viewSupport'],
+        'sub' => [
+            [
+                'title' => 'Thêm mới',
+                'routeName' => 'admin.support.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['viewSupport'],
+            ],
+            [
+                'title' => 'Trung tâm trợ giúp',
+                'routeName' => 'admin.support.help-center',
+                'icon' => '<i class="ti ti-help-square-rounded"></i>',
+                'roles' => [],
+                'permissions' => ['viewSupport'],
+            ],
+            [
+                'title' => 'Hướng dẫn sử dụng',
+                'routeName' => 'admin.support.guide',
+                'icon' => '<i class="ti ti-help-square-rounded"></i>',
+                'roles' => [],
+                'permissions' => ['viewSupport'],
             ]
         ]
     ],

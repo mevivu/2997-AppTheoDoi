@@ -43,6 +43,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Rating\RatingRepositoryInterface' => 'App\Admin\Repositories\Rating\RatingRepository',
         'App\Admin\Repositories\Subject\SubjectRepositoryInterface' => 'App\Admin\Repositories\Subject\SubjectRepository',
         'App\Admin\Repositories\Capability\CapabilityRepositoryInterface' => 'App\Admin\Repositories\Capability\CapabilityRepository',
+        'App\Admin\Repositories\Support\SupportRepositoryInterface' => 'App\Admin\Repositories\Support\SupportRepository',
     ];
 
     /**

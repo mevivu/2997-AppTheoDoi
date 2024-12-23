@@ -30,9 +30,8 @@ class JournalService implements JournalServiceInterface
 
     public function __construct(
         JournalRepositoryInterface $repository,
-        FileService                $fileService
-    )
-    {
+        FileService $fileService
+    ) {
         $this->repository = $repository;
         $this->fileService = $fileService;
     }
@@ -42,14 +41,20 @@ class JournalService implements JournalServiceInterface
     {
         $data = $request->validated();
         $type = $data['type'];
+
         $limit = $data['limit'] ?? 10;
         $page = $data['page'] ?? 1;
-        $date = $data['date'];
+        $date = $data['date'] ?? null;
+
         $query = $this->repository->getByQueryBuilder([
             'type' => $type,
             'child_id' => $data['child_id'],
         ]);
-        $query->whereDate('created_at', '=', $date);
+
+        if ($date) {
+            $date = date('Y-m-d', strtotime($date));
+            $query->whereDate('created_at', '=', $date);
+        }
         return $query->paginate($limit, ['*'], 'page', $page);
     }
 
