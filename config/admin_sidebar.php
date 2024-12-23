@@ -43,9 +43,9 @@ return [
     [
         'title' => 'Thai kì',
         'routeName' => null,
-        'icon' => '<i class="ti ti-external-link"></i>',
+        'icon' => '<i class="ti ti-pennant"></i>',
         'roles' => [],
-        'permissions' => ['createPregnancy', 'viewPregnancy'],
+        'permissions' => ['createPregnancy', 'viewPregnancy','viewPregnancy','updatePregnancy'],
         'sub' => [
             [
                 'title' => 'Thêm Thai kì',

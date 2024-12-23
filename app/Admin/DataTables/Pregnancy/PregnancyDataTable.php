@@ -14,7 +14,8 @@ class PregnancyDataTable extends BaseDataTable
 
     public function __construct(
         PregnancyRepositoryInterface $repository
-    ) {
+    )
+    {
         $this->repository = $repository;
 
         parent::__construct();
@@ -24,9 +25,9 @@ class PregnancyDataTable extends BaseDataTable
     public function setView(): void
     {
         $this->view = [
-            'child'=>'admin.pregnancy.datatable.child',
+            'child' => 'admin.pregnancy.datatable.child',
             'action' => 'admin.pregnancy.datatable.action',
-            'status'=>'admin.pregnancy.datatable.status',
+            'status' => 'admin.pregnancy.datatable.status',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
@@ -34,7 +35,7 @@ class PregnancyDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [0, 1,2,3];
+        $this->columnAllSearch = [1, 2, 3];
 
         $this->columnSearchDate = [2];
 
@@ -55,13 +56,18 @@ class PregnancyDataTable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getByQueryBuilder(['status'=>ActiveStatus::Active]);
+        return $this->repository->getByQueryBuilder(
+            [
+                ['status', '!=', ActiveStatus::Deleted],
+            ]
+        );
     }
 
     protected function setCustomColumns(): void
     {
         $this->customColumns = config('datatables_columns.pregnancy', []);
     }
+
     public function setCustomFilterColumns(): void
     {
         $this->customFilterColumns = [
@@ -73,6 +79,7 @@ class PregnancyDataTable extends BaseDataTable
 
         ];
     }
+
     protected function setCustomEditColumns(): void
     {
         $this->customEditColumns = [

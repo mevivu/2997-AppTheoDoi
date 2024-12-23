@@ -12,8 +12,9 @@ class PregnancyService implements PregnancyServiceInterface
 
     protected array $data;
     protected PregnancyRepositoryInterface $repository;
+
     public function __construct(
-     PregnancyRepositoryInterface $repository,
+        PregnancyRepositoryInterface $repository,
 
     )
     {
@@ -47,6 +48,7 @@ class PregnancyService implements PregnancyServiceInterface
         // TODO: Implement delete() method.
         return $this->repository->delete($id);
     }
+
     public function actionMultipleRecords(Request $request): bool
     {
         $this->data = $request->all();

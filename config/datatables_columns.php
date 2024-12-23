@@ -53,7 +53,7 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
-        'created_at'=>[
+        'created_at' => [
             'title' => 'Ngày tạo',
             'addClass' => 'text-center align-middle',
             'orderable' => false
@@ -80,12 +80,12 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
-        'start_date'=>[
+        'start_date' => [
             'title' => 'Ngày bắt đầu',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
-        'end_date'=>[
+        'end_date' => [
             'title' => 'Ngày kết thúc',
             'addClass' => 'text-center align-middle',
             'orderable' => false
