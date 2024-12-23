@@ -2,12 +2,13 @@
 
 namespace App\Admin\Http\Controllers\Quiz;
 
-use App\Admin\DataTables\Clinic\ClinicDataTable;
+use App\Admin\DataTables\Quiz\QuizDataTable;
 use App\Admin\Http\Controllers\Controller;
-use App\Admin\Http\Requests\Clinic\ClinicRequest;
+use App\Admin\Http\Requests\Quiz\QuizRequest;
 use App\Admin\Repositories\Quiz\QuizRepositoryInterface;
 use App\Admin\Services\Quiz\QuizServiceInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Question\QuestionType;
 use App\Traits\ResponseController;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -21,10 +22,9 @@ class QuizController extends Controller
     use ResponseController;
 
 
-
     public function __construct(
-        QuizRepositoryInterface   $repository,
-        QuizServiceInterface      $service
+        QuizRepositoryInterface $repository,
+        QuizServiceInterface    $service
     )
     {
 
@@ -38,23 +38,23 @@ class QuizController extends Controller
     public function getView(): array
     {
         return [
-            'index' => 'admin.clinic.index',
-            'create' => 'admin.clinic.create',
-            'edit' => 'admin.clinic.edit',
+            'index' => 'admin.quiz.index',
+            'create' => 'admin.quiz.create',
+            'edit' => 'admin.quiz.edit',
         ];
     }
 
     public function getRoute(): array
     {
         return [
-            'index' => 'admin.clinic.index',
-            'create' => 'admin.clinic.create',
-            'edit' => 'admin.clinic.edit',
-            'delete' => 'admin.clinic.delete',
+            'index' => 'admin.quiz.index',
+            'create' => 'admin.quiz.create',
+            'edit' => 'admin.quiz.edit',
+            'delete' => 'admin.quiz.delete',
         ];
     }
 
-    public function index(ClinicDataTable $dataTable)
+    public function index(QuizDataTable $dataTable)
     {
         $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
@@ -62,7 +62,7 @@ class QuizController extends Controller
             [
                 'status' => ActiveStatus::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
-                'breadcrumbs' => $this->crums->add(__('clinic')),
+                'breadcrumbs' => $this->crums->add(__('quiz')),
             ]
 
         );
@@ -72,12 +72,13 @@ class QuizController extends Controller
     {
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
-            'breadcrumbs' => $this->crums->add(__('clinic'),
+            'type' => QuestionType::asSelectArray(),
+            'breadcrumbs' => $this->crums->add(__('quiz'),
                 route($this->route['index']))->add(__('add')),
         ]);
     }
 
-    public function store(ClinicRequest $request): RedirectResponse
+    public function store(QuizRequest $request): RedirectResponse
     {
         return $this->handleResponse($request, function ($request) {
             return $this->service->store($request);
@@ -96,16 +97,26 @@ class QuizController extends Controller
             [
                 'instance' => $instance,
                 'status' => ActiveStatus::asSelectArray(),
-                'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),
+                'type' => QuestionType::asSelectArray(),
+                'breadcrumbs' => $this->crums->add(__('quiz'), route($this->route['index']))->add(__('edit')),
             ],
         );
 
     }
 
-    public function update(ClinicRequest $request): RedirectResponse
+    /**
+     * @throws Exception
+     */
+    public function update(QuizRequest $request): RedirectResponse
     {
+        if ($request['status'] == ActiveStatus::Deleted->value) {
+            $this->repository->delete($request['id']);
+            return redirect()->route($this->route['index'])
+                ->with('success', __('notifySuccess'));
+        }
         return $this->handleUpdateResponse($request, function ($request) {
             return $this->service->update($request);
+
         });
     }
 

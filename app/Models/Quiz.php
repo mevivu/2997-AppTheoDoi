@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ActiveStatus;
+use App\Enums\Question\QuestionType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -19,12 +20,16 @@ class Quiz extends Model
         'title',
         /* Mô tả */
         'description',
+        /** Tuổi */
+        'age',
+        /** Loại */
+        'type',
         /* Trạng thái */
         'status'
 
     ];
     protected $casts = [
-
+        'type' => QuestionType::class,
         'status' => ActiveStatus::class,
     ];
 
