@@ -4,12 +4,15 @@ namespace App\Api\V1\Http\Controllers\Package;
 
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Http\Requests\Package\PackageRequest;
+use App\Api\V1\Http\Resources\Package\PackageResource;
 use App\Api\V1\Http\Resources\Package\UserPackageResource;
 use App\Api\V1\Repositories\Package\PackageRepositoryInterface;
 use App\Api\V1\Services\Package\PackageServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
+use App\Enums\ActiveStatus;
+use App\Enums\Package\PackageType;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -22,13 +25,12 @@ class PackageController extends Controller
 
     public function __construct(
         PackageRepositoryInterface $repository,
-        PackageServiceInterface    $service
+        PackageServiceInterface $service
 
-    )
-    {
+    ) {
         $this->repository = $repository;
         $this->service = $service;
-        $this->middleware('auth:api');
+        $this->middleware('auth:api', ['only' => ['purchasePackage']]);
 
     }
 
@@ -68,8 +70,14 @@ class PackageController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $response = $this->service->index();
-            return $this->jsonResponseSuccess($response);
+            $response = $this->repository->getByQueryBuilder(
+                [
+                    'status' => ActiveStatus::Active->value,
+                    ['type', '!=', PackageType::Normal->value],
+                    ['type', '!=', PackageType::Trial->value],
+                ]
+            )->get();
+            return $this->jsonResponseSuccess(PackageResource::collection($response));
         } catch (Exception $exception) {
             $this->logError('Get packages failed:', $exception);
             return $this->jsonResponseError('Get  packages failed', 500);
