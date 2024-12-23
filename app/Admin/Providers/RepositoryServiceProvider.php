@@ -41,6 +41,8 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Journal\JournalRepositoryInterface' => 'App\Admin\Repositories\Journal\JournalRepository',
         'App\Admin\Repositories\Pregnancy\PregnancyRepositoryInterface' => 'App\Admin\Repositories\Pregnancy\PregnancyRepository',
         'App\Admin\Repositories\Rating\RatingRepositoryInterface' => 'App\Admin\Repositories\Rating\RatingRepository',
+        'App\Admin\Repositories\Subject\SubjectRepositoryInterface' => 'App\Admin\Repositories\Subject\SubjectRepository',
+        'App\Admin\Repositories\Capability\CapabilityRepositoryInterface' => 'App\Admin\Repositories\Capability\CapabilityRepository',
     ];
 
     /**
