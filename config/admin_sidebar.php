@@ -24,12 +24,44 @@ return [
                 'permissions' => ['CreateJournal'],
             ],
             [
-                'title' => 'DS Nhật ký',
-                'routeName' => 'admin.journal.index',
-                'icon' => '<i class="ti ti-list"></i>',
+                'title' => 'Nhật ký đơn thuốc',
+                'routeName' => 'admin.journal.prescription',
+                'icon' => '<i class="ti ti-pill"></i>',
                 'roles' => [],
                 'permissions' => ['viewJournal'],
             ],
+            [
+                'title' => 'Nhật ký Khoảng khắc',
+                'routeName' => 'admin.journal.moment',
+                'icon' => '<i class="ti ti-comet"></i>',
+                'roles' => [],
+                'permissions' => ['viewJournal'],
+            ]
+
+        ]
+    ],
+    [
+        'title' => 'Thai kì',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-pennant"></i>',
+        'roles' => [],
+        'permissions' => ['createPregnancy', 'viewPregnancy','viewPregnancy','updatePregnancy'],
+        'sub' => [
+            [
+                'title' => 'Thêm Thai kì',
+                'routeName' => 'admin.pregnancy.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createPregnancy'],
+            ],
+            [
+                'title' => 'DS Thai kì',
+                'routeName' => 'admin.pregnancy.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewPregnancy'],
+            ],
+
 
         ]
     ],
@@ -48,8 +80,24 @@ return [
                 'permissions' => ['createNotification'],
             ],
             [
-                'title' => 'DS thông báo',
+                'title' => 'Thông báo ADMIN',
                 'routeName' => 'admin.notification.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewNotification'],
+            ],
+
+            [
+                'title' => 'Thông báo Khách hàng',
+                'routeName' => 'admin.notification.user',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewNotification'],
+            ],
+
+            [
+                'title' => 'Yêu cầu xác nhận',
+                'routeName' => 'admin.notification.package',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewNotification'],
@@ -253,13 +301,6 @@ return [
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createQuestionGroup'],
-            ],
-            [
-                'title' => 'Nhóm câu hỏi',
-                'routeName' => 'admin.question-group.index',
-                'icon' => '<i class="ti ti-category"></i>',
-                'roles' => [],
-                'permissions' => ['viewQuestionGroup'],
             ],
             [
                 'title' => 'Câu hỏi IQ',

@@ -3,7 +3,7 @@
 namespace App\Api\V1\Services\Notification;
 
 
-use App\Admin\Repositories\Admin\AdminRepositoryInterface;
+use App\Admin\Services\File\FileService;
 use App\Admin\Traits\Roles;
 use App\Api\V1\Repositories\Notification\NotificationRepositoryInterface;
 use App\Api\V1\Repositories\User\UserRepositoryInterface;
@@ -24,20 +24,20 @@ class NotificationService implements NotificationServiceInterface
     use AuthServiceApi;
 
     protected NotificationRepositoryInterface $repository;
+    protected UserRepositoryInterface $userRepository;
 
-    protected AdminRepositoryInterface $adminRepository;
-
-    private UserRepositoryInterface $userRepository;
+    protected FileService $fileService;
 
     public function __construct(
         NotificationRepositoryInterface $repository,
         UserRepositoryInterface         $userRepository,
-        AdminRepositoryInterface        $adminRepository
+        FileService                     $fileService
     )
     {
         $this->repository = $repository;
         $this->userRepository = $userRepository;
-        $this->adminRepository = $adminRepository;
+        $this->fileService = $fileService;
+
 
     }
 
@@ -48,8 +48,7 @@ class NotificationService implements NotificationServiceInterface
             $userId = $this->getCurrentUserId();
             $limit = $data['limit'] ?? 10;
             $page = $data['page'] ?? 1;
-            $user = $this->repository->getNotificationByUserId("user_id", $userId, $limit, $page);
-            return $user;
+            return $this->repository->getNotificationByUserId("user_id", $userId, $limit, $page);
         } catch (Exception $e) {
             $this->logError('Failed to process get user', $e);
             return false;
@@ -71,7 +70,6 @@ class NotificationService implements NotificationServiceInterface
 
     public function updateAllStatusIsRead(Request $request): bool
     {
-        // TODO: Implement UpdateAllStatusIsRead() method.
         try {
             $response = $this->repository->getNotificationIsNotRead($this->getCurrentUserId());
             foreach ($response as $notification) {
@@ -85,33 +83,21 @@ class NotificationService implements NotificationServiceInterface
         }
     }
 
-    public function delete(Request $request): bool
+    /**
+     * @throws Exception
+     */
+    public function delete($id): void
     {
-        // TODO: Implement delete() method.
-        $data = $request->validated();
-        try {
-            $this->repository->delete($data['id']);
-            return true;
-        } catch (\Exception $e) {
-            return false;
+        $notification = $this->repository->findOrFail($id);
+        if ($notification->payment_confirmation_image) {
+            $this->fileService->deleteModelImages($notification, ['payment_confirmation_image']);
         }
+        $notification->delete();
     }
 
     /**
      * @throws Exception
      */
-    public function sendApprovalNotificationToAdmin(User $user): void
-    {
-        $title = config('notifications.package_purchase_pending.title');
-        $bodyTemplate = config('notifications.package_purchase_pending.message');
-        $body = str_replace('{fullname}', $user->fullname, $bodyTemplate);
-        $admins = $this->adminRepository->getAll();
-        $deviceTokens = $admins->pluck('device_token')->filter()->all();
-        if (!empty($deviceTokens)) {
-            $this->sendFirebaseNotification($deviceTokens, null, $title, $body);
-        }
-
-    }
 
 
     public function sendCustomerPaymentNotification(User $user): void
@@ -122,6 +108,7 @@ class NotificationService implements NotificationServiceInterface
         $this->sendFirebaseNotificationToUser($user, $title, $body, MessageType::UNCLASSIFIED);
 
     }
+
 
 
 }

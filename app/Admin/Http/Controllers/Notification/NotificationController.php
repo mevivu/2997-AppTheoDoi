@@ -2,7 +2,9 @@
 
 namespace App\Admin\Http\Controllers\Notification;
 
-use App\Admin\DataTables\Notification\NotificationDataTable;
+use App\Admin\DataTables\Notification\NotificationAdminDataTable;
+use App\Admin\DataTables\Notification\NotificationPackageDataTable;
+use App\Admin\DataTables\Notification\NotificationUserDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Notification\NotificationRequest;
 use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
@@ -45,7 +47,9 @@ class NotificationController extends Controller
     {
 
         return [
+            'user' => 'admin.notifications.user',
             'index' => 'admin.notifications.index',
+            'package' => 'admin.notifications.package',
             'create' => 'admin.notifications.create',
             'edit' => 'admin.notifications.edit'
         ];
@@ -56,16 +60,36 @@ class NotificationController extends Controller
 
         return [
             'index' => 'admin.notification.index',
+            'user' => 'admin.notification.user',
+            'package' => 'admin.notifications.package',
             'create' => 'admin.notification.create',
             'edit' => 'admin.notification.edit',
             'delete' => 'admin.page.delete'
         ];
     }
 
-    public function index(NotificationDataTable $dataTable)
+    public function index(NotificationAdminDataTable $dataTable)
     {
         $actionMultiple = $this->getActionMultiple();
         return $dataTable->render($this->view['index'], [
+            'breadcrumbs' => $this->crums->add(__('notifications')),
+            'actionMultiple' => $actionMultiple,
+        ]);
+    }
+
+    public function getNotificationByUser(NotificationUserDataTable $dataTable)
+    {
+        $actionMultiple = $this->getActionMultiple();
+        return $dataTable->render($this->view['user'], [
+            'breadcrumbs' => $this->crums->add(__('notifications')),
+            'actionMultiple' => $actionMultiple,
+        ]);
+    }
+
+    public function getNotificationByPackage(NotificationPackageDataTable $dataTable)
+    {
+        $actionMultiple = $this->getActionMultiple();
+        return $dataTable->render($this->view['package'], [
             'breadcrumbs' => $this->crums->add(__('notifications')),
             'actionMultiple' => $actionMultiple,
         ]);

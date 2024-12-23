@@ -137,4 +137,5 @@ class ClinicController extends Controller
         }
         return back()->with('error', __('notifyFail'));
     }
+
 }

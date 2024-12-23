@@ -53,8 +53,45 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
-        'type' => [
-            'title' => 'type',
+        'created_at' => [
+            'title' => 'Ngày tạo',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
+    'pregnancy' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'child_id' => [
+            'title' => 'Trẻ em',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'start_date' => [
+            'title' => 'Ngày bắt đầu',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'end_date' => [
+            'title' => 'Ngày kết thúc',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'status' => [
+            'title' => 'status',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],

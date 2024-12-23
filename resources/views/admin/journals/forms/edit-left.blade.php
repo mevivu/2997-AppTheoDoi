@@ -1,11 +1,11 @@
 <div class="col-12 col-md-9">
     <div class="card">
         <div class="card-header justify-content-center">
-            <h2 class="mb-0">{{ __('Thông tin Admin') }}</h2>
+            <h2 class="mb-0">{{ __('Thông tin Thai kì') }}</h2>
         </div>
         <div class="row card-body">
 
-            <!-- Fullname -->
+            <!-- Title -->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
                     <label class="control-label">{{ __('Tiêu đề') }}:</label>
@@ -14,7 +14,7 @@
                              value="{{ $response->title }}"/>
                 </div>
             </div>
-
+            <!-- children -->
             <div class="col-md-6 col-sm-12">
                 <label class="control-label">
                     <span class="ti ti-user"></span>

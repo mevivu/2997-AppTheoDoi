@@ -180,21 +180,6 @@ class NotificationService implements NotificationServiceInterface
 
         $this->handleApprovalPackage($notification, $this->data);
 
-        $userId = $notification->user_id;
-        $adminId = $notification->admin_id;
-
-
-        if ($userId) {
-            $user = User::findOrFail($userId);
-            $device_token = $user->device_token;
-        } else {
-            $admin = Admin::findOrFail($adminId);
-            $device_token = $admin->device_token;
-        }
-
-        if ($device_token) {
-            $this->sendFirebaseNotification([$device_token], null, $this->data['title'], $this->data['message']);
-        }
         return $this->repository->update($this->data['id'], $this->data);
     }
 

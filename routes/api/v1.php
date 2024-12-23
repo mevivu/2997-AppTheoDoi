@@ -43,7 +43,7 @@ Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationControlle
         Route::get('/{id}', 'detail');
         Route::put('/read', 'updateStatusRead');
         Route::post('/read-all', 'updateAllStatusReadAll');
-        Route::delete('delete', 'delete');
+        Route::delete('/{id}', 'delete');
     });
 
 // Assessment
@@ -88,7 +88,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Journal\JournalController::class)
         Route::delete('/{id}', 'delete');
     });
 
-// Pregnancy
+// pregnancy
 Route::controller(\App\Api\V1\Http\Controllers\Pregnancy\PregnancyController::class)
     ->prefix('/pregnancy')
     ->as('pregnancy.')
@@ -97,6 +97,17 @@ Route::controller(\App\Api\V1\Http\Controllers\Pregnancy\PregnancyController::cl
         Route::get('/{id}', 'show');
         Route::post('/', 'store');
         Route::post('/update', 'update');
+        Route::delete('/{id}', 'delete');
+    });
+
+// Rating
+Route::controller(\App\Api\V1\Http\Controllers\Rating\RatingController::class)
+    ->prefix('/ratings')
+    ->as('rating.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+        Route::post('/', 'store');
         Route::delete('/{id}', 'delete');
     });
 
