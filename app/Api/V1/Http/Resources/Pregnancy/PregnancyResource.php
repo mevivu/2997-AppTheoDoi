@@ -2,6 +2,7 @@
 
 namespace App\Api\V1\Http\Resources\Pregnancy;
 
+use App\Api\V1\Support\CheckPackage;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
@@ -10,6 +11,7 @@ use JsonSerializable;
 
 class PregnancyResource extends JsonResource
 {
+    use CheckPackage;
     /**
      * Transform the resource into an array.
      *
@@ -19,6 +21,7 @@ class PregnancyResource extends JsonResource
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
+        $isContentVisible = $this->checkUserPackage();
         return [
             'id' => $this->id,
             'start_date' => format_date($this->start_date),
@@ -28,7 +31,9 @@ class PregnancyResource extends JsonResource
             'length' => $this->length,
             'head_circumference' => $this->head_circumference,
             'image' => formatImageUrl($this->image),
-            'created_at' => format_date($this->created_at)
+            'created_at' => format_date($this->created_at),
+            'checked' => $isContentVisible
+
         ];
     }
 }
