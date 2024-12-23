@@ -22,7 +22,8 @@ class QuizRequest extends BaseRequest
             'age' => ['required', 'numeric'],
             'type' => ['required', new Enum(QuestionType::class)],
             'description' => ['nullable', 'string'],
-
+            'question_ids' => ['required', 'array'],
+            'question_ids.*' => ['exists:questions,id'],
         ];
     }
 
@@ -34,6 +35,8 @@ class QuizRequest extends BaseRequest
             'title' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'age' => ['required', 'numeric'],
+            'question_ids' => ['required', 'array'],
+            'question_ids.*' => ['exists:questions,id'],
             'status' => ['required', new Enum(ActiveStatus::class)],
 
 

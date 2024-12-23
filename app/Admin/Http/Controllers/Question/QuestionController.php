@@ -15,13 +15,14 @@ use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 
 class QuestionController extends Controller
 {
-    protected $questionGroupRepository;
+    protected QuestionGroupRepositoryInterface $questionGroupRepository;
 
     public function __construct(
         QuestionRepositoryInterface $repository,
@@ -157,7 +158,7 @@ class QuestionController extends Controller
         ];
     }
 
-    public function actionMultipleRecords(Request $request)
+    public function actionMultipleRecords(Request $request): RedirectResponse
     {
         $boolean = $this->service->actionMultipleRecords($request);
         if ($boolean) {
@@ -165,4 +166,20 @@ class QuestionController extends Controller
         }
         return back()->with('error', __('notifyFail'));
     }
+
+    public function getQuestionsByType(QuestionRequest $request): JsonResponse
+    {
+        try {
+            $type = $request['type'];
+            $questions = $this->repository->getBy([
+                'question_type' => $type,
+                'status' => ActiveStatus::Active
+            ]);
+
+            return response()->json(['data' => $questions], 200);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Server error'], 500);
+        }
+    }
+
 }

@@ -2,17 +2,6 @@
     <div class="card">
         <div class="row card-body">
 
-            <div class="col-12">
-                <div class="mb-3">
-                    <label class="control-label">@lang('type')</label>
-                    <x-select name="type" :required="true">
-                        @foreach ($type as $key => $value)
-                            <x-select-option :value="$key" :title="$value"/>
-                        @endforeach
-                    </x-select>
-                </div>
-            </div>
-
             <!-- title -->
             <div class="col-12">
                 <div class="mb-3">
@@ -49,6 +38,28 @@
                 </div>
             </div>
 
+            <!-- type -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('type')</label>
+                    <x-select name="type" :required="true" id="type-select" >
+                        <x-select-option value="" :title="__('--Chọn thể loại--')" />
+                        @foreach ($type as $key => $value)
+                            <x-select-option :value="$key" :title="$value"/>
+                        @endforeach
+                    </x-select>
+                </div>
+            </div>
+
+
+            <!-- show questions -->
+            <div class="col-12">
+                <div id="loading" style="display: none;">
+                    <p>Loading...</p>
+                </div>
+                <div id="questions-container" class="mb-3">
+                 </div>
+            </div>
 
         </div>
     </div>
