@@ -6,6 +6,8 @@ use App\Enums\ActiveStatus;
 use App\Enums\Question\QuestionType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Question extends Model
 {
@@ -31,12 +33,12 @@ class Question extends Model
         'question_type' => QuestionType::class,
     ];
 
-    public function group()
+    public function group(): BelongsTo
     {
         return $this->belongsTo(QuestionGroup::class, 'question_group_id', 'id');
     }
 
-    public function answers()
+    public function answers(): HasMany
     {
         return $this->hasMany(Answer::class, 'question_id', 'id');
     }

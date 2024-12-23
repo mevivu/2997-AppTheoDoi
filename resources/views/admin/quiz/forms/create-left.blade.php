@@ -1,0 +1,55 @@
+<div class="col-12 col-md-9">
+    <div class="card">
+        <div class="row card-body">
+
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('type')</label>
+                    <x-select name="type" :required="true">
+                        @foreach ($type as $key => $value)
+                            <x-select-option :value="$key" :title="$value"/>
+                        @endforeach
+                    </x-select>
+                </div>
+            </div>
+
+            <!-- title -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('title')</label>
+                    <x-input name="title"
+                             :value="old('title')"
+                             :required="true"
+                             :placeholder="__('title')"/>
+                </div>
+            </div>
+
+            <!-- age -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('age')</label>
+                    <x-input name="age"
+                             type="number"
+                             :value="old('age')"
+                             :required="true"
+                             :placeholder="__('age')"/>
+                </div>
+            </div>
+
+
+            <!-- description -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('description')</label>
+                    <textarea name="description"
+                              class="form-control"
+                              rows="4"
+                              placeholder="{{ __('description') }}"
+                    >{{ old('description') }}</textarea>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>

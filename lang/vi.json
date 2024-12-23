@@ -279,5 +279,7 @@
     "opening_time": "Giờ mở cửa",
     "vaccination_schedule": "Lịch tiêm chủng",
     "performed_on": "Ngày tiêm chủng",
-    "package": "Gói"
+    "package": "Gói",
+    "quiz": "Bài kiểm tra",
+    "age": "Độ tuổi"
 }

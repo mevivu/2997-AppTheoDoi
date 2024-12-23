@@ -203,6 +203,28 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                Route::delete('/delete/{id}', 'delete')->name('delete');
            });
         });
+
+    //Quiz
+    Route::controller(\App\Admin\Http\Controllers\Quiz\QuizController::class)
+        ->prefix('/bai-kiem-tra')
+        ->as('quiz.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createQuiz', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewQuiz', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['permission:updateQuiz', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:deleteQuiz', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
     //Journals
     Route::controller(\App\Admin\Http\Controllers\Journal\JournalController::class)
         ->prefix('/nhat-ky')
