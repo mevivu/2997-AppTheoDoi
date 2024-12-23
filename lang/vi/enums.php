@@ -23,6 +23,7 @@ use App\Enums\Setting\SettingGroup;
 use App\Enums\ActiveStatus;
 use App\Enums\Exercise\ExerciseType;
 use App\Enums\Child\ChildStatus;
+use App\Enums\Support\SupportType;
 use App\Enums\User\{
     Gender,
     UserStatus,
@@ -31,6 +32,10 @@ use App\Enums\User\{
 };
 
 return [
+    SupportType::class => [
+        SupportType::HelpCenter->value => 'Trung tâm trợ giúp',
+        SupportType::Guide->value => 'Hướng dẫn sử dụng',
+    ],
     ExerciseType::class => [
         ExerciseType::PHYSICAL->value => 'Bài tập thể chất',
         ExerciseType::POWER->value => 'Bài tập sức mạnh',
@@ -61,8 +66,8 @@ return [
         ChildStatus::Deleted->value => 'Đã xóa',
     ],
     JournalType::class => [
-      JournalType::Prescription->value=>"Đơn thuốc",
-        JournalType::Moment->value=>"khoảnh khắc"
+        JournalType::Prescription->value => "Đơn thuốc",
+        JournalType::Moment->value => "khoảnh khắc"
     ],
     PackageType::class => [
         PackageType::Trial->value => 'Dùng thử',

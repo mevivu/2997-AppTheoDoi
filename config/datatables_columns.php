@@ -1,6 +1,33 @@
 <?php
 
 return [
+    'support' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center w-25',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'title' => [
+            'title' => 'Tiêu đề',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'status' => [
+            'title' => 'Trạng thái',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
     'expected' => [
         'checkbox' => [
             'title' => 'choose',
