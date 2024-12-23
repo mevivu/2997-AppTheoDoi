@@ -2,18 +2,16 @@
 
 namespace App\Api\V1\Http\Resources\Journal;
 
-use App\Api\V1\Support\AuthServiceApi;
-use App\Enums\Package\PackageType;
+use App\Api\V1\Support\CheckPackage;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Carbon;
 use JsonSerializable;
 
 class JournalResource extends JsonResource
 {
-    use AuthServiceApi;
+    use CheckPackage;
 
     /**
      * Transform the resource into an array.
@@ -24,12 +22,7 @@ class JournalResource extends JsonResource
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        $user = $this->getCurrentUser();
-        $package = $user->userPackages->first();
-        $isContentVisible = true;
-        if ($package->current_type == PackageType::Normal) {
-            $isContentVisible = $this->created_at >= Carbon::now()->subYear();
-        }
+        $isContentVisible = $this->checkUserPackage();
 
         return [
             'id' => $this->id,
