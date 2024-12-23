@@ -10,5 +10,9 @@ interface PregnancyServiceInterface
 
     public function update(Request $request);
 
+    public function delete($id): object;
+
     public function actionMultipleRecords(Request $request);
+
+
 }

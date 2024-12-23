@@ -1,24 +1,21 @@
 <?php
 
-namespace App\Admin\DataTables\Journal;
+namespace App\Admin\DataTables\Pregnancy;
 
 use App\Admin\DataTables\BaseDataTable;
-use App\Admin\Repositories\Children\ChildrenRepositoryInterface;
-use App\Admin\Repositories\Journal\JournalRepositoryInterface;
-use App\Admin\Traits\Roles;
-use App\Enums\Child\ChildStatus;
-use App\Enums\Journal\JournalType;
-use App\Enums\User\Gender;
+use App\Admin\Repositories\Pregnancy\PregnancyRepositoryInterface;
+use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Builder;
 
-class JournalMomentDataTable extends BaseDataTable
+class PregnancyDataTable extends BaseDataTable
 {
-    protected $nameTable = 'JournalTable';
+    protected $nameTable = 'pregnancyTable';
 
 
     public function __construct(
-        JournalRepositoryInterface $repository
-    ) {
+        PregnancyRepositoryInterface $repository
+    )
+    {
         $this->repository = $repository;
 
         parent::__construct();
@@ -28,21 +25,27 @@ class JournalMomentDataTable extends BaseDataTable
     public function setView(): void
     {
         $this->view = [
-            'title'=>'admin.journals.datatable.title',
-            'child'=>'admin.journals.datatable.child',
-            'action' => 'admin.journals.datatable.action',
-
+            'child' => 'admin.pregnancy.datatable.child',
+            'action' => 'admin.pregnancy.datatable.action',
+            'status' => 'admin.pregnancy.datatable.status',
+            'checkbox' => 'admin.common.checkbox',
         ];
     }
 
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [0, 1,2];
+        $this->columnAllSearch = [1, 2, 3];
 
-        $this->columnSearchDate = [1,2];
+        $this->columnSearchDate = [2];
 
+        $this->columnSearchSelect = [
 
+            [
+                'column' => 3,
+                'data' => ActiveStatus::asSelectArray()
+            ],
+        ];
     }
 
 
@@ -53,13 +56,18 @@ class JournalMomentDataTable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getByQueryBuilder(['type'=>JournalType::Moment]);
+        return $this->repository->getByQueryBuilder(
+            [
+                ['status', '!=', ActiveStatus::Deleted],
+            ]
+        );
     }
 
     protected function setCustomColumns(): void
     {
-        $this->customColumns = config('datatables_columns.journal', []);
+        $this->customColumns = config('datatables_columns.pregnancy', []);
     }
+
     public function setCustomFilterColumns(): void
     {
         $this->customFilterColumns = [
@@ -68,23 +76,22 @@ class JournalMomentDataTable extends BaseDataTable
                     $subQuery->where('fullname', 'like', "%$keyword%");
                 });
             },
-            'title' => function ($query, $keyword) {
-                $query->where('title', 'like', "%$keyword%");
-            },
 
         ];
     }
+
     protected function setCustomEditColumns(): void
     {
         $this->customEditColumns = [
-
-            'title' => $this->view['title'],
+            'status' => $this->view['status'],
+            'checkbox' => $this->view['checkbox'],
             'child_id' => function ($children) {
                 return view($this->view['child'], [
                     'child' => $children->child,
                 ])->render();
             },
-            'created_at' => '{{ date("d-m-Y", strtotime($created_at)) }}',
+            'start_date' => '{{ date("d-m-Y", strtotime($start_date)) }}',
+            'end_date' => '{{ date("d-m-Y", strtotime($end_date)) }}',
 
         ];
     }
@@ -100,11 +107,10 @@ class JournalMomentDataTable extends BaseDataTable
     protected function setCustomRawColumns(): void
     {
         $this->customRawColumns = [
-            'title',
             'child_id',
-            'type',
+            'status',
             'action',
-
+            'checkbox',
 
         ];
     }

@@ -88,7 +88,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Journal\JournalController::class)
         Route::delete('/{id}', 'delete');
     });
 
-// Pregnancy
+// pregnancy
 Route::controller(\App\Api\V1\Http\Controllers\Pregnancy\PregnancyController::class)
     ->prefix('/pregnancy')
     ->as('pregnancy.')
