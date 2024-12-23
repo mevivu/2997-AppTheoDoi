@@ -39,14 +39,13 @@ class PackageService implements PackageServiceInterface
 
 
     public function __construct(
-        PackageRepositoryInterface      $repository,
-        UserPackageRepositoryInterface  $userPackageRepository,
-        NotificationServiceInterface    $notificationService,
-        AdminRepositoryInterface        $adminRepository,
+        PackageRepositoryInterface $repository,
+        UserPackageRepositoryInterface $userPackageRepository,
+        NotificationServiceInterface $notificationService,
+        AdminRepositoryInterface $adminRepository,
         NotificationRepositoryInterface $notificationRepository,
-        FileService                     $fileService
-    )
-    {
+        FileService $fileService
+    ) {
         $this->repository = $repository;
         $this->userPackageRepository = $userPackageRepository;
         $this->notificationService = $notificationService;
@@ -78,12 +77,12 @@ class PackageService implements PackageServiceInterface
                 ->uploadAvatar('images/package', $image);
         }
         $this->notificationService->sendCustomerPaymentNotification($user);
-        $this->notificationService->sendNotificationsPaymentToAdmins($user, $data['payment_confirmation_image'],$packageId);
+        $this->notificationService->sendNotificationsPaymentToAdmins($user, $data['payment_confirmation_image'], $packageId);
         return true;
 
     }
 
-//    public function purchasePackage(Request $request): ?Model
+    //    public function purchasePackage(Request $request): ?Model
 //    {
 //        $data = $request->validated();
 //        $user = $this->getCurrentUser();
