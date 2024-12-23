@@ -9,9 +9,17 @@ enum QuestionType: string
 {
     use Enum;
 
+    /** IQ */
     case IQ = 'iq';
+
+    /** EQ */
     case EQ = 'eq';
+
+    /** AQ */
     case AQ = 'aq';
+
+    /** Thể chất */
+    case PQ = 'pq';
 
 
     public function badge(): string
