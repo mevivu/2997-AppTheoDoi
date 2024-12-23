@@ -39,6 +39,26 @@ class QuestionService implements QuestionServiceInterface
 
     protected function addIqQuestion($data, $question)
     {
+
+        //     "answer" => array:2 [▼
+        //     "is_correct" => array:3 [▼
+        //       0 => array:1 [▼
+        //         0 => "0"
+        //       ]
+        //       1 => array:1 [▼
+        //         0 => "1"
+        //       ]
+        //       2 => array:1 [▼
+        //         0 => "0"
+        //       ]
+        //     ]
+        //     "iq_answers" => array:3 [▼
+        //       0 => "213"
+        //       1 => "cc"
+        //       2 => "đ"
+        //     ]
+        //   ]
+        // ]
         $question_id = $question->id;
 
         $answers = $data['answer']['iq_answers'];
@@ -48,7 +68,7 @@ class QuestionService implements QuestionServiceInterface
             $this->answerRepository->create([
                 'question_id' => $question_id,
                 'answer' => $answer,
-                'is_correct' => isset($isCorrect[$index]) && $isCorrect[$index] == '1' ? true : false,
+                'is_correct' => isset($isCorrect[$index][0]) && $isCorrect[$index][0] == '1' ? true : false,
             ]);
         }
 
@@ -88,30 +108,36 @@ class QuestionService implements QuestionServiceInterface
         }
     }
 
+
+
     protected function updateIqQuestion($data, $question)
     {
         $data['answer']['question_id'] = $question->id;
-
         $answers = $data['answer']['iq_answers'];
-        $isCorrect = $data['answer']['is_correct'];
+        $correctAnswerId = $data['answer']['is_correct'][$question->id];
 
         $existingAnswers = $this->answerRepository->getByQueryBuilder([
             'question_id' => $data['answer']['question_id'],
         ])->get();
 
         foreach ($answers as $answerId => $answer) {
-            $existingAnswer = $existingAnswers->where('id', $answerId)->first();
+            if ($answerId == $correctAnswerId) {
+                $isCorrectAnswer = true;
+            } else {
+                $isCorrectAnswer = false;
+            }
 
+            $existingAnswer = $existingAnswers->firstWhere('id', $answerId);
             if ($existingAnswer) {
-                $this->answerRepository->update($answerId, [
+                $existingAnswer->update([
                     'answer' => $answer,
-                    'is_correct' => isset($isCorrect[$answerId]) && $isCorrect[$answerId] == '1' ? true : false,
+                    'is_correct' => $isCorrectAnswer,
                     'question_id' => $data['answer']['question_id'],
                 ]);
             } else {
                 $this->answerRepository->create([
                     'answer' => $answer,
-                    'is_correct' => isset($isCorrect[$answerId]) && $isCorrect[$answerId] == '1' ? true : false,
+                    'is_correct' => $isCorrectAnswer,
                     'question_id' => $data['answer']['question_id'],
                 ]);
             }
@@ -119,10 +145,12 @@ class QuestionService implements QuestionServiceInterface
 
         foreach ($existingAnswers as $existingAnswer) {
             if (!isset($answers[$existingAnswer->id])) {
-                $this->answerRepository->delete($existingAnswer->id);
+                $existingAnswer->delete();
             }
         }
     }
+
+
     protected function updateEqAqQuestion($data, $question)
     {
         $data['answer']['question_id'] = $question->id;

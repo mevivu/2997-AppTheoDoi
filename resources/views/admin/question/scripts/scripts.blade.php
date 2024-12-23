@@ -14,8 +14,8 @@
         $('#add_wrong_answer').click(function() {
             let html = `
                 <div class="d-flex align-items-center justify-content-start gap-2 position-relative mb-3">
-                        <input type="hidden" name="answer[is_correct][]" value="0"/>
-                        <input type="checkbox" name="answer[is_correct][]" class="form-check-input" value="1" onchange="toggleCheckbox(this)"/>
+                        <input type="hidden" name="answer[is_correct][][${question_id}]" value="0" />
+                        <input type="radio" name="answer[is_correct][][${question_id}]" class="form-check-input"  value="1" onChange="toggleCheckbox(this)" />
                         <x-input type="text" name="answer[iq_answers][]" :placeholder="'Nhập nội dung câu trả lời'" />
                      <button type="button" class="btn btn-danger remove_wrong_answer">
                         <i class="ti ti-x fs-2"></i>
@@ -45,10 +45,37 @@
         $(document).on('click', '.remove_answer', function() {
             $(this).parent().remove();
         });
+
+        $('#add_wrong_answer_edit').click(function() {
+            const tempAnswerId = Date.now();
+
+            let html = `
+       <div class="d-flex align-items-center justify-content-start gap-2 position-relative mb-3" id="answer_${tempAnswerId}">
+            <input type="hidden" name="answer[is_correct][${question_id}]" value="0" />
+            <input type="radio" name="answer[is_correct][${question_id}]" class="form-check-input" value="${tempAnswerId}" onChange="toggleCheckboxEdit(this, ${tempAnswerId})" />
+            <x-input type="text" name="answer[iq_answers][${tempAnswerId}]" :placeholder="'Nhập nội dung câu trả lời'" />
+            <button type="button" class="btn btn-danger remove_wrong_answer">
+                <i class="ti ti-x fs-2"></i>
+            </button>
+        </div>
+    `;
+            $('#wrong_answers').append(html);
+        });
+
     });
 
     function toggleCheckbox(checkbox) {
         const hiddenInput = checkbox.previousElementSibling;
         hiddenInput.disabled = checkbox.checked;
+    }
+
+    function toggleCheckboxEdit(selectedRadio, tempAnswerId) {
+        $('input[name="answer[is_correct][' + question_id + ']"]').each(function() {
+            $(this).val('0');
+        });
+
+        $(selectedRadio).val(tempAnswerId);
+
+        $('input[name="answer[is_correct][' + question_id + ']"]').val(tempAnswerId);
     }
 </script>

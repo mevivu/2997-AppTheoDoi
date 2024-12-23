@@ -20,7 +20,7 @@ class QuestionRequest extends BaseRequest
         if ($this->input('question.question_type') == QuestionType::IQ->value) {
             $this->validate['question.age'] = ['required', 'numeric'];
             $this->validate['answer.iq_answers'] = ['required', 'array'];
-            $this->validate['answer.iq_answers.*'] = ['required'];
+            $this->validate['answer.iq_answers.*'] = ['required', 'string'];
             $this->validate['answer.is_correct'] = ['required'];
         }
 
@@ -44,10 +44,10 @@ class QuestionRequest extends BaseRequest
 
         if ($this->input('question.question_type') == QuestionType::IQ->value) {
             $this->validate['question.age'] = ['required', 'numeric'];
-            $this->validate['answer.iq_answers_ids'] = ['required', 'array'];
-            $this->validate['answer.iq_answers'] = ['required', 'array'];
-            $this->validate['answer.iq_answers.*'] = ['required'];
+            $this->validate['answer.iq_answers'] = ['required'];
+            $this->validate['answer.iq_answers.*'] = ['required', 'string'];
             $this->validate['answer.is_correct'] = ['required'];
+            $this->validate['answer.is_correct.*'] = ['required'];
         }
 
         if ($this->input('question.question_type') == QuestionType::EQ->value || $this->input('question.question_type') == QuestionType::AQ->value) {
