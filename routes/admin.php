@@ -182,6 +182,27 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
+    //pregnancy
+    Route::controller(\App\Admin\Http\Controllers\Pregnancy\PregnancyController::class)
+        ->prefix('/thai-ki')
+        ->as('pregnancy.')
+        ->group(function () {
+           Route::group(['middleware' => ['permission:createPregnancy', 'auth:admin']], function () {
+              Route::get('/add', 'create')->name('create');
+              Route::post('/add', 'store')->name('store');
+           });
+           Route::group(['middleware' => ['permission:viewPregnancy', 'auth:admin']], function () {
+               Route::get('/', 'index')->name('index');
+               Route::get('/edit/{id}', 'edit')->name('edit');
+           });
+           Route::group(['middleware' => ['permission:updatePregnancy', 'auth:admin']], function () {
+               Route::put('/edit', 'update')->name('update');
+               Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+           });
+           Route::group(['middleware' => ['permission:deletePregnancy', 'auth:admin']], function () {
+               Route::delete('/delete/{id}', 'delete')->name('delete');
+           });
+        });
     //Journals
     Route::controller(\App\Admin\Http\Controllers\Journal\JournalController::class)
         ->prefix('/nhat-ky')

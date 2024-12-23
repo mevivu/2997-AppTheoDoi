@@ -41,6 +41,31 @@ return [
         ]
     ],
     [
+        'title' => 'Thai kì',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-external-link"></i>',
+        'roles' => [],
+        'permissions' => ['createPregnancy', 'viewPregnancy'],
+        'sub' => [
+            [
+                'title' => 'Thêm Thai kì',
+                'routeName' => 'admin.pregnancy.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createPregnancy'],
+            ],
+            [
+                'title' => 'DS Thai kì',
+                'routeName' => 'admin.pregnancy.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewPregnancy'],
+            ],
+
+
+        ]
+    ],
+    [
         'title' => 'notification',
         'routeName' => null,
         'icon' => '<i class="ti ti-bell-check"></i>',

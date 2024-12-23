@@ -1,7 +1,7 @@
 <div class="col-12 col-md-9">
     <div class="card">
         <div class="card-header justify-content-center">
-            <h2 class="mb-0">{{ __('Thông tin Admin') }}</h2>
+            <h2 class="mb-0">{{ __('Thông tin Thai kì') }}</h2>
         </div>
         <div class="row card-body">
 
