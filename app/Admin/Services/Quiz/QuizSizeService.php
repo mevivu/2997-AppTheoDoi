@@ -39,7 +39,12 @@ class QuizSizeService implements QuizServiceInterface
     public function store(Request $request): object|false
     {
         $data = $request->validated();
-        return $this->repository->create($data);
+        $questionIds = $data['question_ids'] ?? [];
+        $quiz = $this->repository->create($data);
+        if (!empty($data['question_ids'])) {
+            $quiz->questions()->attach($questionIds);
+        }
+        return $quiz;
     }
 
     /**
@@ -49,7 +54,10 @@ class QuizSizeService implements QuizServiceInterface
     {
 
         $data = $request->validated();
-        return $this->repository->update($data['id'], $data);
+        $questionIds = $data['question_ids'] ?? [];
+        $quiz = $this->repository->update($data['id'], $data);
+        $quiz->questions()->sync($questionIds);
+        return $quiz;
     }
 
     /**

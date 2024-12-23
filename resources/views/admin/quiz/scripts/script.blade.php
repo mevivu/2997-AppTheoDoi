@@ -5,6 +5,11 @@
         $('#type-select').on('change', function () {
             const selectedType = $(this).val();
             const questionContainer = $('#questions-container');
+            const checkCount = $('#checked-count');
+            if(selectedType === ''){
+                questionContainer.empty();
+                checkCount.text(0);
+            }
             if (selectedType) {
                 questionContainer.empty();
                 $('#loading').show();
@@ -26,13 +31,20 @@
                             `;
                                 questionContainer.append(questionHtml);
                             });
+
+                            $('input[name="question_ids[]"]').on('change', function() {
+                                var checkedCount = $('input[name="question_ids[]"]:checked').length;
+                                $('#checked-count').text(checkedCount);
+                            });
                         } else {
                             questionContainer.html('<div>Không có câu hỏi nào.</div>');
+                            checkCount.text(0);
                         }
                     },
                     error: function (error) {
                         $('#loading').hide();
                         questionContainer.html('<div>Lỗi khi tải câu hỏi.</div>');
+                        checkCount.text(0);
 
                     }
                 });

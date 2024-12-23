@@ -50,12 +50,17 @@
                     </x-select>
                 </div>
             </div>
-
+            <div class="col-12">
+                <div id="count-checked" class="mb-3">
+                    Các câu hỏi được chọn: <span id="checked-count">0</span>
+                </div>
+            </div>
 
             <!-- show questions -->
             <div class="col-12">
+
                 <div id="loading" style="display: none;">
-                    <p>Loading...</p>
+                    <i class="fa fa-spinner fa-spin"></i> Loading...
                 </div>
                 <div id="questions-container" class="mb-3">
                  </div>
