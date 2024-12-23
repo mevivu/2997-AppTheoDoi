@@ -28,8 +28,6 @@ class PregnancyService implements PregnancyServiceInterface
     public function store(Request $request): object
     {
         $data = $request->validated();
-        $data['image'] = $data['image'] ? json_encode(explode(",", $data['image'][0])) : null;
-
         return $this->repository->create($data);
 
     }
@@ -38,8 +36,6 @@ class PregnancyService implements PregnancyServiceInterface
     {
         // TODO: Implement update() method.
         $data = $request->validated();
-        $data['image'] = $data['image'] ? json_encode(explode(",", $data['image'][0])) : null;
-
         return $this->repository->update($data['id'], $data);
     }
 

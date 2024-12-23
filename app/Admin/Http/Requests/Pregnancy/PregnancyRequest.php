@@ -20,28 +20,30 @@ class PregnancyRequest extends BaseRequest
             'child_id' => ['required', 'exists:App\Models\Child,id'],
             'start_date' => ['required', 'date_format:Y-m-d'],
             'end_date' => ['required', 'date_format:Y-m-d'],
-            'week'=>['nullable','integer'],
-            'weight'=>['nullable','integer'],
-            'length'=>['nullable','integer'],
-            'head_circumference'=>['nullable','integer'],
-            'image' => ['required', 'array', 'min:1'],
+            'week' => ['nullable', 'integer'],
+            'weight' => ['nullable', 'integer'],
+            'length' => ['nullable', 'integer'],
+            'head_circumference' => ['nullable', 'integer'],
+            'image' => ['required'],
             'image.*' => ['required', 'string', 'distinct', 'not_in:""'],
-            'status'=>['nullable'=>new Enum(ActiveStatus::class)],
+            'status' => ['nullable' => new Enum(ActiveStatus::class)],
         ];
     }
-    protected function methodPut(): array{
+
+    protected function methodPut(): array
+    {
         return [
-            'id'=>'required|exists:App\Models\Pregnancy,id',
+            'id' => 'required|exists:App\Models\Pregnancy,id',
             'child_id' => ['required', 'exists:App\Models\Child,id'],
             'start_date' => ['required', 'date_format:Y-m-d'],
             'end_date' => ['required', 'date_format:Y-m-d'],
-            'week'=>['nullable','integer'],
-            'weight'=>['nullable','integer'],
-            'length'=>['nullable','integer'],
-            'head_circumference'=>['nullable','integer'],
-            'image' => ['required', 'array', 'min:1'],
+            'week' => ['nullable', 'integer'],
+            'weight' => ['nullable', 'integer'],
+            'length' => ['nullable', 'integer'],
+            'head_circumference' => ['nullable', 'integer'],
+            'image' => ['required'],
             'image.*' => ['required', 'string', 'distinct', 'not_in:""'],
-            'status'=>['nullable'=>new Enum(ActiveStatus::class)],
+            'status' => ['nullable' => new Enum(ActiveStatus::class)],
         ];
     }
 
