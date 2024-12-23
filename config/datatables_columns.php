@@ -364,6 +364,46 @@ return [
         ],
 
     ],
+    'quiz' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'name' => [
+            'title' => 'name',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'description' => [
+            'title' => 'description',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'type' => [
+            'title' => 'type',
+            'orderable' => false,
+            'width' => '150px',
+            'addClass' => 'text-center align-middle'
+        ],
+
+        'status' => [
+            'title' => 'status',
+            'orderable' => false,
+            'width' => '150px',
+            'addClass' => 'text-center align-middle'
+        ],
+        'created_at' => [
+            'title' => 'createdAt',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+            'visible' => true
+        ],
+
+    ],
     'clinic_type' => [
         'checkbox' => [
             'title' => 'choose',

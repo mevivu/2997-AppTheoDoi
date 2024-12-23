@@ -326,6 +326,29 @@ return [
         ]
     ],
     [
+        'title' => 'quiz',
+        'routeName' => 'admin.expected.index',
+        'icon' => '<i class="ti ti-award"></i>',
+        'roles' => [],
+        'permissions' => ['createQuiz', 'viewQuiz', 'updateQuiz', 'deleteQuiz'],
+        'sub' => [
+            [
+                'title' => 'Thêm',
+                'routeName' => 'admin.quiz.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createQuiz'],
+            ],
+            [
+                'title' => 'DS Thông tin',
+                'routeName' => 'admin.quiz.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuiz'],
+            ]
+        ]
+    ],
+    [
         'title' => 'Khách hàng',
         'routeName' => null,
         'icon' => '<i class="ti ti-users"></i>',
