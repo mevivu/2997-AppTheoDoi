@@ -6,10 +6,7 @@
             <div class="col-12">
                 <div class="mb-3">
                     <label class="control-label">@lang('Tên')</label>
-                    <x-input name="name"
-                             :value="old('name')"
-                             :required="true"
-                             :placeholder="__('name')"/>
+                    <x-input name="name" :value="old('name')" :required="true" :placeholder="__('name')" />
                 </div>
             </div>
 
@@ -18,10 +15,7 @@
             <div class="col-12">
                 <div class="mb-3">
                     <label class="control-label">@lang('price')</label>
-                    <x-input-price name="price"
-                                   :value="old('price')"
-                                   :required="true"
-                                   :placeholder="__('price')"/>
+                    <x-input-price name="price" :value="old('price')" :required="true" :placeholder="__('price')" />
                 </div>
             </div>
 
@@ -30,25 +24,26 @@
                     <label class="control-label">@lang('type')</label>
                     <x-select name="type" :required="true">
                         @foreach ($type as $key => $value)
-                            <x-select-option :value="$key" :title="$value"/>
+                            <x-select-option :value="$key" :title="$value" />
                         @endforeach
                     </x-select>
                 </div>
             </div>
 
-
             <!-- description -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('description')</label>
-                    <textarea name="description"
-                              class="form-control"
-                              rows="4"
-                              placeholder="{{ __('description') }}"
-                    >{{ old('description') }}</textarea>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <label class="control-label">@lang('description')</label>
+                        <p class="text-primary" style="cursor: pointer;" id="add-description">
+                            <i class="ti ti-plus"></i> Thêm mô tả
+                        </p>
+                    </div>
+                    <div class="d-flex flex-column gap-2" id="description-container">
+                        <textarea name="description[]" class="form-control" rows="2" placeholder="{{ __('description') }}">{{ old('description') }}</textarea>
+                    </div>
                 </div>
             </div>
-
 
         </div>
     </div>

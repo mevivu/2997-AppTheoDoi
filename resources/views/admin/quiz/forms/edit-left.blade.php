@@ -52,6 +52,31 @@
                 </div>
             </div>
 
+            <!-- show questions -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <div class="col-12">
+                        <div id="count-checked" class="mb-3">
+                            Các câu hỏi được chọn: <span id="checked-count">0</span>
+                        </div>
+                    </div>
+                    <div>
+                        @foreach ($questions_type as $question)
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="question_ids[]"
+                                       value="{{ $question->id }}"
+                                       id="question-{{ $question->id }}"
+                                    {{ $selected_questions->contains($question->id) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="question-{{ $question->id }}">
+                                    {{ $question->question }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+
         </div>
     </div>
 </div>

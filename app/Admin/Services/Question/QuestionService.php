@@ -116,6 +116,8 @@ class QuestionService implements QuestionServiceInterface
         $answers = $data['answer']['iq_answers'];
         $correctAnswerId = $data['answer']['is_correct'][$question->id];
 
+        // dd($answers, $correctAnswerId);
+
         $existingAnswers = $this->answerRepository->getByQueryBuilder([
             'question_id' => $data['answer']['question_id'],
         ])->get();
@@ -127,7 +129,10 @@ class QuestionService implements QuestionServiceInterface
                 $isCorrectAnswer = false;
             }
 
+            // dd($answerId, $answer, $isCorrectAnswer);
+
             $existingAnswer = $existingAnswers->firstWhere('id', $answerId);
+            // dd($existingAnswer);
             if ($existingAnswer) {
                 $existingAnswer->update([
                     'answer' => $answer,
