@@ -19,6 +19,10 @@ return new class extends Migration
             $table->string('score');
             $table->text('description');
             $table->string('tag', 255)->nullable();
+            $table->integer('height')->nullable();
+            $table->integer('weight')->nullable();
+            $table->integer('strength')->nullable();
+            $table->integer('endurance')->nullable();
             $table->string('result')->nullable();
             $table->enum('type', QuestionType::getValues())->default(QuestionType::EQ->value);
             $table->foreignId('child_id')->nullable()->constrained('children')->onDelete('cascade');

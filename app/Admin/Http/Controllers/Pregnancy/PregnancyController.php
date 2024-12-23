@@ -9,6 +9,7 @@ use App\Admin\Repositories\Pregnancy\PregnancyRepositoryInterface;
 
 use App\Admin\Services\Pregnancy\PregnancyServiceInterface;
 use App\Enums\ActiveStatus;
+use App\Traits\ResponseController;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -17,6 +18,7 @@ use Illuminate\Http\Request;
 
 class PregnancyController extends Controller
 {
+    use ResponseController;
     public function __construct(
         PregnancyRepositoryInterface $repository,
         PregnancyServiceInterface    $service
@@ -61,8 +63,9 @@ class PregnancyController extends Controller
 
     public function update(PregnancyRequest $request)
     {
-        $this->service->update($request);
-        return back()->with('success', __('notifySuccess'));
+        return $this->handleUpdateResponse($request, function ($request) {
+            return $this->service->update($request);
+        });
     }
 
     public function delete($id): RedirectResponse
@@ -94,11 +97,10 @@ class PregnancyController extends Controller
 
     public function store(PregnancyRequest $request)
     {
-        $response = $this->service->store($request);
-        if ($response) {
-            return to_route($this->route['create'], $response)->with('success', __('notifySuccess'));
-        }
-        return back()->with('error', __('notifyFail'));
+        return $this->handleResponse($request, function ($request) {
+            return $this->service->store($request);
+        }, $this->route['index'], $this->route['edit']);
+
     }
 
     protected function getActionMultiple(): array

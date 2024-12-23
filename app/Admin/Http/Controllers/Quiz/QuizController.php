@@ -5,6 +5,7 @@ namespace App\Admin\Http\Controllers\Quiz;
 use App\Admin\DataTables\Quiz\QuizDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Quiz\QuizRequest;
+use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Admin\Repositories\Quiz\QuizRepositoryInterface;
 use App\Admin\Services\Quiz\QuizServiceInterface;
 use App\Enums\ActiveStatus;
@@ -21,16 +22,20 @@ class QuizController extends Controller
 {
     use ResponseController;
 
+    protected QuestionRepositoryInterface $questionRepository;
+
 
     public function __construct(
-        QuizRepositoryInterface $repository,
-        QuizServiceInterface    $service
+        QuizRepositoryInterface     $repository,
+        QuestionRepositoryInterface $questionRepository,
+        QuizServiceInterface        $service
     )
     {
 
         parent::__construct();
 
         $this->repository = $repository;
+        $this->questionRepository = $questionRepository;
         $this->service = $service;
 
     }
@@ -92,12 +97,19 @@ class QuizController extends Controller
     {
 
         $instance = $this->repository->findOrFail($id);
+        $selectedQuestions = $instance->questions;
+        $questionsType = $this->questionRepository->getBy([
+            'status' => ActiveStatus::Active,
+            'question_type' => $instance->type,
+        ]);
         return view(
             $this->view['edit'],
             [
                 'instance' => $instance,
                 'status' => ActiveStatus::asSelectArray(),
                 'type' => QuestionType::asSelectArray(),
+                'selected_questions' => $selectedQuestions,
+                'questions_type' => $questionsType,
                 'breadcrumbs' => $this->crums->add(__('quiz'), route($this->route['index']))->add(__('edit')),
             ],
         );

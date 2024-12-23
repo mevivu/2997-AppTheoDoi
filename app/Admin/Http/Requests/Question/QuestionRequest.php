@@ -59,6 +59,13 @@ class QuestionRequest extends BaseRequest
         return $this->validate;
     }
 
+    protected function methodGet(): array
+    {
+        return [
+            'type' => ['required', new Enum(QuestionType::class)],
+        ];
+    }
+
     public function messages()
     {
         return [

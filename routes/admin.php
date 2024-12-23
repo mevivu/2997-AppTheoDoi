@@ -171,6 +171,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::get('/aq', 'aq')->name('aq');
                 Route::get('/eq', 'eq')->name('eq');
                 Route::get('/edit/{id}', 'edit')->name('edit');
+                Route::get('/search', 'getQuestionsByType')->name('type');
             });
 
             Route::group(['middleware' => ['permission:updateQuestionGroup', 'auth:admin']], function () {
