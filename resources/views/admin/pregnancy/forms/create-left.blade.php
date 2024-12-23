@@ -49,7 +49,7 @@
                     <label class="control-label">
                         <span class="ti ti-weight"></span>
                         @lang('Cân năng(kg)'):</label>
-                    <x-input type="number" name="weight" :value="old('weight')"/>
+                    <x-input type="number" name="weight" :value="old('weight')" step="any"/>
                 </div>
             </div>
             {{--  length--}}
@@ -71,19 +71,6 @@
                 </div>
             </div>
 
-
-            {{--  image--}}
-            <div>
-                <div class="col-12">
-                    <div class="card-body p-2">
-                        <x-input-gallery-ckfinder name="image[]"
-                                                  type="multiple"
-                                                  label="Hình ảnh"/>
-
-
-                    </div>
-                </div>
-            </div>
 
         </div>
 
