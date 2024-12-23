@@ -18,16 +18,19 @@
             <div class="d-flex align-items-center justify-content-start gap-2 mb-3">
                 <input type="radio" name="answer[is_correct][{{ $response->id }}]" class="form-check-input"
                     value="{{ $answer->id }}" {{ $answer->is_correct ? 'checked' : '' }} />
-                <x-input type="text" required name="answer[iq_answers][{{ $answer->id }}]" value="{{ $answer->answer }}" />
-                <button type="button" class="btn btn-danger remove_wrong_answer">
-                    <i class="ti ti-x fs-2"></i>
-                </button>
+
+                <x-input type="text" required name="answer[iq_answers][{{ $answer->id }}]"
+                    value="{{ $answer->answer }}" onclick="toggleCheckbox(this)" />
+
+                @if (!$loop->first)
+                    <button type="button" class="btn btn-danger remove_wrong_answer">
+                        <i class="ti ti-x fs-2"></i>
+                    </button>
+                @endif
             </div>
         @endforeach
-
-        <script>
-            let question_id = {{ $response->id }}
-            let answerIdArr = @json($iq_answers->pluck('id')->toArray())
-        </script>
     </div>
+    <script>
+        let question_id = {{ $response->id }}
+    </script>
 </div>
