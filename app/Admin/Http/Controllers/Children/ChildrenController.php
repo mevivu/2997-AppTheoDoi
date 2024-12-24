@@ -101,6 +101,8 @@ class ChildrenController extends Controller
             [
                 'children' => $instance,
                 'gender' => Gender::asSelectArray(),
+                'birthday' => $instance->birthday,
+                'dueDate' => $instance->due_date,
                 'status' => ChildStatus::asSelectArray(),
                 'born' => BornStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),

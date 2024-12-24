@@ -23,6 +23,8 @@ class Child extends Model
         'fullname',
         /** Ngày sinh */
         'birthday',
+        /** Ngày dự sinh */
+        'due_date',
         /** Giới tính */
         'gender',
         /** Hình ảnh */
@@ -36,6 +38,7 @@ class Child extends Model
     ];
     protected $casts = [
         'birthday' => 'date',
+        'due_date' => 'date',
         'gender' => Gender::class,
         'status' => ChildStatus::class,
         'is_born' => BornStatus::class,
