@@ -30,6 +30,8 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\Journal\JournalServiceInterface' => 'App\Admin\Services\Journal\JournalService',
         'App\Admin\Services\Pregnancy\PregnancyServiceInterface' => 'App\Admin\Services\Pregnancy\PregnancyService',
         'App\Admin\Services\Support\SupportServiceInterface' => 'App\Admin\Services\Support\SupportService',
+        'App\Admin\Services\Quality\QualityServiceInterface' => 'App\Admin\Services\Quality\QualityService',
+        'App\Admin\Services\Subject\SubjectServiceInterface' => 'App\Admin\Services\Subject\SubjectService',
     ];
     /**
      * Register services.

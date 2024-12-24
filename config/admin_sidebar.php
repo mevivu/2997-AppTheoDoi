@@ -418,6 +418,75 @@ return [
         ]
     ],
     [
+        'title' => "Phẩm chất",
+        'routeName' => null,
+        'icon' => '<i class="ti ti-star"></i>',
+        'roles' => [],
+        'permissions' => ['createQuality', 'viewQuality', 'updateQuality', 'deleteQuality'],
+        'sub' => [
+            [
+                'title' => 'add',
+                'routeName' => 'admin.quality.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createQuality'],
+            ],
+            [
+                'title' => 'list',
+                'routeName' => 'admin.quality.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuality'],
+            ]
+        ]
+    ],
+    [
+        'title' => 'Năng lực',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-accessible"></i>',
+        'roles' => [],
+        'permissions' => ['createCapability', 'viewCapability', 'updateCapability', 'deleteCapability'],
+        'sub' => [
+            [
+                'title' => 'add',
+                'routeName' => 'admin.capability.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createCapability'],
+            ],
+            [
+                'title' => 'list',
+                'routeName' => 'admin.capability.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewCapability'],
+            ]
+        ]
+    ],
+    [
+        'title' => 'Môn học',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-math"></i>',
+        'roles' => [],
+        'permissions' => ['createSubject', 'viewSubject', 'updateSubject', 'deleteSubject'],
+        'sub' => [
+            [
+                'title' => 'add',
+                'routeName' => 'admin.subject.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createSubject'],
+            ],
+            [
+                'title' => 'list',
+                'routeName' => 'admin.subject.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewSubject'],
+            ]
+        ]
+    ],
+    [
         'title' => 'clinic',
         'routeName' => null,
         'icon' => '<i class="ti ti-mushroom"></i>',
