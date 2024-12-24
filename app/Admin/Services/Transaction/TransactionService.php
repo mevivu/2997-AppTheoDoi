@@ -5,8 +5,9 @@ namespace App\Admin\Services\Transaction;
 
 use App\Admin\Repositories\Transaction\TransactionRepositoryInterface;
 use App\Api\V1\Support\UseLog;
+use App\Enums\Transaction\TransactionStatus;
+use App\Enums\Transaction\TransactionType;
 use Exception;
-use Illuminate\Http\Request;
 use App\Admin\Traits\Setup;
 
 class TransactionService implements TransactionServiceInterface
@@ -35,15 +36,17 @@ class TransactionService implements TransactionServiceInterface
     /**
      * @throws Exception
      */
-    public function store(Request $request): object|false
+    public function store($user, $package): void
     {
-        $data = $request->validated();
-        $questionIds = $data['question_ids'] ?? [];
-        $quiz = $this->repository->create($data);
-        if (!empty($data['question_ids'])) {
-            $quiz->questions()->attach($questionIds);
-        }
-        return $quiz;
+        $data = [
+            'user_id' => $user->id,
+            'package_id' => $package->id,
+            'amount' => $package->price,
+            'type' => TransactionType::Payment,
+            'status' => TransactionStatus::Confirmed
+        ];
+        $this->repository->create($data);
+
     }
 
 

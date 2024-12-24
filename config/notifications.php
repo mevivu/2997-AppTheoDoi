@@ -15,4 +15,9 @@ return [
         'title' => 'Yêu cầu phê duyệt gói dịch vụ mới',
         'message' => 'Gói dịch vụ được mua bởi {fullname} cần được phê duyệt. Vui lòng xem xét và phê duyệt gói dịch vụ để hoàn tất quá trình mua hàng.'
     ],
+
+    'package_approved_and_paid' => [
+        'title' => 'Xác nhận và Thanh toán Thành Công',
+        'message' => 'Yêu cầu phê duyệt gói của bạn đã được xác nhận và thanh toán thành công. Bạn có thể bắt đầu sử dụng các dịch vụ của chúng tôi ngay bây giờ. Cảm ơn bạn đã lựa chọn chúng tôi!'
+    ],
 ];

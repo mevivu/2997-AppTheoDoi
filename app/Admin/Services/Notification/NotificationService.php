@@ -14,16 +14,13 @@ use App\Enums\Notification\MessageType;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
 use App\Enums\Notification\NotificationOption;
-use App\Models\Admin;
-use App\Traits\NotifiesViaFirebase;
-use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class NotificationService implements NotificationServiceInterface
 {
-    use NotifiesViaFirebase, AuthService, Roles;
+    use AuthService, Roles;
 
     /**
      * Current Object instance
@@ -37,13 +34,15 @@ class NotificationService implements NotificationServiceInterface
     private UserRepositoryInterface $userRepository;
     private UserPackageRepositoryInterface $userPackageRepository;
     protected TransactionServiceInterface $transactionService;
+    protected NotificationFirebaseServiceInterface $firebaseService;
 
     public function __construct(
-        NotificationRepositoryInterface $repository,
-        UserRepositoryInterface         $userRepository,
-        AdminRepositoryInterface        $adminRepository,
-        UserPackageRepositoryInterface  $userPackageRepository,
-        TransactionServiceInterface     $transactionService
+        NotificationRepositoryInterface      $repository,
+        UserRepositoryInterface              $userRepository,
+        AdminRepositoryInterface             $adminRepository,
+        UserPackageRepositoryInterface       $userPackageRepository,
+        TransactionServiceInterface          $transactionService,
+        NotificationFirebaseServiceInterface $firebaseService
     )
     {
         $this->repository = $repository;
@@ -51,6 +50,7 @@ class NotificationService implements NotificationServiceInterface
         $this->userRepository = $userRepository;
         $this->userPackageRepository = $userPackageRepository;
         $this->transactionService = $transactionService;
+        $this->firebaseService = $firebaseService;
     }
 
     /**
@@ -91,7 +91,7 @@ class NotificationService implements NotificationServiceInterface
                         $this->data['device_token'] = $device_token;
 
                         if ($notification && $device_token) {
-                            $this->sendFirebaseNotification([$device_token], null, $notification->title, $notification->message);
+                            $this->firebaseService->sendFirebaseNotification([$device_token], null, $notification->title, $notification->message);
                         }
                     }
                 }
@@ -139,7 +139,7 @@ class NotificationService implements NotificationServiceInterface
                 $notification = $this->repository->create($this->data);
                 $this->data['device_token'] = $device_token;
                 if ($notification && $device_token) {
-                    $this->sendFirebaseNotification([$device_token], null, $notification->title, $notification->message);
+                    $this->firebaseService->sendFirebaseNotification([$device_token], null, $notification->title, $notification->message);
                 }
             }
         } else {
@@ -166,12 +166,12 @@ class NotificationService implements NotificationServiceInterface
                     $this->data['device_token'] = $device_token;
 
                     if ($notification && $device_token) {
-                        $this->sendFirebaseNotification([$device_token], null, $notification->title, $notification->message);
+                        $this->firebaseService->sendFirebaseNotification([$device_token], null, $notification->title, $notification->message);
                     }
                 }
             }
         }
-        return true; // Thông báo được xử lý thành công
+        return true;
     }
 
 
@@ -195,32 +195,64 @@ class NotificationService implements NotificationServiceInterface
     {
         $data['status'] = NotificationStatus::READ;
         if ($notification->type == MessageType::PAYMENT) {
-            if ($data['approval_status'] == ApprovalStatus::ACTIVE->value) {
-                $package = $notification->package;
-                $startDate = now();
-                $endDate = $startDate->copy()->add($package->type->duration());
-                $userPackage = $this->userPackageRepository
-                    ->findByField('user_id', $notification->user_id_attribute);
-                $userPackage?->update(
-                    [
-                        'package_id' => $notification->package_id,
-                        'start_date' => $startDate,
-                        'end_date' => $endDate,
-                        'current_type' => $package->type
-                    ]
-                );
-                $notifications = $this->repository->getByQueryBuilder(
-                    [
-                        'package_id' => $notification->package_id,
-                        'user_id_attribute' => $notification->user_id_attribute
-                    ]
-                )
-                    ->where('created_at', $notification->created_at)->get();
-                foreach ($notifications as $notification) {
-                    $this->repository->update($notification->id, ['approval_status' => ApprovalStatus::ACTIVE]);
-                }
+            switch ($data['approval_status']) {
+                case ApprovalStatus::ACTIVE->value:
+                    $this->handlePaymentApproval($notification, $data);
+                    break;
+
+                case ApprovalStatus::REJECTED->value:
+                    $this->handlePaymentRejected($notification, $data);
+                    break;
+
+                default:
+                    break;
             }
         }
+    }
+
+    public function handlePaymentRejected($notification, $data): void
+    {
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function handlePaymentApproval($notification, $data): void
+    {
+        $package = $notification->package;
+        $user = $this->userRepository->findOrFail($notification->user_id_attribute);
+        $startDate = now();
+        $endDate = $startDate->copy()->add($package->type->duration());
+        $userPackage = $this->userPackageRepository
+            ->findByField('user_id', $notification->user_id_attribute);
+        $userPackage?->update(
+            [
+                'package_id' => $notification->package_id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'current_type' => $package->type
+            ]
+        );
+        $notifications = $this->repository->getByQueryBuilder(
+            [
+                'package_id' => $notification->package_id,
+                'user_id_attribute' => $notification->user_id_attribute
+            ]
+        )
+            ->where('created_at', $notification->created_at)->get();
+        foreach ($notifications as $notification) {
+            $this->repository->update($notification->id, ['approval_status' => ApprovalStatus::ACTIVE]);
+        }
+        // Create notification
+        if ($user) {
+            $this->firebaseService->notifyUserPackageApproved($user);
+        }
+
+        // create transaction
+
+        $this->transactionService->store($user, $notification->package);
+
     }
 
 
@@ -274,6 +306,7 @@ class NotificationService implements NotificationServiceInterface
      *
      * @param Request $request
      * @return mixed
+     * @throws Exception
      */
 
     public function updateStatus(Request $request): JsonResponse

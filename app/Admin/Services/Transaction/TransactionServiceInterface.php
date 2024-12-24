@@ -7,7 +7,7 @@ interface TransactionServiceInterface
 {
 
 
-    public function store(Request $request);
+    public function store($user,$package);
 
 
 
