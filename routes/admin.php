@@ -40,6 +40,27 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
+    //Classes
+    Route::controller(\App\Admin\Http\Controllers\Classes\ClassesController::class)
+        ->prefix('/lop')
+        ->as('classes.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createClasses', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewClasses', 'auth:admin']], function () {
+                Route::get('/','index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['permission:updateClasses', 'auth:admin']], function () {
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+                Route::put('/edit', 'update')->name('update');
+            });
+            Route::group(['middleware' => ['permission:deleteClasses', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
     //WeightHeight
     Route::controller(\App\Admin\Http\Controllers\WeightHeightWho\WeightHeightWhoController::class)
         ->prefix('/weight-height-who')
