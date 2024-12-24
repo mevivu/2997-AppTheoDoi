@@ -2,7 +2,7 @@
     "birth-day": "Ngày sinh",
     "children": "Trẻ em",
     "childrenList": "DS trẻ em",
-    "reminder": "Lịch nhắc hẹn" ,
+    "reminder": "Lịch nhắc hẹn",
     "notifySuccess": "Thực hiện thành công.",
     "notifyFail": "Thực hiện không thành công.",
     "LoginSuccess": "Đăng nhập thành công.",
@@ -15,6 +15,7 @@
     "unauthenticate": "Xác thực không thành công.",
     "pleaseLoginHandle": "Vui lòng đăng nhập để thực hiện",
     "list": "Danh sách",
+    "listclasses": "Danh sách lớp",
     "renting-order": "Danh sách đơn hàng thuê xe",
     "vehicleList": "Danh sách phương tiện",
     "vehicle": "Phương tiện",
@@ -245,8 +246,8 @@
     "payment_role": "Người thanh toán",
     "recipient_name": "Tên người nhận",
     "recipient_phone": "Số điện thoại người nhận",
-    "current_address_driver":"Địa chỉ hiện tại tài xế",
-    "start_address":"Địa chỉ bắt bắt đầu",
+    "current_address_driver": "Địa chỉ hiện tại tài xế",
+    "start_address": "Địa chỉ bắt bắt đầu",
     "delivery_status": "Trạng thái giao hàng",
     "advance_payment_status": "Đối ứng trước",
     "collect_on_delivery_amount": "Số tiền thu hộ",
@@ -283,5 +284,6 @@
     "quiz": "Bài kiểm tra",
     "age": "Độ tuổi",
     "help-center": "Trung tâm trợ giúp",
-    "guide": "Hướng dẫn sử dụng"
+    "guide": "Hướng dẫn sử dụng",
+    "due_date": "Ngày dự sinh"
 }

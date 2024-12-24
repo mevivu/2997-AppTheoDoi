@@ -194,6 +194,33 @@ return [
             'addClass' => 'text-center align-middle'
         ],
     ],
+    'classes'=>[
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'name' => [
+            'title' => 'Tiêu đề',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'status' => [
+            'title' => 'status',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
     'pregnancy' => [
         'checkbox' => [
             'title' => 'choose',
@@ -672,6 +699,62 @@ return [
         ],
 
         'status' => [
+            'title' => 'status',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+
+        'created_at' => [
+            'title' => 'Ngày thông báo',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+
+        'action' => [
+            'title' => 'action',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+
+    ],
+
+    'notifications_approval' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+            'visible' => false,
+        ],
+
+        'title' => [
+            'title' => 'Tiêu đề',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+
+        'admin_id' => [
+            'title' => 'Admin nhận',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+
+        'message' => [
+            'title' => 'Nội dung',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'package_id' => [
+            'title' => 'package',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+
+        'approval_status' => [
             'title' => 'status',
             'orderable' => false,
             'addClass' => 'text-center align-middle',

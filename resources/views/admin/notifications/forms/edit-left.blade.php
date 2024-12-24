@@ -9,12 +9,14 @@
                         <label class="control-label">
                             <i class="ti ti-user"></i>
                             @lang('Nhân viên nhận')</label>
-                        <x-input :value="$notification->user->fullname" name="user_id" :required="true" :placeholder="__('Nhân viên nhận')" readonly />
+                        <x-input :value="$notification->user->fullname" name="user_id" :required="true"
+                                 :placeholder="__('Nhân viên nhận')" readonly/>
                     @else
                         <label class="control-label">
                             <i class="ti ti-user"></i>
                             @lang('Admin nhận')</label>
-                        <x-input :value="$notification->admin->fullname" name="admin_id" :required="true" :placeholder="__('Admin nhận')" readonly />
+                        <x-input :value="$notification->admin->fullname" name="admin_id" :required="true"
+                                 :placeholder="__('Admin nhận')" readonly/>
                     @endif
                 </div>
             </div>
@@ -23,7 +25,10 @@
                 <div class="mb-3">
                     <i class="ti ti-bell-ringing"></i>
                     <label class="control-label">@lang('title')</label>
-                    <x-input :value="$notification->title" name="title" :required="true" :placeholder="__('title')" />
+                    <x-input :value="$notification->title"
+                             name="title"
+                             :required="true"
+                             :placeholder="__('title')"/>
                 </div>
             </div>
             <!-- message -->
@@ -31,9 +36,26 @@
                 <div class="mb-3">
                     <i class="ti ti-chart-bubble"></i>
                     <label class="control-label">@lang('message')</label>
-                    <x-input :value="$notification->message" name="message" :required="true" :placeholder="__('message')" />
+                    <textarea class="form-control"
+                              name="message"
+                              required placeholder="{{ __('message') }}">{{ $notification->message }}</textarea>
                 </div>
             </div>
+
+
+        @if($notification->type  == MessageType::PAYMENT)
+                <!-- package -->
+                <div class="col-12">
+                    <div class="mb-3">
+                        <i class="ti ti-bell-ringing"></i>
+                        <label class="control-label">@lang('package')</label>
+                        <x-input :value="$notification->package->name"
+                                 disabled
+                                 :required="true"
+                                 :placeholder="__('title')"/>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>

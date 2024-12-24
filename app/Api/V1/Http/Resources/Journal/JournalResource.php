@@ -22,7 +22,7 @@ class JournalResource extends JsonResource
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        $isContentVisible = $this->checkUserPackage();
+        $isContentVisible = $this->checkUserPackage($this->created_at);
 
         return [
             'id' => $this->id,

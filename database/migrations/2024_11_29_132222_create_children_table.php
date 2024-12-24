@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->id();
             $table->string('fullname');
             $table->date('birthday')->nullable();
+            $table->date('due_date')->nullable();
             $table->enum('gender', Gender::getValues())->default(Gender::Other->value);
             $table->enum('is_born', BornStatus::getValues())->default(BornStatus::Unborn->value);
             $table->text('avatar')->nullable();

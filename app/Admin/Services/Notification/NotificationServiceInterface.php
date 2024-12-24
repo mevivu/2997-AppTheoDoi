@@ -23,5 +23,4 @@ interface NotificationServiceInterface
 
     public function actionMultipleRecode(Request $request): bool;
 
-    public function sendFirebaseNotificationToUser(User $user, string $title, string $body, ?MessageType $type = null);
 }
