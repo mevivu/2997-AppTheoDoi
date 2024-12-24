@@ -41,6 +41,30 @@ return [
         ]
     ],
     [
+        'title' => 'Lớp',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-school"></i>',
+        'roles' => [],
+        'permissions' => ['createClasses','viewClasses'],
+        'sub' => [
+            [
+                'title' => 'Thêm Lớp',
+                'routeName' => 'admin.classes.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createClasses'],
+            ],
+            [
+                'title' => 'DS Lớp',
+                'routeName' => 'admin.classes.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewClasses'],
+            ],
+
+        ]
+    ],
+    [
         'title' => 'Thai kì',
         'routeName' => null,
         'icon' => '<i class="ti ti-pennant"></i>',
