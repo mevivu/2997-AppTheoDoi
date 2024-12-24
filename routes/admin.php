@@ -1,5 +1,6 @@
 <?php
 
+use App\Admin\Http\Controllers\Transaction\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [App\Admin\Http\Controllers\Home\HomeController::class, 'index']);
@@ -50,7 +51,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::post('/add', 'store')->name('store');
             });
             Route::group(['middleware' => ['permission:viewClasses', 'auth:admin']], function () {
-                Route::get('/','index')->name('index');
+                Route::get('/', 'index')->name('index');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
             Route::group(['middleware' => ['permission:updateClasses', 'auth:admin']], function () {
@@ -225,7 +226,15 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
-
+    //Transaction
+    Route::controller(TransactionController::class)
+        ->prefix('/giao-dich')
+        ->as('transaction.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:viewTransaction', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+            });
+        });
     //Quiz
     Route::controller(\App\Admin\Http\Controllers\Quiz\QuizController::class)
         ->prefix('/bai-kiem-tra')

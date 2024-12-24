@@ -10,6 +10,25 @@ return [
         'sub' => []
     ],
     [
+        'title' => 'Giao dịch',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-calendar-dollar"></i>',
+        'roles' => [],
+        'permissions' => ['viewTransaction'],
+        'sub' => [
+
+            [
+                'title' => 'DS giao dịch',
+                'routeName' => 'admin.transaction.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewTransaction'],
+            ],
+
+
+        ]
+    ],
+    [
         'title' => 'Nhật ký',
         'routeName' => null,
         'icon' => '<i class="ti ti-external-link"></i>',
@@ -45,7 +64,7 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-school"></i>',
         'roles' => [],
-        'permissions' => ['createClasses','viewClasses'],
+        'permissions' => ['createClasses', 'viewClasses'],
         'sub' => [
             [
                 'title' => 'Thêm Lớp',
