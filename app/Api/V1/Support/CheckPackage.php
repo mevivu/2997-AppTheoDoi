@@ -10,13 +10,13 @@ trait CheckPackage
 {
     use AuthServiceApi;
 
-    public function checkUserPackage(): bool
+    public function checkUserPackage($time): bool
     {
         $user = $this->getCurrentUser();
         $package = $user->userPackages->first();
         $isContentVisible = true;
         if ($package->current_type == PackageType::Normal) {
-            $isContentVisible = $this->created_at >= Carbon::now()->subYear();
+            $isContentVisible = $time >= Carbon::now()->subYear();
         }
         return $isContentVisible;
 

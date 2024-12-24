@@ -1,16 +1,12 @@
 <?php
+namespace App\Admin\DataTables\Notification\Common;
 
-namespace App\Admin\DataTables\Notification;
 
-use App\Admin\DataTables\BaseDataTable;
+
 use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
-use App\Enums\ApprovalStatus;
 use App\Enums\Notification\NotificationStatus;
 
-class NotificationPackageDataTable extends BaseDataTable
-{
-    protected $nameTable = 'notificationTable';
-
+trait CommonTable {
 
     public function __construct(
         NotificationRepositoryInterface $repository
@@ -20,18 +16,6 @@ class NotificationPackageDataTable extends BaseDataTable
 
         parent::__construct();
 
-    }
-
-    public function setView(): void
-    {
-        $this->view = [
-            'action' => 'admin.notifications.datatable.action',
-            'title' => 'admin.notifications.datatable.title',
-            'status' => 'admin.notifications.datatable.status',
-            'admin' => 'admin.notifications.datatable.admin',
-            'edit_link_customer' => 'admin.notifications.datatable.edit-link-customer',
-            'checkbox' => 'admin.common.checkbox',
-        ];
     }
 
     public function setColumnSearch(): void
@@ -47,21 +31,16 @@ class NotificationPackageDataTable extends BaseDataTable
         ];
 
     }
-
-    public function query()
+    public function setView(): void
     {
-        return $this->repository->getByQueryBuilder(
-            [
-                ['admin_id', '!=', null],
-                ['package_id', '!=', null],
-                'approval_status' => ApprovalStatus::PENDING
-            ]
-        );
-    }
-
-    protected function setCustomColumns(): void
-    {
-        $this->customColumns = config('datatables_columns.notifications', []);
+        $this->view = [
+            'action' => 'admin.notifications.datatable.action',
+            'title' => 'admin.notifications.datatable.title',
+            'status' => 'admin.notifications.datatable.status',
+            'admin' => 'admin.notifications.datatable.admin',
+            'edit_link_customer' => 'admin.notifications.datatable.edit-link-customer',
+            'checkbox' => 'admin.common.checkbox',
+        ];
     }
 
     protected function setCustomEditColumns(): void

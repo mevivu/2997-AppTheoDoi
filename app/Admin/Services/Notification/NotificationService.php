@@ -6,6 +6,7 @@ use App\Admin\Repositories\Admin\AdminRepositoryInterface;
 use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Repositories\UserPackage\UserPackageRepositoryInterface;
+use App\Admin\Services\Transaction\TransactionServiceInterface;
 use App\Admin\Traits\AuthService;
 use App\Admin\Traits\Roles;
 use App\Enums\ApprovalStatus;
@@ -34,20 +35,22 @@ class NotificationService implements NotificationServiceInterface
     protected NotificationRepositoryInterface $repository;
     private AdminRepositoryInterface $adminRepository;
     private UserRepositoryInterface $userRepository;
-
     private UserPackageRepositoryInterface $userPackageRepository;
+    protected TransactionServiceInterface $transactionService;
 
     public function __construct(
         NotificationRepositoryInterface $repository,
         UserRepositoryInterface         $userRepository,
         AdminRepositoryInterface        $adminRepository,
-        UserPackageRepositoryInterface  $userPackageRepository
+        UserPackageRepositoryInterface  $userPackageRepository,
+        TransactionServiceInterface     $transactionService
     )
     {
         $this->repository = $repository;
         $this->adminRepository = $adminRepository;
         $this->userRepository = $userRepository;
         $this->userPackageRepository = $userPackageRepository;
+        $this->transactionService = $transactionService;
     }
 
     /**
@@ -55,6 +58,7 @@ class NotificationService implements NotificationServiceInterface
      *
      * @param Request $request Yêu cầu chứa dữ liệu thông báo đã được kiểm duyệt.
      * @return bool True nếu thông báo được lưu trữ và gửi thành công, False nếu không.
+     * @throws Exception
      */
     public function store(Request $request): bool
     {
@@ -112,6 +116,7 @@ class NotificationService implements NotificationServiceInterface
      *
      * @param string $objectId Tên trường lưu trữ ID người dùng trong kho lưu trữ.
      * @return bool True nếu thông báo được tạo và gửi thành công, False nếu không.
+     * @throws Exception
      */
     private function handleNotificationOption(string $objectId)
     {
@@ -188,6 +193,7 @@ class NotificationService implements NotificationServiceInterface
      */
     private function handleApprovalPackage(mixed $notification, $data): void
     {
+        $data['status'] = NotificationStatus::READ;
         if ($notification->type == MessageType::PAYMENT) {
             if ($data['approval_status'] == ApprovalStatus::ACTIVE->value) {
                 $package = $notification->package;
@@ -195,16 +201,14 @@ class NotificationService implements NotificationServiceInterface
                 $endDate = $startDate->copy()->add($package->type->duration());
                 $userPackage = $this->userPackageRepository
                     ->findByField('user_id', $notification->user_id_attribute);
-                if ($userPackage) {
-                    $userPackage->update(
-                        [
-                            'package_id' => $notification->package_id,
-                            'start_date' => $startDate,
-                            'end_date' => $endDate,
-                            'current_type' => $package->type
-                        ]
-                    );
-                }
+                $userPackage?->update(
+                    [
+                        'package_id' => $notification->package_id,
+                        'start_date' => $startDate,
+                        'end_date' => $endDate,
+                        'current_type' => $package->type
+                    ]
+                );
                 $notifications = $this->repository->getByQueryBuilder(
                     [
                         'package_id' => $notification->package_id,

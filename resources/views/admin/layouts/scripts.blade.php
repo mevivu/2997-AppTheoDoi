@@ -14,6 +14,8 @@
 <script src="{{ asset('/public/libs/datatables/plugins/responsive/js/responsive.bootstrap5.min.js') }}"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/redoc@2.2.0/bundles/redoc.standalone.min.js"></script>
+
 
 @stack('libs-js')
 <script type="module" src="{{ asset('public/admin/assets/js/i18n.js') }}"></script>
