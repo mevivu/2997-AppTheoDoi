@@ -5,7 +5,6 @@ namespace App\Api\V1\Http\Controllers\BMI;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Http\Requests\BMI\BMIRequest;
 use App\Api\V1\Http\Resources\BMI\BMIResourceCollection;
-use App\Api\V1\Http\Resources\Question\QuestionResourceCollection;
 use App\Api\V1\Repositories\BMI\BMIRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use Exception;
@@ -24,8 +23,7 @@ class BMIController extends Controller
     public function __construct(
         BMIRepositoryInterface $repository,
 
-    )
-    {
+    ) {
         $this->repository = $repository;
 
     }
