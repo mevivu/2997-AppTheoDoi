@@ -129,6 +129,28 @@ return [
             'addClass' => 'text-center align-middle',
         ],
     ],
+    'transaction' => [
+        'user_id' => [
+            'title' => 'Người dùng',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'amount' => [
+            'title' => 'giá',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'package_id' => [
+            'title' => 'gói',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'status' => [
+            'title' => 'Trạng thái',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
     'expected' => [
         'checkbox' => [
             'title' => 'choose',
@@ -194,7 +216,7 @@ return [
             'addClass' => 'text-center align-middle'
         ],
     ],
-    'classes'=>[
+    'classes' => [
         'checkbox' => [
             'title' => 'choose',
             'orderable' => false,
