@@ -11,7 +11,7 @@ class Capability extends Model
 {
     use HasFactory;
 
-    protected $table = 'qualities';
+    protected $table = 'capabilities';
 
 
     protected $fillable = ['name', 'status'];

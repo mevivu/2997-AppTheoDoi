@@ -1,6 +1,107 @@
 <?php
 
 return [
+    'subjects' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'name' => [
+            'title' => 'Tên môn học',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'class_id' => [
+            'title' => 'Lớp học',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'status' => [
+            'title' => 'Trạng thái',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'created_at' => [
+            'title' => 'Ngày tạo',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'capabilities' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'name' => [
+            'title' => 'Tên năng lực',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'status' => [
+            'title' => 'Trạng thái',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'created_at' => [
+            'title' => 'Ngày tạo',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'qualities' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'name' => [
+            'title' => 'Tên phẩm chất',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'status' => [
+            'title' => 'Trạng thái',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'created_at' => [
+            'title' => 'Ngày tạo',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
     'support' => [
         'checkbox' => [
             'title' => 'choose',
