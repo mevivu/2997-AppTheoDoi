@@ -18,6 +18,8 @@ class Transaction extends Model
     protected $table = 'transactions';
 
     protected $fillable = [
+        /** code */
+        'code',
         /* ID người dùng thực hiện giao dịch */
         'user_id',
         /* ID gói dịch vụ liên quan đến giao dịch */
