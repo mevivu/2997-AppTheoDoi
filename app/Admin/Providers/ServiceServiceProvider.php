@@ -14,6 +14,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\User\UserServiceInterface' => 'App\Admin\Services\User\UserService',
         'App\Admin\Services\Children\ChildrenServiceInterface' => 'App\Admin\Services\Children\ChildrenService',
         'App\Admin\Services\Notification\NotificationServiceInterface' => 'App\Admin\Services\Notification\NotificationService',
+        'App\Admin\Services\Notification\NotificationFirebaseServiceInterface' => 'App\Admin\Services\Notification\NotificationFirebaseService',
         'App\Admin\Services\Exercise\ExerciseServiceInterface' => 'App\Admin\Services\Exercise\ExerciseService',
         'App\Admin\Services\Bmi\BmiServiceInterface' => 'App\Admin\Services\Bmi\BmiService',
         'App\Admin\Services\ClinicType\ClinicTypeServiceInterface' => 'App\Admin\Services\ClinicType\ClinicTypeSizeService',
@@ -30,6 +31,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\Journal\JournalServiceInterface' => 'App\Admin\Services\Journal\JournalService',
         'App\Admin\Services\Pregnancy\PregnancyServiceInterface' => 'App\Admin\Services\Pregnancy\PregnancyService',
         'App\Admin\Services\Support\SupportServiceInterface' => 'App\Admin\Services\Support\SupportService',
+        'App\Admin\Services\Transaction\TransactionServiceInterface' => 'App\Admin\Services\Transaction\TransactionService',
     ];
     /**
      * Register services.
