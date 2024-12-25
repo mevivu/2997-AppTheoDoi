@@ -38,14 +38,26 @@ class ClassesService implements ClassesServiceInterface
     public function store(Request $request): object|false
     {
         $data = $request->validated();
-        return $this->repository->create($data);
+
+       $class= $this->repository->create($data);
+        if(!empty($data['subject_id'])){
+            $class->subjects()->attach($data['subject_id']);
+        }
+        return $class;
     }
 
     public function update(Request $request): object|bool
     {
-
         $data = $request->validated();
-        return $this->repository->update($data['id'], $data);
+        $class=$this->repository->findOrFail($data['id']);
+        $update=$this->repository->update($data['id'],[
+            'name'=>$data['name'],
+            'status'=>$data['status'],
+        ]);
+        if ($update && !empty($data['subject_id'])) {
+            $class->subjects()->sync($data['subject_id']);
+        }
+        return $update;
     }
 
 

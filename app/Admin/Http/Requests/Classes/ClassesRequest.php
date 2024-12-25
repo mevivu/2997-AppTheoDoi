@@ -17,15 +17,17 @@ class ClassesRequest extends BaseRequest
     {
         return [
             'name' => ['required', 'string'],
+            'subject_id'=>['required','integer','exists:App\Models\Subject,id'],
             'status' => ['required', new Enum(ActiveStatus::class)],
         ];
     }
     protected function methodPut(): array
     {
         return [
-            'id'=>['required', 'integer', 'exists:App\Models\Classes,id'],
+            'id'=>['required', 'integer', 'exists:App\Models\SchoolClass,id'],
             'name' => ['required', 'string'],
             'status' => ['required', new Enum(ActiveStatus::class)],
+            'subject_id'=>['required','integer','exists:App\Models\Subject,id'],
         ];
     }
 }

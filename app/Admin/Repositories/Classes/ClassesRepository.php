@@ -3,7 +3,9 @@
 namespace App\Admin\Repositories\Classes;
 
 use App\Admin\Repositories\EloquentRepository;
+use App\Enums\ActiveStatus;
 use App\Models\Classes;
+use App\Models\SchoolClass;
 
 class ClassesRepository extends EloquentRepository implements ClassesRepositoryInterface
 {
@@ -12,8 +14,9 @@ class ClassesRepository extends EloquentRepository implements ClassesRepositoryI
 
     public function getModel(): string
     {
-        return Classes::class;
+        return SchoolClass::class;
     }
+
 
     public function searchAllLimit($keySearch = '', $meta = [], $select = ['id', 'name'], $limit = 12)
     {
@@ -34,4 +37,12 @@ class ClassesRepository extends EloquentRepository implements ClassesRepositoryI
         });
     }
 
+
+    public function getClassSubject($id)
+    {
+        // TODO: Implement getClassSubject() method.
+        return $this->model->select(['classes.id as id','classes.status', 'classes.name as name','class_subject.subject_id as subject_id',
+            'subjects.name as nameSubject'])->join('class_subject', 'classes.id', '=', 'class_subject.class_id')
+            ->join('subjects','subjects.id','=','class_subject.subject_id')->where('classes.id', $id)->first();
+    }
 }
