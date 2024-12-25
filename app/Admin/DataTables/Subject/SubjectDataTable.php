@@ -35,12 +35,12 @@ class SubjectDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 2, 3, 4];
-        $this->columnSearchDate = [4];
+        $this->columnAllSearch = [1, 2, 3];
+        $this->columnSearchDate = [3];
         $this->columnSearchSelect = [
 
             [
-                'column' => 3,
+                'column' => 2,
                 'data' => ActiveStatus::asSelectArray()
             ],
         ];
@@ -83,9 +83,6 @@ class SubjectDataTable extends BaseDataTable
             'name' => $this->view['name'],
             'created_at' => function ($query) {
                 return format_datetime($query->created_at);
-            },
-            'class_id' => function ($query) {
-                return $query->class->name;
             },
         ];
     }

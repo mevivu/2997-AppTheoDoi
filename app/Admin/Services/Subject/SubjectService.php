@@ -19,13 +19,25 @@ class SubjectService implements SubjectServiceInterface
     public function store(Request $request)
     {
         $data = $request->validated();
-        return $this->repository->create($data);
+        $class_ids = $data['class_id'];
+        unset($data['class_id']);
+        $subject = $this->repository->create($data);
+
+        $subject->classes()->attach($class_ids);
+
+        return $subject;
     }
 
     public function update(Request $request)
     {
         $data = $request->validated();
-        return $this->repository->update($data['id'], $data);
+        $class_ids = $data['class_id'];
+        unset($data['class_id']);
+        $subject = $this->repository->update($data['id'], $data);
+
+        $subject->classes()->sync($class_ids);
+
+        return $subject;
     }
 
     public function actionMultipleRecords(Request $request): bool

@@ -7,17 +7,19 @@
 
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('name') }}:</label>
+                    <span class="ti ti-math"></span>
+                    {{ __('Môn học') }}:</label>
                     <x-input type="text" name="name" :value="$response->name" :required="true" />
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <label class="control-label">{{ __('Lớp học') }}:</label>
-                <x-select name="class_id" class="select2" :required="true">
-                    <option value="">{{ __('Chọn lớp học') }}</option>
-                    @foreach ($classes as $key => $value)
-                        <x-select-option :value="$key" :title="$value" :option="$response->class_id" />
+            <div class="col-12">
+                <label class="control-label">
+                    <span class="ti ti-school"></span>
+                    @lang('Lớp học'):</label>
+                <x-select class="select2-bs5-ajax" name="class_id[]" id="class_id" :data-url="route('admin.search.select.classes')" multiple>
+                    @foreach ($response->classes as $class)
+                        <x-select-option :option="$class->id" :value="$class->id" :title="$class->name" />
                     @endforeach
                 </x-select>
             </div>

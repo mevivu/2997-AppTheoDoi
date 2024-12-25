@@ -15,11 +15,6 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
-        'class_id' => [
-            'title' => 'Lớp học',
-            'addClass' => 'text-center align-middle',
-            'orderable' => false
-        ],
         'status' => [
             'title' => 'Trạng thái',
             'addClass' => 'text-center align-middle',
@@ -130,7 +125,7 @@ return [
         ],
     ],
     'transaction' => [
-        'code'=>[
+        'code' => [
             'title' => 'Mã giao dịch',
             'addClass' => 'text-center align-middle',
             'orderable' => false

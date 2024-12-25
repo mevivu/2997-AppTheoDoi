@@ -10,7 +10,8 @@ class SubjectRequest extends BaseRequest
     {
         return [
             'name' => 'required',
-            'class_id' => 'required|exists:classes,id',
+            'class_id' => 'required|array',
+            'class_id.*' => 'required|exists:classes,id',
             'status' => 'required',
         ];
     }
@@ -20,7 +21,8 @@ class SubjectRequest extends BaseRequest
         return [
             'id' => 'required|exists:subjects,id',
             'name' => 'required',
-            'class_id' => 'required|exists:classes,id',
+            'class_id' => 'required|array',
+            'class_id.*' => 'required|exists:classes,id',
             'status' => 'required',
         ];
     }
