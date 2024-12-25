@@ -78,12 +78,15 @@ class ClassesDatable extends BaseDataTable
     {
         $this->customAddColumns = [
             'action' => $this->view['action'],
+            'subject_id' => function ($children) {
+                return $children->subjects->first()?->name;
+            },
         ];
     }
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['action', 'name', 'status', 'checkbox'];
+        $this->customRawColumns = ['action','subject_id', 'name', 'status', 'checkbox'];
     }
 
     public function setCustomFilterColumns(): void

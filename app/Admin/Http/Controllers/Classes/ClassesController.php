@@ -84,7 +84,7 @@ class ClassesController extends Controller
 
     public function edit(int $id): Factory|View|Application
     {
-        $response = $this->repository->findOrFail($id);
+        $response = $this->repository->getClassSubject($id);
         return view(
             $this->view['edit'],
             [

@@ -225,8 +225,14 @@ return [
             'addClass' => 'align-middle text-center',
             'footer' => '<input type="checkbox" class="form-check-input check-all" />',
         ],
+
         'name' => [
-            'title' => 'Tiêu đề',
+            'title' => 'Tên',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'subject_id'=>[
+            'title' => 'Môn',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
