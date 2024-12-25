@@ -23,7 +23,6 @@
         </div>
         <div class="card-body p-2">
             <x-select name="is_born" :required="true" id="is_born">
-                <option value="">@lang('Chọn tình trạng của trẻ')</option>
                 @foreach ($born as $key => $value)
                     <x-select-option :value="$key" :title="$value" />
                 @endforeach

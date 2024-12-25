@@ -45,6 +45,13 @@ Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationControlle
         Route::post('/read-all', 'updateAllStatusReadAll');
         Route::delete('/{id}', 'delete');
     });
+Route::controller(App\Api\V1\Http\Controllers\Support\SupportController::class)
+    ->prefix('/supports')
+    ->as('support.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+    });
 
 // Assessment
 Route::controller(\App\Api\V1\Http\Controllers\Assessment\AssessmentController::class)

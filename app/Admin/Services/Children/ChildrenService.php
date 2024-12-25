@@ -5,6 +5,7 @@ namespace App\Admin\Services\Children;
 use App\Admin\Repositories\Children\ChildrenRepositoryInterface;
 use App\Admin\Traits\Roles;
 use App\Api\V1\Support\UseLog;
+use App\Enums\Child\BornStatus;
 use App\Enums\Child\ChildStatus;
 use Exception;
 use Illuminate\Http\Request;
@@ -36,6 +37,12 @@ class ChildrenService implements ChildrenServiceInterface
     public function store(Request $request): object|false
     {
         $data = $request->validated();
+
+        if ($data['is_born'] == BornStatus::Born->value) {
+            $data['due_date'] = null;
+        } elseif ($data['is_born'] == BornStatus::Unborn->value) {
+            $data['birthday'] = null;
+        }
         return $this->repository->create($data);
     }
 
@@ -46,6 +53,13 @@ class ChildrenService implements ChildrenServiceInterface
     {
 
         $data = $request->validated();
+
+        if ($data['is_born'] == BornStatus::Born->value) {
+            $data['due_date'] = null;
+        } elseif ($data['is_born'] == BornStatus::Unborn->value) {
+            $data['birthday'] = null;
+        }
+
         return $this->repository->update($data['id'], $data);
     }
 
