@@ -17,7 +17,8 @@ class ClassesRequest extends BaseRequest
     {
         return [
             'name' => ['required', 'string'],
-            'subject_id'=>['required','integer','exists:App\Models\Subject,id'],
+            'subject_id' => ['required', 'array'],
+            'subject_id.*' => 'required|exists:subjects,id',
             'status' => ['required', new Enum(ActiveStatus::class)],
         ];
     }
@@ -27,7 +28,8 @@ class ClassesRequest extends BaseRequest
             'id'=>['required', 'integer', 'exists:App\Models\SchoolClass,id'],
             'name' => ['required', 'string'],
             'status' => ['required', new Enum(ActiveStatus::class)],
-            'subject_id'=>['required','integer','exists:App\Models\Subject,id'],
+            'subject_id' => ['required', 'array'],
+            'Subject_id.*' => 'required|exists:subjects,id',
         ];
     }
 }

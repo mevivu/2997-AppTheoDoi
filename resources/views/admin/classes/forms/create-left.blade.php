@@ -17,9 +17,10 @@
             </div>
             <div class=" col-12">
                 <label class="form-label fw-bold">@lang('Môn')</label>
-                <x-select name="subject_id"
+                <x-select name="subject_id[]"
                           id="subject_id"
                           :required="true"
+                          multiple
                           class="select2-bs5-ajax form-select"
                           data-url="{{ route('admin.search.select.subject') }}">
                 </x-select>

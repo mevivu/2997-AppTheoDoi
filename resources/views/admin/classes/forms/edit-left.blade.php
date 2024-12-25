@@ -22,15 +22,13 @@
                     <span class="ti ti-user"></span>
                     @lang('Môn'):</label>
                 <x-select class="select2-bs5-ajax"
-                          name="subject_id"
+                          name="subject_id[]"
                           id="subject_id"
+                          multiple
                           :data-url="route('admin.search.select.subject')">
-                    <x-select-option
-                        :option="$response->subject_id"
-                        :value="$response->subject_id"
-                        :title="$response->nameSubject"
-                        :selected="old('subject_id') ? (old('subject_id') == $response->subject_id) : true"
-                    />
+                    @foreach ($response->subjects as $subject)
+                        <x-select-option :option="$subject->id" :value="$subject->id" :title="$subject->name" />
+                    @endforeach
                 </x-select>
             </div>
         </div>
