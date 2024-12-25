@@ -3,6 +3,7 @@
 use App\Enums\ApprovalStatus;
 use App\Enums\Child\BornStatus;
 use App\Enums\DefaultStatus;
+use App\Enums\Transaction\TransactionStatus;
 use App\Enums\DeleteStatus;
 use App\Enums\FeaturedStatus;
 use App\Enums\OpenStatus;
@@ -44,7 +45,11 @@ return [
         DeleteStatus::Deleted->value => 'Đã xóa',
         DeleteStatus::NotDeleted->value => 'Chưa xóa',
     ],
-
+    TransactionStatus::class => [
+        TransactionStatus::Pending->value => 'Chưa giải quyết',
+        TransactionStatus::Confirmed->value => 'Đã xác nhận',
+        TransactionStatus::Success->value => 'Xác nhận thành công'
+    ],
     BornStatus::class => [
         BornStatus::Born->value => 'Đã sinh',
         BornStatus::Unborn->value => 'Chưa sinh',

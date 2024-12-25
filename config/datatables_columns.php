@@ -130,6 +130,11 @@ return [
         ],
     ],
     'transaction' => [
+        'code'=>[
+            'title' => 'Code',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
         'user_id' => [
             'title' => 'Người dùng',
             'addClass' => 'text-center align-middle',

@@ -35,10 +35,10 @@ class TransactionDatable extends BaseDataTable
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [0, 2, 3];
+        $this->columnAllSearch = [0,1, 3, 4];
         $this->columnSearchSelect = [
             [
-                'column' => 3,
+                'column' => 4,
                 'data' => TransactionStatus::asSelectArray()
             ],
 
@@ -81,6 +81,7 @@ class TransactionDatable extends BaseDataTable
     protected function setCustomRawColumns(): void
     {
         $this->customRawColumns = [
+            'code',
             'status',
             'user_id',
             'amount',
