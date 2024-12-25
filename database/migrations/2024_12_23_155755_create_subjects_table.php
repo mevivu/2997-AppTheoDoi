@@ -17,7 +17,6 @@ return new class extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('class_id')->constrained()->onDelete('cascade');
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
             $table->timestamps();
         });
