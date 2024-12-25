@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Subject extends Model
 {
@@ -23,8 +23,10 @@ class Subject extends Model
         'status' => ActiveStatus::class,
     ];
 
-    public function class(): BelongsTo
+    public function classes(): BelongsToMany
     {
-        return $this->belongsTo(SchoolClass::class, 'class_id');
+        return $this->belongsToMany(SchoolClass::class, 'class_subject', 'subject_id', 'class_id');
     }
+
+
 }
