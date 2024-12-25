@@ -738,6 +738,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::get('/clinic-types', [App\Admin\Http\Controllers\ClinicType\ClinicTypeSearchSelectController::class, 'selectSearch'])->name('clinicType');
             Route::get('/children', [\App\Admin\Http\Controllers\Children\ChildrenSelectController::class, 'selectSearch'])->name('children');
             Route::get('/subject', [App\Admin\Http\Controllers\Subject\SubjectSearchSelectController::class, 'selectSearch'])->name('subject');
+            Route::get('/classes', [App\Admin\Http\Controllers\Classes\ClassesSearchSelectController::class, 'selectSearch'])->name('classes');
         });
     });
 
