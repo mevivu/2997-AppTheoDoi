@@ -15,7 +15,7 @@ class ClassesRepository extends EloquentRepository implements ClassesRepositoryI
         return Classes::class;
     }
 
-    public function searchAllLimit($keySearch = '', $meta = [], $select = ['id', 'name'], $limit = 10)
+    public function searchAllLimit($keySearch = '', $meta = [], $select = ['id', 'name'], $limit = 12)
     {
         $this->instance = $this->model->select($select);
         $this->getQueryBuilderFindByKey($keySearch);

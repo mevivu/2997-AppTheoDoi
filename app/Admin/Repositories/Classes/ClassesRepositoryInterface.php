@@ -6,6 +6,6 @@ use App\Admin\Repositories\EloquentRepositoryInterface;
 
 interface ClassesRepositoryInterface extends EloquentRepositoryInterface
 {
-    public function searchAllLimit($value = '', $meta = [], $select = [], $limit = 10);
+    public function searchAllLimit($value = '', $meta = [], $select = [], $limit = 12);
 
 }

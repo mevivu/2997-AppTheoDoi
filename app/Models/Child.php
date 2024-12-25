@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
 use App\Enums\Assessment\AssessmentType;
 use App\Enums\Child\BornStatus;
 use App\Enums\OpenStatus;
@@ -54,12 +55,20 @@ class Child extends Model
         return $this->hasMany(Rating::class, 'child_id');
     }
 
+    public function classGrades(): HasMany
+    {
+        return $this->hasMany(ClassGrade::class, 'child_id');
+    }
+
     protected static function boot(): void
     {
         parent::boot();
 
         static::created(function ($child) {
             $descriptions = self::getAssessmentDescriptions();
+            $class = SchoolClass::where('status', ActiveStatus::Active)->get();
+
+            // create assessment
             foreach (AssessmentType::cases() as $type) {
                 Assessment::create([
                     'child_id' => $child->id,
@@ -67,6 +76,17 @@ class Child extends Model
                     'description' => $descriptions[$type->value] ?? null,
                     'score' => null,
                     'checked' => OpenStatus::OFF->value,
+                ]);
+            }
+            // create class grades
+            foreach ($class as $item) {
+                ClassGrade::create([
+                    'child_id' => $child->id,
+                    'class_id' => $item->id,
+                    'semester1_grade' => 0,
+                    'semester2_grade' => 0,
+                    'full_year_grade' => 0,
+                    'status' => ActiveStatus::Draft->value,
                 ]);
             }
         });
