@@ -20,6 +20,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('package_id');
+            $table->string('code', 191)->unique();
+
             $table->decimal('amount', 15, 0);
             $table->enum('type', TransactionType::getValues())->default(TransactionType::Payment->value);
             $table->enum('is_deleted', DeleteStatus::getValues())->default(DeleteStatus::Deleted->value);
