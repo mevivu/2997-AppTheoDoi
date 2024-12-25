@@ -14,10 +14,17 @@
             </div>
 
             <!-- birthday -->
-            <div class="col-md-6 col-sm-12">
-                <div class="mb-3 d-none" id="date_birthday">
+            <div class="col-md-6 col-sm-12" id="date_birthday">
+                <div class="mb-3 ">
                     <label class="control-label">{{ __('Ngày sinh') }}:</label>
                     <x-input type="date" name="birthday" :value="old('birthday')" placeholder="{{ __('Ngày sinh') }}" />
+                </div>
+            </div>
+
+            <div class="col-md-6 col-sm-12 d-none" id="due_date">
+                <div class="mb-3">
+                    <label class="control-label">{{ __('Ngày dự sinh') }}:</label>
+                    <x-input type="date" name="due_date" :value="old('due_date')" placeholder="{{ __('Ngày sinh') }}" />
                 </div>
             </div>
 

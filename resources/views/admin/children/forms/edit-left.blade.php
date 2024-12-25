@@ -3,6 +3,7 @@
     use Carbon\Carbon;
 
     $birthday = Carbon::parse($children->birthday)->format('Y-m-d');
+    $due_date = Carbon::parse($children->due_date)->format('Y-m-d');
 @endphp
 <div class="col-12 col-md-9">
     <div class="card">
@@ -33,6 +34,20 @@
                         <label class="control-label">{{ __('Ngày sinh') }}:</label>
                         <x-input type="date" name="birthday" placeholder="{{ __('Ngày sinh') }}"
                             value="{{ old('birthday') }}" />
+                    </div>
+                @endif
+
+                @if ($children->is_born == \App\Enums\Child\BornStatus::Unborn)
+                    <div class="mb-3" id="due_date">
+                        <label class="control-label">{{ __('Ngày dự sinh') }}:</label>
+                        <x-input type="date" name="due_date" placeholder="{{ __('Ngày dự sinh') }}"
+                            value="{{ $due_date }}" />
+                    </div>
+                @else
+                    <div class="mb-3 d-none" id="due_date">
+                        <label class="control-label">{{ __('Ngày dự sinh') }}:</label>
+                        <x-input type="date" name="due_date" placeholder="{{ __('Ngày dự sinh') }}"
+                            value="{{ old('due_date') }}" />
                     </div>
                 @endif
             </div>
