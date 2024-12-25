@@ -131,7 +131,7 @@ return [
     ],
     'transaction' => [
         'code'=>[
-            'title' => 'Code',
+            'title' => 'Mã giao dịch',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
