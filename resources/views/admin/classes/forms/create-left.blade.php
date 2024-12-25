@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class=" col-12">
-                <label class="form-label fw-bold">@lang('Subject')</label>
+                <label class="form-label fw-bold">@lang('Môn')</label>
                 <x-select name="subject_id"
                           id="subject_id"
                           :required="true"
