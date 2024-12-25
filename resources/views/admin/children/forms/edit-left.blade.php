@@ -15,20 +15,26 @@
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
                     <label class="control-label">{{ __('Họ và tên') }}:</label>
-                    <x-input name="fullname" :value="old('fullname')" :required="true"
-                    placeholder="{{ __('Họ và tên') }}"
-                    value="{{ $children->fullname }}"/>
+                    <x-input name="fullname" :value="old('fullname')" :required="true" placeholder="{{ __('Họ và tên') }}"
+                        value="{{ $children->fullname }}" />
                 </div>
             </div>
 
             <!-- birthday -->
             <div class="col-md-6 col-sm-12">
-                <div class="mb-3">
-                    <label class="control-label">{{ __('Ngày sinh') }}:</label>
-                    <x-input type="date" name="birthday" :value="old('birthday')"
-                    :required="true" placeholder="{{ __('Ngày sinh') }}"
-                    value="{{ $birthday }}"/>
-                </div>
+                @if ($children->is_born == \App\Enums\Child\BornStatus::Born)
+                    <div class="mb-3" id="date_birthday">
+                        <label class="control-label">{{ __('Ngày sinh') }}:</label>
+                        <x-input type="date" name="birthday" placeholder="{{ __('Ngày sinh') }}"
+                            value="{{ $birthday }}" />
+                    </div>
+                @else
+                    <div class="mb-3 d-none" id="date_birthday">
+                        <label class="control-label">{{ __('Ngày sinh') }}:</label>
+                        <x-input type="date" name="birthday" placeholder="{{ __('Ngày sinh') }}"
+                            value="{{ old('birthday') }}" />
+                    </div>
+                @endif
             </div>
 
             <!-- gender-->
@@ -47,16 +53,8 @@
                 <label class="control-label">
                     <span class="ti ti-user"></span>
                     @lang('Cha/mẹ'):</label>
-                <x-select class="select2-bs5-ajax"
-                          name="user_id"
-                          id="user_id"
-                          :data-url="route('admin.search.select.user')">
-                    <x-select-option
-                        :option="$children->user_id"
-                        :value="$children->user_id"
-                        :title="$children->user->fullname . '-' . AESHelper::decrypt($children->user->phone)"
-                        :selected="old('user_id') ? (old('user_id') == $children->user_id) : true"
-                    />
+                <x-select class="select2-bs5-ajax" name="user_id" id="user_id" :data-url="route('admin.search.select.user')">
+                    <x-select-option :option="$children->user_id" :value="$children->user_id" :title="$children->user->fullname . '-' . AESHelper::decrypt($children->user->phone)" :selected="old('user_id') ? old('user_id') == $children->user_id : true" />
                 </x-select>
             </div>
         </div>

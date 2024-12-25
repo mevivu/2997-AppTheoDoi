@@ -26,8 +26,7 @@ class ChildrenService implements ChildrenServiceInterface
 
     public function __construct(
         ChildrenRepositoryInterface $repository,
-    )
-    {
+    ) {
         $this->repository = $repository;
     }
 

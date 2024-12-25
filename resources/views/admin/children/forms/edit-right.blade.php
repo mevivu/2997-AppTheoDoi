@@ -6,7 +6,7 @@
         <div class="card-body p-2">
             <div class="w-100 d-flex align-items-center h-100 gap-2">
                 <x-button.submit :title="__('save')" name="submitter" value="save"
-                                 class="flex-column gap-1 text-wrap p-2 flex-grow-1" />
+                    class="flex-column gap-1 text-wrap p-2 flex-grow-1" />
                 <x-link :href="route('admin.children.index')" class="w-50 btn btn-outline" :title="'Quay lại'" />
             </div>
         </div>
@@ -18,9 +18,9 @@
             {{ __('Tình trạng') }}
         </div>
         <div class="card-body p-2">
-            <x-select name='is_born' :required="true">
+            <x-select name='is_born' id="is_born">
                 @foreach ($born as $key => $value)
-                    <x-select-option :option="$children->is_born->value" :value="$key" :title="$value"/>
+                    <x-select-option :option="$children->is_born->value" :value="$key" :title="$value" />
                 @endforeach
             </x-select>
         </div>
@@ -34,7 +34,7 @@
         <div class="card-body p-2">
             <x-select name="status" :required="true">
                 @foreach ($status as $key => $value)
-                    <x-select-option :option="$children->status->value" :value="$key" :title="$value"/>
+                    <x-select-option :option="$children->status->value" :value="$key" :title="$value" />
                 @endforeach
             </x-select>
         </div>

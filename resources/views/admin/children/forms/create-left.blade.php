@@ -1,7 +1,7 @@
 <div class="col-12 col-md-9">
     <div class="card">
         <div class="card-header justify-content-center">
-            <h2 class="mb-0">{{ __('Thông tin Admin') }}</h2>
+            <h2 class="mb-0">{{ __('Thông tin trẻ') }}</h2>
         </div>
         <div class="row card-body">
 
@@ -15,9 +15,9 @@
 
             <!-- birthday -->
             <div class="col-md-6 col-sm-12">
-                <div class="mb-3">
+                <div class="mb-3 d-none" id="date_birthday">
                     <label class="control-label">{{ __('Ngày sinh') }}:</label>
-                    <x-input type="date" name="birthday" :value="old('birthday')" :required="true" placeholder="{{ __('Ngày sinh') }}" />
+                    <x-input type="date" name="birthday" :value="old('birthday')" placeholder="{{ __('Ngày sinh') }}" />
                 </div>
             </div>
 
