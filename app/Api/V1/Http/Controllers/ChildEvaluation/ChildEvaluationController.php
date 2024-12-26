@@ -219,6 +219,35 @@ class ChildEvaluationController extends Controller
         }
     }
 
+    /**
+     * Tìm kiếm đánh giá năng lực của trẻ dựa vào ID lớp học, ID bảng điểm lớp và kỳ học.
+     *
+     * Phương thức này nhận các tham số từ query để tìm kiếm thông tin đánh giá năng lực của trẻ phù hợp với điều kiện đã cho.
+     * Nếu tìm thấy thông tin đánh giá, nó sẽ trả về chi tiết thông tin đó. Nếu không tìm thấy, trả về mảng rỗng.
+     *
+     * @authenticated
+     * @queryParam class_id int required ID của lớp học cần tìm kiếm. Example: 1
+     * @queryParam class_grade_id int required ID của bảng điểm lớp cần tìm kiếm. Example: 1
+     * @queryParam semester string required Kỳ học cần tìm kiếm. Example: semester_1
+     *
+     * @response 200 {
+     *     "status": "success",
+     *     "message": "Tìm kiếm thành công.",
+     *     "data": [Chi tiết đánh giá năng lực tìm được dựa trên các tiêu chí]
+     * }
+     * @response 200 {
+     *     "status": "success",
+     *     "message": "Không có dữ liệu phù hợp với tiêu chí tìm kiếm.",
+     *     "data": []
+     * }
+     * @response 500 {
+     *     "status": "error",
+     *     "message": "Lỗi server nội bộ."
+     * }
+     *
+     * @param ChildEvaluationSearchRequest $request Yêu cầu tìm kiếm bao gồm các tham số lọc.
+     * @return JsonResponse Trả về kết quả tìm kiếm đánh giá năng lực của trẻ hoặc lỗi nếu có.
+     */
     public function search(ChildEvaluationSearchRequest $request): JsonResponse
     {
         try {
