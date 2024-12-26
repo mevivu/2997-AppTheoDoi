@@ -5,7 +5,7 @@ namespace App\Enums\Semester;
 
 use App\Supports\Enum;
 
-enum Semester: string
+enum SemesterStatus: string
 {
     use Enum;
 
