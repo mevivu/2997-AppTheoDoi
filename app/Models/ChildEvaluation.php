@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
 use App\Enums\Semester\SemesterStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,12 +24,16 @@ class ChildEvaluation extends Model
         /** Hạnh kiểm */
         'conduct',
         /**Kỳ học */
-        'semester'
+        'semester',
+        /** Trạng thái  */
+        'status'
     ];
 
     protected $casts = [
-        'semester' => SemesterStatus::class
+        'semester' => SemesterStatus::class,
+        'status' => ActiveStatus::class
     ];
+
     public function subjectGrades(): HasMany
     {
         return $this->hasMany(SubjectGrade::class, 'child_evaluation_id');

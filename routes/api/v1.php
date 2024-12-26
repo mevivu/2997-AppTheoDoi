@@ -136,6 +136,14 @@ Route::controller(\App\Api\V1\Http\Controllers\Rating\RatingController::class)
         Route::delete('/{id}', 'delete');
     });
 
+// ChildEvaluation
+Route::controller(\App\Api\V1\Http\Controllers\ChildEvaluation\ChildEvaluationController::class)
+    ->prefix('/ChildEvaluations')
+    ->as('ChildEvaluation.')
+    ->group(function () {
+        Route::post('/', 'store');
+    });
+
 // Exercise
 Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::class)
     ->prefix('/exercises')

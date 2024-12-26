@@ -49,6 +49,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Quality\QualityRepositoryInterface' => 'App\Admin\Repositories\Quality\QualityRepository',
         'App\Admin\Repositories\ClassGrade\ClassGradeRepositoryInterface' => 'App\Admin\Repositories\ClassGrade\ClassGradeRepository',
         'App\Admin\Repositories\SubjectGrade\SubjectGradeRepositoryInterface' => 'App\Admin\Repositories\SubjectGrade\SubjectGradeRepository',
+        'App\Admin\Repositories\ChildEvaluation\ChildEvaluationRepositoryInterface' => 'App\Admin\Repositories\ChildEvaluation\ChildEvaluationRepository',
 
     ];
 
