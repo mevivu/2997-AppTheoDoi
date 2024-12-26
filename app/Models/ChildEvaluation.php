@@ -2,9 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
+use App\Enums\ChildEvaluation\AcademicRating;
+use App\Enums\ChildEvaluation\ConductRating;
 use App\Enums\Semester\SemesterStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ChildEvaluation extends Model
@@ -23,14 +27,30 @@ class ChildEvaluation extends Model
         /** Hạnh kiểm */
         'conduct',
         /**Kỳ học */
-        'semester'
+        'semester',
+        /** Trạng thái  */
+        'status'
     ];
 
     protected $casts = [
-        'semester' => SemesterStatus::class
+        'semester' => SemesterStatus::class,
+        'status' => ActiveStatus::class,
+        'conduct' => ConductRating::class,
+        'academic_performance' => AcademicRating::class
     ];
+
     public function subjectGrades(): HasMany
     {
         return $this->hasMany(SubjectGrade::class, 'child_evaluation_id');
+    }
+
+    public function qualities(): HasMany
+    {
+        return $this->hasMany(ChildQuality::class, 'child_evaluation_id');
+    }
+
+    public function classGrade(): BelongsTo
+    {
+        return $this->belongsTo(ClassGrade::class, 'class_grade_id');
     }
 }

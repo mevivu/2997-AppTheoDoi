@@ -10,13 +10,13 @@ class SubjectGrade extends Model
 {
     use HasFactory;
 
-    protected $table = 'class_grades';
+    protected $table = 'subject_grades';
 
     public $timestamps = false;
 
     protected $fillable = [
-        /** ID của bảng điểm lớp */
-        'class_grade_id',
+        /** ID của bảng đánh giá */
+        'child_evaluation_id',
         /** ID môn học */
         'subject_id',
         /** Điểm số*/

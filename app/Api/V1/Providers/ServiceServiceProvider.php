@@ -23,6 +23,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Api\V1\Services\Pregnancy\PregnancyServiceInterface' => 'App\Api\V1\Services\Pregnancy\PregnancyService',
         'App\Api\V1\Services\Rating\RatingServiceInterface' => 'App\Api\V1\Services\Rating\RatingService',
         'App\Api\V1\Services\Quiz\QuizServiceInterface' => 'App\Api\V1\Services\Quiz\QuizService',
+        'App\Api\V1\Services\ChildEvaluation\ChildEvaluationServiceInterface' => 'App\Api\V1\Services\ChildEvaluation\ChildEvaluationService',
     ];
 
     /**
