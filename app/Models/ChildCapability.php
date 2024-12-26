@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /** Đánh giá năng lực*/
-class ChildQuality extends Model
+class ChildCapability extends Model
 {
     use HasFactory;
 
-    protected $table = 'child_qualities';
+    protected $table = 'child_capabilities';
 
     public $timestamps = false;
 
@@ -20,14 +20,14 @@ class ChildQuality extends Model
     protected $fillable = [
         /** ID của bảng đánh giá */
         'child_evaluation_id',
-        /** ID phẩm chất*/
-        'quality_id',
+        /** ID năng lực*/
+        'capability_id',
         /** Trạng thái */
-        'quality_status'
+        'capability_status'
     ];
 
     protected $casts = [
-        'quality_status' => EvaluationStatus::class
+        'capability_status' => EvaluationStatus::class
     ];
 
     public function childEvaluation(): BelongsTo
@@ -35,8 +35,8 @@ class ChildQuality extends Model
         return $this->belongsTo(ChildEvaluation::class, 'child_evaluation_id');
     }
 
-    public function quality(): BelongsTo
+    public function capability(): BelongsTo
     {
-        return $this->belongsTo(Quality::class, 'quality_id');
+        return $this->belongsTo(Capability::class, 'capability_id');
     }
 }
