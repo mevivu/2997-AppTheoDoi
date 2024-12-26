@@ -8,6 +8,8 @@ use App\Admin\Http\Requests\Classes\ClassesRequest;
 use App\Admin\Repositories\Classes\ClassesRepositoryInterface;
 use App\Admin\Services\Classes\ClassesServiceInterface;
 use App\Enums\ActiveStatus;
+use App\Models\SchoolClass;
+use App\Models\Subject;
 use App\Traits\ResponseController;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -84,10 +86,13 @@ class ClassesController extends Controller
 
     public function edit(int $id): Factory|View|Application
     {
-        $response = $this->repository->getClassSubject($id);
+        $Subject = Subject::where('status', ActiveStatus::Active->value)->pluck('name', 'id');
+        $response = $this->repository->findOrFail($id);
+
         return view(
             $this->view['edit'],
             [
+                'Subject' => $Subject,
                 'response' => $response,
                 'status' => ActiveStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add('Danh sách Lớp ', route($this->route['index']))->add('Cập nhật'),
