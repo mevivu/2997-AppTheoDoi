@@ -7,5 +7,5 @@ use App\Admin\Repositories\EloquentRepositoryInterface;
 
 interface CapabilityRepositoryInterface extends EloquentRepositoryInterface
 {
-    public function getAllCapabilities();
+    public function index();
 }

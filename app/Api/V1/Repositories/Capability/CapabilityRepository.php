@@ -10,7 +10,7 @@ class CapabilityRepository extends AdminArea implements CapabilityRepositoryInte
     protected $model;
 
 
-    public function getAllCapabilities()
+    public function index()
     {
         return $this->model->where('status', ActiveStatus::Active)->get();
     }

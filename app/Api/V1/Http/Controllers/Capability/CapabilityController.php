@@ -69,7 +69,7 @@ class CapabilityController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $response = $this->repository->getAllCapabilities();
+            $response = $this->repository->index();
             return $this->jsonResponseSuccess(CapabilityResource::collection($response));
         } catch (Exception $e) {
             $this->logError('Get Capabilities List failed:', $e);
