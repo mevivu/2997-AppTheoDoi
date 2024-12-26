@@ -20,4 +20,14 @@ class ClassesRepository extends AdminArea implements ClassesRepositoryInterface
         // TODO: Implement findClassesActive() method.
         return $this->model->where('status', ActiveStatus::Active)->get();
     }
+
+    public function findSubjectsByClasses($classId)
+    {
+        // TODO: Implement findSubjectsByClasses() method.
+        $class = $this->model->find($classId);
+        if (!$class) {
+            throw new \Exception("Class not found with ID: $classId");
+        }
+        return $class->subjects()->get();
+    }
 }

@@ -8,4 +8,6 @@ use App\Admin\Repositories\EloquentRepositoryInterface;
 interface ClassesRepositoryInterface extends EloquentRepositoryInterface
 {
     public function findClassesActive();
+
+    public function findSubjectsByClasses($classId);
 }
