@@ -77,7 +77,7 @@ class ChildEvaluationController extends Controller
         try {
             $response = $this->service->store($request);
             DB::commit();
-            return $this->jsonResponseSuccess(new ChildResource($response));
+            return $this->jsonResponseSuccess($response);
         } catch (Exception $exception) {
             DB::rollBack();
             $this->logError('Child Store failed:', $exception);

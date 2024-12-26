@@ -138,8 +138,8 @@ Route::controller(\App\Api\V1\Http\Controllers\Rating\RatingController::class)
 
 // ChildEvaluation
 Route::controller(\App\Api\V1\Http\Controllers\ChildEvaluation\ChildEvaluationController::class)
-    ->prefix('/ChildEvaluations')
-    ->as('ChildEvaluation.')
+    ->prefix('/child-evaluations')
+    ->as('childEvaluation.')
     ->group(function () {
         Route::post('/', 'store');
     });

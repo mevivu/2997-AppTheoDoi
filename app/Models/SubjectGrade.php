@@ -10,7 +10,7 @@ class SubjectGrade extends Model
 {
     use HasFactory;
 
-    protected $table = 'class_grades';
+    protected $table = 'subject_grades';
 
     public $timestamps = false;
 
