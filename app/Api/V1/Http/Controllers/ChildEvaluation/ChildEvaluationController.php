@@ -98,6 +98,71 @@ class ChildEvaluationController extends Controller
     }
 
     /**
+     * Cập nhật Đánh giá năng lực cho một trẻ cụ thể.
+     *
+     * Phương thức này nhận dữ liệu từ body của request để cập nhật thông tin đánh giá năng lực.
+     * Dữ liệu có thể bao gồm học lực, hạnh kiểm, điểm số của các môn học, phẩm chất, và năng lực.
+     *
+     * @authenticated
+     * @bodyParam child_evaluation_id int required ID của Đánh giá năng lực cần cập nhật.
+     * @bodyParam class_grade_id int required ID của lớp. Example: 1
+     * @bodyParam semester string required Kỳ học. Example: semester_1
+     * @bodyParam status string required Trạng thái của đánh giá. Example: draft
+     * @bodyParam conduct string required Hạnh kiểm của học sinh. Example: good
+     * @bodyParam academic_performance string required Học lực của học sinh. Example: excellent
+     * @bodyParam subjects array required Mảng các môn học và điểm số. Example: [{'id': 1, 'grade': 9.5}]
+     * @bodyParam qualities array required Mảng các phẩm chất. Example: [{'id': 1, 'quality_status': 'achieved'}]
+     * @bodyParam capabilities array required Mảng các năng lực. Example: [{'id': 1, 'capability_status': 'developed'}]
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Đánh giá năng lực được cập nhật thành công.",
+     *     "data": {
+     *         "id": 12,
+     *         "class_grade_id": 1,
+     *         "semester": "semester_1",
+     *         "status": "draft",
+     *         "conduct": "good",
+     *         "academic_performance": "excellent",
+     *         "average_score": 8.333333333333334,
+     *         "updated_at": "2024-12-26T07:38:17.000000Z"
+     *     }
+     * }
+     *
+     * @response 400 {
+     *     "status": 400,
+     *     "message": "Dữ liệu nhập vào không hợp lệ."
+     * }
+     *
+     * @response 404 {
+     *     "status": 404,
+     *     "message": "Đánh giá năng lực không tồn tại."
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống."
+     * }
+     *
+     * @param ChildEvaluationRequest $request
+     * @return JsonResponse
+     */
+    public function update(ChildEvaluationRequest $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $response = $this->service->update($request);
+            DB::commit();
+            return $this->jsonResponseSuccess($response);
+        } catch (Exception $e) {
+            DB::rollBack();
+            $this->logError('Update child evaluation failed:', $e);
+            return $this->jsonResponseError('Lỗi hệ thống khi cập nhật đánh giá năng lực', 500);
+        }
+    }
+
+
+    /**
      * Lấy danh sách đánh giá năng lực theo ID của trẻ.
      *
      * Phương thức này truy xuất danh sách phân trang các đánh giá năng lực của một trẻ cụ thể,

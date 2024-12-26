@@ -6,13 +6,10 @@ use App\Admin\Repositories\ClassGrade\ClassGradeRepositoryInterface;
 use App\Api\V1\Repositories\ChildCapability\ChildCapabilityRepositoryInterface;
 use App\Api\V1\Repositories\ChildEvaluation\ChildEvaluationRepositoryInterface;
 use App\Api\V1\Repositories\ChildQuality\ChildQualityRepositoryInterface;
-use App\Api\V1\Repositories\Classes\ClassesRepositoryInterface;
 use App\Api\V1\Repositories\SubjectGrade\SubjectGradeRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
-use App\Models\ChildEvaluation;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 
@@ -89,14 +86,36 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     /**
      * @throws Exception
      */
+    public function update(Request $request): object
+    {
+        $data = $request->validated();
+        $childEvaluationId = $data['child_evaluation_id'];
+        $subjects = $data['subjects'] ?? [];
+        $qualities = $data['qualities'] ?? [];
+        $capabilities = $data['capabilities'] ?? [];
+        $averageScore = $this->calculateAverageScore($subjects);
+        $data['average_score'] = $averageScore;
+        $childEvaluation = $this->repository->update($childEvaluationId, $data);
+        $this->createSubjectGrade($subjects, $childEvaluationId);
+        $this->createChildQuality($qualities, $childEvaluationId);
+        $this->createChildCapability($capabilities, $childEvaluationId);
+        return $childEvaluation;
+
+    }
+
+    /**
+     * @throws Exception
+     */
     public function createSubjectGrade(array $subjects, int $childEvaluationId): void
     {
-        foreach ($subjects as $subject) {
-            $this->subjectGradeRepository->create(
+        foreach ($subjects as $subjectData) {
+            $this->subjectGradeRepository->updateOrCreate(
                 [
                     'child_evaluation_id' => $childEvaluationId,
-                    'subject_id' => $subject['id'],
-                    'grade' => $subject['grade']
+                    'subject_id' => $subjectData['id'],
+                ],
+                [
+                    'grade' => $subjectData['grade']
                 ]
             );
         }
@@ -107,12 +126,16 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
      */
     public function createChildCapability(array $capabilities, int $childEvaluationId): void
     {
-        foreach ($capabilities as $capability) {
-            $this->childCapabilityRepository->create([
-                'child_evaluation_id' => $childEvaluationId,
-                'capability_id' => $capability['id'],
-                'capability_status' => $capability['capability_status']
-            ]);
+        foreach ($capabilities as $capabilityData) {
+            $this->childCapabilityRepository->updateOrCreate(
+                [
+                    'child_evaluation_id' => $childEvaluationId,
+                    'capability_id' => $capabilityData['id'],
+                ],
+                [
+                    'capability_status' => $capabilityData['capability_status']
+                ]
+            );
         }
     }
 
@@ -122,11 +145,15 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     public function createChildQuality(array $qualities, int $childEvaluationId): void
     {
         foreach ($qualities as $quality) {
-            $this->childQualityRepository->create([
-                'child_evaluation_id' => $childEvaluationId,
-                'quality_id' => $quality['id'],
-                'quality_status' => $quality['quality_status']
-            ]);
+            $this->childQualityRepository->updateOrCreate(
+                [
+                    'child_evaluation_id' => $childEvaluationId,
+                    'quality_id' => $quality['id'],
+                ],
+                [
+                    'quality_status' => $quality['quality_status']
+                ]
+            );
         }
     }
 

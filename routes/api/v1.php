@@ -145,6 +145,7 @@ Route::controller(\App\Api\V1\Http\Controllers\ChildEvaluation\ChildEvaluationCo
         Route::get('/search', 'search');
         Route::get('/{id}', 'show');
         Route::post('/', 'store');
+        Route::put('/', 'update');
     });
 
 // Exercise
