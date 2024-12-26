@@ -141,6 +141,7 @@ Route::controller(\App\Api\V1\Http\Controllers\ChildEvaluation\ChildEvaluationCo
     ->prefix('/child-evaluations')
     ->as('childEvaluation.')
     ->group(function () {
+        Route::get('/', 'index');
         Route::post('/', 'store');
     });
 

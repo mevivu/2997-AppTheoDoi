@@ -2,9 +2,11 @@
 
 namespace App\Api\V1\Services\ChildEvaluation;
 
+use App\Admin\Repositories\ClassGrade\ClassGradeRepositoryInterface;
 use App\Api\V1\Repositories\ChildCapability\ChildCapabilityRepositoryInterface;
 use App\Api\V1\Repositories\ChildEvaluation\ChildEvaluationRepositoryInterface;
 use App\Api\V1\Repositories\ChildQuality\ChildQualityRepositoryInterface;
+use App\Api\V1\Repositories\Classes\ClassesRepositoryInterface;
 use App\Api\V1\Repositories\SubjectGrade\SubjectGradeRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
@@ -27,19 +29,37 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     protected SubjectGradeRepositoryInterface $subjectGradeRepository;
     protected ChildQualityRepositoryInterface $childQualityRepository;
     protected ChildCapabilityRepositoryInterface $childCapabilityRepository;
+    protected ClassGradeRepositoryInterface $classGradeRepository;
 
 
     public function __construct(
         ChildEvaluationRepositoryInterface $repository,
         SubjectGradeRepositoryInterface    $subjectGradeRepository,
         ChildQualityRepositoryInterface    $childQualityRepository,
-        ChildCapabilityRepositoryInterface $childCapabilityRepository
+        ChildCapabilityRepositoryInterface $childCapabilityRepository,
+        ClassGradeRepositoryInterface      $classGradeRepository
     )
     {
         $this->repository = $repository;
         $this->subjectGradeRepository = $subjectGradeRepository;
         $this->childQualityRepository = $childQualityRepository;
         $this->childCapabilityRepository = $childCapabilityRepository;
+        $this->classGradeRepository = $classGradeRepository;
+    }
+
+
+    public function index(Request $request)
+    {
+        $data = $request->validated();
+        $limit = $data['limit'] ?? 10;
+        $page = $data['page'] ?? 1;
+        $query = $this->classGradeRepository->getByQueryBuilder(
+            [
+                'child_id' => $data['child_id']
+            ],
+            ['evaluations']
+        );
+        return $query->paginate($limit, ['*'], 'page', $page);
     }
 
 
@@ -115,5 +135,11 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             $totalScore += $subject['grade'];
         }
         return count($subjects) > 0 ? $totalScore / count($subjects) : 0;
+    }
+
+
+    public function show(Request $request)
+    {
+        $data = $request->validated();
     }
 }

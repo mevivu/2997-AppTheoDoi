@@ -12,6 +12,16 @@ use Illuminate\Validation\Rules\Enum;
 
 class ChildEvaluationRequest extends BaseRequest
 {
+
+    protected function methodGet(): array
+    {
+        return [
+            'child_id' => ['required', 'exists:App\Models\Child,id'],
+            'limit' => 'nullable|integer|min:1',
+            'page' => 'nullable|integer|min:1',
+        ];
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *

@@ -8,5 +8,7 @@ use Illuminate\Http\Request;
 interface ChildEvaluationServiceInterface
 {
     public function store(Request $request);
+    public function index(Request $request);
+    public function show(Request $request);
 
 }

@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Enums\ActiveStatus;
-use App\Enums\User\Gender;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ClassGrade extends Model
@@ -31,13 +31,16 @@ class ClassGrade extends Model
 
     protected $casts = [
         'status' => ActiveStatus::class,
-        'gender' => Gender::class,
     ];
-
 
 
     public function evaluations(): HasMany
     {
         return $this->hasMany(ChildEvaluation::class, 'class_grade_id');
+    }
+
+    public function class(): BelongsTo
+    {
+        return $this->belongsTo(SchoolClass::class, 'class_id');
     }
 }
