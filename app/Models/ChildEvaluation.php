@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\ActiveStatus;
+use App\Enums\ChildEvaluation\AcademicRating;
+use App\Enums\ChildEvaluation\ConductRating;
 use App\Enums\Semester\SemesterStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,7 +34,9 @@ class ChildEvaluation extends Model
 
     protected $casts = [
         'semester' => SemesterStatus::class,
-        'status' => ActiveStatus::class
+        'status' => ActiveStatus::class,
+        'conduct' => ConductRating::class,
+        'academic_performance' => AcademicRating::class
     ];
 
     public function subjectGrades(): HasMany

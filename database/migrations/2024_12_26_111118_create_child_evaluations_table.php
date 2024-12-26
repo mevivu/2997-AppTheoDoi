@@ -1,6 +1,8 @@
 <?php
 
 use App\Enums\ActiveStatus;
+use App\Enums\ChildEvaluation\AcademicRating;
+use App\Enums\ChildEvaluation\ConductRating;
 use App\Enums\Semester\SemesterStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -19,8 +21,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('class_grade_id');
             $table->decimal('average_score', 4, 2)->default(0);
-            $table->string('academic_performance')->nullable();
-            $table->string('conduct')->nullable();
+            $table->enum('conduct', ConductRating::getValues())->default(ConductRating::Good->value);
+            $table->enum('academic_performance', AcademicRating::getValues())->default(AcademicRating::Good->value);
             $table->enum('semester', SemesterStatus::getValues())->default(SemesterStatus::Semester1->value);
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Draft->value);
 

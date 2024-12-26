@@ -4,6 +4,8 @@ namespace App\Api\V1\Http\Requests\ChildEvaluation;
 
 use App\Api\V1\Http\Requests\BaseRequest;
 use App\Enums\ActiveStatus;
+use App\Enums\ChildEvaluation\AcademicRating;
+use App\Enums\ChildEvaluation\ConductRating;
 use App\Enums\ChildEvaluation\EvaluationStatus;
 use App\Enums\Semester\SemesterStatus;
 use Illuminate\Validation\Rules\Enum;
@@ -22,6 +24,8 @@ class ChildEvaluationRequest extends BaseRequest
             'class_grade_id' => ['required', 'exists:App\Models\ClassGrade,id'],
             'semester' => ['required', new Enum(SemesterStatus::class)],
             'status' => ['required', new Enum(ActiveStatus::class)],
+            'conduct' => ['required', new Enum(ConductRating::class)],
+            'academic_performance' => ['required', new Enum(AcademicRating::class)],
 
             'subjects' => ['required', 'array'],
             'subjects.*.id' => ['required', 'exists:subjects,id'],
@@ -34,6 +38,7 @@ class ChildEvaluationRequest extends BaseRequest
             'capabilities' => ['required', 'array'],
             'capabilities.*.id' => ['required', 'exists:qualities,id'],
             'capabilities.*.capability_status' => ['required', new Enum(EvaluationStatus::class)],
+
 
         ];
     }
