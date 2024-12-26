@@ -5,7 +5,6 @@ namespace App\Api\V1\Http\Controllers\ChildEvaluation;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Exception\NotFoundException;
-use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationDetailRequest;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationRequest;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationSearchRequest;
 use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationDetailResource;
