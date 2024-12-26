@@ -49,6 +49,11 @@ class ChildEvaluation extends Model
         return $this->hasMany(ChildQuality::class, 'child_evaluation_id');
     }
 
+    public function capabilities(): HasMany
+    {
+        return $this->hasMany(ChildCapability::class, 'child_evaluation_id');
+    }
+
     public function classGrade(): BelongsTo
     {
         return $this->belongsTo(ClassGrade::class, 'class_grade_id');

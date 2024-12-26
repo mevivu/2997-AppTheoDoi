@@ -14,6 +14,7 @@ use App\Api\V1\Services\ChildEvaluation\ChildEvaluationServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
+use App\Api\V1\Validate\Validator;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -200,13 +201,14 @@ class ChildEvaluationController extends Controller
      *     "message": "Lỗi hệ thống."
      * }
      *
-     * @param ChildEvaluationDetailRequest $request
+     * @param $id
      * @return JsonResponse
      */
-    public function show(ChildEvaluationDetailRequest $request): JsonResponse
+    public function show($id): JsonResponse
     {
         try {
-            $response = $this->service->show($request);
+            Validator::validateExists($this->repository, $id);
+            $response = $this->service->show($id);
             return $this->jsonResponseSuccess(new ChildEvaluationDetailResource($response));
         } catch (BadRequestException|NotFoundException $e) {
             return $this->jsonResponseError($e->getMessage());

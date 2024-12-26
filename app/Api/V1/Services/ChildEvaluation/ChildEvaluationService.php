@@ -138,8 +138,11 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     }
 
 
-    public function show(Request $request)
+    /**
+     * @throws Exception
+     */
+    public function show($id)
     {
-        $data = $request->validated();
+        return $this->repository->findOrFail($id);
     }
 }

@@ -142,6 +142,7 @@ Route::controller(\App\Api\V1\Http\Controllers\ChildEvaluation\ChildEvaluationCo
     ->as('childEvaluation.')
     ->group(function () {
         Route::get('/', 'index');
+        Route::get('/{id}', 'show');
         Route::post('/', 'store');
     });
 

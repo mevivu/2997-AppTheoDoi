@@ -22,12 +22,17 @@ class ChildEvaluationDetailResource extends JsonResource
         return [
             'id' => $this->id,
             'class' => [
-                'name' => $this->class->name
+                'id' => $this->classGrade->class->id,
+                'name' => $this->classGrade->class->name
             ],
-            'semester1_grade' => $this->semester1_grade,
-            'semester2_grade' => $this->semester2_grade,
-            'full_year_grade' => $this->full_year_grade,
+            'semester' => $this->semester,
+            'average_score' => $this->average_score,
+            'conduct' => $this->conduct,
+            'academic_performance' => $this->academic_performance,
             'status' => $this->status,
+            'subjects' => SubjectGradeResource::collection($this->subjectGrades),
+            'capabilities' => ChildCapabilityResource::collection($this->capabilities),
+            'qualities' => ChildQualityResource::collection($this->qualities)
 
         ];
     }
