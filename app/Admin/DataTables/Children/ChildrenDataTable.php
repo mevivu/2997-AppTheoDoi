@@ -17,8 +17,7 @@ class ChildrenDataTable extends BaseDataTable
 
     public function __construct(
         ChildrenRepositoryInterface $repository
-    )
-    {
+    ) {
         $this->repository = $repository;
 
         parent::__construct();
