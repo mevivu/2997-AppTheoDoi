@@ -7,6 +7,7 @@ use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Exception\NotFoundException;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationDetailRequest;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationRequest;
+use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationSearchRequest;
 use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationDetailResource;
 use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationResourceCollection;
 use App\Api\V1\Repositories\ChildEvaluation\ChildEvaluationRepositoryInterface;
@@ -215,6 +216,21 @@ class ChildEvaluationController extends Controller
         } catch (Exception $e) {
             $this->logError('Show detail child failed:', $e);
             return $this->jsonResponseError('Show detail child failed', 500);
+        }
+    }
+
+    public function search(ChildEvaluationSearchRequest $request): JsonResponse
+    {
+        try {
+            $response = $this->service->search($request);
+            if ($response) {
+                return $this->jsonResponseSuccess(new ChildEvaluationDetailResource($response));
+
+            }
+            return $this->jsonResponseSuccess([]);
+        } catch (Exception $exception) {
+            $this->logError('Search  failed:', $exception);
+            return $this->jsonResponseError('Search', 500);
         }
     }
 

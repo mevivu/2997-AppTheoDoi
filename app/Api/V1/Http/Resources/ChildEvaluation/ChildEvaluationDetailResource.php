@@ -25,6 +25,7 @@ class ChildEvaluationDetailResource extends JsonResource
                 'id' => $this->classGrade->class->id,
                 'name' => $this->classGrade->class->name
             ],
+            'class_grade_id' => $this->class_grade_id,
             'semester' => $this->semester,
             'average_score' => $this->average_score,
             'conduct' => $this->conduct,

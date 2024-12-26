@@ -10,7 +10,9 @@ use App\Api\V1\Repositories\Classes\ClassesRepositoryInterface;
 use App\Api\V1\Repositories\SubjectGrade\SubjectGradeRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
+use App\Models\ChildEvaluation;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 
@@ -145,4 +147,22 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     {
         return $this->repository->findOrFail($id);
     }
+
+    public function search(Request $request)
+    {
+        $data = $request->validated();
+        $classId = $data['class_id'];
+        $semester = $data['semester'];
+        $classGradeId = $data['class_grade_id'];
+        $query = $this->repository->getBy([
+            ['classGrade.class_id', '=', $classId],
+            'semester' => $semester,
+            'class_grade_id' => $classGradeId,
+        ]);
+        return $query->first();
+
+
+    }
+
+
 }
