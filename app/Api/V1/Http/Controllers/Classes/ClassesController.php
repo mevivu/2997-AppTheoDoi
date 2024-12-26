@@ -5,11 +5,14 @@ namespace App\Api\V1\Http\Controllers\Classes;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Http\Resources\Classes\ClassesResource;
 use App\Api\V1\Http\Resources\Subject\SubjectResource;
+use App\Api\V1\Exception\BadRequestException;
+use App\Api\V1\Exception\NotFoundException;
 use App\Api\V1\Repositories\Classes\ClassesRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
 use Exception;
+use App\Api\V1\Validate\Validator;
 use Illuminate\Http\JsonResponse;
 
 
@@ -76,6 +79,13 @@ class ClassesController extends Controller
      * }
      * 
      * @response 400 {
+     *     "status": 400,
+     *     "message": "Resource with ID 16 not found.",
+     *     "data": null
+     * }
+     * 
+     * 
+     * @response 500 {
      *     "status": 500,
      *     "message": "Lỗi hệ thống khi lấy danh sách môn học của lớp.",
      *     "data": null
@@ -87,8 +97,11 @@ class ClassesController extends Controller
     public function findSubjectsByClasses($id)
     {
         try {
+            Validator::validateExists($this->repository, $id);
             $response = $this->repository->findSubjectsByClasses($id);
             return $this->jsonResponseSuccess(SubjectResource::collection($response));
+        } catch (NotFoundException | BadRequestException $e) {
+            return $this->jsonResponseError($e->getMessage());
         } catch (Exception $e) {
             $this->logError('Get Subjects List failed:', $e);
             return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách môn học của lớp.', 500);
