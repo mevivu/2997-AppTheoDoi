@@ -1,0 +1,40 @@
+<?php
+
+use App\Enums\Semester\SemesterStatus;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up(): void
+    {
+        Schema::create('child_evaluations', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('class_grade_id');
+            $table->decimal('average_score', 4, 2);
+            $table->string('academic_performance');
+            $table->string('conduct');
+            $table->enum('semester', SemesterStatus::getValues())->default(SemesterStatus::Semester1->value);
+
+            $table->foreign('class_grade_id')->references('id')->on('class_grades')->onDelete('cascade');
+
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('child_evaluations');
+    }
+};

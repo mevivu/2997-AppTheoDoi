@@ -6,6 +6,7 @@ use App\Enums\ActiveStatus;
 use App\Enums\User\Gender;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ClassGrade extends Model
 {
@@ -32,4 +33,11 @@ class ClassGrade extends Model
         'status' => ActiveStatus::class,
         'gender' => Gender::class,
     ];
+
+
+
+    public function evaluations(): HasMany
+    {
+        return $this->hasMany(ChildEvaluation::class, 'class_grade_id');
+    }
 }
