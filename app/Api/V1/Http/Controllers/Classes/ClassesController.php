@@ -9,6 +9,7 @@ use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
 use Exception;
+use Illuminate\Http\JsonResponse;
 
 
 /**
@@ -27,6 +28,28 @@ class ClassesController extends Controller
         $this->repository = $repository;
     }
 
+    /**
+     * Lấy danh sách lớp đang hoạt động
+     *
+     * @authenticated
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Thực hiện thành công.",
+     *     "data": {
+     *         "id": 4,
+     *         "name": "asd"
+     *     }
+     * }
+     *
+     * @response 400 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống khi lấy danh sách lớp",
+     *     "data":null
+     * }
+     *
+     * @return JsonResponse
+     */
     public function index()
     {
         try {
