@@ -43,4 +43,12 @@ class ClassGrade extends Model
     {
         return $this->belongsTo(SchoolClass::class, 'class_id');
     }
+
+
+    public function children(): BelongsTo
+    {
+        return $this->belongsTo(Child::class, 'child_id', 'id'); // child_id là khóa ngoại
+    }
+
+
 }

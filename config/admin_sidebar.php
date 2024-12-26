@@ -29,6 +29,22 @@ return [
         ]
     ],
     [
+        'title' => 'GPA',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-calendar-dollar"></i>',
+        'roles' => [],
+        'permissions' => ['viewGPA'],
+        'sub' => [
+            [
+                'title' => 'DS GPA',
+                'routeName' => 'admin.gpa.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewGPA'],
+            ],
+        ]
+    ],
+    [
         'title' => 'Nhật ký',
         'routeName' => null,
         'icon' => '<i class="ti ti-external-link"></i>',
@@ -205,15 +221,15 @@ return [
         'icon' => '<i class="ti ti-article"></i>',
         'roles' => [],
         'permissions' =>
-            [
-                'createPost',
-                'viewPost',
-                'updatePost',
-                'deletePost',
-                'viewPostCategory',
-                'createPostCategory',
-                'updatePostCategory'
-            ],
+        [
+            'createPost',
+            'viewPost',
+            'updatePost',
+            'deletePost',
+            'viewPostCategory',
+            'createPostCategory',
+            'updatePostCategory'
+        ],
         'sub' => [
             [
                 'title' => 'Thêm bài viết',

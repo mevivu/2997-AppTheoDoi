@@ -1181,5 +1181,37 @@ return [
             'visible' => false
         ],
     ],
+    'gpa' => [
+        'children.fullname' => [
+            'title' => 'Họ tên trẻ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'classes.name' => [
+            'title' => 'Tên lớp',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'semester1_grade' => [
+            'title' => 'Điểm học kỳ I',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'semester2_grade' => [
+            'title' => 'Điểm học kỳ II',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'full_year_grade' => [
+            'title' => 'Tổng điểm',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'status' => [
+            'title' => 'Trạng thái',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ]
 
 ];

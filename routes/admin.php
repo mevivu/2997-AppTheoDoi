@@ -563,7 +563,6 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::get('/{id}/history', 'history')->name('history');
                 Route::get('/sua/{id}', 'edit')->name('edit');
                 Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
-
             });
 
             Route::group(['middleware' => ['permission:updateUser', 'auth:admin']], function () {
@@ -574,7 +573,6 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/xoa/{id}', 'delete')->name('delete');
             });
         });
-
     });
 
     //sliders
@@ -654,7 +652,15 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
     });
-
+    //GPA
+    Route::controller(\App\Admin\Http\Controllers\GPA\GPAController::class)
+        ->prefix('/gpa')
+        ->as('gpa.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:viewGPA', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+            });
+        });
 
     //children
     Route::prefix('/quan-ly-tre-em')->as('children.')->group(function () {
@@ -667,7 +673,6 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/sua/{id}', 'edit')->name('edit');
                 Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
-
             });
 
             Route::group(['middleware' => ['permission:updateChildren', 'auth:admin']], function () {
@@ -678,7 +683,6 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/xoa/{id}', 'delete')->name('delete');
             });
         });
-
     });
 
     //admin
