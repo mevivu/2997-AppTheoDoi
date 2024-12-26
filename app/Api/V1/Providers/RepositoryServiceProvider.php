@@ -29,6 +29,8 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\Classes\ClassesRepositoryInterface' => 'App\Api\V1\Repositories\Classes\ClassesRepository',
         'App\Api\V1\Repositories\Support\SupportRepositoryInterface' => 'App\Api\V1\Repositories\Support\SupportRepository',
         'App\Api\V1\Repositories\SubjectGrade\SubjectGradeRepositoryInterface' => 'App\Api\V1\Repositories\SubjectGrade\SubjectGradeRepository',
+        'App\Api\V1\Repositories\Quality\QualityRepositoryInterface' => 'App\Api\V1\Repositories\Quality\QualityRepository',
+        'App\Admin\Repositories\Capability\CapabilityRepositoryInterface' => 'App\Admin\Repositories\Capability\CapabilityRepository',
     ];
 
     /**
