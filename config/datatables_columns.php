@@ -1187,7 +1187,7 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
-        'classes.name' => [
+        'class.name' => [
             'title' => 'Tên lớp',
             'addClass' => 'text-center align-middle',
             'orderable' => false

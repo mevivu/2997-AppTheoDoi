@@ -37,7 +37,7 @@ class GPADataTable extends BaseDataTable
             [
                 ['status', '!=', ActiveStatus::Deleted],
             ]
-        )->with(['children', 'classes']);
+        )->with(['children', 'class']);
     }
 
 
@@ -77,7 +77,7 @@ class GPADataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['children.fullname', 'classes.name', 'semester1_grade', 'semester1_grade', 'full_year_grade', 'status'];
+        $this->customRawColumns = ['children.fullname', 'class.name', 'semester1_grade', 'semester1_grade', 'full_year_grade', 'status'];
     }
 
     protected function setCustomFilterColumns(): void
