@@ -16,6 +16,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
+
 class UserController extends Controller
 {
     use ResponseController;
@@ -30,7 +31,6 @@ class UserController extends Controller
         $this->repository = $repository;
 
         $this->service = $service;
-
     }
 
     public function getView(): array
@@ -101,7 +101,6 @@ class UserController extends Controller
                 'breadcrumbs' => $this->crums->add(__('Khách hàng'), route($this->route['index']))->add(__('edit')),
             ],
         );
-
     }
 
     public function update(UserRequest $request): RedirectResponse

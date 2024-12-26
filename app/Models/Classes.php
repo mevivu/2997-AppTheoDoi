@@ -7,15 +7,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Subject extends Model
+class Classes extends Model
 {
     use HasFactory;
 
-    protected $table = 'subjects';
+    protected $table = 'classes';
 
     protected $fillable = [
         'name',
-        'class_id',
+        'subject_id',
         'status'
     ];
 
@@ -23,8 +23,8 @@ class Subject extends Model
         'status' => ActiveStatus::class,
     ];
 
-    public function classes(): BelongsToMany
+    public function subjects(): BelongsToMany
     {
-        return $this->belongsToMany(SchoolClass::class, 'class_subject', 'subject_id', 'class_id');
+        return $this->belongsToMany(Subject::class, 'class_subject', 'class_id', 'subject_id');
     }
 }

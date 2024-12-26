@@ -231,11 +231,7 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
-        'subject_id'=>[
-            'title' => 'Môn',
-            'addClass' => 'text-center align-middle',
-            'orderable' => false
-        ],
+
         'status' => [
             'title' => 'status',
             'addClass' => 'text-center align-middle',

@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\ActiveStatus;
-use App\Enums\Vaccination\VaccinationStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,17 +14,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vaccination_schedules', function (Blueprint $table) {
+        Schema::create('vaccination_types', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
-            $table->date('performed_on')->nullable();
-            $table->text('image')->nullable();
-            $table->enum('vaccination_status', VaccinationStatus::getValues())->default(VaccinationStatus::NotVaccinated->value);
-            $table->foreignId('child_id')->constrained('children')->onDelete('cascade');
-            $table->foreignId('vaccination_type_id')->constrained('vaccination_types')->onDelete('cascade');
-
             $table->timestamps();
         });
     }
@@ -35,8 +28,8 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('vaccination_schedules');
+        Schema::dropIfExists('vaccination_types');
     }
 };

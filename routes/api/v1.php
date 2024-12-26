@@ -59,7 +59,6 @@ Route::controller(\App\Api\V1\Http\Controllers\Assessment\AssessmentController::
     ->as('assessment.')
     ->group(function () {
         Route::get('/', 'index');
-
     });
 // Child
 Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
@@ -71,13 +70,13 @@ Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
         Route::post('/', 'store');
         Route::post('/update', 'update');
         Route::delete('/{id}', 'delete');
-
     });
 Route::controller(\App\Api\V1\Http\Controllers\Classes\ClassesController::class)
     ->prefix("/class")
     ->as('classes.')
     ->group(function () {
         Route::get('/', 'index');
+        Route::get('/subject/{id}', 'findSubjectsByClasses');
     });
 
 // Package
@@ -100,7 +99,20 @@ Route::controller(\App\Api\V1\Http\Controllers\Journal\JournalController::class)
         Route::post('/update', 'update');
         Route::delete('/{id}', 'delete');
     });
-
+//Quality
+Route::controller(\App\Api\V1\Http\Controllers\Quality\QualityController::class)
+    ->prefix('/qualities')
+    ->as('quality.')
+    ->group(function () {
+        Route::get('/', 'index');
+    });
+//Capabilities
+Route::controller(\App\Api\V1\Http\Controllers\Capability\CapabilityController::class)
+    ->prefix('/capabilities')
+    ->as('capability.')
+    ->group(function () {
+        Route::get('/', 'index');
+    });
 // pregnancy
 Route::controller(\App\Api\V1\Http\Controllers\Pregnancy\PregnancyController::class)
     ->prefix('/pregnancy')
