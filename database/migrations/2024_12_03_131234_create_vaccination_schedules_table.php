@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ActiveStatus;
+use App\Enums\Vaccination\VaccinationStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,6 +22,8 @@ return new class extends Migration
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
             $table->date('performed_on')->nullable();
             $table->text('image')->nullable();
+            $table->enum('vaccination_status', VaccinationStatus::getValues())->default(VaccinationStatus::NotVaccinated->value);
+            $table->foreignId('child_id')->constrained('children')->onDelete('cascade');
             $table->timestamps();
         });
     }
