@@ -59,7 +59,6 @@ Route::controller(\App\Api\V1\Http\Controllers\Assessment\AssessmentController::
     ->as('assessment.')
     ->group(function () {
         Route::get('/', 'index');
-
     });
 // Child
 Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
@@ -71,13 +70,13 @@ Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
         Route::post('/', 'store');
         Route::post('/update', 'update');
         Route::delete('/{id}', 'delete');
-
     });
 Route::controller(\App\Api\V1\Http\Controllers\Classes\ClassesController::class)
     ->prefix("/class")
     ->as('classes.')
     ->group(function () {
         Route::get('/', 'index');
+        Route::get('/subject/{id}', 'findSubjectsByClasses');
     });
 
 // Package
