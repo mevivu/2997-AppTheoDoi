@@ -53,7 +53,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\ChildEvaluation\ChildEvaluationRepositoryInterface' => 'App\Admin\Repositories\ChildEvaluation\ChildEvaluationRepository',
         'App\Admin\Repositories\ChildQuality\ChildQualityRepositoryInterface' => 'App\Admin\Repositories\ChildQuality\ChildQualityRepository',
         'App\Admin\Repositories\ChildCapability\ChildCapabilityRepositoryInterface' => 'App\Admin\Repositories\ChildCapability\ChildCapabilityRepository',
-
+        'App\Admin\Repositories\VaccinationType\VaccinationTypeRepositoryInterface' => 'App\Admin\Repositories\VaccinationType\VaccinationTypeRepository',
     ];
 
     /**

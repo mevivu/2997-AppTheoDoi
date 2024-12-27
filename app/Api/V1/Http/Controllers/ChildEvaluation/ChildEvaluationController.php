@@ -5,11 +5,14 @@ namespace App\Api\V1\Http\Controllers\ChildEvaluation;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Exception\NotFoundException;
+use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationInfoRequest;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationRequest;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationSearchRequest;
 use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationDetailResource;
+use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationInfoResource;
 use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationResourceCollection;
 use App\Api\V1\Repositories\ChildEvaluation\ChildEvaluationRepositoryInterface;
+use App\Api\V1\Repositories\ClassGrade\ClassGradeRepositoryInterface;
 use App\Api\V1\Services\ChildEvaluation\ChildEvaluationServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
@@ -26,16 +29,53 @@ class ChildEvaluationController extends Controller
 {
     use AuthServiceApi, Response, UseLog;
 
+    protected ClassGradeRepositoryInterface $classGradeRepository;
     public function __construct(
         ChildEvaluationRepositoryInterface $repository,
+        ClassGradeRepositoryInterface     $classGradeRepository,
         ChildEvaluationServiceInterface    $service
 
     )
     {
         $this->repository = $repository;
+        $this->classGradeRepository = $classGradeRepository;
         $this->service = $service;
         $this->middleware('auth:api');
 
+    }
+
+    /**
+     * Lấy danh sách đánh giá năng lực theo ID của bảng điểm lớp.
+     *
+     * @authenticated
+     * @queryParam id int required ID của lớp học. Example: 1
+     * @queryParam semester string required Kỳ học. Example: semester_1
+     *
+     * @response 200 {
+     *     "status": "success",
+     *     "message": "Dữ liệu đánh giá năng lực được truy xuất thành công.",
+     *     "data": [Danh sách đánh giá năng lực]
+     * }
+     * @response 404 {
+     *     "status": "error",
+     *     "message": "Không tìm thấy bản ghi."
+     * }
+     * @response 500 {
+     *     "status": "error",
+     *     "message": "Lỗi server nội bộ."
+     * }
+     *
+     * @param ChildEvaluationInfoRequest $request
+     * @return JsonResponse
+     */
+    public function findByClassGrade(ChildEvaluationInfoRequest $request): JsonResponse
+    {
+        try {
+            $response = $this->service->findByClass($request);
+            return $this->jsonResponseSuccess(new ChildEvaluationInfoResource($response));
+        } catch (Exception $e) {
+            return $this->jsonResponseError('Lỗi server nội bộ khi truy xuất đánh giá năng lực.', 500);
+        }
     }
 
     /**

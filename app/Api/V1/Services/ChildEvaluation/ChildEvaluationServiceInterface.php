@@ -17,4 +17,6 @@ interface ChildEvaluationServiceInterface
 
     public function search(Request $request);
 
+    public function findByClass(Request $request);
+
 }

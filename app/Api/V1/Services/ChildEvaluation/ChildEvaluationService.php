@@ -2,13 +2,19 @@
 
 namespace App\Api\V1\Services\ChildEvaluation;
 
-use App\Admin\Repositories\ClassGrade\ClassGradeRepositoryInterface;
+use App\Api\V1\Repositories\Capability\CapabilityRepositoryInterface;
 use App\Api\V1\Repositories\ChildCapability\ChildCapabilityRepositoryInterface;
 use App\Api\V1\Repositories\ChildEvaluation\ChildEvaluationRepositoryInterface;
 use App\Api\V1\Repositories\ChildQuality\ChildQualityRepositoryInterface;
+use App\Api\V1\Repositories\Classes\ClassesRepositoryInterface;
+use App\Api\V1\Repositories\ClassGrade\ClassGradeRepositoryInterface;
+use App\Api\V1\Repositories\Quality\QualityRepositoryInterface;
 use App\Api\V1\Repositories\SubjectGrade\SubjectGradeRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
+use App\Enums\ActiveStatus;
+use App\Enums\Semester\SemesterStatus;
+use App\Models\ClassGrade;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -29,6 +35,9 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     protected ChildQualityRepositoryInterface $childQualityRepository;
     protected ChildCapabilityRepositoryInterface $childCapabilityRepository;
     protected ClassGradeRepositoryInterface $classGradeRepository;
+    protected QualityRepositoryInterface $qualityRepository;
+    protected CapabilityRepositoryInterface $capabilityRepository;
+    protected ClassesRepositoryInterface $classesRepository;
 
 
     public function __construct(
@@ -36,7 +45,10 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         SubjectGradeRepositoryInterface    $subjectGradeRepository,
         ChildQualityRepositoryInterface    $childQualityRepository,
         ChildCapabilityRepositoryInterface $childCapabilityRepository,
-        ClassGradeRepositoryInterface      $classGradeRepository
+        ClassGradeRepositoryInterface      $classGradeRepository,
+        QualityRepositoryInterface         $qualityRepository,
+        CapabilityRepositoryInterface      $capabilityRepository,
+        ClassesRepositoryInterface         $classesRepository
     )
     {
         $this->repository = $repository;
@@ -44,6 +56,9 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $this->childQualityRepository = $childQualityRepository;
         $this->childCapabilityRepository = $childCapabilityRepository;
         $this->classGradeRepository = $classGradeRepository;
+        $this->qualityRepository = $qualityRepository;
+        $this->capabilityRepository = $capabilityRepository;
+        $this->classesRepository = $classesRepository;
     }
 
 
@@ -68,9 +83,12 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     public function store(Request $request): object
     {
         $data = $request->validated();
+        $semester = $data['semester'];
+        $classGradeId = $data['class_grade_id'];
         $subjects = $data['subjects'] ?? [];
         $qualities = $data['qualities'] ?? [];
         $capabilities = $data['capabilities'] ?? [];
+        $classGrade = $this->classGradeRepository->findOrFail($classGradeId);
         $averageScore = $this->calculateAverageScore($subjects);
         $data['average_score'] = $averageScore;
         $childEvaluation = $this->repository->create($data);
@@ -78,8 +96,26 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $this->createSubjectGrade($subjects, $childEvaluationId);
         $this->createChildQuality($qualities, $childEvaluationId);
         $this->createChildCapability($capabilities, $childEvaluationId);
+        $this->updateScoreClassGrade($semester, $classGrade, $averageScore);
 
         return $childEvaluation;
+
+    }
+
+    private function updateScoreClassGrade($semester, ClassGrade $classGrade, $averageScore): void
+    {
+        if ($semester == SemesterStatus::Semester1->value) {
+            $classGrade->update([
+                'semester1_grade' => $averageScore
+            ]);
+        } else {
+            $semester1Grade = $classGrade->semester1_grade;
+            $fullYearGrade = ($semester1Grade + $averageScore * 2) / 3;
+            $classGrade->update([
+                'semester2_grade' => $averageScore,
+                'full_year_grade' => $fullYearGrade
+            ]);
+        }
 
     }
 
@@ -192,4 +228,21 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     }
 
 
+    /**
+     * @throws Exception
+     */
+    public function findByClass(Request $request): array
+    {
+        $data = $request->validated();
+        $class = $this->classesRepository->findOrFail($data['id']);
+        $subjects = $class->subjects;
+        $qualities = $this->qualityRepository->getBy(['status' => ActiveStatus::Active]);
+        $capabilities = $this->capabilityRepository->getBy(['status' => ActiveStatus::Active]);
+        return [
+            'class' => $class,
+            'subjects' => $subjects,
+            'qualities' => $qualities,
+            'capabilities' => $capabilities
+        ];
+    }
 }

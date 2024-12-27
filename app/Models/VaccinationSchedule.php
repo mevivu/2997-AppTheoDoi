@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ActiveStatus;
+use App\Enums\Permission\PermissionType;
 use App\Enums\Vaccination\VaccinationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -31,10 +32,13 @@ class VaccinationSchedule extends Model
         /* Trạng thái */
         'status',
         /* Trạng thái tiêm chủng */
-        'vaccination_status'
+        'vaccination_status',
+        /** Loại */
+        'type'
     ];
     protected $casts = [
         'status' => ActiveStatus::class,
+        'type' => PermissionType::class,
         'vaccination_status' => VaccinationStatus::class,
         'performed_on' => 'date',
     ];

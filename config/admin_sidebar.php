@@ -45,6 +45,32 @@ return [
         ]
     ],
     [
+        'title' => 'Loại Tiêm chủng',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-vaccine-bottle"></i>',
+        'roles' => [],
+        'permissions' => ['createTypeVaccination', 'viewTypeVaccination','updateTypeVaccination','deleteTypeVaccination'],
+        'sub' => [
+
+            [
+                'title' => 'Thêm loại Tiêm chủng',
+                'routeName' => 'admin.vaccinationType.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createTypeVaccination'],
+            ],
+            [
+                'title' => 'DS loại Tiêm chủng',
+                'routeName' => 'admin.vaccinationType.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewTypeVaccination'],
+            ],
+
+
+        ]
+    ],
+    [
         'title' => 'Nhật ký',
         'routeName' => null,
         'icon' => '<i class="ti ti-external-link"></i>',
@@ -221,15 +247,15 @@ return [
         'icon' => '<i class="ti ti-article"></i>',
         'roles' => [],
         'permissions' =>
-        [
-            'createPost',
-            'viewPost',
-            'updatePost',
-            'deletePost',
-            'viewPostCategory',
-            'createPostCategory',
-            'updatePostCategory'
-        ],
+            [
+                'createPost',
+                'viewPost',
+                'updatePost',
+                'deletePost',
+                'viewPostCategory',
+                'createPostCategory',
+                'updatePostCategory'
+            ],
         'sub' => [
             [
                 'title' => 'Thêm bài viết',
