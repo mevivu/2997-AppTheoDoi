@@ -81,7 +81,7 @@ class VaccinationTypeController extends Controller
     {
         return $this->handleResponse($request, function ($request) {
             return $this->service->store($request);
-        }, $this->route['index'], $this->route['create']);
+        }, $this->route['index'], $this->route['edit']);
     }
 
     /**

@@ -31,9 +31,9 @@ return [
     [
         'title' => 'Loại Tiêm chủng',
         'routeName' => null,
-        'icon' => '<i class="ti ti-calendar-dollar"></i>',
+        'icon' => '<i class="ti ti-vaccine-bottle"></i>',
         'roles' => [],
-        'permissions' => ['createTypeVaccination', 'viewTypeVaccination'],
+        'permissions' => ['createTypeVaccination', 'viewTypeVaccination','updateTypeVaccination','deleteTypeVaccination'],
         'sub' => [
 
             [
