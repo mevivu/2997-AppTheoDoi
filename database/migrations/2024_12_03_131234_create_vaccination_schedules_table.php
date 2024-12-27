@@ -26,7 +26,6 @@ return new class extends Migration
             $table->text('image')->nullable();
             $table->enum('type', PermissionType::getValues())->default(PermissionType::USER->value);
             $table->enum('vaccination_status', VaccinationStatus::getValues())->default(VaccinationStatus::NotVaccinated->value);
-            $table->foreignId('child_id')->constrained('children')->onDelete('cascade');
             $table->foreign('vaccination_type_id')->references('id')->on('vaccination_types')->onDelete('set null');
             $table->timestamps();
         });

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Enums\Child\ChildStatus;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Child extends Model
@@ -58,6 +59,12 @@ class Child extends Model
     public function classGrades(): HasMany
     {
         return $this->hasMany(ClassGrade::class, 'child_id');
+    }
+
+    public function vaccinationSchedules(): BelongsToMany
+    {
+        return $this->belongsToMany(VaccinationSchedule::class, 'child_vaccination_schedule', 'child_id', 'vaccination_schedule_id')
+            ->withTimestamps();
     }
 
     protected static function boot(): void
