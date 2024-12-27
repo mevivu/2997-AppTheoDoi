@@ -53,5 +53,32 @@ class ChildEvaluationRequest extends BaseRequest
         ];
     }
 
+    protected function methodPut(): array
+    {
+        return [
+
+            'child_evaluation_id' => ['required', 'exists:App\Models\ChildEvaluation,id'],
+            'class_grade_id' => ['required', 'exists:App\Models\ClassGrade,id'],
+            'semester' => ['required', new Enum(SemesterStatus::class)],
+            'status' => ['required', new Enum(ActiveStatus::class)],
+            'conduct' => ['required', new Enum(ConductRating::class)],
+            'academic_performance' => ['required', new Enum(AcademicRating::class)],
+
+            'subjects' => ['required', 'array'],
+            'subjects.*.id' => ['required', 'exists:subjects,id'],
+            'subjects.*.grade' => ['required', 'numeric', 'between:0,10'],
+
+            'qualities' => ['required', 'array'],
+            'qualities.*.id' => ['required', 'exists:qualities,id'],
+            'qualities.*.quality_status' => ['required', new Enum(EvaluationStatus::class)],
+
+            'capabilities' => ['required', 'array'],
+            'capabilities.*.id' => ['required', 'exists:qualities,id'],
+            'capabilities.*.capability_status' => ['required', new Enum(EvaluationStatus::class)],
+
+
+        ];
+    }
+
 
 }
