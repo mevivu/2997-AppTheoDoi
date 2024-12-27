@@ -6,5 +6,5 @@ use App\Admin\Repositories\EloquentRepositoryInterface;
 
 interface QuizRepositoryInterface extends EloquentRepositoryInterface
 {
-    public function getAllQuizzesByTypeAndAge();
+    public function getAllQuizzesByTypeAndAge($age, $type);
 }

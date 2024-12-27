@@ -30,8 +30,7 @@ class QuizService implements QuizServiceInterface
     public function __construct(
         QuizRepositoryInterface $repository,
         FileService                  $fileService
-    )
-    {
+    ) {
         $this->repository = $repository;
         $this->fileService = $fileService;
     }
@@ -40,12 +39,10 @@ class QuizService implements QuizServiceInterface
     public function index(Request $request)
     {
         $data = $request->validated();
-        $limit = $data['limit'] ?? 10;
-        $page = $data['page'] ?? 1;
-        $query = $this->repository->getByQueryBuilder([
-            'child_id' => $data['child_id'],
-        ]);
-        return $query->paginate($limit, ['*'], 'page', $page);
+        $type = $data['type'];
+        $age = $data['age'];
+        $query = $this->repository->getAllQuizzesByTypeAndAge($age, $type);
+        return $query;
     }
 
     /**
@@ -86,6 +83,5 @@ class QuizService implements QuizServiceInterface
         $response = $this->repository->findOrFail($id);
         $this->fileService->deleteModelImages($response, ['image']);
         $this->repository->delete($id);
-
     }
 }

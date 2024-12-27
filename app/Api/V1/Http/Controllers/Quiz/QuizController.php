@@ -40,54 +40,67 @@ class QuizController extends Controller
         $this->middleware('auth:api');
     }
     /**
-     * Lấy danh sách bài kiểm tra có type là AQ và tuổi (age), 
-     * thông tin trả về gồm câu hỏi (questions) và câu trả lời (answers)
+     * Lấy danh sách bài kiểm tra có type bất kỳ và tuổi
+     *
+     * Thông tin trả về gồm câu hỏi (questions) và câu trả lời (answers)
+     *
+     * Thể loại bài kiểm tra (`type`) bao gồm:
+     * - `iq`: Bài kiểm tra IQ.
+     * - `aq`: Bài kiểm tra AQ.
+     * - `eq`: Bài kiểm tra EQ.
      *
      * @authenticated
+     * @queryParam age int required tuổi của trẻ. Example: 1
+     * @queryParam type string required Thể loại của bài kiểm tra. Examples: iq
      *
      * @response 200 {
      *     "status": 200,
-     *     "message": "Thực hiện thành công",
-     *     "data": {
-     *         "quiz_id": 7,
-     *         "age": 3,
-     *         "type": "iq",
-     *         "questions": [
-     *             {
-     *                 "question_id": 6,
-     *                 "question": "Look at this series: 31, 29, 24, 22, 17, ... What number should come next?",
-     *                 "question_type": "iq",
-     *                 "answers": [
-     *                     {
-     *                         "answer_id": 25,
-     *                         "answer": "12"
-     *                     },
-     *                     {
-     *                         "answer_id": 26,
-     *                         "answer": "14"
-     *                     }
-     *                 ]
-     *             }
-     *         ]
-     *     }
+     *     "message": "Thực hiện thành công.",
+     *     "data": [
+     *         {
+     *             "quiz_id": 9,
+     *             "age": 5,
+     *             "type": "iq",
+     *             "questions": [
+     *                 {
+     *                     "question_id": 6,
+     *                     "question": "Look at this series: 31, 29, 24, 22, 17, ... What number should come next?",
+     *                     "question_type": "iq",
+     *                     "answers": [
+     *                         {
+     *                             "answer_id": 25,
+     *                             "answer": "12"
+     *                         }
+     *                     ]
+     *                 }
+     *             ]
+     *         }
+     *     ]
      * }
      *
      * @response 500 {
      *     "status": 500,
-     *     "message": "Lỗi hệ thống khi lấy danh sách."
+     *     "message": "Lỗi hệ thống khi lấy danh sách bài kiểm tra."
      * }
      *
      * @param QuizRequest $request
      * @return JsonResponse
      */
+
     public function index(QuizRequest $request)
     {
         try {
-            $response = $this->repository->getAllQuizzesByTypeAndAge($request);
+            $response = $this->service->index($request);
+
+            // Kiểm tra nếu không có dữ liệu
+            if ($response->isEmpty()) {
+                return $this->jsonResponseSuccess(null, 'Không có dữ liệu');
+            }
+
             return $this->jsonResponseSuccess(new QuizResource($response));
         } catch (Exception $exception) {
-            $this->logError('Lỗi hệ thống khi lấy danh sách:', $exception);
-            return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách', 500);
+            $this->logError('Lỗi hệ thống khi lấy danh sách bài kiểm tra:', $exception);
+            return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách bài kiểm tra', 500);
         }
     }
 }

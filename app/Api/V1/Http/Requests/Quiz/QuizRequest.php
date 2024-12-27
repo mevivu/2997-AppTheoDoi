@@ -16,7 +16,7 @@ class QuizRequest extends BaseRequest
     protected function methodGet()
     {
         return [
-            'age' => ['nullable', 'integer', 'min:1'],
+            'age' => 'required|integer|min:1',
             'type' => ['nullable', new Enum(QuestionType::class)],
         ];
     }
