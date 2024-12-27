@@ -15,7 +15,9 @@
 
                         <div class="table-responsive position-relative">
                             <x-admin.partials.toggle-column-datatable />
-
+                            @isset($actionMultiple)
+                                <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple" />
+                            @endisset
                             {{ $dataTable->table(['class' => 'table table-bordered'], true) }}
                         </div>
 

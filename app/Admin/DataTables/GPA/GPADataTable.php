@@ -27,6 +27,7 @@ class GPADataTable extends BaseDataTable
     {
         $this->view = [
             'index' => 'admin.gpa.index',
+            'children.fullname' => 'admin.gpa.datatable.name',
             'status' => 'admin.gpa.datatable.status',
         ];
     }
@@ -46,9 +47,8 @@ class GPADataTable extends BaseDataTable
         $this->columnAllSearch = [0, 1, 5];
         $this->columnSearchSelect = [
             [
-
                 'column' => 5,
-                'data' => ActiveStatus::asSelectArray()
+                'data' => ActiveStatus::asSelectArray(),
             ],
 
         ];
@@ -59,14 +59,18 @@ class GPADataTable extends BaseDataTable
         $this->customColumns = config('datatables_columns.gpa', []);
     }
 
-    // protected function setCustomEditColumns(): void
-    // {
-    //     $this->customEditColumns = [
-    //         'status' => $this->view['status'],
-    //         'name' => $this->view['name'],
-    //         'checkbox' => $this->view['checkbox'],
-    //     ];
-    // }
+    protected function setCustomEditColumns(): void
+    {
+        $this->customEditColumns = [
+            'status' => $this->view['status'],
+            'children.fullname' => function ($children) {
+                return view($this->view['children.fullname'], [
+                    'children' => $children->children,
+                ])->render();
+            },
+
+        ];
+    }
 
     // protected function setCustomAddColumns(): void
     // {
@@ -89,9 +93,9 @@ class GPADataTable extends BaseDataTable
                     $q->where('fullname', 'LIKE', "%{$keyword}%");
                 });
             },
-            'classes.name' => function ($query, $keyword) {
+            'class.name' => function ($query, $keyword) {
                 // Sử dụng whereHas để filter cột name trong mối quan hệ classes
-                $query->whereHas('classes', function ($q) use ($keyword) {
+                $query->whereHas('class', function ($q) use ($keyword) {
                     $q->where('name', 'LIKE', "%{$keyword}%");
                 });
             },

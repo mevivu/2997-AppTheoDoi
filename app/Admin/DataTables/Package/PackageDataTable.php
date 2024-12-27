@@ -16,8 +16,7 @@ class PackageDataTable extends BaseDataTable
 
     public function __construct(
         PackageRepositoryInterface $repository
-    )
-    {
+    ) {
 
         parent::__construct();
         $this->repository = $repository;
@@ -45,7 +44,7 @@ class PackageDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 2, 3,4];
+        $this->columnAllSearch = [1, 2, 3, 4];
         $this->columnSearchDate = [4];
         $this->columnSearchSelect = [
             [
@@ -78,12 +77,11 @@ class PackageDataTable extends BaseDataTable
 
     protected function setCustomAddColumns(): void
     {
-        $this->customAddColumns = [
-        ];
+        $this->customAddColumns = [];
     }
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['action', 'name', 'status', 'checkbox','type'];
+        $this->customRawColumns = ['action', 'name', 'status', 'checkbox', 'type'];
     }
 }

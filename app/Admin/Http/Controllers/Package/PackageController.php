@@ -24,15 +24,13 @@ class PackageController extends Controller
     public function __construct(
         PackageRepositoryInterface $repository,
         PackageServiceInterface    $service
-    )
-    {
+    ) {
 
         parent::__construct();
 
         $this->repository = $repository;
 
         $this->service = $service;
-
     }
 
     public function getView(): array
@@ -74,8 +72,10 @@ class PackageController extends Controller
         return view($this->view['create'], [
             'status' => PackageStatus::asSelectArray(),
             'type' => PackageType::asSelectArray(),
-            'breadcrumbs' => $this->crums->add(__('package'),
-                route($this->route['index']))->add(__('add')),
+            'breadcrumbs' => $this->crums->add(
+                __('package'),
+                route($this->route['index'])
+            )->add(__('add')),
         ]);
     }
 
@@ -99,11 +99,12 @@ class PackageController extends Controller
                 'instance' => $instance,
                 'type' => PackageType::asSelectArray(),
                 'status' => PackageStatus::asSelectArray(),
-                'breadcrumbs' => $this->crums->add(__('package'),
-                    route($this->route['index']))->add(__('edit')),
+                'breadcrumbs' => $this->crums->add(
+                    __('package'),
+                    route($this->route['index'])
+                )->add(__('edit')),
             ],
         );
-
     }
 
     public function update(PackageRequest $request): RedirectResponse
