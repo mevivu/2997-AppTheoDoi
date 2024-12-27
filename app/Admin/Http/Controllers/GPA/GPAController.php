@@ -11,6 +11,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use App\Enums\ActiveStatus;
+use App\Models\ClassGrade;
 
 class GPAController extends Controller
 {
@@ -29,6 +31,8 @@ class GPAController extends Controller
     {
         return [
             'index' => 'admin.gpa.index',
+            'status' => 'admin.gpa.datatable.status',
+            'name' => 'admin.gpa.datatable.name',
         ];
     }
 
@@ -40,11 +44,23 @@ class GPAController extends Controller
     }
     public function index(GPADataTable $dataTable)
     {
+        $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
             $this->view['index'],
             [
-                'breadcrumbs' => $this->crums->add(__('Danh sách GPA'))
+                'status' => ActiveStatus::asSelectArray(),
+                'actionMultiple' => $actionMultiple,
+                'breadcrumbs' => $this->crums->add(__('Danh sách GPA')),
             ]
         );
+    }
+
+    protected function getActionMultiple(): array
+    {
+        return [
+            'active' => ActiveStatus::Active->description(),
+            'draft' => ActiveStatus::Draft->description(),
+            'deleted' => ActiveStatus::Deleted->description()
+        ];
     }
 }

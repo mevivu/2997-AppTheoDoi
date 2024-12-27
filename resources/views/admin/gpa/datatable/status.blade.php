@@ -1,5 +1,1 @@
-<span @class([
-    'badge',
-    App\Enums\ClassGrade\ClassGradeStatus::from($status)->badge(),
-])>
-    {{ \App\Enums\ClassGrade\ClassGradeStatus::getDescription($status) }}</span>
+<span @class(['badge', App\Enums\ActiveStatus::from($status)->badge()])>{{ \App\Enums\ActiveStatus::getDescription($status) }}</span>

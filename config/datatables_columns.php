@@ -1185,7 +1185,8 @@ return [
         'children.fullname' => [
             'title' => 'Họ tên trẻ',
             'addClass' => 'text-center align-middle',
-            'orderable' => false
+            'orderable' => false,
+            'data' => 'children.fullname',
         ],
         'class.name' => [
             'title' => 'Tên lớp',
