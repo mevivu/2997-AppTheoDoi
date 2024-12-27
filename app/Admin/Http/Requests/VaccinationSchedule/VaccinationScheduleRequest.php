@@ -30,7 +30,7 @@ class VaccinationScheduleRequest extends BaseRequest
     {
 
         return [
-            'id' => ['required', 'exists:App\Models\Clinic,id'],
+            'id' => ['required', 'exists:App\Models\VaccinationSchedule,id'],
             'name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'performed_on' => ['required', 'date'],
