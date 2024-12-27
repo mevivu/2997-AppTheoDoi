@@ -7,6 +7,7 @@ use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Exception\NotFoundException;
 use App\Api\V1\Http\Requests\Pregnancy\PregnancyRequest;
 use App\Api\V1\Http\Requests\Pregnancy\PregnancyUpdateRequest;
+use App\Api\V1\Http\Requests\Quiz\QuizRequest;
 use App\Api\V1\Http\Resources\Pregnancy\PregnancyCollection;
 use App\Api\V1\Http\Resources\Pregnancy\PregnancyResource;
 use App\Api\V1\Repositories\Quiz\QuizRepositoryInterface;
@@ -18,6 +19,9 @@ use App\Api\V1\Validate\Validator;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use App\Models\Quiz;
+use App\Api\V1\Http\Resources\Quiz\QuizResource;
+use Illuminate\Http\Request;
 
 /**
  * @group Thai kì
@@ -30,12 +34,10 @@ class QuizController extends Controller
         QuizRepositoryInterface $repository,
         QuizServiceInterface    $service
 
-    )
-    {
+    ) {
         $this->repository = $repository;
         $this->service = $service;
         $this->middleware('auth:api');
-
     }
 
     /**
@@ -207,7 +209,6 @@ class QuizController extends Controller
             $this->logError('Create prescription journal failed:', $exception);
             return $this->jsonResponseError('Create prescription journal failed', 500);
         }
-
     }
 
     /**
@@ -251,7 +252,7 @@ class QuizController extends Controller
             Validator::validateExists($this->repository, $id);
             $response = $this->repository->findOrFail($id);
             return $this->jsonResponseSuccess(new PregnancyResource($response));
-        } catch (NotFoundException|BadRequestException $e) {
+        } catch (NotFoundException | BadRequestException $e) {
             return $this->jsonResponseError($e->getMessage());
         } catch (Exception $exception) {
             $this->logError('Deleted failed:', $exception);
@@ -291,7 +292,7 @@ class QuizController extends Controller
             Validator::validateExists($this->repository, $id);
             $this->service->delete($id);
             return $this->jsonResponseSuccessNoData();
-        } catch (NotFoundException|BadRequestException $e) {
+        } catch (NotFoundException | BadRequestException $e) {
             return $this->jsonResponseError($e->getMessage());
         } catch (Exception $exception) {
             $this->logError('Deleted failed:', $exception);
@@ -299,4 +300,55 @@ class QuizController extends Controller
         }
     }
 
+    /**
+     * Lấy danh sách bài kiểm tra có type là AQ và tuổi (age), 
+     * thông tin trả về gồm câu hỏi (questions) và câu trả lời (answers)
+     *
+     * @authenticated
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Thực hiện thành công",
+     *     "data": {
+     *         "quiz_id": 7,
+     *         "age": 3,
+     *         "type": "iq",
+     *         "questions": [
+     *             {
+     *                 "question_id": 6,
+     *                 "question": "Look at this series: 31, 29, 24, 22, 17, ... What number should come next?",
+     *                 "question_type": "iq",
+     *                 "answers": [
+     *                     {
+     *                         "answer_id": 25,
+     *                         "answer": "12"
+     *                     },
+     *                     {
+     *                         "answer_id": 26,
+     *                         "answer": "14"
+     *                     }
+     *                 ]
+     *             }
+     *         ]
+     *     }
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống khi lấy danh sách."
+     * }
+     *
+     * @param QuizRequest $request
+     * @return JsonResponse
+     */
+    public function getQuizzesByAgeAndType(QuizRequest $request)
+    {
+        try {
+            $response = $this->repository->getAllQuizzesByTypeAndAge($request);
+            return $this->jsonResponseSuccess(new QuizResource($response));
+        } catch (Exception $exception) {
+            $this->logError('Lỗi hệ thống khi lấy danh sách:', $exception);
+            return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách', 500);
+        }
+    }
 }

@@ -34,6 +34,8 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\ChildEvaluation\ChildEvaluationRepositoryInterface' => 'App\Api\V1\Repositories\ChildEvaluation\ChildEvaluationRepository',
         'App\Api\V1\Repositories\ChildQuality\ChildQualityRepositoryInterface' => 'App\Api\V1\Repositories\ChildQuality\ChildQualityRepository',
         'App\Api\V1\Repositories\ChildCapability\ChildCapabilityRepositoryInterface' => 'App\Api\V1\Repositories\ChildCapability\ChildCapabilityRepository',
+        'App\Api\V1\Repositories\Quiz\QuizRepositoryInterface' => 'App\Api\V1\Repositories\Quiz\QuizRepository',
+
     ];
 
     /**

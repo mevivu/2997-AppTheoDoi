@@ -4,8 +4,12 @@ namespace App\Api\V1\Repositories\Quiz;
 
 use App\Admin\Repositories\Quiz\QuizRepository as AdminRepository;
 
+use App\Models\Quiz;
 
 class QuizRepository extends AdminRepository implements QuizRepositoryInterface
 {
-
+    public function getAllQuizzesByTypeAndAge()
+    {
+        return Quiz::with('questions.answers')->get();
+    }
 }

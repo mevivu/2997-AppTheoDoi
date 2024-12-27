@@ -174,6 +174,14 @@ Route::controller(\App\Api\V1\Http\Controllers\Question\QuestionController::clas
         Route::get('/', 'index');
     });
 
+//***** -- Quiz -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Quiz\QuizController::class)
+    ->prefix('/quizzes')
+    ->as('quiz.')
+    ->group(function () {
+        Route::get('/quizzes-by-age-type', 'getQuizzesByAgeAndType');
+    });
+
 //***** -- BMI -- ******* //
 Route::controller(\App\Api\V1\Http\Controllers\BMI\BMIController::class)
     ->prefix('/bmis')
