@@ -508,6 +508,35 @@ return [
             'addClass' => 'text-center align-middle'
         ],
     ],
+    'vaccinationType' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'name' => [
+            'title' => 'name',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+
+        'status' => [
+            'title' => 'status',
+            'orderable' => false,
+            'width' => '150px',
+            'addClass' => 'text-center align-middle'
+        ],
+        'action' => [
+            'title' => 'action',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
     'package' => [
         'checkbox' => [
             'title' => 'choose',
