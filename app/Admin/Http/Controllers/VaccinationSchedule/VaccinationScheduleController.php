@@ -8,6 +8,7 @@ use App\Admin\Http\Requests\VaccinationSchedule\VaccinationScheduleRequest;
 use App\Admin\Repositories\VaccinationSchedule\VaccinationScheduleRepositoryInterface;
 use App\Admin\Services\VaccinationSchedule\VaccinationScheduleServiceInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Vaccination\VaccinationStatus;
 use App\Traits\ResponseController;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -21,10 +22,9 @@ class VaccinationScheduleController extends Controller
     use ResponseController;
 
 
-
     public function __construct(
-        VaccinationScheduleRepositoryInterface   $repository,
-        VaccinationScheduleServiceInterface      $service
+        VaccinationScheduleRepositoryInterface $repository,
+        VaccinationScheduleServiceInterface    $service
     )
     {
 
@@ -72,6 +72,7 @@ class VaccinationScheduleController extends Controller
     {
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
+            'vaccinationStatus' => VaccinationStatus::asSelectArray(),
             'breadcrumbs' => $this->crums->add(__('vaccination_schedule'),
                 route($this->route['index']))->add(__('add')),
         ]);
@@ -96,6 +97,7 @@ class VaccinationScheduleController extends Controller
             [
                 'instance' => $instance,
                 'status' => ActiveStatus::asSelectArray(),
+                'vaccinationStatus' => VaccinationStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(__('vaccination_schedule'),
                     route($this->route['index']))->add(__('edit')),
             ],

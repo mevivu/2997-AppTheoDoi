@@ -36,12 +36,18 @@
                              name="performed_on"
                              :value="old('performed_on')"
                              :required="true"
-                             :placeholder="__('performed_on')" />
+                             :placeholder="__('performed_on')"/>
                 </div>
             </div>
-
-
-
+            <!--vaccination Type-->
+            <div class="col-md-12 col-sm-12">
+                <label class="control-label">
+                    <span class="ti ti-user"></span>
+                    @lang('Loại tiêm chủng'):</label>
+                <x-select class="select2-bs5-ajax" name="vaccination_type_id" id="vaccination_type_id"
+                          :data-url="route('admin.search.select.vaccinationType')">
+                </x-select>
+            </div>
         </div>
     </div>
 </div>

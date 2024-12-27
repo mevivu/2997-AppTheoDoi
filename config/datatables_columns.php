@@ -482,6 +482,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
+        'vaccination_type_id' => [
+            'title' => 'Loại tiêm chủng',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
         'performed_on' => [
             'title' => 'performed_on',
             'orderable' => false,
