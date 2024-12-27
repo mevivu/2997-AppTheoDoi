@@ -2,10 +2,12 @@
 
 namespace App\Admin\Services\VaccinationSchedule;
 
+use App\Admin\Repositories\Children\ChildrenRepositoryInterface;
 use App\Admin\Repositories\VaccinationSchedule\VaccinationScheduleRepository;
 use App\Admin\Repositories\VaccinationSchedule\VaccinationScheduleRepositoryInterface;
 use App\Api\V1\Support\UseLog;
 use App\Enums\ActiveStatus;
+use App\Enums\Permission\PermissionType;
 use Exception;
 use Illuminate\Http\Request;
 use App\Admin\Traits\Setup;
@@ -14,21 +16,25 @@ class VaccinationScheduleSizeService implements VaccinationScheduleServiceInterf
 {
     use Setup, UseLog;
 
+
     /**
      * Current Object instance
      *
      * @var array
      */
     protected array $data;
+    protected ChildrenRepositoryInterface $childrenRepository;
 
     protected VaccinationScheduleRepositoryInterface $repository;
 
 
     public function __construct(
         VaccinationScheduleRepository $repository,
+        ChildrenRepositoryInterface   $childrenRepository
     )
     {
         $this->repository = $repository;
+        $this->childrenRepository = $childrenRepository;
 
     }
 
@@ -39,7 +45,11 @@ class VaccinationScheduleSizeService implements VaccinationScheduleServiceInterf
     public function store(Request $request): object|false
     {
         $data = $request->validated();
-        return $this->repository->create($data);
+        $data['type'] = PermissionType::ADMIN;
+        $children = $this->childrenRepository->getAll();
+        $vaccination = $this->repository->create($data);
+        $vaccination->children()->attach($children->pluck('id'));
+        return $vaccination;
     }
 
     /**
@@ -49,7 +59,10 @@ class VaccinationScheduleSizeService implements VaccinationScheduleServiceInterf
     {
 
         $data = $request->validated();
-        return $this->repository->update($data['id'], $data);
+        $children = $this->childrenRepository->getAll();
+        $vaccination = $this->repository->update($data['id'], $data);
+        $vaccination->children()->sync($children->pluck('id'));
+        return $vaccination;
     }
 
     /**

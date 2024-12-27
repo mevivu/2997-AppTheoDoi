@@ -50,8 +50,7 @@ class VaccinationSchedule extends Model
 
     public function children(): BelongsToMany
     {
-        return $this->belongsToMany(Child::class, 'child_vaccination_schedule', 'vaccination_schedule_id', 'child_id')
-            ->withTimestamps();
+        return $this->belongsToMany(Child::class, 'child_vaccination_schedule', 'vaccination_schedule_id', 'child_id');
     }
 
 }
