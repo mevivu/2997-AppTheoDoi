@@ -13,6 +13,8 @@ use App\Api\V1\Repositories\SubjectGrade\SubjectGradeRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\ActiveStatus;
+use App\Enums\Semester\SemesterStatus;
+use App\Models\ClassGrade;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -46,7 +48,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         ClassGradeRepositoryInterface      $classGradeRepository,
         QualityRepositoryInterface         $qualityRepository,
         CapabilityRepositoryInterface      $capabilityRepository,
-        ClassesRepositoryInterface        $classesRepository
+        ClassesRepositoryInterface         $classesRepository
     )
     {
         $this->repository = $repository;
@@ -81,9 +83,12 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     public function store(Request $request): object
     {
         $data = $request->validated();
+        $semester = $data['semester'];
+        $classGradeId = $data['class_grade_id'];
         $subjects = $data['subjects'] ?? [];
         $qualities = $data['qualities'] ?? [];
         $capabilities = $data['capabilities'] ?? [];
+        $classGrade = $this->classGradeRepository->findOrFail($classGradeId);
         $averageScore = $this->calculateAverageScore($subjects);
         $data['average_score'] = $averageScore;
         $childEvaluation = $this->repository->create($data);
@@ -91,8 +96,26 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $this->createSubjectGrade($subjects, $childEvaluationId);
         $this->createChildQuality($qualities, $childEvaluationId);
         $this->createChildCapability($capabilities, $childEvaluationId);
+        $this->updateScoreClassGrade($semester, $classGrade, $averageScore);
 
         return $childEvaluation;
+
+    }
+
+    private function updateScoreClassGrade($semester, ClassGrade $classGrade, $averageScore): void
+    {
+        if ($semester == SemesterStatus::Semester1->value) {
+            $classGrade->update([
+                'semester1_grade' => $averageScore
+            ]);
+        } else {
+            $semester1Grade = $classGrade->semester1_grade;
+            $fullYearGrade = ($semester1Grade + $averageScore * 2) / 3;
+            $classGrade->update([
+                'semester2_grade' => $averageScore,
+                'full_year_grade' => $fullYearGrade
+            ]);
+        }
 
     }
 
