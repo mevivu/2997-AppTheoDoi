@@ -6,6 +6,7 @@ use App\Api\V1\Repositories\Capability\CapabilityRepositoryInterface;
 use App\Api\V1\Repositories\ChildCapability\ChildCapabilityRepositoryInterface;
 use App\Api\V1\Repositories\ChildEvaluation\ChildEvaluationRepositoryInterface;
 use App\Api\V1\Repositories\ChildQuality\ChildQualityRepositoryInterface;
+use App\Api\V1\Repositories\Classes\ClassesRepositoryInterface;
 use App\Api\V1\Repositories\ClassGrade\ClassGradeRepositoryInterface;
 use App\Api\V1\Repositories\Quality\QualityRepositoryInterface;
 use App\Api\V1\Repositories\SubjectGrade\SubjectGradeRepositoryInterface;
@@ -34,6 +35,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     protected ClassGradeRepositoryInterface $classGradeRepository;
     protected QualityRepositoryInterface $qualityRepository;
     protected CapabilityRepositoryInterface $capabilityRepository;
+    protected ClassesRepositoryInterface $classesRepository;
 
 
     public function __construct(
@@ -43,7 +45,8 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         ChildCapabilityRepositoryInterface $childCapabilityRepository,
         ClassGradeRepositoryInterface      $classGradeRepository,
         QualityRepositoryInterface         $qualityRepository,
-        CapabilityRepositoryInterface      $capabilityRepository
+        CapabilityRepositoryInterface      $capabilityRepository,
+        ClassesRepositoryInterface        $classesRepository
     )
     {
         $this->repository = $repository;
@@ -53,6 +56,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $this->classGradeRepository = $classGradeRepository;
         $this->qualityRepository = $qualityRepository;
         $this->capabilityRepository = $capabilityRepository;
+        $this->classesRepository = $classesRepository;
     }
 
 
@@ -204,11 +208,10 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     /**
      * @throws Exception
      */
-    public function findByClassGrade(Request $request): array
+    public function findByClass(Request $request): array
     {
         $data = $request->validated();
-        $classGrade = $this->classGradeRepository->findOrFail($data['id']);
-        $class = $classGrade->class;
+        $class = $this->classesRepository->findOrFail($data['id']);
         $subjects = $class->subjects;
         $qualities = $this->qualityRepository->getBy(['status' => ActiveStatus::Active]);
         $capabilities = $this->capabilityRepository->getBy(['status' => ActiveStatus::Active]);

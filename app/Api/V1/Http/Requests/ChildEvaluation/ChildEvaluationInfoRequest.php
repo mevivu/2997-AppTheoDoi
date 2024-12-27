@@ -10,7 +10,7 @@ class ChildEvaluationInfoRequest extends BaseRequest
     protected function methodGet(): array
     {
         return [
-            'id' => ['required', 'exists:App\Models\ClassGrade,id'],
+            'id' => ['required', 'exists:App\Models\SchoolClass,id'],
         ];
     }
 

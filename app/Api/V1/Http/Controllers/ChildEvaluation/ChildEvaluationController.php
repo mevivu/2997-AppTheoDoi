@@ -47,10 +47,8 @@ class ChildEvaluationController extends Controller
     /**
      * Lấy danh sách đánh giá năng lực theo ID của bảng điểm lớp.
      *
-     * Phương thức này sử dụng class_grade_id để truy xuất danh sách đánh giá năng lực của trẻ em trong lớp đó.
-     *
      * @authenticated
-     * @queryParam id int required ID (class_grade_id) của DS đánh giá năng lực . Example: 1
+     * @queryParam id int required ID của lớp học. Example: 1
      * @queryParam semester string required Kỳ học. Example: semester_1
      *
      * @response 200 {
@@ -73,7 +71,7 @@ class ChildEvaluationController extends Controller
     public function findByClassGrade(ChildEvaluationInfoRequest $request): JsonResponse
     {
         try {
-            $response = $this->service->findByClassGrade($request);
+            $response = $this->service->findByClass($request);
             return $this->jsonResponseSuccess(new ChildEvaluationInfoResource($response));
         } catch (Exception $e) {
             return $this->jsonResponseError('Lỗi server nội bộ khi truy xuất đánh giá năng lực.', 500);
