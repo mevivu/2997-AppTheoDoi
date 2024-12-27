@@ -8,6 +8,7 @@ use App\Enums\DeleteStatus;
 use App\Enums\FeaturedStatus;
 use App\Enums\OpenStatus;
 use App\Enums\Module\ModuleStatus;
+use App\Enums\Vaccination\VaccinationStatus;
 use App\Enums\Notification\MessageType;
 use App\Enums\Notification\NotificationOption;
 use App\Enums\Notification\NotificationStatus;
@@ -86,6 +87,10 @@ return [
         Gender::Male->value => 'Nam',
         Gender::Female->value => 'Nữ',
         Gender::Other->value => 'Khác',
+    ],
+    VaccinationStatus::class => [
+        VaccinationStatus::Vaccinated->value => 'Đã tiêm vắc-xin',
+        VaccinationStatus::NotVaccinated->value => 'Chưa tiêm vắc-xin',
     ],
     PostCategoryStatus::class => [
         PostCategoryStatus::Published => 'Đã xuất bản',
