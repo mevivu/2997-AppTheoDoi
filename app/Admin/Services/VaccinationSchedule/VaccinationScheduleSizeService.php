@@ -48,7 +48,9 @@ class VaccinationScheduleSizeService implements VaccinationScheduleServiceInterf
         $data['type'] = PermissionType::ADMIN;
         $children = $this->childrenRepository->getAll();
         $vaccination = $this->repository->create($data);
-        $vaccination->children()->attach($children->pluck('id'));
+        if($children){
+            $vaccination->children()->attach($children->pluck('id'));
+        }
         return $vaccination;
     }
 
@@ -61,7 +63,9 @@ class VaccinationScheduleSizeService implements VaccinationScheduleServiceInterf
         $data = $request->validated();
         $children = $this->childrenRepository->getAll();
         $vaccination = $this->repository->update($data['id'], $data);
-        $vaccination->children()->sync($children->pluck('id'));
+        if($children){
+            $vaccination->children()->sync($children->pluck('id'));
+        }
         return $vaccination;
     }
 
