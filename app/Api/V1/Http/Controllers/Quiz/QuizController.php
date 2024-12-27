@@ -91,12 +91,6 @@ class QuizController extends Controller
     {
         try {
             $response = $this->service->index($request);
-
-            // Kiểm tra nếu không có dữ liệu
-            if ($response->isEmpty()) {
-                return $this->jsonResponseSuccess(null, 'Không có dữ liệu');
-            }
-
             return $this->jsonResponseSuccess(new QuizResource($response));
         } catch (Exception $exception) {
             $this->logError('Lỗi hệ thống khi lấy danh sách bài kiểm tra:', $exception);
