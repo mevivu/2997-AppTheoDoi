@@ -180,7 +180,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Quiz\QuizController::class)
     ->prefix('/quizzes')
     ->as('quiz.')
     ->group(function () {
-        Route::get('/quizzes-by-age-type', 'getQuizzesByAgeAndType');
+        Route::get('/', 'index');
     });
 
 //***** -- BMI -- ******* //
