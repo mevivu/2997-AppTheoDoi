@@ -381,7 +381,27 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
-
+    //vaccinationType
+    Route::controller(\App\Admin\Http\Controllers\VaccinationType\vaccinationTypeController::class)
+        ->prefix('/loai-tiem-chung')
+        ->as('vaccinationType.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createTypeVaccination', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewTypeVaccination', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['permission:updateTypeVaccination', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:deleteTypeVaccination', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
     //Quality
     Route::controller(App\Admin\Http\Controllers\Quality\QualityController::class)
         ->prefix('/pham-chat')

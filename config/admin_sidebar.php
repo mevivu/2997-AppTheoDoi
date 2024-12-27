@@ -29,6 +29,32 @@ return [
         ]
     ],
     [
+        'title' => 'Loại Tiêm chủng',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-calendar-dollar"></i>',
+        'roles' => [],
+        'permissions' => ['createTypeVaccination', 'viewTypeVaccination'],
+        'sub' => [
+
+            [
+                'title' => 'Thêm loại Tiêm chủng',
+                'routeName' => 'admin.vaccinationType.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createTypeVaccination'],
+            ],
+            [
+                'title' => 'DS loại Tiêm chủng',
+                'routeName' => 'admin.vaccinationType.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewTypeVaccination'],
+            ],
+
+
+        ]
+    ],
+    [
         'title' => 'Nhật ký',
         'routeName' => null,
         'icon' => '<i class="ti ti-external-link"></i>',
