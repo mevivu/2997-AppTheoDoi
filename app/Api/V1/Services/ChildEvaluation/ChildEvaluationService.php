@@ -2,13 +2,16 @@
 
 namespace App\Api\V1\Services\ChildEvaluation;
 
-use App\Admin\Repositories\ClassGrade\ClassGradeRepositoryInterface;
+use App\Api\V1\Repositories\Capability\CapabilityRepositoryInterface;
 use App\Api\V1\Repositories\ChildCapability\ChildCapabilityRepositoryInterface;
 use App\Api\V1\Repositories\ChildEvaluation\ChildEvaluationRepositoryInterface;
 use App\Api\V1\Repositories\ChildQuality\ChildQualityRepositoryInterface;
+use App\Api\V1\Repositories\ClassGrade\ClassGradeRepositoryInterface;
+use App\Api\V1\Repositories\Quality\QualityRepositoryInterface;
 use App\Api\V1\Repositories\SubjectGrade\SubjectGradeRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
+use App\Enums\ActiveStatus;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -29,6 +32,8 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     protected ChildQualityRepositoryInterface $childQualityRepository;
     protected ChildCapabilityRepositoryInterface $childCapabilityRepository;
     protected ClassGradeRepositoryInterface $classGradeRepository;
+    protected QualityRepositoryInterface $qualityRepository;
+    protected CapabilityRepositoryInterface $capabilityRepository;
 
 
     public function __construct(
@@ -36,7 +41,9 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         SubjectGradeRepositoryInterface    $subjectGradeRepository,
         ChildQualityRepositoryInterface    $childQualityRepository,
         ChildCapabilityRepositoryInterface $childCapabilityRepository,
-        ClassGradeRepositoryInterface      $classGradeRepository
+        ClassGradeRepositoryInterface      $classGradeRepository,
+        QualityRepositoryInterface         $qualityRepository,
+        CapabilityRepositoryInterface      $capabilityRepository
     )
     {
         $this->repository = $repository;
@@ -44,6 +51,8 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $this->childQualityRepository = $childQualityRepository;
         $this->childCapabilityRepository = $childCapabilityRepository;
         $this->classGradeRepository = $classGradeRepository;
+        $this->qualityRepository = $qualityRepository;
+        $this->capabilityRepository = $capabilityRepository;
     }
 
 
@@ -192,4 +201,22 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     }
 
 
+    /**
+     * @throws Exception
+     */
+    public function findByClassGrade(Request $request): array
+    {
+        $data = $request->validated();
+        $classGrade = $this->classGradeRepository->findOrFail($data['id']);
+        $class = $classGrade->class;
+        $subjects = $class->subjects;
+        $qualities = $this->qualityRepository->getBy(['status' => ActiveStatus::Active]);
+        $capabilities = $this->capabilityRepository->getBy(['status' => ActiveStatus::Active]);
+        return [
+            'class' => $class,
+            'subjects' => $subjects,
+            'qualities' => $qualities,
+            'capabilities' => $capabilities
+        ];
+    }
 }
