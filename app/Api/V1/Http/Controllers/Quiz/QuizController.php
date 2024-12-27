@@ -40,18 +40,13 @@ class QuizController extends Controller
         $this->middleware('auth:api');
     }
     /**
-     * Lấy danh sách bài kiểm tra có type bất kỳ và tuổi
+     * Lấy danh sách bài kiểm tra có type AQ và tuổi
      *
      * Thông tin trả về gồm câu hỏi (questions) và câu trả lời (answers)
      *
-     * Thể loại bài kiểm tra (`type`) bao gồm:
-     * - `iq`: Bài kiểm tra IQ.
-     * - `aq`: Bài kiểm tra AQ.
-     * - `eq`: Bài kiểm tra EQ.
      *
      * @authenticated
      * @queryParam age int required tuổi của trẻ. Example: 1
-     * @queryParam type string required Thể loại của bài kiểm tra. Examples: iq
      *
      * @response 200 {
      *     "status": 200,
@@ -60,12 +55,12 @@ class QuizController extends Controller
      *         {
      *             "quiz_id": 9,
      *             "age": 5,
-     *             "type": "iq",
+     *             "type": "aq",
      *             "questions": [
      *                 {
      *                     "question_id": 6,
      *                     "question": "Look at this series: 31, 29, 24, 22, 17, ... What number should come next?",
-     *                     "question_type": "iq",
+     *                     "question_type": "aq",
      *                     "answers": [
      *                         {
      *                             "answer_id": 25,

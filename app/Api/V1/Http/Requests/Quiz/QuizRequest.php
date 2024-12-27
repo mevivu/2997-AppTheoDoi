@@ -17,14 +17,12 @@ class QuizRequest extends BaseRequest
     {
         return [
             'age' => 'required|integer|min:1',
-            'type' => ['required', 'nullable', new Enum(QuestionType::class)],
         ];
     }
     protected function methodPost()
     {
         return [
             'age' => 'required|integer|min:1',
-            'type' => ['required', 'nullable', new Enum(QuestionType::class)],
         ];
     }
 }
