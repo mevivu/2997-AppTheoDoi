@@ -46,19 +46,19 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->prefix('/lop')
         ->as('classes.')
         ->group(function () {
-            Route::group(['middleware' => ['permission:createClasses', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:CreateClass', 'auth:admin']], function () {
                 Route::get('/add', 'create')->name('create');
                 Route::post('/add', 'store')->name('store');
             });
-            Route::group(['middleware' => ['permission:viewClasses', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:ViewClass', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
-            Route::group(['middleware' => ['permission:updateClasses', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:UpdateClass', 'auth:admin']], function () {
                 Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
                 Route::put('/edit', 'update')->name('update');
             });
-            Route::group(['middleware' => ['permission:deleteClasses', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:DeleteClass', 'auth:admin']], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
@@ -141,7 +141,8 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::post('/add', 'store')->name('store');
             });
             Route::group(['middleware' => ['permission:viewVaccinationSchedule', 'auth:admin']], function () {
-                Route::get('/', 'index')->name('index');
+                Route::get('/user', 'user')->name('user');
+                Route::get('/admin', 'admin')->name('admin');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
 
@@ -414,21 +415,21 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->prefix('/pham-chat')
         ->as('quality.')
         ->group(function () {
-            Route::group(['middleware' => ['permission:createQuality', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:CreateQuality', 'auth:admin']], function () {
                 Route::get('/add', 'create')->name('create');
                 Route::post('/add', 'store')->name('store');
             });
-            Route::group(['middleware' => ['permission:viewQuality', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:ViewQuality', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
 
-            Route::group(['middleware' => ['permission:updateQuality', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:UpdateQuality', 'auth:admin']], function () {
                 Route::put('/edit', 'update')->name('update');
                 Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
             });
 
-            Route::group(['middleware' => ['permission:deleteQuality', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:DeleteQuality', 'auth:admin']], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
@@ -438,21 +439,21 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->prefix('/nang-luc')
         ->as('capability.')
         ->group(function () {
-            Route::group(['middleware' => ['permission:createCapability', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:CreateCapability', 'auth:admin']], function () {
                 Route::get('/add', 'create')->name('create');
                 Route::post('/add', 'store')->name('store');
             });
-            Route::group(['middleware' => ['permission:viewCapability', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:ViewCapability', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
 
-            Route::group(['middleware' => ['permission:updateCapability', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:UpdateCapability', 'auth:admin']], function () {
                 Route::put('/edit', 'update')->name('update');
                 Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
             });
 
-            Route::group(['middleware' => ['permission:deleteCapability', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:DeleteCapability', 'auth:admin']], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
@@ -462,21 +463,21 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->prefix('/mon-hoc')
         ->as('subject.')
         ->group(function () {
-            Route::group(['middleware' => ['permission:createSubject', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:CreateSubject', 'auth:admin']], function () {
                 Route::get('/add', 'create')->name('create');
                 Route::post('/add', 'store')->name('store');
             });
-            Route::group(['middleware' => ['permission:viewSubject', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:ViewSubject', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
 
-            Route::group(['middleware' => ['permission:updateSubject', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:UpdateSubject', 'auth:admin']], function () {
                 Route::put('/edit', 'update')->name('update');
                 Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
             });
 
-            Route::group(['middleware' => ['permission:deleteSubject', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:DeleteSubject', 'auth:admin']], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });

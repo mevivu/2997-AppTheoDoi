@@ -2,12 +2,14 @@
 
 namespace App\Admin\Http\Controllers\VaccinationSchedule;
 
-use App\Admin\DataTables\VaccinationSchedule\VaccinationScheduleDataTable;
+use App\Admin\DataTables\VaccinationSchedule\AdminVaccinationScheduleDataTable;
+use App\Admin\DataTables\VaccinationSchedule\UserVaccinationScheduleDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\VaccinationSchedule\VaccinationScheduleRequest;
 use App\Admin\Repositories\VaccinationSchedule\VaccinationScheduleRepositoryInterface;
 use App\Admin\Services\VaccinationSchedule\VaccinationScheduleServiceInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Permission\PermissionType;
 use App\Enums\Vaccination\VaccinationStatus;
 use App\Traits\ResponseController;
 use Exception;
@@ -38,27 +40,43 @@ class VaccinationScheduleController extends Controller
     public function getView(): array
     {
         return [
-            'index' => 'admin.vaccinationSchedule.index',
+            'admin' => 'admin.vaccinationSchedule.admin',
             'create' => 'admin.vaccinationSchedule.create',
             'edit' => 'admin.vaccinationSchedule.edit',
+            'user' => 'admin.vaccinationSchedule.user',
         ];
     }
 
     public function getRoute(): array
     {
         return [
-            'index' => 'admin.vaccination.index',
+            'admin' => 'admin.vaccination.admin',
             'create' => 'admin.vaccination.create',
             'edit' => 'admin.vaccination.edit',
             'delete' => 'admin.vaccination.delete',
+            'user' => 'admin.vaccination.user',
         ];
     }
 
-    public function index(VaccinationScheduleDataTable $dataTable)
+    public function user(UserVaccinationScheduleDataTable $dataTable)
     {
         $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
-            $this->view['index'],
+            $this->view['user'],
+            [
+                'status' => ActiveStatus::asSelectArray(),
+                'actionMultiple' => $actionMultiple,
+                'breadcrumbs' => $this->crums->add(__('vaccination_schedule')),
+            ]
+
+        );
+    }
+
+    public function admin(AdminVaccinationScheduleDataTable $dataTable)
+    {
+        $actionMultiple = $this->getActionMultiple();
+        return $dataTable->render(
+            $this->view['admin'],
             [
                 'status' => ActiveStatus::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
@@ -72,17 +90,19 @@ class VaccinationScheduleController extends Controller
     {
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
+            'type' => PermissionType::asSelectArray(),
             'vaccinationStatus' => VaccinationStatus::asSelectArray(),
-            'breadcrumbs' => $this->crums->add(__('vaccination_schedule'),
-                route($this->route['index']))->add(__('add')),
+            'breadcrumbs' => $this->crums->add('DS tiêm chủng')->add('Thêm'),
         ]);
     }
 
     public function store(VaccinationScheduleRequest $request): RedirectResponse
     {
-        return $this->handleResponse($request, function ($request) {
-            return $this->service->store($request);
-        }, $this->route['index'], $this->route['edit']);
+        $response = $this->service->store($request);
+        if ($response) {
+            return to_route($this->route['edit'], $response)->with('success', __('notifySuccess'));
+        }
+        return back()->with('error', __('notifyFail'));
     }
 
     /**
@@ -96,10 +116,11 @@ class VaccinationScheduleController extends Controller
             $this->view['edit'],
             [
                 'instance' => $instance,
+                'type' => PermissionType::asSelectArray(),
                 'status' => ActiveStatus::asSelectArray(),
                 'vaccinationStatus' => VaccinationStatus::asSelectArray(),
-                'breadcrumbs' => $this->crums->add(__('vaccination_schedule'),
-                    route($this->route['index']))->add(__('edit')),
+                'breadcrumbs' => $this->crums->add('vaccination_schedule')->add('Cập nhật'),
+
             ],
         );
 
