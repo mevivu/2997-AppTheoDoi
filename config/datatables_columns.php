@@ -482,6 +482,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
+        'vaccination_type_id' => [
+            'title' => 'Loại tiêm chủng',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
         'performed_on' => [
             'title' => 'performed_on',
             'orderable' => false,
@@ -499,6 +504,35 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle',
             'visible' => false
+        ],
+        'action' => [
+            'title' => 'action',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
+    'vaccinationType' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'name' => [
+            'title' => 'name',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+
+        'status' => [
+            'title' => 'status',
+            'orderable' => false,
+            'width' => '150px',
+            'addClass' => 'text-center align-middle'
         ],
         'action' => [
             'title' => 'action',
@@ -1181,5 +1215,38 @@ return [
             'visible' => false
         ],
     ],
+    'gpa' => [
+        'children.fullname' => [
+            'title' => 'Họ tên trẻ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+            'data' => 'children.fullname',
+        ],
+        'class.name' => [
+            'title' => 'Tên lớp',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'semester1_grade' => [
+            'title' => 'Điểm học kỳ I',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'semester2_grade' => [
+            'title' => 'Điểm học kỳ II',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'full_year_grade' => [
+            'title' => 'Tổng điểm',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'status' => [
+            'title' => 'Trạng thái',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ]
 
 ];

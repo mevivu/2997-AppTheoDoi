@@ -23,10 +23,8 @@ class QuestionController extends Controller
     public function __construct(
         QuestionRepositoryInterface $repository,
 
-    )
-    {
+    ) {
         $this->repository = $repository;
-
     }
 
     /**
@@ -80,12 +78,9 @@ class QuestionController extends Controller
             } else {
                 return $this->jsonResponseError('Get user Questions failed', 500);
             }
-
         } catch (Exception $e) {
             $this->logError('Get user Questions failed:', $e);
             return $this->jsonResponseError('Get user Questions failed', 500);
         }
     }
-
-
 }

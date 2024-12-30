@@ -388,7 +388,27 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
-
+    //vaccinationType
+    Route::controller(\App\Admin\Http\Controllers\VaccinationType\vaccinationTypeController::class)
+        ->prefix('/loai-tiem-chung')
+        ->as('vaccinationType.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createTypeVaccination', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewTypeVaccination', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['permission:updateTypeVaccination', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:deleteTypeVaccination', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
     //Quality
     Route::controller(App\Admin\Http\Controllers\Quality\QualityController::class)
         ->prefix('/pham-chat')
@@ -570,7 +590,6 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::get('/{id}/history', 'history')->name('history');
                 Route::get('/sua/{id}', 'edit')->name('edit');
                 Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
-
             });
 
             Route::group(['middleware' => ['permission:updateUser', 'auth:admin']], function () {
@@ -581,7 +600,6 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/xoa/{id}', 'delete')->name('delete');
             });
         });
-
     });
 
     //sliders
@@ -661,7 +679,15 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
     });
-
+    //GPA
+    Route::controller(\App\Admin\Http\Controllers\GPA\GPAController::class)
+        ->prefix('/gpa')
+        ->as('gpa.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:viewGPA', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+            });
+        });
 
     //children
     Route::prefix('/quan-ly-tre-em')->as('children.')->group(function () {
@@ -674,7 +700,6 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/sua/{id}', 'edit')->name('edit');
                 Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
-
             });
 
             Route::group(['middleware' => ['permission:updateChildren', 'auth:admin']], function () {
@@ -685,7 +710,6 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/xoa/{id}', 'delete')->name('delete');
             });
         });
-
     });
 
     //admin
@@ -746,6 +770,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::get('/children', [\App\Admin\Http\Controllers\Children\ChildrenSelectController::class, 'selectSearch'])->name('children');
             Route::get('/subject', [App\Admin\Http\Controllers\Subject\SubjectSearchSelectController::class, 'selectSearch'])->name('subject');
             Route::get('/classes', [App\Admin\Http\Controllers\Classes\ClassesSearchSelectController::class, 'selectSearch'])->name('classes');
+            Route::get('/vaccinationType', [\App\Admin\Http\Controllers\VaccinationType\VaccinationTypeSelectController::class, 'selectSearch'])->name('vaccinationType');
         });
     });
 

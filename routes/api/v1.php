@@ -136,6 +136,19 @@ Route::controller(\App\Api\V1\Http\Controllers\Rating\RatingController::class)
         Route::delete('/{id}', 'delete');
     });
 
+// ChildEvaluation
+Route::controller(\App\Api\V1\Http\Controllers\ChildEvaluation\ChildEvaluationController::class)
+    ->prefix('/child-evaluations')
+    ->as('childEvaluation.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/search', 'search');
+        Route::get('/info', 'findByClassGrade');
+        Route::get('/{id}', 'show');
+        Route::post('/', 'store');
+        Route::put('/', 'update');
+    });
+
 // Exercise
 Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::class)
     ->prefix('/exercises')
@@ -158,6 +171,14 @@ Route::controller(App\Api\V1\Http\Controllers\Clinic\ClinicController::class)
 Route::controller(\App\Api\V1\Http\Controllers\Question\QuestionController::class)
     ->prefix('/questions')
     ->as('question.')
+    ->group(function () {
+        Route::get('/', 'index');
+    });
+
+//***** -- Quiz -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Quiz\QuizController::class)
+    ->prefix('/quizzes')
+    ->as('quiz.')
     ->group(function () {
         Route::get('/', 'index');
     });
