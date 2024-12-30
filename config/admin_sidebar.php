@@ -357,7 +357,7 @@ return [
         'permissions' => ['createQuestionGroup', 'viewQuestionGroup', 'updateQuestionGroup', 'deleteQuestionGroup'],
         'sub' => [
             [
-                'title' => 'Thêm câu hỏi',
+                'title' => 'Thêm Câu hỏi',
                 'routeName' => 'admin.question.create',
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
@@ -394,16 +394,30 @@ return [
         'permissions' => ['createQuiz', 'viewQuiz', 'updateQuiz', 'deleteQuiz'],
         'sub' => [
             [
-                'title' => 'Thêm',
-                'routeName' => 'admin.quiz.create',
-                'icon' => '<i class="ti ti-plus"></i>',
+                'title' => 'Bài kiểm tra IQ',
+                'routeName' => 'admin.quiz.iq',
+                'icon' => '<i class="ti ti-brain"></i>',
                 'roles' => [],
-                'permissions' => ['createQuiz'],
+                'permissions' => ['viewQuiz'],
             ],
             [
-                'title' => 'DS Thông tin',
-                'routeName' => 'admin.quiz.index',
-                'icon' => '<i class="ti ti-list"></i>',
+                'title' => 'Bài kiểm tra EQ',
+                'routeName' => 'admin.quiz.eq',
+                'icon' => '<i class="ti ti-heart"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuiz'],
+            ],
+            [
+                'title' => 'Bài kiểm tra AQ',
+                'routeName' => 'admin.quiz.aq',
+                'icon' => '<i class="ti ti-leaf"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuiz'],
+            ],
+            [
+                'title' => 'Bài kiểm tra PQ',
+                'routeName' => 'admin.quiz.pq',
+                'icon' => '<i class="ti ti-switch"></i>',
                 'roles' => [],
                 'permissions' => ['viewQuiz'],
             ]

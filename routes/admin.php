@@ -188,6 +188,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::get('/add', 'create')->name('create');
                 Route::post('/add', 'store')->name('store');
             });
+
             Route::group(['middleware' => ['permission:viewQuestionGroup', 'auth:admin']], function () {
                 Route::get('/iq', 'iq')->name('iq');
                 Route::get('/aq', 'aq')->name('aq');
@@ -241,11 +242,17 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->as('quiz.')
         ->group(function () {
             Route::group(['middleware' => ['permission:createQuiz', 'auth:admin']], function () {
-                Route::get('/add', 'create')->name('create');
+                Route::get('/add/iq', 'createIq')->name('createIq');
+                Route::get('/add/aq', 'createAq')->name('createAq');
+                Route::get('/add/eq', 'createEq')->name('createEq');
+                Route::get('/add/pq', 'createPq')->name('createPq');
                 Route::post('/add', 'store')->name('store');
             });
             Route::group(['middleware' => ['permission:viewQuiz', 'auth:admin']], function () {
-                Route::get('/', 'index')->name('index');
+                Route::get('/iq', 'iq')->name('iq');
+                Route::get('/eq', 'eq')->name('eq');
+                Route::get('/aq', 'aq')->name('aq');
+                Route::get('/pq', 'pq')->name('pq');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
             Route::group(['middleware' => ['permission:updateQuiz', 'auth:admin']], function () {

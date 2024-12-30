@@ -8,8 +8,10 @@
         <div class="container-xl">
             <div class="card">
                 <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list')</h2>
-                    <x-link :href="route('admin.quiz.create')" class="btn btn-primary">
+                    <h2 class="mb-0">
+                        {{ $title }}
+                    </h2>
+                    <x-link :href="route($route)" class="btn btn-primary">
                         <i class="ti ti-plus"></i>
                         <span class="ms-1">@lang('add')</span>
                     </x-link>
