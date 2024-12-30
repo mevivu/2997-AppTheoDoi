@@ -3,8 +3,8 @@
 namespace App\Api\V1\Http\Requests\VaccinationSchedule;
 
 use App\Admin\Http\Requests\BaseRequest;
+use App\Enums\Vaccination\VaccinationStatus;
 use Illuminate\Validation\Rules\Enum;
-use App\Enums\Permission\PermissionType;
 
 class VaccinationScheduleRequest extends BaseRequest
 {
@@ -25,8 +25,7 @@ class VaccinationScheduleRequest extends BaseRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'vaccination_status' => ['required'],
-            'vaccination_type_id' => ['required', 'integer', 'exists:vaccination_types,id'],
+            'vaccination_status' => ['required', new Enum(VaccinationStatus::class)],
             'description' => ['nullable', 'string'],
             'performed_on' => ['required'],
             'image' => ['required', 'array', 'min:1'],
