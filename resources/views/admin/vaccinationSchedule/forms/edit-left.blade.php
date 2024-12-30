@@ -22,7 +22,7 @@
                               class="form-control"
                               rows="4"
                               placeholder="{{ __('description') }}"
-                    >{{ $instance->description }}</textarea>
+                              >{{ $instance->description }}</textarea>
                 </div>
             </div>
 
@@ -36,21 +36,25 @@
                              name="performed_on"
                              :value="$instance->performed_on"
                              :required="true"
-                             :placeholder="__('performed_on')"/>
+                             :placeholder="__('performed_on')" />
                 </div>
             </div>
+            <!-- children -->
+
             <!--vaccination Type-->
             <div class="col-md-12 col-sm-12">
                 <label class="control-label">
                     <span class="ti ti-user"></span>
                     @lang('Loại tiêm chủng'):</label>
-                <x-select class="select2-bs5-ajax" name="vaccination_type_id" id="vaccination_type_id"
+                <x-select class="select2-bs5-ajax"
+                          name="vaccination_type_id"
+                          id="vaccination_type_id"
                           :data-url="route('admin.search.select.vaccinationType')">
                     <x-select-option
                         :option="$instance->vaccination_type_id"
                         :value="$instance->vaccination_type_id"
                         :title="$instance->vaccinationType->name"
-                        :selected="old('vaccination_type_id') ? (old('vaccination_type_id') == $vaccinationType->vaccination_type_id) : true"
+                        :selected="old('vaccination_type_id') ? (old('child_id') == $vaccinationType->vaccination_type_id) : true"
                     />
                 </x-select>
             </div>
