@@ -27,7 +27,7 @@ class VaccinationScheduleRequest extends BaseRequest
             'name' => ['required', 'string', 'max:255'],
             'vaccination_status' => ['required', new Enum(VaccinationStatus::class)],
             'description' => ['nullable', 'string'],
-            'performed_on' => ['required'],
+            'performed_on' => ['nullable', 'date_format:d-m-Y'],
             'image' => ['required', 'array', 'min:1'],
             'image.*' => ['file', 'image', 'max:5000'],
         ];

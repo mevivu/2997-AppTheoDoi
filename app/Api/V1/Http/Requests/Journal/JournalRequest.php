@@ -36,6 +36,4 @@ class JournalRequest extends BaseRequest
             'image.*' => 'file|image|max:5000',
         ];
     }
-
-
 }

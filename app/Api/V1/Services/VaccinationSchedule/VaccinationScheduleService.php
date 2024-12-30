@@ -40,6 +40,10 @@ class VaccinationScheduleService implements VaccinationScheduleServiceInterface
         $data = $request->validated();
         $limit = $data['limit'] ?? 10;
         $page = $data['page'] ?? 1;
+        $date = $data['performed_on'] ?? null;
+        if ($date) {
+            $date = date('d-m-Y', strtotime($date));
+        }
         $query = $this->repository->getQueryBuilder();
         return $query->paginate($limit, ['*'], 'page', $page);
     }
