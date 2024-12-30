@@ -16,8 +16,7 @@ class QuizDataTable extends BaseDataTable
 
     public function __construct(
         QuizRepositoryInterface $repository
-    )
-    {
+    ) {
 
         parent::__construct();
         $this->repository = $repository;
@@ -36,16 +35,29 @@ class QuizDataTable extends BaseDataTable
 
     public function query(): Builder
     {
+        if (request()->routeIs('admin.quiz.iq')) {
+            $type = QuestionType::IQ->value;
+        } elseif (request()->routeIs('admin.quiz.eq')) {
+            $type = QuestionType::EQ->value;
+        } elseif (request()->routeIs('admin.quiz.aq')) {
+            $type = QuestionType::AQ->value;
+        } elseif (request()->routeIs('admin.quiz.pq')) {
+            $type = QuestionType::PQ->value;
+        } else {
+            $type = QuestionType::IQ->value;
+        }
+
         return $this->repository->getByQueryBuilder(
             [
                 ['status', '!=', ActiveStatus::Deleted],
+                ['type', '=', $type]
             ]
         );
     }
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 2, 3, 4,5];
+        $this->columnAllSearch = [1, 2, 3, 4, 5];
         $this->columnSearchDate = [5];
         $this->columnSearchSelect = [
             [

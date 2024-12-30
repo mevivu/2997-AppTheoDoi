@@ -26,11 +26,10 @@ class QuizController extends Controller
 
 
     public function __construct(
-        QuizRepositoryInterface     $repository,
+        QuizRepositoryInterface $repository,
         QuestionRepositoryInterface $questionRepository,
-        QuizServiceInterface        $service
-    )
-    {
+        QuizServiceInterface $service
+    ) {
 
         parent::__construct();
 
@@ -52,14 +51,20 @@ class QuizController extends Controller
     public function getRoute(): array
     {
         return [
-            'index' => 'admin.quiz.index',
-            'create' => 'admin.quiz.create',
+            'iq' => 'admin.quiz.iq',
+            'eq' => 'admin.quiz.eq',
+            'aq' => 'admin.quiz.aq',
+            'pq' => 'admin.quiz.pq',
+            'createIq' => 'admin.quiz.createIq',
+            'createEq' => 'admin.quiz.createEq',
+            'createAq' => 'admin.quiz.createAq',
+            'createPq' => 'admin.quiz.createPq',
             'edit' => 'admin.quiz.edit',
             'delete' => 'admin.quiz.delete',
         ];
     }
 
-    public function index(QuizDataTable $dataTable)
+    public function iq(QuizDataTable $dataTable)
     {
         $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
@@ -67,27 +72,139 @@ class QuizController extends Controller
             [
                 'status' => ActiveStatus::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
-                'breadcrumbs' => $this->crums->add(__('quiz')),
+                'breadcrumbs' => $this->crums->add(__('Bài kiểm tra IQ')),
+                'title' => __('Bài kiểm tra IQ'),
+                'route' => $this->route['createIq'],
             ]
 
         );
     }
 
-    public function create(): Factory|View|Application
+    public function eq(QuizDataTable $dataTable)
     {
+        $actionMultiple = $this->getActionMultiple();
+        return $dataTable->render(
+            $this->view['index'],
+            [
+                'status' => ActiveStatus::asSelectArray(),
+                'actionMultiple' => $actionMultiple,
+                'breadcrumbs' => $this->crums->add(__('Bài kiểm tra EQ')),
+                'title' => __('Bài kiểm tra EQ'),
+                'route' => $this->route['createEq'],
+            ]
+
+        );
+    }
+
+    public function aq(QuizDataTable $dataTable)
+    {
+        $actionMultiple = $this->getActionMultiple();
+        return $dataTable->render(
+            $this->view['index'],
+            [
+                'status' => ActiveStatus::asSelectArray(),
+                'actionMultiple' => $actionMultiple,
+                'breadcrumbs' => $this->crums->add(__('Bài kiểm tra AQ')),
+                'title' => __('Bài kiểm tra AQ'),
+                'route' => $this->route['createAq'],
+            ]
+
+        );
+    }
+
+    public function pq(QuizDataTable $dataTable)
+    {
+        $actionMultiple = $this->getActionMultiple();
+        return $dataTable->render(
+            $this->view['index'],
+            [
+                'status' => ActiveStatus::asSelectArray(),
+                'actionMultiple' => $actionMultiple,
+                'breadcrumbs' => $this->crums->add(__('Bài kiểm tra PQ')),
+                'title' => __('Bài kiểm tra PQ'),
+                'route' => $this->route['createPq']
+            ]
+
+        );
+    }
+
+    public function createIq(): Factory|View|Application
+    {
+        $breadcrumbs = $this->crums->add(__('Bài kiểm tra IQ'), route($this->route['iq']));
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
             'type' => QuestionType::asSelectArray(),
-            'breadcrumbs' => $this->crums->add(__('quiz'),
-                route($this->route['index']))->add(__('add')),
+            'breadcrumbs' => $breadcrumbs->add(__('add')),
+            'title' => __('Bài kiểm tra IQ'),
+            'route' => $this->route['iq'],
+            'selectedType' => QuestionType::IQ->value,
+        ]);
+    }
+
+    public function createEq(): Factory|View|Application
+    {
+        $breadcrumbs = $this->crums->add(__('Bài kiểm tra EQ'), route($this->route['eq']));
+        return view($this->view['create'], [
+            'status' => ActiveStatus::asSelectArray(),
+            'type' => QuestionType::asSelectArray(),
+            'breadcrumbs' => $breadcrumbs->add(__('add')),
+            'title' => __('Bài kiểm tra EQ'),
+            'route' => $this->route['eq'],
+            'selectedType' => QuestionType::EQ->value,
+        ]);
+    }
+
+    public function createAq(): Factory|View|Application
+    {
+        $breadcrumbs = $this->crums->add(__('Bài kiểm tra AQ'), route($this->route['aq']));
+        return view($this->view['create'], [
+            'status' => ActiveStatus::asSelectArray(),
+            'type' => QuestionType::asSelectArray(),
+            'breadcrumbs' => $breadcrumbs->add(__('add')),
+            'title' => __('Bài kiểm tra AQ'),
+            'route' => $this->route['aq'],
+            'selectedType' => QuestionType::AQ->value,
+        ]);
+    }
+
+    public function createPq(): Factory|View|Application
+    {
+        $breadcrumbs = $this->crums->add(__('Bài kiểm tra PQ'), route($this->route['pq']));
+        return view($this->view['create'], [
+            'status' => ActiveStatus::asSelectArray(),
+            'type' => QuestionType::asSelectArray(),
+            'breadcrumbs' => $breadcrumbs->add(__('add')),
+            'title' => __('Bài kiểm tra PQ'),
+            'route' => $this->route['pq'],
+            'selectedType' => QuestionType::PQ->value,
         ]);
     }
 
     public function store(QuizRequest $request): RedirectResponse
     {
-        return $this->handleResponse($request, function ($request) {
-            return $this->service->store($request);
-        }, $this->route['index'], $this->route['edit']);
+        $response = $this->service->store($request);
+        if ($response) {
+            switch ($response->type->value) {
+                case QuestionType::IQ->value:
+                    return redirect()->route($this->route['iq'])
+                        ->with('success', __('notifySuccess'));
+                case QuestionType::EQ->value:
+                    return redirect()->route($this->route['eq'])
+                        ->with('success', __('notifySuccess'));
+                case QuestionType::AQ->value:
+                    return redirect()->route($this->route['aq'])
+                        ->with('success', __('notifySuccess'));
+                case QuestionType::PQ->value:
+                    return redirect()->route($this->route['pq'])
+                        ->with('success', __('notifySuccess'));
+                default:
+                    return redirect()->route($this->route['iq'])
+                        ->with('success', __('notifySuccess'));
+            }
+        } else {
+            return redirect()->back()
+                ->with('error', __('notifyFail'));
+        }
     }
 
     /**
@@ -102,6 +219,24 @@ class QuizController extends Controller
             'status' => ActiveStatus::Active,
             'question_type' => $instance->type,
         ]);
+
+        if ($instance->type->value == QuestionType::IQ->value) {
+            $breadcrumbs = $this->crums->add(__('Bài kiểm tra IQ'), route($this->route['iq']));
+            $route = $this->route['iq'];
+        } elseif ($instance->type->value == QuestionType::EQ->value) {
+            $breadcrumbs = $this->crums->add(__('Bài kiểm tra EQ'), route($this->route['eq']));
+            $route = $this->route['eq'];
+        } elseif ($instance->type->value == QuestionType::AQ->value) {
+            $breadcrumbs = $this->crums->add(__('Bài kiểm tra AQ'), route($this->route['aq']));
+            $route = $this->route['aq'];
+        } elseif ($instance->type->value == QuestionType::PQ->value) {
+            $breadcrumbs = $this->crums->add(__('Bài kiểm tra PQ'), route($this->route['pq']));
+            $route = $this->route['pq'];
+        } else {
+            $breadcrumbs = $this->crums->add(__('Bài kiểm tra IQ'), route($this->route['iq']));
+            $route = $this->route['iq'];
+        }
+
         return view(
             $this->view['edit'],
             [
@@ -110,7 +245,8 @@ class QuizController extends Controller
                 'type' => QuestionType::asSelectArray(),
                 'selected_questions' => $selectedQuestions,
                 'questions_type' => $questionsType,
-                'breadcrumbs' => $this->crums->add(__('quiz'), route($this->route['index']))->add(__('edit')),
+                'breadcrumbs' => $breadcrumbs->add(__('edit')),
+                'route' => $route,
             ],
         );
 
@@ -121,15 +257,9 @@ class QuizController extends Controller
      */
     public function update(QuizRequest $request): RedirectResponse
     {
-        if ($request['status'] == ActiveStatus::Deleted->value) {
-            $this->repository->delete($request['id']);
-            return redirect()->route($this->route['index'])
-                ->with('success', __('notifySuccess'));
-        }
-        return $this->handleUpdateResponse($request, function ($request) {
-            return $this->service->update($request);
-
-        });
+        $response = $this->service->update($request);
+        return redirect()->back()
+            ->with($response ? 'success' : 'error', $response ? __('notifySuccess') : __('notifyFail'));
     }
 
     /**

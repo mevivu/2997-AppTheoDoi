@@ -20,7 +20,7 @@ class QuizRequest extends BaseRequest
     {
         return [
             'title' => ['required', 'string'],
-            'age' => ['required', 'numeric', new UniqueQuiz(request()->type)],
+            'age' => ['nullable', 'numeric', new UniqueQuiz(request()->type)],
             'type' => ['required', new Enum(QuestionType::class)],
             'description' => ['nullable', 'string'],
             'question_ids' => ['required', 'array', 'min:3'],
@@ -35,7 +35,7 @@ class QuizRequest extends BaseRequest
             'id' => ['required', 'exists:App\Models\Quiz,id'],
             'title' => ['required', 'string'],
             'description' => ['nullable', 'string'],
-            'age' => ['required', 'numeric', new UniqueQuiz(request()->type, $quizId)],
+            'age' => ['nullable', 'numeric', new UniqueQuiz(request()->type, $quizId)],
             'question_ids' => ['required', 'array', 'min:3'],
             'question_ids.*' => ['exists:questions,id'],
             'status' => ['required', new Enum(ActiveStatus::class)]
