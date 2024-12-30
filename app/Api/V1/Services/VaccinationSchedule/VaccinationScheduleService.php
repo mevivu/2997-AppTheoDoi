@@ -62,12 +62,12 @@ class VaccinationScheduleService implements VaccinationScheduleServiceInterface
     public function update(Request $request): object
     {
         $data = $request->validated();
-        $journal = $this->repository->findOrFail($data['id']);
-        $data['image'] = $this->uploadPhotos($request->file('image') ?? [], $journal);
+        $VaccinationSchedule = $this->repository->findOrFail($data['id']);
+        $data['image'] = $this->uploadPhotos($request->file('image') ?? [], $VaccinationSchedule);
 
-        $journal->update($data);
+        $VaccinationSchedule->update($data);
 
-        return $journal;
+        return $VaccinationSchedule;
     }
 
     protected function uploadPhotos($photos, $model = null): string
