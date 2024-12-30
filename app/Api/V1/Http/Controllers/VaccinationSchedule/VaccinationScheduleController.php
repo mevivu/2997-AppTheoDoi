@@ -40,7 +40,7 @@ class VaccinationScheduleController extends Controller
      * Lấy lịch tiêm chủng
      *
      * @authenticated
-     * @queryParam limit int optional Số lượng lịch tiêm chủngchủng trên mỗi trang, mặc định là 10. Example: 10
+     * @queryParam limit int optional Số lượng lịch tiêm chủng trên mỗi trang, mặc định là 10. Example: 10
      * @queryParam page int optional Trang cần hiển thị, mặc định là 1. Example: 1
      *
      * @response 200 {
@@ -92,8 +92,8 @@ class VaccinationScheduleController extends Controller
             $response = $this->service->index($request);
             return $this->jsonResponseSuccess(new VaccinationScheduleCollection($response));
         } catch (Exception $exception) {
-            $this->logError('Get journals failed:', $exception);
-            return $this->jsonResponseError('Get journals failed', 500);
+            $this->logError('Get VaccinationSchedule failed:', $exception);
+            return $this->jsonResponseError('Get VaccinationSchedule failed', 500);
         }
     }
 
@@ -191,7 +191,7 @@ class VaccinationScheduleController extends Controller
      *     "message": "Lỗi hệ thống khi cập nhật lịch tiêm chủng."
      * }
      *
-     * @param JournalUpdateRequest $request
+     * @param VaccinationScheduleUpdateRequest $request
      * @return JsonResponse
      */
 

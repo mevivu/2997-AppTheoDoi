@@ -62,12 +62,12 @@ class VaccinationScheduleService implements VaccinationScheduleServiceInterface
     public function update(Request $request): object
     {
         $data = $request->validated();
-        $VaccinationSchedule = $this->repository->findOrFail($data['id']);
-        $data['image'] = $this->uploadPhotos($request->file('image') ?? [], $VaccinationSchedule);
+        $vaccinationSchedule = $this->repository->findOrFail($data['id']);
+        $data['image'] = $this->uploadPhotos($request->file('image') ?? [], $vaccinationSchedule);
 
-        $VaccinationSchedule->update($data);
+        $vaccinationSchedule->update($data);
 
-        return $VaccinationSchedule;
+        return $vaccinationSchedule;
     }
 
     protected function uploadPhotos($photos, $model = null): string
@@ -113,8 +113,8 @@ class VaccinationScheduleService implements VaccinationScheduleServiceInterface
      */
     public function delete($id): void
     {
-        $journal = $this->repository->findOrFail($id);
-        $this->fileService->deleteModelImages($journal, ['image']);
+        $vaccinationSchedule = $this->repository->findOrFail($id);
+        $this->fileService->deleteModelImages($vaccinationSchedule, ['image']);
         $this->repository->delete($id);
     }
 }
