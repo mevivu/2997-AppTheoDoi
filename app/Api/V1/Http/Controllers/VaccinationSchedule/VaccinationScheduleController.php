@@ -30,7 +30,8 @@ class VaccinationScheduleController extends Controller
         VaccinationScheduleRepositoryInterface $repository,
         VaccinationScheduleServiceInterface    $service
 
-    ) {
+    )
+    {
         $this->repository = $repository;
         $this->service = $service;
         $this->middleware('auth:api');
@@ -143,7 +144,7 @@ class VaccinationScheduleController extends Controller
     {
         try {
             $response = $this->service->store($request);
-            return $this->jsonResponseSuccess(data: new VaccinationScheduleResource($response));
+            return $this->jsonResponseSuccess(new VaccinationScheduleResource($response));
         } catch (Exception $exception) {
             $this->logError('Create prescription vaccination failed:', $exception);
             return $this->jsonResponseError('Create prescription vaccination failed', 500);
@@ -239,7 +240,7 @@ class VaccinationScheduleController extends Controller
             Validator::validateExists($this->repository, $id);
             $this->service->delete($id);
             return $this->jsonResponseSuccessNoData();
-        } catch (NotFoundException | BadRequestException $e) {
+        } catch (NotFoundException|BadRequestException $e) {
             return $this->jsonResponseError($e->getMessage());
         } catch (Exception $exception) {
             $this->logError('Deleted failed:', $exception);

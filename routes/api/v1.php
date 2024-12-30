@@ -149,15 +149,15 @@ Route::controller(\App\Api\V1\Http\Controllers\ChildEvaluation\ChildEvaluationCo
         Route::put('/', 'update');
     });
 
-// ChildEvaluation
+// Vaccination Schedule
 Route::controller(\App\Api\V1\Http\Controllers\VaccinationSchedule\VaccinationScheduleController::class)
     ->prefix('/vaccination-schedule')
     ->as('vaccinationSchedule.')
     ->group(function () {
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
-        Route::post('/create', 'store');
-        Route::post('/update/{id}', 'update');
+        Route::post('/', 'store');
+        Route::post('/update', 'update');
         Route::delete('/{id}', 'delete');
     });
 

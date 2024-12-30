@@ -7,6 +7,7 @@ use App\Api\V1\Repositories\VaccinationSchedule\VaccinationScheduleRepositoryInt
 use App\Api\V1\Services\VaccinationSchedule\VaccinationScheduleServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
+use App\Enums\Permission\PermissionType;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -29,8 +30,9 @@ class VaccinationScheduleService implements VaccinationScheduleServiceInterface
 
     public function __construct(
         VaccinationScheduleRepositoryInterface $repository,
-        FileService $fileService
-    ) {
+        FileService                            $fileService
+    )
+    {
         $this->repository = $repository;
         $this->fileService = $fileService;
     }
@@ -41,23 +43,39 @@ class VaccinationScheduleService implements VaccinationScheduleServiceInterface
         $limit = $data['limit'] ?? 10;
         $page = $data['page'] ?? 1;
         $date = $data['performed_on'] ?? null;
-        if ($date) {
-            $date = date('d-m-Y', strtotime($date));
+        $childId = $data['child_id'];
+        $query = $this->repository->getByQueryBuilder(
+            [
+                'type' => PermissionType::USER
+            ]
+        );
+        if ($childId) {
+            $query = $query->whereHas('children', function ($q) use ($childId) {
+                $q->where('children.id', $childId);
+            });
         }
-        $query = $this->repository->getQueryBuilder();
+        if (!empty($date)) {
+            $query->whereDate('performed_on', '=', date('Y-m-d', strtotime($date)));
+        }
         return $query->paginate($limit, ['*'], 'page', $page);
     }
+
     /**
      * @throws Exception
      */
     public function store(Request $request): object
     {
         $data = $request->validated();
-        $data['image'] = $this->uploadPhotos($request->file('image') ?? []);
-        return $this->repository->create($data);
+        $childId = $data['child_id'];
+        $image = $data['image'];
+        $data['image'] = $this->fileService->uploadAvatar('images/vaccinations', $image);
+        $vaccinationSchedule = $this->repository->create($data);
+        if ($vaccinationSchedule && $childId) {
+            $vaccinationSchedule->children()->attach($childId);
+        }
+
+        return $vaccinationSchedule;
     }
-
-
 
 
     /**
@@ -66,50 +84,14 @@ class VaccinationScheduleService implements VaccinationScheduleServiceInterface
     public function update(Request $request): object
     {
         $data = $request->validated();
+        $image = $data['image'];
         $vaccinationSchedule = $this->repository->findOrFail($data['id']);
-        $data['image'] = $this->uploadPhotos($request->file('image') ?? [], $vaccinationSchedule);
+        $data['image'] = $this->fileService->uploadAvatar('images/vaccinations', $image, $vaccinationSchedule->image);
 
         $vaccinationSchedule->update($data);
 
         return $vaccinationSchedule;
     }
-
-    protected function uploadPhotos($photos, $model = null): string
-    {
-        $paths = [];
-
-        // Xử lý xóa ảnh cũ nếu có
-        if ($model && $model->image) {
-            $oldPaths = json_decode($model->image);
-            if (is_array($oldPaths)) {
-                foreach ($oldPaths as $path) {
-                    $path = preg_replace('#/+#', '/', $path);
-                    $this->fileService->delete($path);
-                }
-            }
-        }
-
-        // Lặp qua các ảnh được upload và xử lý
-        foreach ($photos as $photo) {
-            if ($photo->isValid()) {
-                // Lưu ảnh vào thư mục public/uploads/files
-                $uploadedPath = $photo->storeAs('uploads/files', $photo->hashName(), 'public'); // Đảm bảo sử dụng 'public' disk
-
-                // Trả về đường dẫn bắt đầu bằng '/public'
-                $formattedPath = '/public/' . $uploadedPath;
-
-                // Thêm đường dẫn đã được xử lý vào mảng paths
-                $paths[] = $formattedPath;
-            } else {
-                Log::warning('Uploaded file is invalid.', ['file' => $photo->getClientOriginalName()]);
-            }
-        }
-
-        // Trả về mảng đường dẫn dưới dạng JSON
-        return json_encode($paths);
-    }
-
-
 
 
     /**

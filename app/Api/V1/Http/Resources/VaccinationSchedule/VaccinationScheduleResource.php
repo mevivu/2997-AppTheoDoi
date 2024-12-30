@@ -2,6 +2,8 @@
 
 namespace App\Api\V1\Http\Resources\VaccinationSchedule;
 
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class VaccinationScheduleResource extends JsonResource
@@ -9,19 +11,19 @@ class VaccinationScheduleResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @return array
+     * @throws Exception
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
             'id' => $this->id,
-            'child_id' => $this->child_id,
             'name' => $this->name,
             'description' => $this->description,
             'vaccination_status' => $this->vaccination_status,
-            'performed_on' => $this->performed_on ? $this->performed_on->format('Y-m-d') : null,
-            'image' => $this->image ? json_decode($this->image) : null,
+            'performed_on' => format_date($this->performed_on),
+            'image' => $this->image,
         ];
     }
 }

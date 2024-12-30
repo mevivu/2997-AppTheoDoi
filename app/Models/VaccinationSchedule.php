@@ -45,4 +45,15 @@ class VaccinationSchedule extends Model
     {
         return $this->belongsTo(VaccinationType::class, 'vaccination_type_id');
     }
+
+    public function children(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Child::class,
+            'child_vaccination_schedule',
+            'vaccination_schedule_id',
+            'child_id'
+        );
+    }
+
 }
