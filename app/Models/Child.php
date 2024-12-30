@@ -23,6 +23,8 @@ class Child extends Model
     protected $fillable = [
         /** Họ tên */
         'fullname',
+        /** Tuổi */
+        'age',
         /** Ngày sinh */
         'birthday',
         /** Ngày dự sinh */

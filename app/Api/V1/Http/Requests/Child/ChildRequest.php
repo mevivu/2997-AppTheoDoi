@@ -32,6 +32,7 @@ class ChildRequest extends BaseRequest
             'gender' => ['required', new Enum(Gender::class)],
             'is_born' => ['required', new Enum(BornStatus::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d'],
+            'due_date' => ['nullable', 'date_format:Y-m-d'],
             'avatar' => ['nullable'],
         ];
     }
@@ -44,6 +45,7 @@ class ChildRequest extends BaseRequest
             'gender' => ['required', new Enum(Gender::class)],
             'is_born' => ['required', new Enum(BornStatus::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d'],
+            'due_date' => ['nullable', 'date_format:Y-m-d'],
             'avatar' => ['nullable'],
         ];
     }
