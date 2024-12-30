@@ -156,8 +156,8 @@ Route::controller(\App\Api\V1\Http\Controllers\VaccinationSchedule\VaccinationSc
     ->group(function () {
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
-        Route::post('/', 'store');
-        Route::post('/update', 'update');
+        Route::post('/create', 'store');
+        Route::post('/update/{id}', 'update');
         Route::delete('/{id}', 'delete');
     });
 

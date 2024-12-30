@@ -36,6 +36,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\ChildCapability\ChildCapabilityRepositoryInterface' => 'App\Api\V1\Repositories\ChildCapability\ChildCapabilityRepository',
         'App\Api\V1\Repositories\Quiz\QuizRepositoryInterface' => 'App\Api\V1\Repositories\Quiz\QuizRepository',
         'App\Api\V1\Repositories\ClassGrade\ClassGradeRepositoryInterface' => 'App\Api\V1\Repositories\ClassGrade\ClassGradeRepository',
+        'App\Api\V1\Repositories\VaccinationSchedule\VaccinationScheduleRepositoryInterface' => 'App\Api\V1\Repositories\VaccinationSchedule\VaccinationScheduleRepository',
 
     ];
 

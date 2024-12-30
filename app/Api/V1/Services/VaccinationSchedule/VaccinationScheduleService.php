@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Api\V1\Services\Journal;
-
+namespace App\Api\V1\Services\VaccinationSchedule;
 
 use App\Admin\Services\File\FileService;
-use App\Api\V1\Repositories\Journal\JournalRepositoryInterface;
+use App\Api\V1\Repositories\VaccinationSchedule\VaccinationScheduleRepositoryInterface;
+use App\Api\V1\Services\VaccinationSchedule\VaccinationScheduleServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-
-class JournalService implements JournalServiceInterface
+class VaccinationScheduleService implements VaccinationScheduleServiceInterface
 {
     use AuthSupport, AuthServiceApi;
 
@@ -23,41 +22,27 @@ class JournalService implements JournalServiceInterface
      */
     protected array $data;
 
-    protected JournalRepositoryInterface $repository;
+    protected VaccinationScheduleRepositoryInterface $repository;
 
     protected FileService $fileService;
 
 
     public function __construct(
-        JournalRepositoryInterface $repository,
+        VaccinationScheduleRepositoryInterface $repository,
         FileService $fileService
     ) {
         $this->repository = $repository;
         $this->fileService = $fileService;
     }
 
-
     public function index(Request $request)
     {
         $data = $request->validated();
-        $type = $data['type'];
-
         $limit = $data['limit'] ?? 10;
         $page = $data['page'] ?? 1;
-        $date = $data['date'] ?? null;
-
-        $query = $this->repository->getByQueryBuilder([
-            'type' => $type,
-            'child_id' => $data['child_id'],
-        ]);
-
-        if ($date) {
-            $date = date('Y-m-d', strtotime($date));
-            $query->whereDate('created_at', '=', $date);
-        }
+        $query = $this->repository->getQueryBuilder();
         return $query->paginate($limit, ['*'], 'page', $page);
     }
-
     /**
      * @throws Exception
      */
@@ -67,6 +52,9 @@ class JournalService implements JournalServiceInterface
         $data['image'] = $this->uploadPhotos($request->file('image') ?? []);
         return $this->repository->create($data);
     }
+
+
+
 
     /**
      * @throws Exception
@@ -85,6 +73,8 @@ class JournalService implements JournalServiceInterface
     protected function uploadPhotos($photos, $model = null): string
     {
         $paths = [];
+
+        // Xử lý xóa ảnh cũ nếu có
         if ($model && $model->image) {
             $oldPaths = json_decode($model->image);
             if (is_array($oldPaths)) {
@@ -94,17 +84,28 @@ class JournalService implements JournalServiceInterface
                 }
             }
         }
+
+        // Lặp qua các ảnh được upload và xử lý
         foreach ($photos as $photo) {
             if ($photo->isValid()) {
-                $uploadedPath = $this->fileService->uploadAvatar('images/journals', $photo);
-                $formattedPath = '/' . trim($uploadedPath, '/');
+                // Lưu ảnh vào thư mục public/uploads/files
+                $uploadedPath = $photo->storeAs('uploads/files', $photo->hashName(), 'public'); // Đảm bảo sử dụng 'public' disk
+
+                // Trả về đường dẫn bắt đầu bằng '/public'
+                $formattedPath = '/public/' . $uploadedPath;
+
+                // Thêm đường dẫn đã được xử lý vào mảng paths
                 $paths[] = $formattedPath;
             } else {
                 Log::warning('Uploaded file is invalid.', ['file' => $photo->getClientOriginalName()]);
             }
         }
+
+        // Trả về mảng đường dẫn dưới dạng JSON
         return json_encode($paths);
     }
+
+
 
 
     /**
