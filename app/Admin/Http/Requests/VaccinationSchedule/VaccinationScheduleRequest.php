@@ -4,6 +4,7 @@ namespace App\Admin\Http\Requests\VaccinationSchedule;
 
 use App\Admin\Http\Requests\BaseRequest;
 use App\Enums\ActiveStatus;
+use App\Enums\Permission\PermissionType;
 use App\Enums\Vaccination\VaccinationStatus;
 use Illuminate\Validation\Rules\Enum;
 
@@ -21,6 +22,7 @@ class VaccinationScheduleRequest extends BaseRequest
             'name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'performed_on' => ['required', 'date'],
+            'type' => ['required', new Enum(PermissionType::class)],
             'image' => ['nullable', 'string'],
             'vaccination_type_id' => ['required', 'exists:App\Models\VaccinationType,id'],
         ];
@@ -35,6 +37,7 @@ class VaccinationScheduleRequest extends BaseRequest
             'description' => ['nullable', 'string'],
             'performed_on' => ['required', 'date'],
             'image' => ['nullable', 'string'],
+            'type' => ['required', new Enum(PermissionType::class)],
             'status' => ['required', new Enum(ActiveStatus::class)],
             'vaccination_type_id' => ['required', 'exists:App\Models\VaccinationType,id'],
             'vaccination_status' => ['required', new Enum(VaccinationStatus::class)],

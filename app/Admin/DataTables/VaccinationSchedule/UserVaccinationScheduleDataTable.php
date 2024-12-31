@@ -5,9 +5,10 @@ namespace App\Admin\DataTables\VaccinationSchedule;
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\VaccinationSchedule\VaccinationScheduleRepositoryInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Permission\PermissionType;
 use Illuminate\Database\Eloquent\Builder;
 
-class VaccinationScheduleDataTable extends BaseDataTable
+class UserVaccinationScheduleDataTable extends BaseDataTable
 {
     protected $nameTable = 'vaccinationScheduleTable';
 
@@ -35,11 +36,7 @@ class VaccinationScheduleDataTable extends BaseDataTable
 
     public function query(): Builder
     {
-        return $this->repository->getByQueryBuilder(
-            [
-                ['status', '!=', ActiveStatus::Deleted],
-            ]
-        );
+        return $this->repository->getByQueryBuilder(['type' => PermissionType::USER]);
     }
 
     public function setColumnSearch(): void

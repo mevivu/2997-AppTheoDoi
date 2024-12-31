@@ -49,7 +49,7 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-vaccine-bottle"></i>',
         'roles' => [],
-        'permissions' => ['createTypeVaccination', 'viewTypeVaccination','updateTypeVaccination','deleteTypeVaccination'],
+        'permissions' => ['createTypeVaccination', 'viewTypeVaccination', 'updateTypeVaccination', 'deleteTypeVaccination'],
         'sub' => [
 
             [
@@ -461,9 +461,16 @@ return [
                 'permissions' => ['createVaccinationSchedule'],
             ],
             [
-                'title' => 'list',
-                'routeName' => 'admin.vaccination.index',
-                'icon' => '<i class="ti ti-list"></i>',
+                'title' => 'Quản trị viên',
+                'routeName' => 'admin.vaccination.admin',
+                'icon' => '<i class="ti ti-ad"></i>',
+                'roles' => [],
+                'permissions' => ['viewVaccinationSchedule'],
+            ],
+            [
+                'title' => 'Người dùng',
+                'routeName' => 'admin.vaccination.user',
+                'icon' => '<i class="ti ti-user"></i>',
                 'roles' => [],
                 'permissions' => ['viewVaccinationSchedule'],
             ]
@@ -497,21 +504,21 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-star"></i>',
         'roles' => [],
-        'permissions' => ['createQuality', 'viewQuality', 'updateQuality', 'deleteQuality'],
+        'permissions' => ['CreateQuality', 'ViewQuality', 'UpdateQuality', 'DeleteQuality'],
         'sub' => [
             [
                 'title' => 'add',
                 'routeName' => 'admin.quality.create',
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
-                'permissions' => ['createQuality'],
+                'permissions' => ['CreateQuality'],
             ],
             [
                 'title' => 'list',
                 'routeName' => 'admin.quality.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
-                'permissions' => ['viewQuality'],
+                'permissions' => ['ViewQuality'],
             ]
         ]
     ],
@@ -520,21 +527,21 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-accessible"></i>',
         'roles' => [],
-        'permissions' => ['createCapability', 'viewCapability', 'updateCapability', 'deleteCapability'],
+        'permissions' => ['CreateCapability', 'ViewCapability', 'UpdateCapability', 'DeleteCapability'],
         'sub' => [
             [
                 'title' => 'add',
                 'routeName' => 'admin.capability.create',
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
-                'permissions' => ['createCapability'],
+                'permissions' => ['CreateCapability'],
             ],
             [
                 'title' => 'list',
                 'routeName' => 'admin.capability.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
-                'permissions' => ['viewCapability'],
+                'permissions' => ['ViewCapability'],
             ]
         ]
     ],
@@ -543,21 +550,21 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-school"></i>',
         'roles' => [],
-        'permissions' => ['createClasses', 'viewClasses'],
+        'permissions' => ['CreateClass', 'ViewClass', 'UpdateClass', 'DeleteClass'],
         'sub' => [
             [
                 'title' => 'Thêm Lớp',
                 'routeName' => 'admin.classes.create',
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
-                'permissions' => ['createClasses'],
+                'permissions' => ['CreateClass'],
             ],
             [
                 'title' => 'DS Lớp',
                 'routeName' => 'admin.classes.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
-                'permissions' => ['viewClasses'],
+                'permissions' => ['ViewClass'],
             ],
 
         ]
@@ -567,21 +574,21 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-math"></i>',
         'roles' => [],
-        'permissions' => ['createSubject', 'viewSubject', 'updateSubject', 'deleteSubject'],
+        'permissions' => ['CreateSubject', 'viewSubject', 'updateSubject', 'deleteSubject'],
         'sub' => [
             [
                 'title' => 'add',
                 'routeName' => 'admin.subject.create',
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
-                'permissions' => ['createSubject'],
+                'permissions' => ['CreateSubject', 'ViewSubject', 'UpdateSubject', 'DeleteSubject'],
             ],
             [
                 'title' => 'list',
                 'routeName' => 'admin.subject.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
-                'permissions' => ['viewSubject'],
+                'permissions' => ['ViewSubject'],
             ]
         ]
     ],
