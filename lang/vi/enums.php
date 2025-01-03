@@ -26,6 +26,7 @@ use App\Enums\ActiveStatus;
 use App\Enums\Exercise\ExerciseType;
 use App\Enums\Child\ChildStatus;
 use App\Enums\Support\SupportType;
+use App\Enums\Answser\AnswerType;
 use App\Enums\User\{
     Gender,
     UserStatus,
@@ -34,6 +35,10 @@ use App\Enums\User\{
 };
 
 return [
+    AnswerType::class => [
+        AnswerType::Image->value => 'Hình ảnh',
+        AnswerType::Normal->value => 'Văn bản',
+    ],
     SupportType::class => [
         SupportType::HelpCenter->value => 'Trung tâm trợ giúp',
         SupportType::Guide->value => 'Hướng dẫn sử dụng',

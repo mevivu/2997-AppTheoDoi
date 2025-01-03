@@ -4,6 +4,7 @@ namespace App\Admin\Services\Question;
 
 use App\Admin\Repositories\Answer\AnswerRepositoryInterface;
 use App\Admin\Repositories\Question\QuestionRepositoryInterface;
+use App\Enums\Answser\AnswerType;
 use App\Enums\Question\QuestionType;
 use Illuminate\Http\Request;
 use App\Enums\ActiveStatus;
@@ -39,37 +40,35 @@ class QuestionService implements QuestionServiceInterface
 
     protected function addIqQuestion($data, $question)
     {
-
-        //     "answer" => array:2 [▼
-        //     "is_correct" => array:3 [▼
-        //       0 => array:1 [▼
-        //         0 => "0"
-        //       ]
-        //       1 => array:1 [▼
-        //         0 => "1"
-        //       ]
-        //       2 => array:1 [▼
-        //         0 => "0"
-        //       ]
-        //     ]
-        //     "iq_answers" => array:3 [▼
-        //       0 => "213"
-        //       1 => "cc"
-        //       2 => "đ"
-        //     ]
-        //   ]
-        // ]
         $question_id = $question->id;
 
-        $answers = $data['answer']['iq_answers'];
+        if ($data['answer']['answer_type'] == AnswerType::Image->value) {
+            $images = $data['answer']['image-iq'];
+            $answers = null;
+        } else {
+            $answers = $data['answer']['iq_answers'];
+            $images = null;
+        }
         $isCorrect = $data['answer']['is_correct'];
 
-        foreach ($answers as $index => $answer) {
-            $this->answerRepository->create([
-                'question_id' => $question_id,
-                'answer' => $answer,
-                'is_correct' => isset($isCorrect[$index][0]) && $isCorrect[$index][0] == '1' ? true : false,
-            ]);
+        if ($images) {
+            foreach ($images as $index => $image) {
+                $this->answerRepository->create([
+                    'question_id' => $question_id,
+                    'image' => $image,
+                    'is_correct' => isset($isCorrect[$index][0]) && $isCorrect[$index][0] == '1' ? true : false,
+                    'type' => AnswerType::Image->value,
+                ]);
+            }
+        } else {
+            foreach ($answers as $index => $answer) {
+                $this->answerRepository->create([
+                    'question_id' => $question_id,
+                    'answer' => $answer,
+                    'is_correct' => isset($isCorrect[$index][0]) && $isCorrect[$index][0] == '1' ? true : false,
+                    'type' => AnswerType::Normal->value,
+                ]);
+            }
         }
 
         return $question;
@@ -78,15 +77,55 @@ class QuestionService implements QuestionServiceInterface
     protected function addEqAqQuestion($data, $question)
     {
         $question_id = $question->id;
-        $answers = $data['answer']['answers'];
+
         $scores = $data['answer']['scores'];
 
-        foreach ($answers as $index => $answer) {
-            $this->answerRepository->create([
-                'question_id' => $question_id,
-                'answer' => $answer,
-                'score' => $scores[$index],
-            ]);
+        if ($data['answer']['answer_type_aqeq'] == AnswerType::Image->value) {
+            $answers = null;
+            $images = $data['answer']['image-eqaq'];
+
+            $images = array_values($images);
+            $scores = array_values($scores);
+
+            $result = [];
+            foreach ($images as $key => $image) {
+                $result[] = [
+                    'image' => $image,
+                    'score' => $scores[$key] ?? null,
+                ];
+            }
+
+            foreach ($result as $item) {
+                $this->answerRepository->create([
+                    'question_id' => $question_id,
+                    'image' => $item['image'],
+                    'score' => $item['score'],
+                    'type' => AnswerType::Image->value,
+                ]);
+            }
+        } else {
+            $answers = $data['answer']['answers'];
+            $images = null;
+
+            $answers = array_values($answers);
+            $scores = array_values($scores);
+
+            $result = [];
+            foreach ($answers as $key => $answer) {
+                $result[] = [
+                    'answer' => $answer,
+                    'score' => $scores[$key] ?? null, // Đảm bảo không bị lỗi nếu key không tồn tại
+                ];
+            }
+
+            foreach ($result as $item) {
+                $this->answerRepository->create([
+                    'question_id' => $question_id,
+                    'answer' => $item['answer'],
+                    'score' => $item['score'],
+                    'type' => AnswerType::Normal->value,
+                ]);
+            }
         }
 
         return $question;
@@ -113,47 +152,60 @@ class QuestionService implements QuestionServiceInterface
     protected function updateIqQuestion($data, $question)
     {
         $data['answer']['question_id'] = $question->id;
-        $answers = $data['answer']['iq_answers'];
-        $correctAnswerId = $data['answer']['is_correct'][$question->id];
+        $correctAnswerId = $data['answer']['is_correct'][$question->id] ?? null;
+        $answerType = $data['answer']['answer_type'];
 
-        // dd($answers, $correctAnswerId);
-
+        // Lấy thông tin câu trả lời hiện có
         $existingAnswers = $this->answerRepository->getByQueryBuilder([
             'question_id' => $data['answer']['question_id'],
         ])->get();
 
-        foreach ($answers as $answerId => $answer) {
-            if ($answerId == $correctAnswerId) {
-                $isCorrectAnswer = true;
-            } else {
-                $isCorrectAnswer = false;
-            }
+        // Phân loại dữ liệu
+        $answers = $answerType == AnswerType::Image->value
+            ? $data['answer']['image-iq']
+            : $data['answer']['iq_answers'];
+        $answerKey = $answerType == AnswerType::Image->value ? 'image' : 'answer';
 
-            // dd($answerId, $answer, $isCorrectAnswer);
+        // Lưu danh sách ID câu trả lời mới
+        $newAnswerIds = [];
 
-            $existingAnswer = $existingAnswers->firstWhere('id', $answerId);
-            // dd($existingAnswer);
+        foreach ($answers as $key => $content) {
+            // Tìm câu trả lời cũ dựa trên nội dung
+            $existingAnswer = $existingAnswers->where($answerKey, $content)->first();
+
+            $isCorrectAnswer = false;
             if ($existingAnswer) {
-                $existingAnswer->update([
-                    'answer' => $answer,
+                // Nếu câu trả lời cũ tồn tại
+                $isCorrectAnswer = $correctAnswerId == $existingAnswer->id;
+                $newAnswerIds[] = $existingAnswer->id;
+
+                // Cập nhật dữ liệu câu trả lời
+                $this->answerRepository->update($existingAnswer->id, [
+                    $answerKey => $content,
                     'is_correct' => $isCorrectAnswer,
                     'question_id' => $data['answer']['question_id'],
+                    'type' => $answerType,
                 ]);
             } else {
-                $this->answerRepository->create([
-                    'answer' => $answer,
-                    'is_correct' => $isCorrectAnswer,
+                // Tạo mới câu trả lời
+                $createdAnswer = $this->answerRepository->create([
+                    $answerKey => $content,
+                    'is_correct' => $correctAnswerId == $key, // So khớp với key từ frontend
                     'question_id' => $data['answer']['question_id'],
+                    'type' => $answerType,
                 ]);
+                $newAnswerIds[] = $createdAnswer->id;
             }
         }
 
+        // Xóa câu trả lời không còn sử dụng
         foreach ($existingAnswers as $existingAnswer) {
-            if (!isset($answers[$existingAnswer->id])) {
+            if (!in_array($existingAnswer->id, $newAnswerIds)) {
                 $existingAnswer->delete();
             }
         }
     }
+
 
 
     protected function updateEqAqQuestion($data, $question)

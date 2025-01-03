@@ -4,6 +4,7 @@ namespace App\Admin\Http\Requests\Question;
 
 use App\Api\V1\Http\Requests\BaseRequest;
 use App\Enums\ActiveStatus;
+use App\Enums\Answser\AnswerType;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\Question\QuestionType;
 
@@ -15,18 +16,32 @@ class QuestionRequest extends BaseRequest
             'question.question' => ['required'],
             'question.question_type' => ['required', new Enum(QuestionType::class)],
             'question.status' => ['required', new Enum(ActiveStatus::class)],
+            'answer.answer_type' => ['required', new Enum(AnswerType::class)],
         ];
 
         if ($this->input('question.question_type') == QuestionType::IQ->value) {
             $this->validate['question.age'] = ['required', 'numeric'];
-            $this->validate['answer.iq_answers'] = ['required', 'array'];
-            $this->validate['answer.iq_answers.*'] = ['required', 'string'];
+            if ($this->input('answer.answer_type') == AnswerType::Image->value) {
+                $this->validate['answer.image-iq'] = ['required', 'array'];
+                $this->validate['answer.image-iq.*'] = ['required',];
+            } else {
+                $this->validate['answer.iq_answers'] = ['required', 'array'];
+                $this->validate['answer.iq_answers.*'] = ['required', 'string'];
+            }
+
             $this->validate['answer.is_correct'] = ['required'];
         }
 
         if ($this->input('question.question_type') == QuestionType::EQ->value || $this->input('question.question_type') == QuestionType::AQ->value) {
             $this->validate['question.question_group_id'] = ['required', 'numeric', 'exists:App\Models\QuestionGroup,id'];
-            $this->validate['answer.answers'] = ['required', 'array'];
+            $this->validate['answer.answer_type_aq_eq'] = ['required'];
+            if ($this->input('answer.answer_type_aq_eq') == AnswerType::Image->value) {
+                $this->validate['answer.image-eqaq'] = ['required', 'array'];
+                $this->validate['answer.image-eqaq.*'] = ['required', 'string'];
+            } else {
+                $this->validate['answer.answers'] = ['required', 'array'];
+                $this->validate['answer.answers.*'] = ['required', 'string'];
+            }
             $this->validate['answer.scores'] = ['required', 'array'];
         }
 
@@ -44,16 +59,30 @@ class QuestionRequest extends BaseRequest
 
         if ($this->input('question.question_type') == QuestionType::IQ->value) {
             $this->validate['question.age'] = ['required', 'numeric'];
-            $this->validate['answer.iq_answers'] = ['required'];
-            $this->validate['answer.iq_answers.*'] = ['required', 'string'];
+            $this->validate['answer.answer_type'] = ['required', new Enum(AnswerType::class)];
+            if ($this->input('answer.answer_type') == AnswerType::Image->value) {
+                $this->validate['answer.image-iq'] = ['required', 'array'];
+                $this->validate['answer.image-iq.*'] = ['required'];
+            } else {
+                $this->validate['answer.iq_answers'] = ['required', 'array'];
+                $this->validate['answer.iq_answers.*'] = ['required', 'string'];
+            }
+
             $this->validate['answer.is_correct'] = ['required'];
             $this->validate['answer.is_correct.*'] = ['required'];
         }
 
         if ($this->input('question.question_type') == QuestionType::EQ->value || $this->input('question.question_type') == QuestionType::AQ->value) {
             $this->validate['question.question_group_id'] = ['required', 'exists:App\Models\QuestionGroup,id'];
+            $this->validate['answer.answer_type_aq_eq'] = ['required'];
+
+            if ($this->input('answer.answer_type_aq_eq') == AnswerType::Image->value) {
+                $this->validate['answer.image'] = ['required', 'array'];
+            } else {
+                $this->validate['answer.answers'] = ['required', 'array'];
+            }
             $this->validate['answer.answers'] = ['required', 'array'];
-            $this->validate['answer.scores'] = ['required', 'array'];
+            $this->validate['answer.answers.*.score'] = ['required', 'numeric'];
         }
 
         return $this->validate;

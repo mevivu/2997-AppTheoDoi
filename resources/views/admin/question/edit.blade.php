@@ -19,6 +19,10 @@
     <!-- ckfinder js -->
     <script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
     <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
+
+    <script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
+    @include('ckfinder::setup')
 @endpush
 
 @push('custom-js')
