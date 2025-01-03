@@ -11,4 +11,8 @@ class QuizRepository extends EloquentRepository implements QuizRepositoryInterfa
     {
         return Quiz::class;
     }
+    public function existsWithTypes(array $types): bool
+    {
+        return Quiz::whereIn('type', $types)->exists();
+    }
 }
