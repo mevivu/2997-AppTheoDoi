@@ -10,6 +10,7 @@ use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Admin\Repositories\QuestionGroup\QuestionGroupRepositoryInterface;
 use App\Admin\Services\Question\QuestionServiceInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Answser\AnswerType;
 use App\Enums\Question\QuestionType;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -94,6 +95,7 @@ class QuestionController extends Controller
     public function create(): Factory|View|Application
     {
         return view($this->view['create'], [
+            'answer_types' => AnswerType::asSelectArray(),
             'status' => ActiveStatus::asSelectArray(),
             'types' => QuestionType::asSelectArray(),
             'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
@@ -125,6 +127,7 @@ class QuestionController extends Controller
                 'response' => $response,
                 'iq_answers' => $iqAnswers,
                 'answers' => $answers,
+                'answer_types' => AnswerType::asSelectArray(),
                 'questionGroups' => $questionGroups,
                 'status' => ActiveStatus::asSelectArray(),
                 'types' => QuestionType::asSelectArray(),

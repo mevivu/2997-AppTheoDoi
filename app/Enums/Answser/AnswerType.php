@@ -9,10 +9,9 @@ enum AnswerType: string
 {
     use Enum;
     /** Image */
-    case Image = 'image';
-
     case Normal = 'normal';
 
+    case Image = 'image';
 
     public function badge(): string
     {
