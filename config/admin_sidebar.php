@@ -354,8 +354,21 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-help-hexagon"></i>',
         'roles' => [],
-        'permissions' => ['createQuestionGroup', 'viewQuestionGroup', 'updateQuestionGroup', 'deleteQuestionGroup'],
+        'permissions' => [
+            'createQuestionGroup',
+            'viewQuestionGroup',
+            'updateQuestionGroup',
+            'deleteQuestionGroup',
+            'viewExpected'
+        ],
         'sub' => [
+            [
+                'title' => 'Nhóm câu hỏi',
+                'routeName' => 'admin.question-group.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewExpected'],
+            ],
             [
                 'title' => 'Thêm Câu hỏi',
                 'routeName' => 'admin.question.create',
