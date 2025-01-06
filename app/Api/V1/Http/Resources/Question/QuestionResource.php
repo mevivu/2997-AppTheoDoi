@@ -7,13 +7,12 @@ use App\Api\V1\Http\Resources\Answer\AnswerResource;
 
 class QuestionResource extends JsonResource
 {
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
-            'question_id' => $this->id,
+            'id' => $this->id,
             'question' => $this->question,
-            'question_type' => $this->question_type,
-            'answers' => AnswerResource::collection($this->whenLoaded('answers')), // Eager load answers
+            'answers' => AnswerResource::collection($this->answers),
         ];
     }
 }

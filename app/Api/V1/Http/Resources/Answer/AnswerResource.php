@@ -6,10 +6,10 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AnswerResource extends JsonResource
 {
-    public function toArray($request)
+    public function toArray($request): array
     {
         return [
-            'answer_id' => $this->id,
+            'id' => $this->id,
             'answer' => $this->answer,
         ];
     }

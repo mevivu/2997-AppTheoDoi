@@ -2,10 +2,13 @@
 
 namespace App\Api\V1\Http\Controllers\Quiz;
 
+use App\Api\V1\Http\Requests\Quiz\QuizAQAndEQRequest;
+use App\Api\V1\Http\Requests\Quiz\QuizAQEQRequest;
+use App\Api\V1\Http\Resources\Quiz\QuizEQAndAQResource;
 use App\Api\V1\Repositories\Quiz\QuizRepositoryInterface;
 use App\Api\V1\Services\Quiz\QuizServiceInterface;
-use App\Api\V1\Http\Resources\Quiz\QuizResource;
-use App\Api\V1\Http\Requests\Quiz\QuizRequest;
+use App\Api\V1\Http\Resources\Quiz\QuizIQResource;
+use App\Api\V1\Http\Requests\Quiz\QuizIQRequest;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Support\AuthServiceApi;
 use Illuminate\Http\JsonResponse;
@@ -24,13 +27,15 @@ class QuizController extends Controller
         QuizRepositoryInterface $repository,
         QuizServiceInterface    $service
 
-    ) {
+    )
+    {
         $this->repository = $repository;
         $this->service = $service;
         $this->middleware('auth:api');
     }
+
     /**
-     * Lấy danh sách bài kiểm tra có type AQ và tuổi
+     * Lấy danh sách bài kiểm tra có type IQ và tuổi
      *
      * Thông tin trả về gồm câu hỏi (questions) và câu trả lời (answers)
      *
@@ -68,18 +73,69 @@ class QuizController extends Controller
      *     "message": "Lỗi hệ thống khi lấy danh sách bài kiểm tra."
      * }
      *
-     * @param QuizRequest $request
+     * @param QuizIQRequest $request
      * @return JsonResponse
      */
 
-    public function index(QuizRequest $request)
+    public function getListIQ(QuizIQRequest $request): JsonResponse
     {
         try {
-            $response = $this->service->index($request);
-            return $this->jsonResponseSuccess(new QuizResource($response));
+            $response = $this->service->getListIQ($request);
+            return $this->jsonResponseSuccess(new QuizIQResource($response));
         } catch (Exception $exception) {
             $this->logError('Lỗi hệ thống khi lấy danh sách bài kiểm tra:', $exception);
-            return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách bài kiểm tra', 500);
+            return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách bài kiểm tra IQ', 500);
+        }
+    }
+
+    /**
+     * Lấy danh sách bài kiểm tra AQ,EQ
+     *
+     *
+     * @authenticated
+     * @queryParam type string required Loại. Example: aq
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Thực hiện thành công.",
+     *     "data": [
+     *         {
+     *             "quiz_id": 9,
+     *             "age": 5,
+     *             "type": "aq",
+     *             "questions": [
+     *                 {
+     *                     "question_id": 6,
+     *                     "question": "Which behavior is best in social situations?",
+     *                     "question_type": "aq",
+     *                     "answers": [
+     *                         {
+     *                             "answer_id": 25,
+     *                             "answer": "Sharing toys"
+     *                         }
+     *                     ]
+     *                 }
+     *             ]
+     *         }
+     *     ]
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống khi lấy danh sách bài kiểm tra AQ."
+     * }
+     *
+     * @param QuizAQAndEQRequest $request
+     * @return JsonResponse
+     */
+    public function getListAQAndEQ(QuizAQAndEQRequest $request): JsonResponse
+    {
+        try {
+            $response = $this->service->getListAQAndEQ($request);
+            return $this->jsonResponseSuccess(new QuizEQAndAQResource($response));
+        } catch (Exception $exception) {
+            $this->logError('Lỗi hệ thống khi lấy danh sách bài kiểm tra AQ,EQ:', $exception);
+            return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách bài kiểm tra AQ,EQ', 500);
         }
     }
 }

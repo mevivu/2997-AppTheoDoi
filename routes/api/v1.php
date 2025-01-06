@@ -193,7 +193,8 @@ Route::controller(\App\Api\V1\Http\Controllers\Quiz\QuizController::class)
     ->prefix('/quizzes')
     ->as('quiz.')
     ->group(function () {
-        Route::get('/', 'index');
+        Route::get('/iq', 'getListIQ');
+        Route::get('/', 'getListAQAndEQ');
     });
 
 //***** -- BMI -- ******* //

@@ -7,5 +7,7 @@ use Illuminate\Http\Request;
 
 interface QuizServiceInterface
 {
-    public function index(Request $request);
+    public function getListIQ(Request $request);
+
+    public function getListAQAndEQ(Request $request);
 }

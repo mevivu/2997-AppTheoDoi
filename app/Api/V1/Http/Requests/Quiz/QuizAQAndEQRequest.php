@@ -6,23 +6,19 @@ use App\Api\V1\Http\Requests\BaseRequest;
 use App\Enums\Question\QuestionType;
 use Illuminate\Validation\Rules\Enum;
 
-class QuizRequest extends BaseRequest
+class QuizAQAndEQRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.
      *
      * @return array
      */
-    protected function methodGet()
+    protected function methodGet(): array
     {
         return [
-            'age' => 'required|integer|min:1',
+            'type' => ['required', new Enum(QuestionType::class)],
+
         ];
     }
-    protected function methodPost()
-    {
-        return [
-            'age' => 'required|integer|min:1',
-        ];
-    }
+
 }
