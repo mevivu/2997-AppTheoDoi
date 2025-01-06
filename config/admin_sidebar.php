@@ -550,21 +550,21 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-school"></i>',
         'roles' => [],
-        'permissions' => ['CreateClass', 'ViewClass', 'UpdateClass', 'DeleteClass'],
+        'permissions' => ['createClasses', 'viewClasses', 'updateClasses', 'deleteClasses'],
         'sub' => [
             [
                 'title' => 'Thêm Lớp',
                 'routeName' => 'admin.classes.create',
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
-                'permissions' => ['CreateClass'],
+                'permissions' => ['createClasses'],
             ],
             [
                 'title' => 'DS Lớp',
                 'routeName' => 'admin.classes.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
-                'permissions' => ['ViewClass'],
+                'permissions' => ['viewClasses'],
             ],
 
         ]
@@ -574,21 +574,21 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-math"></i>',
         'roles' => [],
-        'permissions' => ['CreateSubject', 'viewSubject', 'updateSubject', 'deleteSubject'],
+        'permissions' => ['createSubject', 'viewSubject', 'updateSubject', 'deleteSubject'],
         'sub' => [
             [
                 'title' => 'add',
                 'routeName' => 'admin.subject.create',
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
-                'permissions' => ['CreateSubject', 'ViewSubject', 'UpdateSubject', 'DeleteSubject'],
+                'permissions' => ['createSubject', 'viewSubject', 'updateSubject', 'deleteSubject'],
             ],
             [
                 'title' => 'list',
                 'routeName' => 'admin.subject.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
-                'permissions' => ['ViewSubject'],
+                'permissions' => ['viewSubject'],
             ]
         ]
     ],
