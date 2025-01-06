@@ -6,6 +6,7 @@ use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**Sản phẩm*/
 class Product extends Model
@@ -30,10 +31,11 @@ class Product extends Model
         'status' => ActiveStatus::class
     ];
 
-    public function productCatalog(): BelongsTo
+    public function productCatalogs(): BelongsToMany
     {
-        return $this->belongsTo(ProductCatalog::class, 'product_catalog_id');
+        return $this->belongsToMany(ProductCatalog::class, 'product_catalog_product', 'product_id');
     }
+
 
     public function brand(): BelongsTo
     {

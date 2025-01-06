@@ -350,6 +350,38 @@ return [
         ]
     ],
     [
+        'title' => 'product',
+        'routeName' => 'admin.expected.index',
+        'icon' => '<i class="ti ti-brand-producthunt"></i>',
+        'roles' => [],
+        'permissions' => [
+            'createProductCatalog',
+            'viewProductCatalog',
+            'updateProductCatalog',
+            'deleteProductCatalog',
+            'createProduct',
+            'viewProduct',
+            'updateProduct',
+            'deleteProduct'
+        ],
+        'sub' => [
+            [
+                'title' => 'Thêm',
+                'routeName' => 'admin.expected.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createProductCatalog'],
+            ],
+            [
+                'title' => 'Danh mục sản phẩm',
+                'routeName' => 'admin.expected.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewProductCatalog'],
+            ]
+        ]
+    ],
+    [
         'title' => 'Câu hỏi',
         'routeName' => null,
         'icon' => '<i class="ti ti-help-hexagon"></i>',

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /** Danh mục sản phẩm */
 class ProductCatalog extends Model
@@ -24,5 +25,15 @@ class ProductCatalog extends Model
     protected $casts = [
         'status' => ActiveStatus::class
     ];
+
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'product_catalog_product',
+            'product_catalog_id',
+            'product_id'
+        );
+    }
 
 }
