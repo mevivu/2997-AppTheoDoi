@@ -32,7 +32,11 @@ class QuizSizeService implements QuizServiceInterface
         $this->repository = $repository;
     }
 
-
+    public function checkTypeExists(array $types): bool
+    {
+        // Kiểm tra nếu có bất kỳ quiz nào với type EQ hoặc AQ
+        return $this->repository->existsWithTypes($types);
+    }
     /**
      * @throws Exception
      */

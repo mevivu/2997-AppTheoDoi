@@ -6,9 +6,11 @@ use App\Admin\Services\File\FileService;
 use App\Api\V1\Repositories\Child\ChildRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
+use App\Enums\Child\BornStatus;
 use App\Enums\Child\ChildStatus;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 
 class ChildService implements ChildServiceInterface
@@ -45,6 +47,9 @@ class ChildService implements ChildServiceInterface
         $data = $request->validated();
         $avatar = $data['avatar'];
         $data['user_id'] = $this->getCurrentUserId();
+        if ($data['is_born'] == BornStatus::Born->value) {
+            $data['age'] = Carbon::parse($data['birthday'])->age;
+        }
         if ($avatar) {
             $data['avatar'] = $this->fileService
                 ->uploadAvatar('images/children', $avatar);
@@ -60,6 +65,9 @@ class ChildService implements ChildServiceInterface
         $data = $request->validated();
         $child = $this->repository->find($data['id']);
         $avatar = $data['avatar'];
+        if (isset($data['birthday'])) {
+            $data['age'] = Carbon::parse($data['birthday'])->age;
+        }
         if ($avatar) {
             $data['avatar'] = $this->fileService
                 ->uploadAvatar('images/children', $avatar, $child->avatar);

@@ -10,6 +10,7 @@ use App\Enums\Child\ChildStatus;
 use Exception;
 use Illuminate\Http\Request;
 use App\Admin\Traits\Setup;
+use Illuminate\Support\Carbon;
 
 class ChildrenService implements ChildrenServiceInterface
 {
@@ -40,6 +41,7 @@ class ChildrenService implements ChildrenServiceInterface
 
         if ($data['is_born'] == BornStatus::Born->value) {
             $data['due_date'] = null;
+            $data['age'] = Carbon::parse($data['birthday'])->age;
         } elseif ($data['is_born'] == BornStatus::Unborn->value) {
             $data['birthday'] = null;
         }
@@ -56,6 +58,7 @@ class ChildrenService implements ChildrenServiceInterface
 
         if ($data['is_born'] == BornStatus::Born->value) {
             $data['due_date'] = null;
+            $data['age'] = Carbon::parse($data['birthday'])->age;
         } elseif ($data['is_born'] == BornStatus::Unborn->value) {
             $data['birthday'] = null;
         }

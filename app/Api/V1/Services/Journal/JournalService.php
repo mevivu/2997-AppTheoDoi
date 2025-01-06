@@ -115,6 +115,5 @@ class JournalService implements JournalServiceInterface
         $journal = $this->repository->findOrFail($id);
         $this->fileService->deleteModelImages($journal, ['image']);
         $this->repository->delete($id);
-
     }
 }

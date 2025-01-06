@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/** Đánh giá*/
+/** Đánh giá Tổng Quan*/
 class Rating extends Model
 {
     use HasFactory;
@@ -23,14 +23,6 @@ class Rating extends Model
         'description',
         /** Thẻ gắn, có thể dùng để phân loại thêm */
         'tag',
-        /** Chiều cao (cm) */
-        'height',
-        /** Cân nặng (kg) */
-        'weight',
-        /** Sức mạnh */
-        'strength',
-        /** Sức bền */
-        'endurance',
         /** Kết quả đánh giá */
         'result',
         /** Loại câu hỏi hoặc đánh giá */

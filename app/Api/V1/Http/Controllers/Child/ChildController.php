@@ -47,6 +47,7 @@ class ChildController extends Controller
      * @bodyParam gender int required Giới tính của đứa trẻ. Example: 1 (Nam)
      * @bodyParam is_born string required Tình trạng đã sinh hay chưa sinh của đứa trẻ. Example: born
      * @bodyParam birthday string nullable Ngày sinh của đứa trẻ. Example: 2024-12-12
+     * @bodyParam due_date string nullable Ngày dự sinh của đứa trẻ. Example: 2024-12-12
      * @bodyParam avatar string nullable Đường dẫn hình ảnh đại diện của đứa trẻ. Example: http://example.com/avatar.jpg
      *
      * @response 200 {

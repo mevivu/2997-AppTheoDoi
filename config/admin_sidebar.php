@@ -49,7 +49,7 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-vaccine-bottle"></i>',
         'roles' => [],
-        'permissions' => ['createTypeVaccination', 'viewTypeVaccination','updateTypeVaccination','deleteTypeVaccination'],
+        'permissions' => ['createTypeVaccination', 'viewTypeVaccination', 'updateTypeVaccination', 'deleteTypeVaccination'],
         'sub' => [
 
             [
@@ -354,8 +354,21 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-help-hexagon"></i>',
         'roles' => [],
-        'permissions' => ['createQuestionGroup', 'viewQuestionGroup', 'updateQuestionGroup', 'deleteQuestionGroup'],
+        'permissions' => [
+            'createQuestionGroup',
+            'viewQuestionGroup',
+            'updateQuestionGroup',
+            'deleteQuestionGroup',
+            'viewExpected'
+        ],
         'sub' => [
+            [
+                'title' => 'Nhóm câu hỏi',
+                'routeName' => 'admin.question-group.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewExpected'],
+            ],
             [
                 'title' => 'Thêm Câu hỏi',
                 'routeName' => 'admin.question.create',
@@ -461,9 +474,16 @@ return [
                 'permissions' => ['createVaccinationSchedule'],
             ],
             [
-                'title' => 'list',
-                'routeName' => 'admin.vaccination.index',
-                'icon' => '<i class="ti ti-list"></i>',
+                'title' => 'Quản trị viên',
+                'routeName' => 'admin.vaccination.admin',
+                'icon' => '<i class="ti ti-ad"></i>',
+                'roles' => [],
+                'permissions' => ['viewVaccinationSchedule'],
+            ],
+            [
+                'title' => 'Người dùng',
+                'routeName' => 'admin.vaccination.user',
+                'icon' => '<i class="ti ti-user"></i>',
                 'roles' => [],
                 'permissions' => ['viewVaccinationSchedule'],
             ]
@@ -493,91 +513,53 @@ return [
         ]
     ],
     [
-        'title' => "Phẩm chất",
+        'title' => "Khung giáo dục",
         'routeName' => null,
         'icon' => '<i class="ti ti-star"></i>',
         'roles' => [],
-        'permissions' => ['createQuality', 'viewQuality', 'updateQuality', 'deleteQuality'],
+        'permissions' => [
+            'createQuality',
+            'viewQuality',
+            'updateQuality',
+            'deleteQuality',
+            'createCapability',
+            'viewCapability',
+            'updateCapability',
+            'deleteCapability',
+            'createClasses',
+            'viewClasses',
+            'updateClasses',
+            'deleteClasses',
+            'createSubject',
+            'viewSubject',
+            'updateSubject',
+            'deleteSubject'
+
+        ],
         'sub' => [
             [
-                'title' => 'add',
-                'routeName' => 'admin.quality.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createQuality'],
-            ],
-            [
-                'title' => 'list',
+                'title' => 'DS phẩm chất',
                 'routeName' => 'admin.quality.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewQuality'],
-            ]
-        ]
-    ],
-    [
-        'title' => 'Năng lực',
-        'routeName' => null,
-        'icon' => '<i class="ti ti-accessible"></i>',
-        'roles' => [],
-        'permissions' => ['createCapability', 'viewCapability', 'updateCapability', 'deleteCapability'],
-        'sub' => [
-            [
-                'title' => 'add',
-                'routeName' => 'admin.capability.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createCapability'],
             ],
             [
-                'title' => 'list',
+                'title' => 'DS năng lực',
                 'routeName' => 'admin.capability.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewCapability'],
-            ]
-        ]
-    ],
-    [
-        'title' => 'Lớp',
-        'routeName' => null,
-        'icon' => '<i class="ti ti-school"></i>',
-        'roles' => [],
-        'permissions' => ['createClasses', 'viewClasses'],
-        'sub' => [
-            [
-                'title' => 'Thêm Lớp',
-                'routeName' => 'admin.classes.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createClasses'],
             ],
             [
-                'title' => 'DS Lớp',
+                'title' => 'DS lớp',
                 'routeName' => 'admin.classes.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewClasses'],
             ],
-
-        ]
-    ],
-    [
-        'title' => 'Môn học',
-        'routeName' => null,
-        'icon' => '<i class="ti ti-math"></i>',
-        'roles' => [],
-        'permissions' => ['createSubject', 'viewSubject', 'updateSubject', 'deleteSubject'],
-        'sub' => [
             [
-                'title' => 'add',
-                'routeName' => 'admin.subject.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createSubject'],
-            ],
-            [
-                'title' => 'list',
+                'title' => 'DS môn học',
                 'routeName' => 'admin.subject.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],

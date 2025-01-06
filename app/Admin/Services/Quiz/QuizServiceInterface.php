@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 interface QuizServiceInterface
 {
 
-
+    public function checkTypeExists(array $types): bool;
     public function store(Request $request);
 
     public function update(Request $request);

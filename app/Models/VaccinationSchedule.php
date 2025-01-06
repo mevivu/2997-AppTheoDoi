@@ -18,8 +18,6 @@ class VaccinationSchedule extends Model
     protected $table = 'vaccination_schedules';
 
     protected $fillable = [
-        /** ID loại */
-        'vaccination_type_id',
         /* Tên */
         'name',
         /** Mô tả */
@@ -50,7 +48,12 @@ class VaccinationSchedule extends Model
 
     public function children(): BelongsToMany
     {
-        return $this->belongsToMany(Child::class, 'child_vaccination_schedule', 'vaccination_schedule_id', 'child_id');
+        return $this->belongsToMany(
+            Child::class,
+            'child_vaccination_schedule',
+            'vaccination_schedule_id',
+            'child_id'
+        );
     }
 
 }

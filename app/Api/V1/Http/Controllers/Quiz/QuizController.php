@@ -2,26 +2,16 @@
 
 namespace App\Api\V1\Http\Controllers\Quiz;
 
-use App\Admin\Http\Controllers\Controller;
-use App\Api\V1\Exception\BadRequestException;
-use App\Api\V1\Exception\NotFoundException;
-use App\Api\V1\Http\Requests\Pregnancy\PregnancyRequest;
-use App\Api\V1\Http\Requests\Pregnancy\PregnancyUpdateRequest;
-use App\Api\V1\Http\Requests\Quiz\QuizRequest;
-use App\Api\V1\Http\Resources\Pregnancy\PregnancyCollection;
-use App\Api\V1\Http\Resources\Pregnancy\PregnancyResource;
 use App\Api\V1\Repositories\Quiz\QuizRepositoryInterface;
 use App\Api\V1\Services\Quiz\QuizServiceInterface;
+use App\Api\V1\Http\Resources\Quiz\QuizResource;
+use App\Api\V1\Http\Requests\Quiz\QuizRequest;
+use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Support\AuthServiceApi;
+use Illuminate\Http\JsonResponse;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
-use App\Api\V1\Validate\Validator;
 use Exception;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
-use App\Models\Quiz;
-use App\Api\V1\Http\Resources\Quiz\QuizResource;
-use Illuminate\Http\Request;
 
 /**
  * @group Bài kiểm tra

@@ -20,7 +20,7 @@ class JournalRequest extends BaseRequest
             'limit' => 'nullable|integer|min:1',
             'page' => 'nullable|integer|min:1',
             'type' => ['required', new Enum(JournalType::class)],
-            'child_id' => ['required', 'numeric', 'exists:children,id'],
+            'child_id' => ['required', 'exists:children,id'],
             'date' => 'nullable|date_format:d-m-Y',
         ];
     }
@@ -28,7 +28,7 @@ class JournalRequest extends BaseRequest
     protected function methodPost(): array
     {
         return [
-            'child_id' => 'required|integer|exists:children,id',
+            'child_id' => 'required|exists:children,id',
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'type' => ['required', new Enum(JournalType::class)],

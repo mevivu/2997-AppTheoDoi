@@ -9,17 +9,18 @@
             <div class="card">
                 <div class="card-header justify-content-between">
                     <h2 class="mb-0">@lang('list')</h2>
-                    <x-link :href="route('admin.vaccination.create')" class="btn btn-primary">
+                    <x-link :href="route('admin.vaccination.create',['back' => 'admin'])" class="btn btn-primary">
                         <i class="ti ti-plus"></i>
                         <span class="ms-1">@lang('add')</span>
                     </x-link>
                 </div>
                 <div class="card-body">
-                    <x-form id="formMultiple" :action="route('admin.vaccination.multiple')" type="post" :validate="true">
+                    <x-form id="formMultiple" :action="route('admin.vaccination.multiple')" type="post"
+                            :validate="true">
                         <div class="table-responsive position-relative">
-                            <x-admin.partials.toggle-column-datatable />
+                            <x-admin.partials.toggle-column-datatable/>
                             @isset($actionMultiple)
-                                <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple" />
+                                <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple"/>
                             @endisset
                             {{ $dataTable->table(['class' => 'table table-bordered'], true) }}
                         </div>
