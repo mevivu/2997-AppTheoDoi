@@ -415,21 +415,21 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->prefix('/pham-chat')
         ->as('quality.')
         ->group(function () {
-            Route::group(['middleware' => ['permission:CreateQuality', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:createQuality', 'auth:admin']], function () {
                 Route::get('/add', 'create')->name('create');
                 Route::post('/add', 'store')->name('store');
             });
-            Route::group(['middleware' => ['permission:ViewQuality', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:viewQuality', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
 
-            Route::group(['middleware' => ['permission:UpdateQuality', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:updateQuality', 'auth:admin']], function () {
                 Route::put('/edit', 'update')->name('update');
                 Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
             });
 
-            Route::group(['middleware' => ['permission:DeleteQuality', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:deleteQuality', 'auth:admin']], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
@@ -439,21 +439,21 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->prefix('/nang-luc')
         ->as('capability.')
         ->group(function () {
-            Route::group(['middleware' => ['permission:CreateCapability', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:createCapability', 'auth:admin']], function () {
                 Route::get('/add', 'create')->name('create');
                 Route::post('/add', 'store')->name('store');
             });
-            Route::group(['middleware' => ['permission:ViewCapability', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:viewCapability', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
 
-            Route::group(['middleware' => ['permission:UpdateCapability', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:updateCapability', 'auth:admin']], function () {
                 Route::put('/edit', 'update')->name('update');
                 Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
             });
 
-            Route::group(['middleware' => ['permission:DeleteCapability', 'auth:admin']], function () {
+            Route::group(['middleware' => ['permission:deleteCapability', 'auth:admin']], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });

@@ -500,91 +500,53 @@ return [
         ]
     ],
     [
-        'title' => "Phẩm chất",
+        'title' => "Khung giáo dục",
         'routeName' => null,
         'icon' => '<i class="ti ti-star"></i>',
         'roles' => [],
-        'permissions' => ['CreateQuality', 'ViewQuality', 'UpdateQuality', 'DeleteQuality'],
+        'permissions' => [
+            'createQuality',
+            'viewQuality',
+            'updateQuality',
+            'deleteQuality',
+            'createCapability',
+            'viewCapability',
+            'updateCapability',
+            'deleteCapability',
+            'createClasses',
+            'viewClasses',
+            'updateClasses',
+            'deleteClasses',
+            'createSubject',
+            'viewSubject',
+            'updateSubject',
+            'deleteSubject'
+
+        ],
         'sub' => [
             [
-                'title' => 'add',
-                'routeName' => 'admin.quality.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['CreateQuality'],
-            ],
-            [
-                'title' => 'list',
+                'title' => 'DS phẩm chất',
                 'routeName' => 'admin.quality.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
-                'permissions' => ['ViewQuality'],
-            ]
-        ]
-    ],
-    [
-        'title' => 'Năng lực',
-        'routeName' => null,
-        'icon' => '<i class="ti ti-accessible"></i>',
-        'roles' => [],
-        'permissions' => ['CreateCapability', 'ViewCapability', 'UpdateCapability', 'DeleteCapability'],
-        'sub' => [
-            [
-                'title' => 'add',
-                'routeName' => 'admin.capability.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['CreateCapability'],
+                'permissions' => ['viewQuality'],
             ],
             [
-                'title' => 'list',
+                'title' => 'DS năng lực',
                 'routeName' => 'admin.capability.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
-                'permissions' => ['ViewCapability'],
-            ]
-        ]
-    ],
-    [
-        'title' => 'Lớp',
-        'routeName' => null,
-        'icon' => '<i class="ti ti-school"></i>',
-        'roles' => [],
-        'permissions' => ['createClasses', 'viewClasses', 'updateClasses', 'deleteClasses'],
-        'sub' => [
-            [
-                'title' => 'Thêm Lớp',
-                'routeName' => 'admin.classes.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createClasses'],
+                'permissions' => ['viewCapability'],
             ],
             [
-                'title' => 'DS Lớp',
+                'title' => 'DS lớp',
                 'routeName' => 'admin.classes.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewClasses'],
             ],
-
-        ]
-    ],
-    [
-        'title' => 'Môn học',
-        'routeName' => null,
-        'icon' => '<i class="ti ti-math"></i>',
-        'roles' => [],
-        'permissions' => ['createSubject', 'viewSubject', 'updateSubject', 'deleteSubject'],
-        'sub' => [
             [
-                'title' => 'add',
-                'routeName' => 'admin.subject.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createSubject', 'viewSubject', 'updateSubject', 'deleteSubject'],
-            ],
-            [
-                'title' => 'list',
+                'title' => 'DS môn học',
                 'routeName' => 'admin.subject.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
