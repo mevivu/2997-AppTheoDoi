@@ -17,6 +17,29 @@ Route::controller(App\Admin\Http\Controllers\Auth\LoginController::class)
 
 Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
+
+    //WeightHeight
+    Route::controller(\App\Admin\Http\Controllers\ProductCatalog\ProductCatalogController::class)
+        ->prefix('/product_catalog')
+        ->as('category.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createProductCatalog', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(["middleware" => ['permission:viewProductCatalog', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['permission:updateProductCatalog', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:deleteProductCatalog', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
     //Exercises
     Route::controller(App\Admin\Http\Controllers\Exercise\ExerciseController::class)
         ->prefix('/exercises')

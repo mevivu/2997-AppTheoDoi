@@ -366,15 +366,8 @@ return [
         ],
         'sub' => [
             [
-                'title' => 'Thêm',
-                'routeName' => 'admin.expected.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createProductCatalog'],
-            ],
-            [
                 'title' => 'Danh mục sản phẩm',
-                'routeName' => 'admin.expected.index',
+                'routeName' => 'admin.category.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewProductCatalog'],
