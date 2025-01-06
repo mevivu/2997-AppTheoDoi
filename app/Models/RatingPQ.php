@@ -11,7 +11,7 @@ class RatingPQ extends Model
 {
     use HasFactory;
 
-    protected $table = 'ratings';
+    protected $table = 'ratings_pqs';
 
     protected $fillable = [
         /** Ngày đánh giá */

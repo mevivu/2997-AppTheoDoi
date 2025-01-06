@@ -19,11 +19,12 @@ return new class extends Migration
             $table->string('score');
             $table->text('description');
             $table->string('tag', 255)->nullable();
-            $table->integer('height')->nullable();
-            $table->integer('weight')->nullable();
-            $table->integer('strength')->nullable();
-            $table->integer('endurance')->nullable();
             $table->string('result')->nullable();
+            $table->string('self_regulation')->nullable();
+            $table->string('social_awareness')->nullable();
+            $table->string('relationship_management')->nullable();
+            $table->string('decision_making')->nullable();
+            $table->string('optimism')->nullable();
             $table->enum('type', QuestionType::getValues())->default(QuestionType::EQ->value);
             $table->foreignId('child_id')->nullable()->constrained('children')->onDelete('cascade');
             $table->timestamps();
@@ -35,7 +36,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('ratings');
     }

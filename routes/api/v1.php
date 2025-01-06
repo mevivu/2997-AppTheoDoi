@@ -132,7 +132,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Rating\RatingController::class)
     ->group(function () {
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
-        Route::post('/', 'store');
+        Route::post('/iq', 'storeIQ');
         Route::delete('/{id}', 'delete');
     });
 

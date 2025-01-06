@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 interface RatingServiceInterface
 {
-    public function store(Request $request);
+    public function storeIQ(Request $request);
 
     public function delete($id);
 

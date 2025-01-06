@@ -27,6 +27,16 @@ class Rating extends Model
         'result',
         /** Loại câu hỏi hoặc đánh giá */
         'type',
+        /** Kiểm soát cảm xúc */
+        'self_regulation',
+        /** Nhận thức cảm xúc */
+        'social_awareness',
+        /** Đồng cảm */
+        'relationship_management',
+        /** Động lực */
+        'decision_making',
+        /** Kỹ năng xã hội */
+        'optimism',
     ];
     protected $casts = [
         'type' => QuestionType::class,

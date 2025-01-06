@@ -55,11 +55,11 @@ class RatingService implements RatingServiceInterface
     /**
      * @throws Exception
      */
-    public function store(Request $request): object
+    public function storeIQ(Request $request): object
     {
         $data = $request->validated();
         $answers = $data['answers'] ?? [];
-        $type = $data['type'];
+        $type = QuestionType::IQ->value;
         $correctCount = 0;
         $totalCount = count($answers);
         foreach ($answers as $answer) {
@@ -85,13 +85,6 @@ class RatingService implements RatingServiceInterface
     protected function getDescriptionByTypeAndScore($type, $score)
     {
         $descriptions = [
-            QuestionType::AQ->value => [
-                1 => 'Miễn cưỡng hoặc không sẵn lòng đối mặt với khó khăn',
-                5 => 'Tiêu cực, đề bỏ cuộc',
-                7 => 'Tích cực nhưng cần hỗ trợ',
-                9 => 'Tích cực, tự lực và có sự cố gắng',
-                10 => 'Rất tích cực, kiên trì, vượt khó tốt'
-            ],
             QuestionType::IQ->value => [
                 3 => 'Tiêu cực, khó kiểm soát cảm xúc',
                 5 => 'Tiêu cực, nhưng không thể hiện ra ngoài',

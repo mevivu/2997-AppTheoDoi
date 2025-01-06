@@ -83,7 +83,7 @@ class RatingController extends Controller
     }
 
     /**
-     * Tạo đánh giá theo loại
+     * Tạo đánh giá theo loại IQ
      *
      * @authenticated
      * @bodyParam child_id int required ID của trẻ mà đánh giá được tạo cho. Example: 1
@@ -115,11 +115,11 @@ class RatingController extends Controller
      * @return JsonResponse
      */
 
-    public function store(RatingRequest $request): JsonResponse
+    public function storeIQ(RatingRequest $request): JsonResponse
     {
         DB::beginTransaction();
         try {
-            $response = $this->service->store($request);
+            $response = $this->service->storeIQ($request);
             DB::commit();
             return $this->jsonResponseSuccess(new RatingResource($response));
         } catch (Exception $exception) {

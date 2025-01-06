@@ -3,6 +3,7 @@
 namespace App\Admin\Http\Controllers\Quiz;
 
 use App\Admin\DataTables\Quiz\QuizDataTable;
+use App\Admin\DataTables\Quiz\QuizIQDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Quiz\QuizRequest;
 use App\Admin\Repositories\Question\QuestionRepositoryInterface;
@@ -64,7 +65,7 @@ class QuizController extends Controller
         ];
     }
 
-    public function iq(QuizDataTable $dataTable)
+    public function iq(QuizIQDataTable $dataTable)
     {
         $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
