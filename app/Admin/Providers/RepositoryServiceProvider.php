@@ -57,6 +57,9 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\VaccinationType\VaccinationTypeRepositoryInterface' => 'App\Admin\Repositories\VaccinationType\VaccinationTypeRepository',
         'App\Admin\Repositories\ProductCatalog\ProductCatalogRepositoryInterface' => 'App\Admin\Repositories\ProductCatalog\ProductCatalogRepository',
         'App\Admin\Repositories\Product\ProductRepositoryInterface' => 'App\Admin\Repositories\Product\ProductRepository',
+        'App\Admin\Repositories\Brand\BrandRepositoryInterface' => 'App\Admin\Repositories\Brand\BrandRepository',
+
+
     ];
 
     /**

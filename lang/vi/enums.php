@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ApprovalStatus;
+use App\Enums\Brand\BrandStatus;
 use App\Enums\Child\BornStatus;
 use App\Enums\DefaultStatus;
 use App\Enums\Transaction\TransactionStatus;
@@ -183,4 +184,10 @@ return [
         OpenStatus::OFF->value => 'Tắt',
 
     ],
+    BrandStatus::class => [
+        BrandStatus::Active->value => 'Hoạt động',
+        BrandStatus::Deleted->value => 'Đã xóa',
+        BrandStatus::Draft->value => 'Bản nháp',
+
+    ]
 ];
