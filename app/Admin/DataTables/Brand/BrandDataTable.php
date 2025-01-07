@@ -4,7 +4,7 @@ namespace App\Admin\DataTables\Brand;
 
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Brand\BrandRepositoryInterface;
-use App\Enums\ActiveStatus;
+use App\Enums\Brand\BrandStatus;
 use Illuminate\Database\Eloquent\Builder;
 
 class BrandDataTable extends BaseDataTable
@@ -47,6 +47,8 @@ class BrandDataTable extends BaseDataTable
         $this->columnSearchDate = [4];
         $this->columnSearchSelect = [
             [
+                'column' => 2,
+                'data' => BrandStatus::asSelectArray()
             ],
         ];
     }
