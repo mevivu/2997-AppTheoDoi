@@ -16,9 +16,21 @@ class BrandRequest extends BaseRequest
     protected function methodPost()
     {
         return [
+            'name' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'country' => ['nullable', 'string'],
             'status' => ['required', new EnumValue(BrandStatus::class, false)],
         ];
     }
 
-
+    protected function methodPut()
+    {
+        return [
+            'id' => ['required', 'exists:App\Models\Brand,id'],
+            'name' => ['required', 'string'],
+            'description' => ['nullable', 'string'],
+            'country' => ['nullable', 'string'],
+            'status' => ['required', new EnumValue(BrandStatus::class, false)],
+        ];
+    }
 }
