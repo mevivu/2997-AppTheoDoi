@@ -26,17 +26,7 @@
                 </div>
             </div>
 
-            <!-- Trạng thái -->
-            <div class="col-12">
-                <div class="mb-3">
-                    <label class="control-label">@lang('Trạng thái')</label>
-                    <x-select name="status" :required="true">
-                        @foreach(\App\Enums\Brand\BrandStatus::asSelectArray() as $key => $value)
-                            <x-select-option value="{{ $key }}" title="{{ $value }}" />
-                        @endforeach
-                    </x-select>
-                </div>
-            </div>
+
 
         </div>
     </div>
