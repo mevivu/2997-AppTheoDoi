@@ -4,13 +4,11 @@ namespace App\Api\V1\Services\VaccinationSchedule;
 
 use App\Admin\Services\File\FileService;
 use App\Api\V1\Repositories\VaccinationSchedule\VaccinationScheduleRepositoryInterface;
-use App\Api\V1\Services\VaccinationSchedule\VaccinationScheduleServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\Permission\PermissionType;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class VaccinationScheduleService implements VaccinationScheduleServiceInterface
 {

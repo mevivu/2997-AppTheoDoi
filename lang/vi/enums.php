@@ -4,6 +4,7 @@ use App\Enums\ApprovalStatus;
 use App\Enums\Brand\BrandStatus;
 use App\Enums\Child\BornStatus;
 use App\Enums\DefaultStatus;
+use App\Enums\Permission\PermissionType;
 use App\Enums\Transaction\TransactionStatus;
 use App\Enums\DeleteStatus;
 use App\Enums\FeaturedStatus;
@@ -39,6 +40,10 @@ return [
     AnswerType::class => [
         AnswerType::Image->value => 'Hình ảnh',
         AnswerType::Normal->value => 'Văn bản',
+    ],
+    PermissionType::class => [
+        PermissionType::USER->value => 'Người dùng',
+        PermissionType::ADMIN->value => 'ADMIN',
     ],
     SupportType::class => [
         SupportType::HelpCenter->value => 'Trung tâm trợ giúp',

@@ -1,5 +1,6 @@
 <div class="col-12 col-md-3">
 
+
     <div class="card mb-3">
         <div class="card-header">
             {{ __('Hoạt động') }}
@@ -25,16 +26,6 @@
             </div>
         </div>
     </div>
-
-    <div class="card mb-3">
-        <div class="card-header">
-            <span class="ti ti-photo me-1"></span>
-            @lang('avatar')
-        </div>
-        <div class="card-body p-2">
-            <x-input-image-ckfinder name="image" :value="old('image')" showImage="featureImage"/>
-        </div>
-    </div>
     <div class="card mb-3">
         <div class="card-header">
             <span class="ti ti-typography"></span>
@@ -46,6 +37,16 @@
                     <x-select-option :value="$key" :title="$value"/>
                 @endforeach
             </x-select>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <span class="ti ti-photo me-1"></span>
+            @lang('avatar')
+        </div>
+        <div class="card-body p-2">
+            <x-input-image-ckfinder name="image" :value="old('image')" showImage="featureImage"/>
         </div>
     </div>
 </div>
