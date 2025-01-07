@@ -18,6 +18,8 @@ class VaccinationSchedule extends Model
     protected $table = 'vaccination_schedules';
 
     protected $fillable = [
+        /* Loại tiêm chủng ID */
+        'vaccination_type_id',
         /* Tên */
         'name',
         /** Mô tả */
