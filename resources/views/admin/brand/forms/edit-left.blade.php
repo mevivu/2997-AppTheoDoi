@@ -10,24 +10,32 @@
                 </div>
             </div>
 
-            <!-- Mô tả -->
+
+            <!-- Quốc gia -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('Quốc gia')</label>
+                    <x-input type="text" name="country" :value="$instance->country" :required="false" :placeholder="__('Quốc gia thương hiệu')" />
+                </div>
+            </div>
+
+            <!-- description -->
             <div class="col-12">
                 @php
-                    // Decode the JSON description and ensure it's an array
                     $description = json_decode($instance->description);
                 @endphp
                 <div class="mb-3">
                     <div class="d-flex align-items-center justify-content-between">
-                        <label class="control-label">@lang('Mô tả')</label>
+                        <label class="control-label">@lang('description')</label>
                         <p class="text-primary" style="cursor: pointer;" id="add-description">
                             <i class="ti ti-plus"></i> Thêm mô tả
                         </p>
                     </div>
                     <div class="d-flex flex-column gap-2" id="description-container">
-                        @if (is_array($description))
+                        @if ($description)
                             @foreach ($description as $item)
-                                <div class="d-flex align-items-stretch gap-1">
-                                    <textarea name="description[]" class="form-control" rows="2" placeholder="{{ __('Mô tả thương hiệu') }}">{{ $item }}</textarea>
+                                <div class="d-flex align-items-strech gap-1">
+                                    <textarea name="description[]" class="form-control" rows="2" placeholder="{{ __('description') }}">{{ $item }}</textarea>
                                     @if (!$loop->first)
                                         <button type="button" class="btn btn-danger remove-description">
                                             <i class="ti ti-x fs-2"></i>
@@ -39,16 +47,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Quốc gia -->
-            <div class="col-12">
-                <div class="mb-3">
-                    <label class="control-label">@lang('Quốc gia')</label>
-                    <x-input type="text" name="country" :value="$instance->country" :required="false" :placeholder="__('Quốc gia thương hiệu')" />
-                </div>
-            </div>
-
-
 
         </div>
     </div>
