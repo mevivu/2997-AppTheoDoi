@@ -19,32 +19,11 @@
                 </div>
             </div>
 
-            <!-- description -->
+            <!-- Mô tả -->
             <div class="col-12">
-                @php
-                    $description = json_decode($instance->description);
-                @endphp
                 <div class="mb-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <label class="control-label">@lang('description')</label>
-                        <p class="text-primary" style="cursor: pointer;" id="add-description">
-                            <i class="ti ti-plus"></i> Thêm mô tả
-                        </p>
-                    </div>
-                    <div class="d-flex flex-column gap-2" id="description-container">
-                        @if ($description)
-                            @foreach ($description as $item)
-                                <div class="d-flex align-items-strech gap-1">
-                                    <textarea name="description[]" class="form-control" rows="2" placeholder="{{ __('description') }}">{{ $item }}</textarea>
-                                    @if (!$loop->first)
-                                        <button type="button" class="btn btn-danger remove-description">
-                                            <i class="ti ti-x fs-2"></i>
-                                        </button>
-                                    @endif
-                                </div>
-                            @endforeach
-                        @endif
-                    </div>
+                    <label class="control-label">{{ __('Mô tả') }}:</label>
+                    <textarea name="description" class="ckeditor visually-hidden">{{ $instance->description }}</textarea>
                 </div>
             </div>
 
