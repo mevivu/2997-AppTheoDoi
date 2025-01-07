@@ -28,5 +28,7 @@
 @endpush
 
 @push('custom-js')
+    <script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
     @include('admin.brand.scripts.script') <!-- Include custom scripts for brand -->
 @endpush
