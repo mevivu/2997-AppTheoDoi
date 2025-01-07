@@ -36,6 +36,8 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\Quality\QualityServiceInterface' => 'App\Admin\Services\Quality\QualityService',
         'App\Admin\Services\Subject\SubjectServiceInterface' => 'App\Admin\Services\Subject\SubjectService',
         'App\Admin\Services\VaccinationType\VaccinationTypeServiceInterface' => 'App\Admin\Services\VaccinationType\VaccinationTypeService',
+        'App\Admin\Services\Brand\BrandServiceInterface' => 'App\Admin\Services\Brand\BrandService',
+
     ];
 
     /**

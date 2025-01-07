@@ -10,6 +10,29 @@ return [
         'sub' => []
     ],
     [
+        'title' => 'Brand',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-rocket"></i>',
+        'roles' => [],
+        'permissions' => ['createBrand', 'viewBrand', 'updateBrand', 'deleteBrand'],
+        'sub' => [
+            [
+                'title' => 'Thêm thương hiệu',
+                'routeName' => 'admin.brand.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createBrand'],
+            ],
+            [
+                'title' => 'DS thông tin thương hiệu',
+                'routeName' => 'admin.brand.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewBrand'],
+            ],
+        ]
+    ],
+    [
         'title' => 'Giao dịch',
         'routeName' => null,
         'icon' => '<i class="ti ti-calendar-dollar"></i>',
