@@ -17,7 +17,8 @@ class BrandRequest extends BaseRequest
     {
         return [
             'name' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
+            'description' => ['nullable', 'array'],
+            'description.*' => ['required', 'string'],
             'country' => ['nullable', 'string'],
             'status' => ['required', new EnumValue(BrandStatus::class, false)],
         ];
@@ -28,7 +29,7 @@ class BrandRequest extends BaseRequest
         return [
             'id' => ['required', 'exists:App\Models\Brand,id'],
             'name' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
+            'description' => ['nullable'],
             'country' => ['nullable', 'string'],
             'status' => ['required', new EnumValue(BrandStatus::class, false)],
         ];
