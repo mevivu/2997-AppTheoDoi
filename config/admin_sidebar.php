@@ -367,7 +367,7 @@ return [
             'createBrand',
             'viewBrand',
             'updateBrand',
-            'deleteBrand'
+            'deleteBrand',
         ],
         'sub' => [
             [
@@ -383,6 +383,13 @@ return [
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewProductCatalog'],
+            ],
+            [
+                'title' => 'DS sản phẩm',
+                'routeName' => 'admin.product.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewProduct'],
             ]
         ]
     ],

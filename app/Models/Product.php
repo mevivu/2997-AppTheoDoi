@@ -33,7 +33,9 @@ class Product extends Model
 
     public function productCatalogs(): BelongsToMany
     {
-        return $this->belongsToMany(ProductCatalog::class, 'product_catalog_product', 'product_id');
+        return $this->belongsToMany(ProductCatalog::class,
+            'product_catalog_product',
+            'product_id');
     }
 
 

@@ -13,7 +13,7 @@
                     <x-input name="title" :value="old('title')" :required="true" placeholder="{{ __('Tiêu đề') }}" />
                 </div>
             </div>
-    
+
             <!-- desc -->
             <div class="col-12">
                 <div class="mb-3">
