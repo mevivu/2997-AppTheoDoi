@@ -3,7 +3,6 @@
 namespace App\Api\V1\Http\Controllers\Quiz;
 
 use App\Api\V1\Http\Requests\Quiz\QuizAQAndEQRequest;
-use App\Api\V1\Http\Requests\Quiz\QuizAQEQRequest;
 use App\Api\V1\Http\Resources\Quiz\QuizEQAndAQResource;
 use App\Api\V1\Repositories\Quiz\QuizRepositoryInterface;
 use App\Api\V1\Services\Quiz\QuizServiceInterface;

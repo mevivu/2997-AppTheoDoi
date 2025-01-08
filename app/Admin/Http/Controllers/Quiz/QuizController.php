@@ -146,9 +146,8 @@ class QuizController extends Controller
     {
         $types = [QuestionType::EQ->value];
         if ($this->service->checkTypeExists($types)) {
-            // Nếu đã tồn tại, chuyển hướng về trang index (trang EQ)
             return redirect()->route($this->route['eq'])
-                ->with('error', __('Không thể tạo thêm bài kiểm tra EQ vì bài kiểm tra loại EQ đã tồn tại.'));
+                ->with('error', __('Bài kiểm tra EQ đã tồn tại!.'));
         }
         $breadcrumbs = $this->crums->add(__('Bài kiểm tra EQ'), route($this->route['eq']));
         return view($this->view['create'], [
@@ -163,11 +162,10 @@ class QuizController extends Controller
 
     public function createAq(): Factory|View|Application|RedirectResponse
     {
-        $types = [QuestionType::EQ->value];
+        $types = [QuestionType::AQ->value];
         if ($this->service->checkTypeExists($types)) {
-            // Nếu đã tồn tại, chuyển hướng về trang index (trang EQ) và thông báo lỗi
-            return redirect()->route($this->route['eq'])
-                ->with('error', __('Không thể tạo thêm bài kiểm tra EQ vì bài kiểm tra loại EQ đã tồn tại.'));
+            return redirect()->route($this->route['aq'])
+                ->with('error', __('Bài kiểm tra AQ đã tồn tại!.'));
         }
         $breadcrumbs = $this->crums->add(__('Bài kiểm tra AQ'), route($this->route['aq']));
         return view($this->view['create'], [
