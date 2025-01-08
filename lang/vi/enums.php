@@ -4,6 +4,7 @@ use App\Enums\ApprovalStatus;
 use App\Enums\Brand\BrandStatus;
 use App\Enums\Child\BornStatus;
 use App\Enums\DefaultStatus;
+use App\Enums\Group\GroupType;
 use App\Enums\Permission\PermissionType;
 use App\Enums\Transaction\TransactionStatus;
 use App\Enums\DeleteStatus;
@@ -40,6 +41,14 @@ return [
     AnswerType::class => [
         AnswerType::Image->value => 'Hình ảnh',
         AnswerType::Normal->value => 'Văn bản',
+    ],
+    GroupType::class => [
+        GroupType::Empathy->value => 'Đồng cảm',
+        GroupType::Motivation->value => 'Động lực',
+        GroupType::SocialSkills->value => 'Kỹ năng xã hội',
+        GroupType::EmotionalRegulation->value => 'Kiểm soát cảm xúc',
+        GroupType::EmotionalAwareness->value => 'Nhận thức cảm xúc',
+
     ],
     PermissionType::class => [
         PermissionType::USER->value => 'Người dùng',

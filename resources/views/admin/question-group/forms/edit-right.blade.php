@@ -16,6 +16,19 @@
 
     <div class="card mb-3">
         <div class="card-header">
+            {{ __('type') }}
+        </div>
+        <div class="card-body p-2">
+            <x-select name="type" :required="true">
+                @foreach ($type as $key => $value)
+                    <x-select-option :value="$key" :title="$value" :option="$response->type->value" />
+                @endforeach
+            </x-select>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
             {{ __('Trạng thái') }}
         </div>
         <div class="card-body p-2">

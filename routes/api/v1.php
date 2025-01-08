@@ -133,6 +133,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Rating\RatingController::class)
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
         Route::post('/iq', 'storeIQ');
+        Route::post('/eq-aq', 'storeEQAndAQ');
         Route::delete('/{id}', 'delete');
     });
 

@@ -14,7 +14,7 @@ class QuestionResource extends JsonResource
             'question' => $this->question,
             'answers' => AnswerResource::collection($this->answers),
             'group' => [
-                'name' => $this->group->name
+                'name' => $this->group->name ?? null
             ]
         ];
     }

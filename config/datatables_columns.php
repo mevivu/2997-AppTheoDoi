@@ -399,6 +399,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
+        'type' => [
+            'title' => 'type',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
         'status' => [
             'title' => 'Trạng thái',
             'orderable' => false,

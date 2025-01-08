@@ -4,26 +4,29 @@ namespace App\Admin\Http\Requests\QuestionGroup;
 
 use App\Api\V1\Http\Requests\BaseRequest;
 use App\Enums\ActiveStatus;
+use App\Enums\Group\GroupType;
 use Illuminate\Validation\Rules\Enum;
 
 class QuestionGroupRequest extends BaseRequest
 {
-    protected function methodPost()
+    protected function methodPost(): array
     {
         return [
             'name' => ['required'],
             'description' => ['nullable'],
             'status' => ['required', new Enum(ActiveStatus::class)],
+            'type' => ['required', new Enum(GroupType::class)],
         ];
     }
 
-    protected function methodPut()
+    protected function methodPut(): array
     {
         return [
             'id' => ['required', 'integer', 'exists:App\Models\QuestionGroup,id'],
             'name' => ['required'],
             'description' => ['nullable'],
             'status' => ['required', new Enum(ActiveStatus::class)],
+            'type' => ['required', new Enum(GroupType::class)],
         ];
     }
 

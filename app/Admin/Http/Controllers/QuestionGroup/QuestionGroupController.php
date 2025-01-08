@@ -8,7 +8,7 @@ use App\Admin\Http\Requests\QuestionGroup\QuestionGroupRequest;
 use App\Admin\Repositories\QuestionGroup\QuestionGroupRepositoryInterface;
 use App\Admin\Services\QuestionGroup\QuestionGroupServiceInterface;
 use App\Enums\ActiveStatus;
-use App\Enums\User\Gender;
+use App\Enums\Group\GroupType;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -62,7 +62,7 @@ class QuestionGroupController extends Controller
     {
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
-            'gender' => Gender::asSelectArray(),
+            'type' => GroupType::asSelectArray(),
             'breadcrumbs' => $this->crums->add('Danh sách nhóm câu hỏi', route($this->route['index']))->add('Thêm mới'),
         ]);
     }
@@ -87,7 +87,7 @@ class QuestionGroupController extends Controller
             [
                 'response' => $response,
                 'status' => ActiveStatus::asSelectArray(),
-                'gender' => Gender::asSelectArray(),
+                'type' => GroupType::asSelectArray(),
                 'breadcrumbs' => $this->crums->add('Danh sách nhóm câu hỏi', route($this->route['index']))->add('Cập nhật'),
             ]
         );
@@ -118,7 +118,7 @@ class QuestionGroupController extends Controller
         ];
     }
 
-    public function actionMultipleRecords(Request $request)
+    public function actionMultipleRecords(Request $request): RedirectResponse
     {
         $boolean = $this->service->actionMultipleRecords($request);
         if ($boolean) {

@@ -24,9 +24,7 @@ class RatingService implements RatingServiceInterface
     protected array $data;
 
     protected RatingRepositoryInterface $repository;
-
     protected AnswerRepositoryInterface $answerRepository;
-
 
     public function __construct(
         RatingRepositoryInterface $repository,
@@ -82,6 +80,23 @@ class RatingService implements RatingServiceInterface
         return $this->repository->create($data);
     }
 
+    /**
+     * @throws Exception
+     */
+    public function storeEQAndAQ(Request $request)
+    {
+        $data = $request->validated();
+        $answers = $data['answers'] ?? [];
+        $type = $data['type'];
+        $totalCount = count($answers);
+        foreach ($answers as $answer) {
+            $answer = $this->answerRepository->findOrFail($answer['answer_id']);
+            $question = $answer->question;
+            $group = $question->group;
+            $score = $answer->score;
+        }
+    }
+
     protected function getDescriptionByTypeAndScore($type, $score)
     {
         $descriptions = [
@@ -117,4 +132,6 @@ class RatingService implements RatingServiceInterface
         $this->repository->delete($id);
 
     }
+
+
 }

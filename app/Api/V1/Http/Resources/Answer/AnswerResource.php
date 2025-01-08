@@ -12,6 +12,7 @@ class AnswerResource extends JsonResource
             'id' => $this->id,
             'answer' => $this->answer,
             'type' => $this->type,
+            'score' => $this->score
         ];
     }
 }

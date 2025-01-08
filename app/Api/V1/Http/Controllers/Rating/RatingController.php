@@ -5,6 +5,7 @@ namespace App\Api\V1\Http\Controllers\Rating;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Exception\NotFoundException;
+use App\Api\V1\Http\Requests\Rating\RatingEQAndAQRequest;
 use App\Api\V1\Http\Requests\Rating\RatingRequest;
 use App\Api\V1\Http\Resources\Rating\RatingCollection;
 use App\Api\V1\Http\Resources\Rating\RatingResource;
@@ -128,6 +129,54 @@ class RatingController extends Controller
             return $this->jsonResponseError('Create pregnancy failed', 500);
         }
     }
+
+    /**
+     * Tạo đánh giá theo loại EQ và AQ
+     *
+     * @authenticated
+     * @bodyParam child_id int required ID của trẻ mà đánh giá được tạo cho. Example: 1
+     * @bodyParam type string required Loại câu hỏi đang được đánh giá. Example: iq
+     * @bodyParam answers array required Một mảng các câu trả lời với ID câu hỏi và ID câu trả lời.
+     * @bodyParam answers[].question_id int required ID của câu hỏi đang được trả lời.
+     * @bodyParam answers[].answer_id int required ID của câu trả lời được cung cấp.
+     * @bodyParam tag string required Thẻ để phân loại đánh giá. Example: Bố
+     *
+     * @response 201 {
+     *     "status": 201,
+     *     "message": "Theo dõi thai kì đã được tạo thành công.",
+     *     "data": {
+     *         "id": 1,
+     *         "child_id": 1,
+     * }
+     *
+     * @response 400 {
+     *     "status": 400,
+     *     "message": "Lỗi dữ liệu nhập vào."
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống."
+     * }
+     *
+     * @param RatingEQAndAQRequest $request
+     * @return JsonResponse
+     */
+
+    public function storeEQAndAQ(RatingEQAndAQRequest $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $response = $this->service->storeEQAndAQ($request);
+            DB::commit();
+            return $this->jsonResponseSuccess($response);
+        } catch (Exception $exception) {
+            DB::rollBack();
+            $this->logError('Create eq,aq failed:', $exception);
+            return $this->jsonResponseError('Create eq,aq failed', 500);
+        }
+    }
+
 
     /**
      * Lấy chi tiết Đánh giá
