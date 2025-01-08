@@ -3,7 +3,9 @@
 namespace App\Api\V1\Services\Rating;
 
 
+use App\Admin\Services\File\FileService;
 use App\Api\V1\Repositories\Answer\AnswerRepositoryInterface;
+use App\Api\V1\Repositories\Child\ChildRepositoryInterface;
 use App\Api\V1\Repositories\Rating\RatingRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
@@ -11,6 +13,9 @@ use App\Enums\Group\GroupType;
 use App\Enums\Question\QuestionType;
 use Exception;
 use Illuminate\Http\Request;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 
 class RatingService implements RatingServiceInterface
@@ -26,14 +31,21 @@ class RatingService implements RatingServiceInterface
 
     protected RatingRepositoryInterface $repository;
     protected AnswerRepositoryInterface $answerRepository;
+    protected ChildRepositoryInterface $childRepository;
+
+    protected FileService $fileService;
 
     public function __construct(
         RatingRepositoryInterface $repository,
         AnswerRepositoryInterface $answerRepository,
+        ChildRepositoryInterface  $childRepository,
+        FileService               $fileService
     )
     {
         $this->repository = $repository;
         $this->answerRepository = $answerRepository;
+        $this->childRepository = $childRepository;
+        $this->fileService = $fileService;
     }
 
 
@@ -58,6 +70,9 @@ class RatingService implements RatingServiceInterface
     {
         $data = $request->validated();
         $answers = $data['answers'] ?? [];
+        $childId = $data['child_id'];
+        $child = $this->childRepository->findOrFail($childId);
+        $childName = $child->fullname;
         $type = QuestionType::IQ->value;
         $correctCount = 0;
         $totalCount = count($answers);
@@ -79,9 +94,71 @@ class RatingService implements RatingServiceInterface
         $data['result'] = $result;
         $data['type'] = $type;
         $data['description'] = $this->getDescriptionByTypeAndScore($type, $correctCount);
-
+        $description = "Đã xuất sắc nhận được chứng chỉ trực tuyến bằng\n cách hoàn thành bài kiểm tra IQ năng cao.Điểm IQ\n đã được xác định bởi Bài kiểm tra IQ năng cao của\n CHAMCON360.";
+        $path = $this->createCertificate($childName, $result, $description, now());
+        $data['badge_image'] = $path;
         return $this->repository->create($data);
     }
+
+    public function createCertificate($name, $score, $description, $date): string
+    {
+        $manager = new ImageManager(new Driver());
+
+        $img = $manager->read(public_path('assets/images/certificate_template.jpg'));
+        $width = $img->width();
+        $height = $img->height();
+        $fontLight = public_path('assets/fonts/Roboto-Light.ttf');
+        $fontBold = public_path('assets/fonts/Roboto-Bold.ttf');
+
+        $x = $width / 2;
+        $yName = $height * 0.30;
+        $yScore = $height * 0.39;
+        $yDesc = $height * 0.55;
+        $yDate = $height * 0.75;
+        $xDate = $width / 3;
+
+
+        $img->text($name, $x, $yName, function ($font) use ($fontBold) {
+            $font->file($fontBold);
+            $font->size(24);
+            $font->color('#000');
+            $font->align('center');
+            $font->valign('middle');
+        });
+
+        $img->text("Điểm: " . $score, $x, $yScore, function ($font) use ($fontLight) {
+            $font->file($fontLight);
+            $font->size(20);
+            $font->color('#32CD32');
+            $font->align('center');
+            $font->valign('middle');
+        });
+
+        $img->text($description, $x, $yDesc, function ($font) use ($fontLight) {
+            $font->file($fontLight);
+            $font->size(18);
+            $font->color('#000');
+            $font->align('center');
+            $font->valign('middle');
+            $font->lineHeight(1.7);
+        });
+
+        $img->text("Date: " . $date, $xDate, $yDate, function ($font) use ($fontLight) {
+            $font->file($fontLight);
+            $font->size(16);
+            $font->color('#000');
+            $font->align('center');
+            $font->valign('middle');
+        });
+
+        $newFilename = uniqid() . '-certificate.jpg';
+        $newImagePath = public_path('uploads/images/certificates/' . $newFilename);
+        $path = '/public/uploads/images/certificates/' . $newFilename;
+        $img->save($newImagePath, 90, 'jpg');
+
+        return $path;
+    }
+
 
     /**
      * @throws Exception
@@ -181,7 +258,6 @@ class RatingService implements RatingServiceInterface
 
         return $lastDesc;
     }
-
 
 
     /**

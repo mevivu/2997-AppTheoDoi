@@ -37,6 +37,8 @@ class Rating extends Model
         'decision_making',
         /** Kỹ năng xã hội */
         'optimism',
+        /** Hình ảnh danh hiệu */
+        'badge_image'
     ];
     protected $casts = [
         'type' => QuestionType::class,

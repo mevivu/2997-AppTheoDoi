@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('relationship_management')->nullable();
             $table->string('decision_making')->nullable();
             $table->string('optimism')->nullable();
+            $table->string('badge_image')->nullable();
             $table->enum('type', QuestionType::getValues())->default(QuestionType::EQ->value);
             $table->foreignId('child_id')->nullable()->constrained('children')->onDelete('cascade');
             $table->timestamps();
