@@ -5,6 +5,7 @@ namespace App\Admin\Http\Requests\Quiz;
 use App\Admin\Http\Requests\BaseRequest;
 use App\Admin\Rules\UniqueQuiz;
 use App\Enums\ActiveStatus;
+use App\Enums\Question\AgeGroup;
 use App\Enums\Question\QuestionType;
 use Illuminate\Validation\Rules\Enum;
 
@@ -25,6 +26,7 @@ class QuizRequest extends BaseRequest
             'description' => ['nullable', 'string'],
             'question_ids' => ['required', 'array', 'min:3'],
             'question_ids.*' => ['exists:questions,id'],
+            'age_group' => ['nullable', new Enum(AgeGroup::class)]
         ];
     }
 
@@ -38,7 +40,8 @@ class QuizRequest extends BaseRequest
             'age' => ['nullable', 'numeric', new UniqueQuiz(request()->type, $quizId)],
             'question_ids' => ['required', 'array', 'min:3'],
             'question_ids.*' => ['exists:questions,id'],
-            'status' => ['required', new Enum(ActiveStatus::class)]
+            'status' => ['required', new Enum(ActiveStatus::class)],
+            'age_group' => ['nullable', new Enum(AgeGroup::class)]
 
         ];
     }

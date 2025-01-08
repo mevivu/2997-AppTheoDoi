@@ -10,6 +10,7 @@ use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Admin\Repositories\Quiz\QuizRepositoryInterface;
 use App\Admin\Services\Quiz\QuizServiceInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Question\AgeGroup;
 use App\Enums\Question\QuestionType;
 use App\Traits\ResponseController;
 use Exception;
@@ -46,6 +47,7 @@ class QuizController extends Controller
             'index' => 'admin.quiz.index',
             'create' => 'admin.quiz.create',
             'edit' => 'admin.quiz.edit',
+            'create-eq-aq' => 'admin.quiz.create-eq-aq',
         ];
     }
 
@@ -88,6 +90,7 @@ class QuizController extends Controller
             $this->view['index'],
             [
                 'status' => ActiveStatus::asSelectArray(),
+                'age_group' => AgeGroup::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
                 'breadcrumbs' => $this->crums->add(__('Bài kiểm tra EQ')),
                 'title' => __('Bài kiểm tra EQ'),
@@ -104,6 +107,7 @@ class QuizController extends Controller
             $this->view['index'],
             [
                 'status' => ActiveStatus::asSelectArray(),
+                'age_group' => AgeGroup::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
                 'breadcrumbs' => $this->crums->add(__('Bài kiểm tra AQ')),
                 'title' => __('Bài kiểm tra AQ'),
@@ -150,7 +154,7 @@ class QuizController extends Controller
                 ->with('error', __('Bài kiểm tra EQ đã tồn tại!.'));
         }
         $breadcrumbs = $this->crums->add(__('Bài kiểm tra EQ'), route($this->route['eq']));
-        return view($this->view['create'], [
+        return view($this->view['create-eq-aq'], [
             'status' => ActiveStatus::asSelectArray(),
             'type' => QuestionType::asSelectArray(),
             'breadcrumbs' => $breadcrumbs->add(__('add')),
@@ -168,9 +172,10 @@ class QuizController extends Controller
                 ->with('error', __('Bài kiểm tra AQ đã tồn tại!.'));
         }
         $breadcrumbs = $this->crums->add(__('Bài kiểm tra AQ'), route($this->route['aq']));
-        return view($this->view['create'], [
+        return view($this->view['create-eq-aq'], [
             'status' => ActiveStatus::asSelectArray(),
             'type' => QuestionType::asSelectArray(),
+            'age_group' => AgeGroup::asSelectArray(),
             'breadcrumbs' => $breadcrumbs->add(__('add')),
             'title' => __('Bài kiểm tra AQ'),
             'route' => $this->route['aq'],
@@ -181,9 +186,10 @@ class QuizController extends Controller
     public function createPq(): Factory|View|Application
     {
         $breadcrumbs = $this->crums->add(__('Bài kiểm tra PQ'), route($this->route['pq']));
-        return view($this->view['create'], [
+        return view($this->view['create-eq-aq'], [
             'status' => ActiveStatus::asSelectArray(),
             'type' => QuestionType::asSelectArray(),
+            'age_group' => AgeGroup::asSelectArray(),
             'breadcrumbs' => $breadcrumbs->add(__('add')),
             'title' => __('Bài kiểm tra PQ'),
             'route' => $this->route['pq'],
@@ -253,6 +259,7 @@ class QuizController extends Controller
             [
                 'instance' => $instance,
                 'status' => ActiveStatus::asSelectArray(),
+                'age_group' => AgeGroup::asSelectArray(),
                 'type' => QuestionType::asSelectArray(),
                 'selected_questions' => $selectedQuestions,
                 'questions_type' => $questionsType,
