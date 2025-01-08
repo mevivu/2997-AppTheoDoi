@@ -6,5 +6,5 @@ use App\Admin\Repositories\EloquentRepositoryInterface;
 
 interface AnswerRepositoryInterface extends EloquentRepositoryInterface
 {
-    //
+    public function deleteMany(array $ids);
 }

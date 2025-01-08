@@ -9,7 +9,7 @@
             <div class="card">
                 <div class="card-header justify-content-between">
                     <h2 class="mb-0">{{ __('Danh sách câu hỏi IQ') }}</h2>
-                    <x-link :href="route('admin.question.create')" class="btn btn-primary"><i class="ti ti-plus"></i>{{ __('Thêm mới') }}</x-link>
+                    <x-link :href="route('admin.question.createIq')" class="btn btn-primary"><i class="ti ti-plus"></i>{{ __('Thêm mới') }}</x-link>
                 </div>
                 <div class="card-body">
                     <div class="card-body">

@@ -5,10 +5,10 @@ namespace App\Admin\Services\Question;
 use App\Admin\Repositories\Answer\AnswerRepositoryInterface;
 use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Enums\Answser\AnswerType;
-use App\Enums\Question\QuestionType;
 use Illuminate\Http\Request;
 use App\Enums\ActiveStatus;
 use Illuminate\Support\Facades\DB;
+
 
 class QuestionService implements QuestionServiceInterface
 {
@@ -23,229 +23,166 @@ class QuestionService implements QuestionServiceInterface
         $this->answerRepository = $answerRepository;
     }
 
-    public function store(Request $request)
+    public function storeIq(Request $request)
     {
         $data = $request->validated();
-        $question = $this->repository->create($data['question']);
+        DB::beginTransaction();
 
-        switch ($data['question']['question_type']) {
-            case QuestionType::IQ->value:
-                return $this->addIqQuestion($data, $question);
-            case QuestionType::EQ->value:
-                return $this->addEqAqQuestion($data, $question);
-            case QuestionType::AQ->value:
-                return $this->addEqAqQuestion($data, $question);
-        }
-    }
+        try {
+            $questionData = $data['question'];
+            $isCorrect = $data['answers']['is_correct'];
 
-    protected function addIqQuestion($data, $question)
-    {
-        $question_id = $question->id;
-
-        if ($data['answer']['answer_type'] == AnswerType::Image->value) {
-            $images = $data['answer']['image-iq'];
-            $answers = null;
-        } else {
-            $answers = $data['answer']['iq_answers'];
-            $images = null;
-        }
-        $isCorrect = $data['answer']['is_correct'];
-
-        if ($images) {
-            foreach ($images as $index => $image) {
-                $this->answerRepository->create([
-                    'question_id' => $question_id,
-                    'image' => $image,
-                    'is_correct' => isset($isCorrect[$index][0]) && $isCorrect[$index][0] == '1' ? true : false,
-                    'type' => AnswerType::Image->value,
-                ]);
+            if ($data['answers']['type'] == AnswerType::Normal->value) {
+                $answerData = $data['answers']['answer'];
+            } else {
+                $answerData = $data['answers']['image'];
             }
-        } else {
-            foreach ($answers as $index => $answer) {
-                $this->answerRepository->create([
-                    'question_id' => $question_id,
-                    'answer' => $answer,
-                    'is_correct' => isset($isCorrect[$index][0]) && $isCorrect[$index][0] == '1' ? true : false,
-                    'type' => AnswerType::Normal->value,
-                ]);
-            }
-        }
 
-        return $question;
-    }
+            $question = $this->repository->create($questionData);
 
-    protected function addEqAqQuestion($data, $question)
-    {
-        $question_id = $question->id;
-
-        $scores = $data['answer']['scores'];
-
-        if ($data['answer']['answer_type_aqeq'] == AnswerType::Image->value) {
-            $answers = null;
-            $images = $data['answer']['image-eqaq'];
-
-            $images = array_values($images);
-            $scores = array_values($scores);
-
-            $result = [];
-            foreach ($images as $key => $image) {
-                $result[] = [
-                    'image' => $image,
-                    'score' => $scores[$key] ?? null,
+            foreach ($answerData as $key => $value) {
+                $answer = [
+                    'question_id' => $question->id,
+                    'answer' => $value,
+                    'is_correct' => $key == $isCorrect ? true : false,
+                    'type' => $data['answers']['type']
                 ];
+                $this->answerRepository->create($answer);
             }
 
-            foreach ($result as $item) {
-                $this->answerRepository->create([
-                    'question_id' => $question_id,
-                    'image' => $item['image'],
-                    'score' => $item['score'],
-                    'type' => AnswerType::Image->value,
-                ]);
-            }
-        } else {
-            $answers = $data['answer']['answers'];
-            $images = null;
+            DB::commit();
+            return $question;
 
-            $answers = array_values($answers);
-            $scores = array_values($scores);
-
-            $result = [];
-            foreach ($answers as $key => $answer) {
-                $result[] = [
-                    'answer' => $answer,
-                    'score' => $scores[$key] ?? null, // Đảm bảo không bị lỗi nếu key không tồn tại
-                ];
-            }
-
-            foreach ($result as $item) {
-                $this->answerRepository->create([
-                    'question_id' => $question_id,
-                    'answer' => $item['answer'],
-                    'score' => $item['score'],
-                    'type' => AnswerType::Normal->value,
-                ]);
-            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error($e->getMessage());
+            return false;
         }
-
-        return $question;
     }
 
-    public function update(Request $request)
+    public function updateIq(Request $request)
+    {
+        $data = $request->validated();
+        DB::beginTransaction();
+
+        try {
+            $questionData = $data['question'];
+            $isCorrect = $data['answers']['is_correct'];
+
+            if ($data['answers']['type'] == AnswerType::Normal->value) {
+                $answerData = $data['answers']['answer'];
+            } else {
+                $answerData = $data['answers']['image'];
+            }
+
+            $question = $this->repository->update($questionData['id'], $questionData);
+            $existAnswers = $question->answers->pluck('answer', 'id')->toArray();
+
+            foreach ($answerData as $key => $value) {
+                if (isset($existAnswers[$key])) {
+                    $this->answerRepository->update($key, ['answer' => $value, 'is_correct' => $key == $isCorrect ? true : false]);
+                    unset($existAnswers[$key]);
+                } else {
+                    $answer = [
+                        'question_id' => $question->id,
+                        'answer' => $value,
+                        'is_correct' => $key == $isCorrect ? true : false,
+                        'type' => $data['answers']['type']
+                    ];
+                    $this->answerRepository->create($answer);
+                }
+            }
+
+            if (count($existAnswers) > 0) {
+                $this->answerRepository->deleteMany(array_keys($existAnswers));
+            }
+
+            DB::commit();
+            return $question;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error($e->getMessage());
+            return false;
+        }
+    }
+
+    public function storeEqAq(Request $request)
     {
         $data = $request->validated();
 
-        $question = $this->repository->update($data['question']['id'], $data['question']);
+        DB::beginTransaction();
 
-        switch ($data['question']['question_type']) {
-            case QuestionType::IQ->value:
-                return $this->updateIqQuestion($data, $question);
-            case QuestionType::EQ->value:
-                return $this->updateEqAqQuestion($data, $question);
-            case QuestionType::AQ->value:
-                return $this->updateEqAqQuestion($data, $question);
-        }
-    }
-
-
-
-    protected function updateIqQuestion($data, $question)
-    {
-        $data['answer']['question_id'] = $question->id;
-        $correctAnswerId = $data['answer']['is_correct'][$question->id] ?? null;
-        $answerType = $data['answer']['answer_type'];
-
-        // Lấy thông tin câu trả lời hiện có
-        $existingAnswers = $this->answerRepository->getByQueryBuilder([
-            'question_id' => $data['answer']['question_id'],
-        ])->get();
-
-        // Phân loại dữ liệu
-        $answers = $answerType == AnswerType::Image->value
-            ? $data['answer']['image-iq']
-            : $data['answer']['iq_answers'];
-        $answerKey = $answerType == AnswerType::Image->value ? 'image' : 'answer';
-
-        // Lưu danh sách ID câu trả lời mới
-        $newAnswerIds = [];
-
-        foreach ($answers as $key => $content) {
-            // Tìm câu trả lời cũ dựa trên nội dung
-            $existingAnswer = $existingAnswers->where($answerKey, $content)->first();
-
-            $isCorrectAnswer = false;
-            if ($existingAnswer) {
-                // Nếu câu trả lời cũ tồn tại
-                $isCorrectAnswer = $correctAnswerId == $existingAnswer->id;
-                $newAnswerIds[] = $existingAnswer->id;
-
-                // Cập nhật dữ liệu câu trả lời
-                $this->answerRepository->update($existingAnswer->id, [
-                    $answerKey => $content,
-                    'is_correct' => $isCorrectAnswer,
-                    'question_id' => $data['answer']['question_id'],
-                    'type' => $answerType,
-                ]);
+        try {
+            $questionData = $data['question'];
+            $question = $this->repository->create($questionData);
+            if ($data['answers']['type'] == AnswerType::Normal->value) {
+                $answerData = $data['answers']['answer'];
             } else {
-                // Tạo mới câu trả lời
-                $createdAnswer = $this->answerRepository->create([
-                    $answerKey => $content,
-                    'is_correct' => $correctAnswerId == $key, // So khớp với key từ frontend
-                    'question_id' => $data['answer']['question_id'],
-                    'type' => $answerType,
-                ]);
-                $newAnswerIds[] = $createdAnswer->id;
+                $answerData = $data['answers']['image'];
             }
-        }
 
-        // Xóa câu trả lời không còn sử dụng
-        foreach ($existingAnswers as $existingAnswer) {
-            if (!in_array($existingAnswer->id, $newAnswerIds)) {
-                $existingAnswer->delete();
+            foreach ($answerData as $key => $value) {
+                $answer = [
+                    'question_id' => $question->id,
+                    'answer' => $value,
+                    'score' => $data['answers']['score'][$key],
+                    'type' => $data['answers']['type']
+                ];
+                $this->answerRepository->create($answer);
             }
+
+            DB::commit();
+            return $question;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error($e->getMessage());
+            return false;
         }
     }
 
-
-
-    protected function updateEqAqQuestion($data, $question)
+    public function updateEqAq(Request $request)
     {
-        $data['answer']['question_id'] = $question->id;
+        $data = $request->validated();
+        DB::beginTransaction();
 
-        $answers = $data['answer']['answers'];
-        $scores = $data['answer']['scores'];
+        try {
+            $questionData = $data['question'];
+            $question = $this->repository->update($questionData['id'], $questionData);
+            $existAnswers = $question->answers->pluck('answer', 'id')->toArray();
 
-        $existingAnswers = $this->answerRepository->getByQueryBuilder([
-            'question_id' => $data['answer']['question_id'],
-        ])->get();
-
-        foreach ($answers as $answerId => $answer) {
-            $score = $scores[$answerId];
-            $existingAnswer = $existingAnswers->where('answer', $answer)->first();
-
-            if ($existingAnswer) {
-                $this->answerRepository->update($existingAnswer->id, [
-                    'answer' => $answer,
-                    'score' => $score,
-                    'question_id' => $data['answer']['question_id'],
-                ]);
+            if ($data['answers']['type'] == AnswerType::Normal->value) {
+                $answerData = $data['answers']['answer'];
             } else {
-                $this->answerRepository->create([
-                    'answer' => $answer,
-                    'score' => $score,
-                    'question_id' => $data['answer']['question_id'],
-                ]);
+                $answerData = $data['answers']['image'];
             }
-        }
 
-        foreach ($existingAnswers as $existingAnswer) {
-            if (!isset($answers[$existingAnswer->id])) {
-                $this->answerRepository->delete($existingAnswer->id);
+            foreach ($answerData as $key => $value) {
+                if (isset($existAnswers[$key])) {
+                    $this->answerRepository->update($key, ['answer' => $value, 'score' => $data['answers']['score'][$key]]);
+                    unset($existAnswers[$key]);
+                } else {
+                    $answer = [
+                        'question_id' => $question->id,
+                        'answer' => $value,
+                        'score' => $data['answers']['score'][$key],
+                        'type' => $data['answers']['type']
+                    ];
+                    $this->answerRepository->create($answer);
+                }
             }
+
+            if (count($existAnswers) > 0) {
+                $this->answerRepository->deleteMany(array_keys($existAnswers));
+            }
+
+            DB::commit();
+            return $question;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error($e->getMessage());
+            return false;
         }
     }
-
-
 
     public function actionMultipleRecords(Request $request): bool
     {

@@ -6,9 +6,13 @@ use Illuminate\Http\Request;
 
 interface QuestionServiceInterface
 {
-    public function store(Request $request);
+    public function storeIq(Request $request);
 
-    public function update(Request $request);
+    public function storeEqAq(Request $request);
+
+    public function updateIq(Request $request);
+
+    public function updateEqAq(Request $request);
 
     public function actionMultipleRecords(Request $request);
 }

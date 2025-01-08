@@ -5,6 +5,8 @@ namespace App\Admin\Http\Controllers\Question;
 use App\Admin\DataTables\Question\AqEqQuestionDataTable;
 use App\Admin\DataTables\Question\IqQuestionDataTable;
 use App\Admin\Http\Controllers\Controller;
+use App\Admin\Http\Requests\Question\QuestionEqAqRequest;
+use App\Admin\Http\Requests\Question\QuestionIQRequest;
 use App\Admin\Http\Requests\Question\QuestionRequest;
 use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Admin\Repositories\QuestionGroup\QuestionGroupRepositoryInterface;
@@ -13,9 +15,6 @@ use App\Enums\ActiveStatus;
 use App\Enums\Answser\AnswerType;
 use App\Enums\Question\QuestionType;
 use Exception;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,8 +41,13 @@ class QuestionController extends Controller
             'iq' => 'admin.question.iq',
             'eq' => 'admin.question.eq',
             'aq' => 'admin.question.aq',
-            'create' => 'admin.question.create',
-            'edit' => 'admin.question.edit',
+
+            'createIq' => 'admin.question.create.iq',
+            'createEq' => 'admin.question.create.eq-aq',
+            'createAq' => 'admin.question.create.eq-aq',
+
+            'editIq' => 'admin.question.edit.iq',
+            'editEqAq' => 'admin.question.edit.eq-aq',
         ];
     }
 
@@ -53,8 +57,14 @@ class QuestionController extends Controller
             'iq' => 'admin.question.iq',
             'eq' => 'admin.question.eq',
             'aq' => 'admin.question.aq',
-            'create' => 'admin.question.create',
-            'edit' => 'admin.question.edit',
+
+            'createIq' => 'admin.question.createIq',
+            'createEq' => 'admin.question.createEq',
+            'createAq' => 'admin.question.createAq',
+
+            'editIq' => 'admin.question.editIq',
+            'editEqAq' => 'admin.question.editEqAq',
+
             'delete' => 'admin.question.delete'
         ];
     }
@@ -76,7 +86,7 @@ class QuestionController extends Controller
             $this->view['eq'],
             [
                 'actionMultiple' => $this->getActionMultiple(),
-                'breadcrumbs' => $this->crums->add('Danh sách câu hỏi IQ'),
+                'breadcrumbs' => $this->crums->add('Danh sách câu hỏi EQ'),
             ]
         );
     }
@@ -92,9 +102,9 @@ class QuestionController extends Controller
         );
     }
 
-    public function create(): Factory|View|Application
+    public function createIq()
     {
-        return view($this->view['create'], [
+        return view($this->view['createIq'], [
             'answer_types' => AnswerType::asSelectArray(),
             'status' => ActiveStatus::asSelectArray(),
             'types' => QuestionType::asSelectArray(),
@@ -103,53 +113,95 @@ class QuestionController extends Controller
         ]);
     }
 
-    public function store(QuestionRequest $request): RedirectResponse
+    public function storeIq(QuestionIQRequest $request): RedirectResponse
     {
-        $response = $this->service->store($request);
+
+        $response = $this->service->storeIq($request);
         if ($response) {
-            return to_route($this->route['edit'], $response)->with('success', __('notifySuccess'));
+            return to_route($this->route['editIq'], $response->id)->with('success', __('notifySuccess'));
         }
         return back()->with('error', __('notifyFail'));
     }
 
-    /**
-     * @throws Exception
-     */
-    public function edit($id): Factory|View|Application
+    public function editIq($id)
     {
-        $response = $this->repository->findOrFail($id);
-        $iqAnswers = $response->answers;
-        $answers = $response->answers;
-        $questionGroups = $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id');
-        return view(
-            $this->view['edit'],
-            [
-                'response' => $response,
-                'iq_answers' => $iqAnswers,
-                'answers' => $answers,
-                'answer_types' => AnswerType::asSelectArray(),
-                'questionGroups' => $questionGroups,
-                'status' => ActiveStatus::asSelectArray(),
-                'types' => QuestionType::asSelectArray(),
-                'breadcrumbs' => $this->crums->add('Danh sách câu hỏi', route($this->route['iq']))->add('Cập nhật'),
-            ]
-        );
-
+        $response = $this->repository->find($id);
+        $type = $response->answers->first()->type->value;
+        return view($this->view['editIq'], [
+            'response' => $response,
+            'type' => $type,
+            'answer_types' => AnswerType::asSelectArray(),
+            'status' => ActiveStatus::asSelectArray(),
+            'types' => QuestionType::asSelectArray(),
+            'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
+            'breadcrumbs' => $this->crums->add('Danh sách câu hỏi IQ', route($this->route['iq']))->add('Cập nhật'),
+        ]);
     }
 
-    public function update(QuestionRequest $request): RedirectResponse
+    public function updateIq(QuestionIqRequest $request): RedirectResponse
     {
-        $this->service->update($request);
+        $this->service->updateIq($request);
         return back()->with('success', __('notifySuccess'));
 
     }
 
+    public function createEq()
+    {
+        return view($this->view['createEq'], [
+            'answer_types' => AnswerType::asSelectArray(),
+            'status' => ActiveStatus::asSelectArray(),
+            'types' => QuestionType::asSelectArray(),
+            'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
+            'breadcrumbs' => $this->crums->add('Danh sách câu hỏi EQ', route($this->route['eq']))->add('Thêm mới'),
+        ]);
+    }
+
+    public function createAq()
+    {
+        return view($this->view['createAq'], [
+            'answer_types' => AnswerType::asSelectArray(),
+            'status' => ActiveStatus::asSelectArray(),
+            'types' => QuestionType::asSelectArray(),
+            'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
+            'breadcrumbs' => $this->crums->add('Danh sách câu hỏi AQ', route($this->route['aq']))->add('Thêm mới'),
+        ]);
+    }
+
+    public function storeEqAq(QuestionEqAqRequest $request): RedirectResponse
+    {
+        $response = $this->service->storeEqAq($request);
+        if ($response) {
+            return to_route($this->route['editEqAq'], $response->id)->with('success', __('notifySuccess'));
+        }
+        return back()->with('error', __('notifyFail'));
+    }
+
+    public function editEqAq($id)
+    {
+        $response = $this->repository->find($id);
+        $type = $response->answers->first()->type->value;
+
+        return view($this->view['editEqAq'], [
+            'response' => $response,
+            'type' => $type,
+            'answer_types' => AnswerType::asSelectArray(),
+            'status' => ActiveStatus::asSelectArray(),
+            'types' => QuestionType::asSelectArray(),
+            'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
+            'breadcrumbs' => $this->crums->add('Danh sách câu hỏi', route($this->route['eq']))->add('Cập nhật'),
+        ]);
+    }
+
+    public function updateEqAq(QuestionEqAqRequest $request): RedirectResponse
+    {
+        $this->service->updateEqAq($request);
+        return back()->with('success', __('notifySuccess'));
+    }
+
     public function delete($id): RedirectResponse
     {
-
         $this->repository->delete($id);
         return redirect()->back()->with('success', __('notifySuccess'));
-
     }
 
     protected function getActionMultiple(): array

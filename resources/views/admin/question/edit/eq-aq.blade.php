@@ -5,10 +5,11 @@
 @section('content')
     <div class="page-body">
         <div class="container-xl">
-            <x-form :action="route('admin.question.store')" type="post" :validate="true" id="form_create_question">
+            <x-form :action="route('admin.question.updateAqEq')" type="put" :validate="true" id="form_eq_aq">
+                <x-input type="hidden" name="question[id]" :value="$response->id" />
                 <div class="row justify-content-center">
-                    @include('admin.question.forms.create-left')
-                    @include('admin.question.forms.create-right')
+                    @include('admin.question.edit.forms.edit-eq-aq-left')
+                    @include('admin.question.edit.forms.edit-right')
                 </div>
             </x-form>
         </div>
@@ -27,5 +28,5 @@
 @endpush
 
 @push('custom-js')
-    @include('admin.question.scripts.scripts')
+    @include('admin.question.scripts.scripts-eq-aq')
 @endpush

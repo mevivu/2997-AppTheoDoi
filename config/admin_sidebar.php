@@ -407,13 +407,6 @@ return [
                 'permissions' => ['viewExpected'],
             ],
             [
-                'title' => 'Thêm Câu hỏi',
-                'routeName' => 'admin.question.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createQuestionGroup'],
-            ],
-            [
                 'title' => 'Câu hỏi IQ',
                 'routeName' => 'admin.question.iq',
                 'icon' => '<i class="ti ti-brain"></i>',
