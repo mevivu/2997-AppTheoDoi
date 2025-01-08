@@ -1,19 +1,20 @@
 @extends('admin.layouts.master')
 @push('libs-css')
 @endpush
+
 @section('content')
     <div class="page-body">
         <div class="container-xl">
-            <x-form :action="route('admin.question.update')" type="put" :validate="true">
-                <x-input type="hidden" name="question[id]" :value="$response->id" />
+            <x-form :action="route('admin.question.storeIq')" type="post" :validate="true" id="form_iq">
                 <div class="row justify-content-center">
-                    @include('admin.question.forms.edit-left')
-                    @include('admin.question.forms.edit-right')
+                    @include('admin.question.create.forms.create-iq-left')
+                    @include('admin.question.create.forms.create-right')
                 </div>
             </x-form>
         </div>
     </div>
 @endsection
+
 
 @push('libs-js')
     <!-- ckfinder js -->
@@ -26,5 +27,5 @@
 @endpush
 
 @push('custom-js')
-    @include('admin.question.scripts.scripts')
+    @include('admin.question.scripts.scripts-iq')
 @endpush

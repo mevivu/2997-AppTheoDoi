@@ -186,20 +186,27 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->as('question.')
         ->group(function () {
             Route::group(['middleware' => ['permission:createQuestionGroup', 'auth:admin']], function () {
-                Route::get('/add', 'create')->name('create');
-                Route::post('/add', 'store')->name('store');
+                Route::get('/add/iq', 'createIq')->name('createIq');
+                Route::get('/add/aq', 'createAq')->name('createAq');
+                Route::get('/add/eq', 'createEq')->name('createEq');
+
+                Route::post('/add/iq', 'storeIq')->name('storeIq');
+                Route::post('/add/aq-eq', 'storeEqAq')->name('storeAqEq');
             });
 
             Route::group(['middleware' => ['permission:viewQuestionGroup', 'auth:admin']], function () {
                 Route::get('/iq', 'iq')->name('iq');
                 Route::get('/aq', 'aq')->name('aq');
                 Route::get('/eq', 'eq')->name('eq');
-                Route::get('/edit/{id}', 'edit')->name('edit');
+
+                Route::get('/edit/iq/{id}', 'editIq')->name('editIq');
+                Route::get('/edit/eq-aq/{id}', 'editEqAq')->name('editEqAq');
                 Route::get('/search', 'getQuestionsByType')->name('type');
             });
 
             Route::group(['middleware' => ['permission:updateQuestionGroup', 'auth:admin']], function () {
-                Route::put('/edit', 'update')->name('update');
+                Route::put('/edit/iq', 'updateIq')->name('updateIq');
+                Route::put('/edit/aq-eq', 'updateEqAq')->name('updateAqEq');
                 Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
             });
 

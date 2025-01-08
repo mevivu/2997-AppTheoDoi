@@ -11,4 +11,9 @@ class AnswerRepository extends EloquentRepository implements AnswerRepositoryInt
     {
         return Answer::class;
     }
+
+    public function deleteMany(array $ids)
+    {
+        return $this->model->whereIn('id', $ids)->delete();
+    }
 }
