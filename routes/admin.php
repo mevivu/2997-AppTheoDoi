@@ -830,6 +830,31 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+    // Product
+    Route::controller(App\Admin\Http\Controllers\Product\ProductController::class)
+        ->prefix('/products')
+        ->as('product.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createProduct', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+
+            Route::group(['middleware' => ['permission:viewProduct', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+
+            Route::group(['middleware' => ['permission:updateProduct', 'auth:admin']], function () {
+                Route::put('/edit/{id}', 'update')->name('update');
+                Route::post('/action-multiple', 'actionMultipleRecords')->name('actionMultiple');
+            });
+
+            Route::group(['middleware' => ['permission:deleteProduct', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
 
 
     Route::post('/logout', [App\Admin\Http\Controllers\Auth\LogoutController::class, 'logout'])->name('logout');

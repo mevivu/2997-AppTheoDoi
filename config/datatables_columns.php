@@ -1354,7 +1354,41 @@ return [
             'addClass' => 'text-center align-middle',
             'visible' => true
         ],
-    ]
+    ],
+    'product' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+            'visible' => false,
+        ],
+        'name' => [
+            'title' => 'name',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true
+        ],
+        'status' => [
+            'title' => 'status',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true
+        ],
+        'created_at' => [
+            'title' => 'createdAt',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
+
 
 
 ];

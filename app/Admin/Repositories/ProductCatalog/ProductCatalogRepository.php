@@ -11,4 +11,5 @@ class ProductCatalogRepository extends EloquentRepository implements ProductCata
     {
         return ProductCatalog::class;
     }
+
 }
