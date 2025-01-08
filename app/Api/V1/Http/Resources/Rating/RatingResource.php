@@ -23,6 +23,7 @@ class RatingResource extends JsonResource
             'id' => $this->id,
             'child_id' => $this->child_id,
             'score' => $this->score,
+            'result' => $this->result,
             'description' => $this->description,
             'type' => $this->type,
             'created_at' => format_datetime($this->created_at),

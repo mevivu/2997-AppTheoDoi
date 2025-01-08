@@ -7,6 +7,7 @@ use App\Api\V1\Repositories\Answer\AnswerRepositoryInterface;
 use App\Api\V1\Repositories\Rating\RatingRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
+use App\Enums\Group\GroupType;
 use App\Enums\Question\QuestionType;
 use Exception;
 use Illuminate\Http\Request;
@@ -73,8 +74,10 @@ class RatingService implements RatingServiceInterface
                 $correctCount++;
             }
         }
-        $score = $totalCount > 0 ? "{$correctCount}/{$totalCount}" : "0/0";
-        $data['score'] = $score;
+        $result = $totalCount > 0 ? "{$correctCount}/{$totalCount}" : "0/0";
+        $data['score'] = $correctCount;
+        $data['result'] = $result;
+        $data['type'] = $type;
         $data['description'] = $this->getDescriptionByTypeAndScore($type, $correctCount);
 
         return $this->repository->create($data);
@@ -83,23 +86,75 @@ class RatingService implements RatingServiceInterface
     /**
      * @throws Exception
      */
-    public function storeEQAndAQ(Request $request)
+    public function storeEQAndAQ(Request $request): object
     {
         $data = $request->validated();
         $answers = $data['answers'] ?? [];
         $type = $data['type'];
-        $totalCount = count($answers);
+        $totalCount = count($answers) * 2;
+
+        $scoreData = $this->calculateScores($answers, $totalCount);
+
+        $data = array_merge($data, $scoreData);
+
+        $type = $type == QuestionType::AQ->value ? QuestionType::AQ->value : QuestionType::EQ->value;
+        $data['description'] = $this->getDescriptionByTypeAndScore($type, $data['score']);
+
+        return $this->repository->create($data);
+    }
+
+
+    /**
+     * @throws Exception
+     */
+    protected function calculateScores(array $answers, int $totalCount): array
+    {
+        $totalScore = 0;
+        $data = [];
+
         foreach ($answers as $answer) {
             $answer = $this->answerRepository->findOrFail($answer['answer_id']);
             $question = $answer->question;
-            $group = $question->group;
-            $score = $answer->score;
+            $groupType = $question->group->type;
+            $score = $answer->score * 2;
+            $totalScore += $score;
+
+            switch ($groupType) {
+                case GroupType::Empathy:
+                    $data['self_regulation'] = $totalCount > 0 ? "{$score}/{$totalCount}" : "0/0";
+                    break;
+                case GroupType::Motivation:
+                    $data['social_awareness'] = $totalCount > 0 ? "{$score}/{$totalCount}" : "0/0";
+                    break;
+                case GroupType::SocialSkills:
+                    $data['relationship_management'] = $totalCount > 0 ? "{$score}/{$totalCount}" : "0/0";
+                    break;
+                case GroupType::EmotionalRegulation:
+                    $data['decision_making'] = $totalCount > 0 ? "{$score}/{$totalCount}" : "0/0";
+                    break;
+                case GroupType::EmotionalAwareness:
+                    $data['optimism'] = $totalCount > 0 ? "{$score}/{$totalCount}" : "0/0";
+                    break;
+                default:
+                    break;
+            }
         }
+
+        $data['score'] = $totalScore / 2.5;
+        return $data;
     }
+
 
     protected function getDescriptionByTypeAndScore($type, $score)
     {
         $descriptions = [
+            QuestionType::AQ->value => [
+                5 => 'Miễn cưỡng hoặc không sẵn lòng đối mặt với khó khăn',
+                7 => 'Tiêu cực, đề bỏ cuộc',
+                7.6 => 'Tích cực nhưng cần hỗ trợ',
+                8 => 'Tích cực, tự lực và có sự cố gắng',
+                9.5 => 'Rất tích cực, kiên trì, vượt khó tốt'
+            ],
             QuestionType::IQ->value => [
                 3 => 'Tiêu cực, khó kiểm soát cảm xúc',
                 5 => 'Tiêu cực, nhưng không thể hiện ra ngoài',
@@ -107,20 +162,26 @@ class RatingService implements RatingServiceInterface
                 9 => 'Tích cực, biết cách kiểm soát và xử lý tình huống',
                 '>9' => 'Rất tích cực, dễ dàng kiểm soát cảm xúc và giúp người khác'
             ],
+            QuestionType::EQ->value => [
+                5 => 'Tiêu cực, nhưng không thể hiện ra ngoài',
+                7 => 'Trung tính, có cố gắng kiểm soát nhưng chưa hoàn toàn tự tin',
+                7.5 => 'Tích cực, biết cách kiểm soát và xử lý tình huống',
+                8 => 'Tích cực, biết cách kiểm soát và xử lý tình huống',
+                9 => 'Rất tích cực, dễ dàng kiểm soát cảm xúc và giúp người khác',
+                9.3 => 'Rất tích cực, dễ dàng kiểm soát cảm xúc và giúp người khác'
+            ]
         ];
 
+        $lastDesc = "Chưa đánh giá được";
         foreach ($descriptions[$type] as $threshold => $desc) {
-            if ($score >= (int)$threshold) {
-                return $desc;
+            if ($score >= $threshold) {
+                $lastDesc = $desc;
             }
         }
 
-        return "oke";
+        return $lastDesc;
     }
 
-    /**
-     * @throws Exception
-     */
 
 
     /**
