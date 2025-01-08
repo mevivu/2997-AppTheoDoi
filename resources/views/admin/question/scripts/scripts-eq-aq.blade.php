@@ -56,28 +56,6 @@
             return images;
         }
 
-        $('#form_eq_aq').on('submit', function(event) {
-            event.preventDefault();
-            if (isImage) {
-                let imageElements = document.querySelectorAll('.answer_image');
-                let images = getImageArray();
 
-                images.forEach((image, index) => {
-                    let answerId = imageElements[index]?.dataset.answer;
-
-                    if (answerId) {
-                        let input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = `answers[image][${answerId}]`;
-                        input.value = image;
-                        this.appendChild(input);
-                    } else {
-                        console.error('Không tìm thấy ID câu trả lời cho ảnh:', image);
-                    }
-                });
-            }
-
-            this.submit();
-        });
     })
 </script>

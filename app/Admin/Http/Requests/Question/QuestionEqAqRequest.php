@@ -23,10 +23,10 @@ class QuestionEqAqRequest extends BaseRequest
 
         if ($this->input('answers.type') == AnswerType::Normal->value) {
             $rules['answers.answer'] = 'required|array';
-            $rules['answers.answer.*'] = 'required|distinct';
+            $rules['answers.answer.*'] = 'required';
         } else {
             $rules['answers.image'] = 'required|array';
-            $rules['answers.image.*'] = 'required|distinct';
+            $rules['answers.image.*'] = 'required';
         }
 
         return $rules;

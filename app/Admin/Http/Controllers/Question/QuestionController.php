@@ -222,19 +222,5 @@ class QuestionController extends Controller
         return back()->with('error', __('notifyFail'));
     }
 
-    public function getQuestionsByType(QuestionRequest $request): JsonResponse
-    {
-        try {
-            $type = $request['type'];
-            $questions = $this->repository->getBy([
-                'question_type' => $type,
-                'status' => ActiveStatus::Active
-            ]);
-
-            return response()->json(['data' => $questions], 200);
-        } catch (Exception $e) {
-            return response()->json(['message' => 'Server error'], 500);
-        }
-    }
 
 }

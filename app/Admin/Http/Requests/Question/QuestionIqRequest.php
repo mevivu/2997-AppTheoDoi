@@ -2,13 +2,13 @@
 
 namespace App\Admin\Http\Requests\Question;
 
-use App\Api\V1\Http\Requests\BaseRequest;
+use App\Admin\Http\Requests\BaseRequest;
 use App\Enums\ActiveStatus;
 use App\Enums\Answser\AnswerType;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\Question\QuestionType;
 
-class QuestionIQRequest extends BaseRequest
+class QuestionIqRequest extends BaseRequest
 {
     protected function methodPost()
     {
