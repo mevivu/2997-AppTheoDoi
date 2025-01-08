@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ActiveStatus;
+use App\Enums\Question\AgeGroup;
 use App\Enums\Question\QuestionType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->integer('age');
+            $table->enum('age_group', AgeGroup::getValues())->nullable()->default(null);
             $table->enum('type', QuestionType::getValues())->default(QuestionType::AQ->value);
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Draft->value);
             $table->timestamps();
