@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ActiveStatus;
+use App\Enums\Question\AgeGroup;
 use App\Enums\Question\QuestionType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,12 +26,16 @@ class Quiz extends Model
         /** Loại */
         'type',
         /* Trạng thái */
-        'status'
+        'status',
+        /** Loại */
+        'age_group'
 
     ];
     protected $casts = [
         'type' => QuestionType::class,
         'status' => ActiveStatus::class,
+        'age_group' => AgeGroup::class,
+
     ];
 
     public function questions(): BelongsToMany

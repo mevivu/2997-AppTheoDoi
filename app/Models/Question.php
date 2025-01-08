@@ -28,14 +28,11 @@ class Question extends Model
         'question_type',
         /* Trạng thái */
         'status',
-        /** Loại */
-        'age_group'
     ];
 
     protected $casts = [
         'status' => ActiveStatus::class,
         'question_type' => QuestionType::class,
-        'age_group' => AgeGroup::class,
 
     ];
 
