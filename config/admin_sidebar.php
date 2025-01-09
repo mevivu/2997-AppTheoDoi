@@ -45,6 +45,22 @@ return [
         ]
     ],
     [
+        'title' => 'Đánh giá thể chất',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-calendar-dollar"></i>',
+        'roles' => [],
+        'permissions' => ['viewGPA'],
+        'sub' => [
+            [
+                'title' => 'Hướng dẫn sức mạnh',
+                'routeName' => 'admin.gpa.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewGPA'],
+            ],
+        ]
+    ],
+    [
         'title' => 'Loại Tiêm chủng',
         'routeName' => null,
         'icon' => '<i class="ti ti-vaccine-bottle"></i>',

@@ -40,6 +40,28 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+    //Guide
+    Route::controller(\App\Admin\Http\Controllers\Guide\GuideController::class)
+        ->prefix('/guides')
+        ->as('guide.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createGuide', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(["middleware" => ['permission:viewGuide', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['permission:updateGuide', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:deleteGuide', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
     //Exercises
     Route::controller(App\Admin\Http\Controllers\Exercise\ExerciseController::class)
         ->prefix('/exercises')
