@@ -104,8 +104,7 @@ class RatingService implements RatingServiceInterface
     {
         $manager = new ImageManager(new Driver());
 
-        $img = $manager->read(public_path('assets/images/certificate_template.jpg'));
-        $logo = $manager->read(public_path('assets/images/logo.jpg'));
+        $img = $manager->read(public_path('assets/images/certificate_template.png'));
         $width = $img->width();
         $height = $img->height();
         $fontLight = public_path('assets/fonts/Roboto-Light.ttf');
@@ -113,15 +112,11 @@ class RatingService implements RatingServiceInterface
 
 
         $x = $width / 2;
-        $yName = $height * 0.30;
-        $logoX = $width / 2 -30 ;
-        $logoY = $yName - 70;
-        $yScore = $height * 0.39;
-        $yDesc = $height * 0.55;
-        $yDate = $height * 0.75;
+        $yName = $height * 0.39;
+        $yScore = $height * 0.46;
+        $yDesc = $height * 0.62;
+        $yDate = $height * 0.82;
         $xDate = $width / 3;
-        $logo->resize(60, 60);
-        $img->place($logo, 'top-left', $logoX, $logoY);
 
         $img->text($name, $x, $yName, function ($font) use ($fontBold) {
             $font->file($fontBold);
@@ -131,8 +126,8 @@ class RatingService implements RatingServiceInterface
             $font->valign('middle');
         });
 
-        $img->text("Điểm: " . $score, $x, $yScore, function ($font) use ($fontLight) {
-            $font->file($fontLight);
+        $img->text("Điểm: " . $score, $x, $yScore, function ($font) use ($fontBold) {
+            $font->file($fontBold);
             $font->size(20);
             $font->color('#32CD32');
             $font->align('center');
@@ -145,7 +140,7 @@ class RatingService implements RatingServiceInterface
             $font->color('#000');
             $font->align('center');
             $font->valign('middle');
-            $font->lineHeight(1.7);
+            $font->lineHeight(1.9);
         });
 
         $img->text("Date: " . $date, $xDate, $yDate, function ($font) use ($fontLight) {
