@@ -52,4 +52,18 @@ class ProductRepository extends EloquentRepository implements ProductRepositoryI
     {
         return ProductCatalog::all();
     }
+    public static function asSelectArray(): array
+    {
+        return self ::pluck('name', 'id')->toArray();
+    }
+    public function getAllBrandsAsSelectArray(): array
+    {
+        return Brand::pluck('name', 'id')->toArray();
+    }
+
+    public function getAllProductCatalogAsSelectArray(): array
+    {
+        return ProductCatalog::pluck('name', 'id')->toArray();
+    }
+
 }
