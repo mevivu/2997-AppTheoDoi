@@ -14,7 +14,7 @@
             <div class="col-12">
                 <div class="mb-3">
                     <label class="control-label">@lang('Mô tả')</label>
-                    <x-input name="description" :value="old('description')" :required="false" :placeholder="__('Mô tả hướng dẫn')" />
+                    <textarea name="description" class="ckeditor">{{ old('description') }}</textarea>
                 </div>
             </div>
 

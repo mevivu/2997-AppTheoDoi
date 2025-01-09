@@ -31,6 +31,7 @@ use App\Enums\Exercise\ExerciseType;
 use App\Enums\Child\ChildStatus;
 use App\Enums\Support\SupportType;
 use App\Enums\Answser\AnswerType;
+use App\Enums\Guide\GuideType;
 use App\Enums\User\{
     Gender,
     UserStatus,
@@ -207,6 +208,9 @@ return [
         BrandStatus::Active->value => 'Hoạt động',
         BrandStatus::Deleted->value => 'Đã xóa',
         BrandStatus::Draft->value => 'Bản nháp',
-
+    ],
+    GuideType::class => [
+        GuideType::Strength->value => 'Sức mạnh',
+        GuideType::Endurance->value => 'Sức bền',
     ]
 ];
