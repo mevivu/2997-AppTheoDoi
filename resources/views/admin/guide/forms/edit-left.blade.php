@@ -2,27 +2,17 @@
     <div class="card">
         <div class="row card-body">
 
-            <!-- Name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Tên')</label>
-                    <x-input type="text"
-                             name="name"
-                             :value="$instance->name"
-                             :required="true"
-                             :placeholder="__('name')"/>
+                    <label class="control-label">@lang('Tiêu đề hướng dẫn')</label>
+                    <x-input type="text" name="title" :value="$instance->title" :required="true" :placeholder="__('Tiêu đề hướng dẫn')" />
                 </div>
             </div>
 
-            <!-- length -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('description')</label>
-                    <x-input name="description"
-                             type="text"
-                             :value="$instance->description"
-                             :required="true"
-                             :placeholder="__('length')"/>
+                    <label class="control-label">{{ __('Mô tả') }}:</label>
+                    <textarea name="description" class="ckeditor visually-hidden">{{ $instance->description }}</textarea>
                 </div>
             </div>
 

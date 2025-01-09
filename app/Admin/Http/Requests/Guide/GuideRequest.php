@@ -4,6 +4,7 @@ namespace App\Admin\Http\Requests\Guide;
 
 use App\Admin\Http\Requests\BaseRequest;
 use App\Enums\ActiveStatus;
+use App\Enums\Guide\GuideType;
 use Illuminate\Validation\Rules\Enum;
 
 
@@ -19,6 +20,8 @@ class GuideRequest extends BaseRequest
         return [
             'title' => ['required', 'string'],
             'description' => ['nullable', 'string'],
+            'status' => ['required', new Enum(ActiveStatus::class, false)],
+            'type' => ['required', new Enum(GuideType::class, false)],
         ];
     }
 
@@ -29,7 +32,7 @@ class GuideRequest extends BaseRequest
             'title' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'status' => ['required', new Enum(ActiveStatus::class)],
-
+            'type'=> ['required', new Enum(GuideType::class)],
         ];
     }
 }

@@ -2,29 +2,21 @@
     <div class="card">
         <div class="row card-body">
 
-            <!-- title -->
+            <!-- Tiêu đề hướng dẫn -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Tên')</label>
-                    <x-input name="name"
-                             :value="old('title')"
-                             :required="true"
-                             :placeholder="__('title')"/>
+                    <label class="control-label">@lang('Tiêu đề')</label>
+                    <x-input name="title" :value="old('title')" :required="true" :placeholder="__('Tiêu đề ')" />
                 </div>
             </div>
 
-
-            <!-- description -->
+            <!-- Mô tả -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Tên')</label>
-                    <x-input name="description"
-                             :value="old('description')"
-                             :required="true"
-                             :placeholder="__('description')"/>
+                    <label class="control-label">@lang('Mô tả')</label>
+                    <x-input name="description" :value="old('description')" :required="false" :placeholder="__('Mô tả hướng dẫn')" />
                 </div>
             </div>
-
 
 
         </div>

@@ -2,12 +2,13 @@
 
 namespace App\Admin\Http\Controllers\Guide;
 
-use App\Admin\DataTables\ClinicType\ClinicTypeDataTable;
+use App\Admin\DataTables\Guide\GuideDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Guide\GuideRequest;
 use App\Admin\Repositories\Guide\GuideRepositoryInterface;
 use App\Admin\Services\Guide\GuideServiceInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Guide\GuideType;
 use App\Traits\ResponseController;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -53,7 +54,7 @@ class GuideController extends Controller
         ];
     }
 
-    public function index(ClinicTypeDataTable $dataTable)
+    public function index(GuideDataTable $dataTable)
     {
         $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
@@ -61,7 +62,7 @@ class GuideController extends Controller
             [
                 'status' => ActiveStatus::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
-                'breadcrumbs' => $this->crums->add(__('clinic_type')),
+                'breadcrumbs' => $this->crums->add(__('Guide')),
             ]
 
         );
@@ -72,7 +73,7 @@ class GuideController extends Controller
     {
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
-            'breadcrumbs' => $this->crums->add(__('clinic_type'),
+            'breadcrumbs' => $this->crums->add(__('Guide'),
                 route($this->route['index']))->add(__('add')),
         ]);
     }
@@ -95,8 +96,9 @@ class GuideController extends Controller
             $this->view['edit'],
             [
                 'instance' => $instance,
+                'type' => GuideType::asSelectArray(),
                 'status' => ActiveStatus::asSelectArray(),
-                'breadcrumbs' => $this->crums->add(__('clinic_type'), route($this->route['index']))->add(__('edit')),
+                'breadcrumbs' => $this->crums->add(__('Guide'), route($this->route['index']))->add(__('edit')),
             ],
         );
 

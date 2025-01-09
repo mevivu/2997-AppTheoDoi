@@ -31,7 +31,6 @@ class ProductDataTable extends BaseDataTable
             'brand' => 'admin.product.datatable.brand',
             'product_catalog' => 'admin.product.datatable.product_catalog',
             'checkbox' => 'admin.common.checkbox',
-
         ];
     }
 
