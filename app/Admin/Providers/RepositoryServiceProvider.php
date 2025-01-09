@@ -58,6 +58,8 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\ProductCatalog\ProductCatalogRepositoryInterface' => 'App\Admin\Repositories\ProductCatalog\ProductCatalogRepository',
         'App\Admin\Repositories\Product\ProductRepositoryInterface' => 'App\Admin\Repositories\Product\ProductRepository',
         'App\Admin\Repositories\Brand\BrandRepositoryInterface' => 'App\Admin\Repositories\Brand\BrandRepository',
+        'App\Admin\Repositories\Guide\GuideRepositoryInterface' => 'App\Admin\Repositories\Guide\GuideRepository',
+        'App\Admin\Repositories\Step\StepRepositoryInterface' => 'App\Admin\Repositories\Step\StepRepository',
 
 
     ];
