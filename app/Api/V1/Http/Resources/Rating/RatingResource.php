@@ -26,6 +26,7 @@ class RatingResource extends JsonResource
             'result' => $this->result,
             'description' => $this->description,
             'type' => $this->type,
+            'badge_image' => formatImageUrl($this->badge_image),
             'created_at' => format_datetime($this->created_at),
         ];
     }
