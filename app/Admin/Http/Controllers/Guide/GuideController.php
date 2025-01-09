@@ -4,12 +4,12 @@ namespace App\Admin\Http\Controllers\Guide;
 
 use App\Admin\DataTables\ClinicType\ClinicTypeDataTable;
 use App\Admin\Http\Controllers\Controller;
-use App\Admin\Http\Requests\ClinicType\ClinicTypeRequest;
+use App\Admin\Http\Requests\Guide\GuideRequest;
 use App\Admin\Repositories\Guide\GuideRepositoryInterface;
 use App\Admin\Services\Guide\GuideServiceInterface;
+use App\Enums\ActiveStatus;
 use App\Traits\ResponseController;
 use Exception;
-use App\Enums\Child\ChildStatus;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -59,7 +59,7 @@ class GuideController extends Controller
         return $dataTable->render(
             $this->view['index'],
             [
-                'status' => ChildStatus::asSelectArray(),
+                'status' => ActiveStatus::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
                 'breadcrumbs' => $this->crums->add(__('clinic_type')),
             ]
@@ -71,13 +71,13 @@ class GuideController extends Controller
     public function create(): Factory|View|Application
     {
         return view($this->view['create'], [
-            'status' => ChildStatus::asSelectArray(),
+            'status' => ActiveStatus::asSelectArray(),
             'breadcrumbs' => $this->crums->add(__('clinic_type'),
                 route($this->route['index']))->add(__('add')),
         ]);
     }
 
-    public function store(ClinicTypeRequest $request): RedirectResponse
+    public function store(GuideRequest $request): RedirectResponse
     {
         return $this->handleResponse($request, function ($request) {
             return $this->service->store($request);
@@ -95,14 +95,14 @@ class GuideController extends Controller
             $this->view['edit'],
             [
                 'instance' => $instance,
-                'status' => ChildStatus::asSelectArray(),
+                'status' => ActiveStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(__('clinic_type'), route($this->route['index']))->add(__('edit')),
             ],
         );
 
     }
 
-    public function update(ClinicTypeRequest $request): RedirectResponse
+    public function update(GuideRequest $request): RedirectResponse
     {
         return $this->handleUpdateResponse($request, function ($request) {
             return $this->service->update($request);
@@ -116,16 +116,16 @@ class GuideController extends Controller
     {
         return $this->handleDeleteResponse($id, function ($id) {
             $response = $this->repository->findOrFail($id);
-            return $response->update(['status' => ChildStatus::Deleted->value]);
+            return $response->update(['status' => ActiveStatus::Deleted->value]);
         });
     }
 
     protected function getActionMultiple(): array
     {
         return [
-            'active' => ChildStatus::Active->description(),
-            'draft' => ChildStatus::Draft->description(),
-            'deleted' => ChildStatus::Deleted->description()
+            'active' => ActiveStatus::Active->description(),
+            'draft' => ActiveStatus::Draft->description(),
+            'deleted' => ActiveStatus::Deleted->description()
         ];
     }
 

@@ -2,14 +2,14 @@
     <div class="card">
         <div class="row card-body">
 
-            <!-- Name -->
+            <!-- title -->
             <div class="col-12">
                 <div class="mb-3">
                     <label class="control-label">@lang('Tên')</label>
                     <x-input name="name"
-                             :value="old('name')"
+                             :value="old('title')"
                              :required="true"
-                             :placeholder="__('name')"/>
+                             :placeholder="__('title')"/>
                 </div>
             </div>
 

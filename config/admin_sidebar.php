@@ -49,14 +49,15 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-calendar-dollar"></i>',
         'roles' => [],
-        'permissions' => ['viewGPA'],
+        'permissions' => ['createGuide', 'viewGuide', 'updateGuide', 'deleteGuide'],
+
         'sub' => [
             [
                 'title' => 'Hướng dẫn sức mạnh',
-                'routeName' => 'admin.gpa.index',
+                'routeName' => 'admin.guide.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
-                'permissions' => ['viewGPA'],
+                'permissions' => ['viewGuide'],
             ],
         ]
     ],
