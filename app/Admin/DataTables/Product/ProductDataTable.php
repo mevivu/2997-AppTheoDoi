@@ -60,11 +60,6 @@ class ProductDataTable extends BaseDataTable
                 'column' => 2,
                 'data' => $this->repository->getAllBrandsAsSelectArray()
             ],
-            [
-                'column' => 1,
-                'data' => $this->repository->getAllProductCatalogAsSelectArray()
-            ]
-
 
         ];
     }
@@ -115,9 +110,9 @@ class ProductDataTable extends BaseDataTable
                     $subQuery->where('name', 'like', '%' . $keyword . '%');
                 });
             },
-            'product_catalog' => function($query, $keyword) {
+            'product_catalog_id' => function($query, $keyword) {
                 $query->whereHas('productCatalogs', function($q) use($keyword) {
-                    $q->whereIn('name', explode(',', $keyword));
+                    $q->where('name', 'like', '%' . $keyword . '%');
                 });
             }
         ];
