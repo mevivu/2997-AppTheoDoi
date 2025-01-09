@@ -4,6 +4,7 @@ namespace App\Admin\Repositories\Product;
 
 use App\Admin\Repositories\EloquentRepository;
 use App\Enums\Product\ProductStatus;
+use App\Enums\Brand\BrandStatus;
 use App\Models\Product;
 use App\Models\Brand;
 use App\Models\ProductCatalog;
@@ -17,7 +18,7 @@ class ProductRepository extends EloquentRepository implements ProductRepositoryI
     }
     public function getAllBrands()
     {
-        return Brand::all();
+        return Brand::where('status', BrandStatus::Active->value)->get();
     }
     public function searchAllLimit(string $keySearch = '', array $meta = [], int $limit = 10)
     {
@@ -42,10 +43,6 @@ class ProductRepository extends EloquentRepository implements ProductRepositoryI
         $this->findOrFail($id);
         $this->instance = $this->instance->load($relations);
         return $this->instance;
-    }
-    public function attachProductCatalogs(Product $product, array $productCatalogId)
-    {
-        return $product->productCatalogs()->attach($productCatalogId);
     }
     public function syncProductCatalogs(Product $product, array $productCatalogId)
     {

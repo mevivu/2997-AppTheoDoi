@@ -1356,19 +1356,21 @@ return [
         ],
     ],
     'product' => [
-        'checkbox' => [
-            'title' => 'choose',
-            'orderable' => false,
-            'exportable' => false,
-            'printable' => false,
-            'addClass' => 'align-middle text-center',
-            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
-            'visible' => false,
-        ],
         'name' => [
             'title' => 'name',
+            'width' => '150px',
             'addClass' => 'text-center align-middle',
             'orderable' => true
+        ],
+        'product_catalog_id' => [
+            'title' => 'Danh mục sản phẩm',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'brand_id' => [
+            'title' => 'Thương hiệu',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
         ],
         'status' => [
             'title' => 'status',
