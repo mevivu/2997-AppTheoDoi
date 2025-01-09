@@ -27,7 +27,10 @@ class ProductDataTable extends BaseDataTable
             'action' => 'admin.product.datatable.action',
             'name' => 'admin.product.datatable.name',
             'status' => 'admin.product.datatable.status',
+            'brand' => 'admin.product.datatable.brand',
+            'product_catalog' => 'admin.product.datatable.product_catalog',
             'checkbox' => 'admin.common.checkbox',
+
         ];
     }
 
@@ -45,10 +48,11 @@ class ProductDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 2, 3];
+        $this->columnAllSearch = [ 0,1, 2, 3, 4];
+        $this->columnSearchDate = [4];
         $this->columnSearchSelect = [
             [
-                'column' => 2,
+                'column' => 3,
                 'data' => ProductStatus::asSelectArray()
             ],
         ];
@@ -66,18 +70,30 @@ class ProductDataTable extends BaseDataTable
             'action' => $this->view['action'],
             'name' => $this->view['name'],
             'status' => $this->view['status'],
-            'checkbox' => $this->view['checkbox'],
+            'brand_id' => function ($product) {
+                return view($this->view['brand'], [
+                    'brand' => $product->brand,
+                ])->render();
+            },
+            'product_catalog_id' => function ($product) {
+                return view($this->view['product_catalog'], [
+                    'product_catalogs' => $product->productCatalogs,
+                ])->render();
+            },
         ];
     }
 
 
     protected function setCustomAddColumns(): void
     {
-        $this->customAddColumns = [];
+        $this->customAddColumns = [
+            'checkbox' => $this->view['checkbox'],
+        ];
     }
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['action', 'name', 'checkbox', 'created_at', 'status'];
+        $this->customRawColumns = ['action', 'name', 'created_at', 'status','brand_id','product_catalog_id','checkbox'];
     }
+
 }

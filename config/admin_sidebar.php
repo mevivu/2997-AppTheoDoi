@@ -371,6 +371,20 @@ return [
         ],
         'sub' => [
             [
+                'title' => 'Tạo sản phẩm',
+                'routeName' => 'admin.product.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createProduct'],
+            ],
+            [
+                'title' => 'DS sản phẩm',
+                'routeName' => 'admin.product.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewProduct'],
+            ],
+            [
                 'title' => 'DS thông tin thương hiệu',
                 'routeName' => 'admin.brand.index',
                 'icon' => '<i class="ti ti-list"></i>',
@@ -384,13 +398,6 @@ return [
                 'roles' => [],
                 'permissions' => ['viewProductCatalog'],
             ],
-            [
-                'title' => 'DS sản phẩm',
-                'routeName' => 'admin.product.index',
-                'icon' => '<i class="ti ti-list"></i>',
-                'roles' => [],
-                'permissions' => ['viewProduct'],
-            ]
         ]
     ],
     [

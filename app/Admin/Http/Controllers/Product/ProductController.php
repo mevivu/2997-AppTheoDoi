@@ -54,12 +54,10 @@ class ProductController extends Controller
 
     public function index(ProductDataTable $dataTable)
     {
-        $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
             $this->view['index'],
             [
                 'status' => ProductStatus::asSelectArray(),
-                'actionMultiple' => $actionMultiple,
                 'breadcrumbs' => $this->crums->add(__('productList')),
             ]
         );
@@ -129,21 +127,4 @@ class ProductController extends Controller
         });
     }
 
-    protected function getActionMultiple(): array
-    {
-        return [
-            'active' => ProductStatus::Active->description(),
-            'draft' => ProductStatus::Draft->description(),
-            'deleted' => ProductStatus::Deleted->description(),
-        ];
-    }
-
-    public function actionMultipleRecode(Request $request): RedirectResponse
-    {
-        $boolean = $this->Service->actionMultipleRecode($request);
-        if ($boolean) {
-            return back()->with('success', __('notifySuccess'));
-        }
-        return back()->with('error', __('notifyFail'));
-    }
 }

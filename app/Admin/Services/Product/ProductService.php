@@ -6,6 +6,7 @@ use App\Admin\Repositories\Product\ProductRepositoryInterface;
 use App\Admin\Traits\Roles;
 use App\Api\V1\Support\UseLog;
 use App\Enums\Product\ProductStatus;
+use App\Models\Product;
 use Exception;
 use Illuminate\Http\Request;
 use App\Admin\Traits\Setup;
@@ -87,29 +88,4 @@ class ProductService implements ProductServiceInterface
         return $this->repository->delete($id);
     }
 
-    public function actionMultipleRecode(Request $request): bool
-    {
-        $this->data = $request->all();
-
-        switch ($this->data['action']) {
-            case 'active':
-                foreach ($this->data['id'] as $value) {
-                    $this->repository->updateAttribute($value, 'status', ProductStatus::Active);
-                }
-                return true;
-            case 'inactive':
-                foreach ($this->data['id'] as $value) {
-                    $this->repository->updateAttribute($value, 'status', ProductStatus::Draft);
-                }
-                return true;
-            case 'deleted':
-                foreach ($this->data['id'] as $value) {
-                    $this->repository->updateAttribute($value, 'status', ActiveStatus::Deleted);
-                }
-                return true;
-
-            default:
-                return false;
-        }
-    }
 }
