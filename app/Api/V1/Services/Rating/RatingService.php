@@ -105,18 +105,23 @@ class RatingService implements RatingServiceInterface
         $manager = new ImageManager(new Driver());
 
         $img = $manager->read(public_path('assets/images/certificate_template.jpg'));
+        $logo = $manager->read(public_path('assets/images/logo.jpg'));
         $width = $img->width();
         $height = $img->height();
         $fontLight = public_path('assets/fonts/Roboto-Light.ttf');
         $fontBold = public_path('assets/fonts/Roboto-Bold.ttf');
 
+
         $x = $width / 2;
         $yName = $height * 0.30;
+        $logoX = $width / 2 -30 ;
+        $logoY = $yName - 70;
         $yScore = $height * 0.39;
         $yDesc = $height * 0.55;
         $yDate = $height * 0.75;
         $xDate = $width / 3;
-
+        $logo->resize(60, 60);
+        $img->place($logo, 'top-left', $logoX, $logoY);
 
         $img->text($name, $x, $yName, function ($font) use ($fontBold) {
             $font->file($fontBold);
