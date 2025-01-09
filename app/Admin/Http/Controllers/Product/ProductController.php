@@ -5,7 +5,6 @@ namespace App\Admin\Http\Controllers\Product;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Product\ProductRequest;
 use App\Admin\Repositories\Product\ProductRepositoryInterface;
-use App\Admin\Repositories\ProductCatalog\ProductCatalogRepositoryInterface;
 use App\Admin\Services\Product\ProductServiceInterface;
 use App\Admin\DataTables\Product\ProductDataTable;
 use App\Enums\Product\ProductStatus;
@@ -126,5 +125,4 @@ class ProductController extends Controller
             return $product->update(['status' => ProductStatus::Deleted->value]);
         });
     }
-
 }

@@ -20,14 +20,14 @@ enum ProductStatus: string
             ProductStatus::Deleted => 'bg-red',
         };
     }
-    public static function asSelectArray(): array
-    {
-        return [
-            self::Active->value => 'Kích hoạt',
-            self::Draft->value => 'Bản nháp',
-            self::Deleted->value => 'Đã xóa',
-        ];
-    }
+        public static function asSelectArray(): array
+        {
+            return [
+                self::Active->value => 'Kích hoạt',
+                self::Draft->value => 'Bản nháp',
+                self::Deleted->value => 'Đã xóa',
+            ];
+        }
     public static function asString($value): string
     {
         return (string) $value;

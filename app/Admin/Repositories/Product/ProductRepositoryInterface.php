@@ -11,6 +11,8 @@ interface ProductRepositoryInterface extends EloquentRepositoryInterface
     public function findOrFailWithRelations(int $id, array $relations = ['productCatalogs']);
     public function syncProductCatalogs(\App\Models\Product $product, array $productCatalogId);
     public function getAllProductCatalogs();
+    public function getAllBrandsAsSelectArray(): array;
+    public function getAllProductCatalogAsSelectArray(): array;
 
 
 }

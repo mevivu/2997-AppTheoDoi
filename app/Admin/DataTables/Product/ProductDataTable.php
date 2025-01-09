@@ -8,6 +8,7 @@ use App\Enums\ActiveStatus;
 use App\Enums\Product\ProductStatus;
 use Illuminate\Database\Eloquent\Builder;
 
+
 class ProductDataTable extends BaseDataTable
 {
     protected $nameTable = 'productTable';
@@ -17,8 +18,8 @@ class ProductDataTable extends BaseDataTable
     public function __construct(
         ProductRepositoryInterface $repository
     ) {
-        parent::__construct();
         $this->repository = $repository;
+        parent::__construct();
     }
 
     public function setView(): void
@@ -55,6 +56,16 @@ class ProductDataTable extends BaseDataTable
                 'column' => 3,
                 'data' => ProductStatus::asSelectArray()
             ],
+            [
+                'column' => 2,
+                'data' => $this->repository->getAllBrandsAsSelectArray()
+            ],
+            [
+                'column' => 1,
+                'data' => $this->repository->getAllProductCatalogAsSelectArray()
+            ]
+
+
         ];
     }
 
@@ -95,5 +106,20 @@ class ProductDataTable extends BaseDataTable
     {
         $this->customRawColumns = ['action', 'name', 'created_at', 'status','brand_id','product_catalog_id','checkbox'];
     }
+    public function setCustomFilterColumns(): void
+    {
+        $this->customFilterColumns = [
 
+            'brand' => function ($query, $keyword) {
+                $query->whereHas('brand', function ($subQuery) use ($keyword) {
+                    $subQuery->where('name', 'like', '%' . $keyword . '%');
+                });
+            },
+            'product_catalog' => function($query, $keyword) {
+                $query->whereHas('productCatalogs', function($q) use($keyword) {
+                    $q->whereIn('name', explode(',', $keyword));
+                });
+            }
+        ];
+    }
 }
