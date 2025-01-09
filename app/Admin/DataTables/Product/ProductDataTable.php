@@ -56,11 +56,6 @@ class ProductDataTable extends BaseDataTable
                 'column' => 3,
                 'data' => ProductStatus::asSelectArray()
             ],
-            [
-                'column' => 2,
-                'data' => $this->repository->getAllBrandsAsSelectArray()
-            ],
-
         ];
     }
 
@@ -104,14 +99,13 @@ class ProductDataTable extends BaseDataTable
     public function setCustomFilterColumns(): void
     {
         $this->customFilterColumns = [
-
-            'brand' => function ($query, $keyword) {
-                $query->whereHas('brand', function ($subQuery) use ($keyword) {
-                    $subQuery->where('name', 'like', '%' . $keyword . '%');
+            'brand_id' => function ($query, $keyword) {
+                $query->whereHas('brand', function ($q) use ($keyword) {
+                    $q->where('name', 'like', '%' . $keyword . '%');
                 });
             },
-            'product_catalog_id' => function($query, $keyword) {
-                $query->whereHas('productCatalogs', function($q) use($keyword) {
+            'product_catalog_id' => function ($query, $keyword) {
+                $query->whereHas('productCatalogs', function ($q) use ($keyword) {
                     $q->where('name', 'like', '%' . $keyword . '%');
                 });
             }
