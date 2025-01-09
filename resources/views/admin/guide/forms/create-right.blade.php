@@ -12,5 +12,22 @@
             </div>
         </div>
     </div>
+    <div class="mb-3">
+        <label class="control-label">@lang('Loại hướng dẫn')</label>
+        <x-select name="type" :required="true">
+            @foreach(\App\Enums\Guide\GuideType::asSelectArray() as $key => $value)
+                <x-select-option value="{{ $key }}" title="{{ $value }}" />
+            @endforeach
+        </x-select>
+    </div>
+
+    <div class="mb-3">
+        <label class="control-label">@lang('Trạng thái')</label>
+        <x-select name="status" :required="true">
+            @foreach(\App\Enums\ActiveStatus::asSelectArray() as $key => $value)
+                <x-select-option value="{{ $key }}" title="{{ $value }}" />
+            @endforeach
+        </x-select>
+    </div>
 
 </div>

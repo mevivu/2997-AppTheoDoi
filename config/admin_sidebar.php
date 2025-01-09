@@ -53,6 +53,13 @@ return [
 
         'sub' => [
             [
+                'title' => 'Tạo bài Hướng dẫn',
+                'routeName' => 'admin.guide.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createGuide'],
+            ],
+            [
                 'title' => 'Hướng dẫn sức mạnh',
                 'routeName' => 'admin.guide.index',
                 'icon' => '<i class="ti ti-list"></i>',
