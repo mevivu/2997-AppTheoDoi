@@ -2,6 +2,7 @@
 
 namespace App\Api\V1\Http\Resources\Auth;
 
+use App\AES\AESHelper;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
@@ -22,20 +23,25 @@ class AuthResource extends JsonResource
         return [
             'id' => $this->id,
             'code' => $this->code,
-            'username' => $this->username,
+            'username' => AESHelper::decrypt($this->username),
             'fullname' => $this->fullname,
             'slug' => $this->slug,
-            'email' => $this->email,
-            'phone' => $this->phone,
-            'address' => $this->address,
+            'email' => AESHelper::decrypt($this->email),
+            'phone' => AESHelper::decrypt($this->phone),
+            'address' => AESHelper::decrypt($this->address),
             'gender' => $this->gender,
             'active' => $this->active,
-            'lgn' => $this->longitude,
+            'lng' => $this->longitude,
             'lat' => $this->latitude,
             'birthday' => $this->birthday,
             'avatar' => formatImageUrl($this->avatar),
             'notification_preference' => $this->notification_preference,
-            'bank_account_number' => $this->bank_account_number,
+            'father_name' => $this->father_name,
+            'father_height' => $this->father_height,
+            'father_birthday' => $this->father_birthday,
+            'mother_name' => $this->mother_name,
+            'mother_height' => $this->mother_height,
+            'mother_birthday' => $this->mother_birthday,
             'status' => $this->status,
             'created_at' => format_date($this->created_at),
         ];

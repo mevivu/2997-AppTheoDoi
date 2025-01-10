@@ -101,6 +101,12 @@ class UserController extends Controller
      * @bodyParam avatar string optional Đường dẫn hình ảnh đại diện mới, nếu cập nhật. Example: http://example.com/avatar.jpg
      * @bodyParam gender string optional Giới tính, nếu cập nhật. Example: 1
      * @bodyParam birthday string optional Ngày sinh, nếu cập nhật. Example: 2024-12-12
+     * @bodyParam father_name string optional Tên của bố. Example: John Doe
+     * @bodyParam father_height integer optional Chiều cao của bố (cm). Example: 180
+     * @bodyParam father_birthday string optional Ngày sinh của bố, nếu cập nhật. Example: 1960-05-15
+     * @bodyParam mother_name string optional Tên của mẹ. Example: Jane Smith
+     * @bodyParam mother_height integer optional Chiều cao của mẹ (cm). Example: 165
+     * @bodyParam mother_birthday string optional Ngày sinh của mẹ, nếu cập nhật. Example: 1962-08-30
      *
      * @response 200 {
      *     "status": 200,
@@ -112,7 +118,13 @@ class UserController extends Controller
      *         "birthday": "2024-12-12",
      *         "phone": "0977123456",
      *         "email": "newuser@example.com",
-     *         "avatar": "http://example.com/avatar.jpg"
+     *         "avatar": "http://example.com/avatar.jpg",
+     *         "father_name": "John Doe",
+     *         "father_height": 180,
+     *         "father_birthday": "1960-05-15",
+     *         "mother_name": "Jane Smith",
+     *         "mother_height": 165,
+     *         "mother_birthday": "1962-08-30"
      *     }
      * }
      *
@@ -133,6 +145,7 @@ class UserController extends Controller
      * @param UserUpdateRequest $request
      * @return JsonResponse
      */
+
     public function update(UserUpdateRequest $request): JsonResponse
     {
         try {

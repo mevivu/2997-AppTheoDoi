@@ -51,10 +51,17 @@ class UserUpdateRequest extends BaseRequest
             'avatar' => ['nullable'],
             'gender' => ['nullable', new Enum(Gender::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d'],
+            'father_name' => ['nullable', 'string'],
+            'father_height' => ['nullable', 'integer', 'min:0'],
+            'father_birthday' => ['nullable', 'date_format:Y-m-d'],
+            'mother_name' => ['nullable', 'string'],
+            'mother_height' => ['nullable', 'integer', 'min:0'],
+            'mother_birthday' => ['nullable', 'date_format:Y-m-d'],
+
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'fullname.required' => 'Tên không được để trống.',
@@ -63,6 +70,14 @@ class UserUpdateRequest extends BaseRequest
             'email.email' => 'Email không đúng định dạng.',
             'email.unique' => 'Email đã được sử dụng.',
             'birthday.date_format' => 'Ngày sinh không đúng định dạng.',
+            'father_name.string' => 'Tên của bố phải là một chuỗi ký tự.',
+            'father_height.integer' => 'Chiều cao của bố phải là một số nguyên.',
+            'father_height.min' => 'Chiều cao của bố không được âm.',
+            'father_birthday.date_format' => 'Ngày sinh của bố không đúng định dạng (YYYY-MM-DD).',
+            'mother_name.string' => 'Tên của mẹ phải là một chuỗi ký tự.',
+            'mother_height.integer' => 'Chiều cao của mẹ phải là một số nguyên.',
+            'mother_height.min' => 'Chiều cao của mẹ không được âm.',
+            'mother_birthday.date_format' => 'Ngày sinh của mẹ không đúng định dạng (YYYY-MM-DD).',
         ];
     }
 }
