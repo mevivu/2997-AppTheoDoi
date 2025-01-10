@@ -33,6 +33,7 @@
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <div>
                                                 <label class="control-label d-block text-start">@lang('Thứ tự')</label>
+                                                <input type="hidden" name="steps[{{ $loop->index }}][order]" value="{{ $step->order }}">
                                                 <span class="form-control-plaintext">{{ $step->order }}</span>
                                             </div>
                                             <button type="button" class="btn btn-danger remove-step">@lang('Xóa bước')</button>
