@@ -1,50 +1,51 @@
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    $(document).ready(function() {
         let stepIndex = {{ count($instance->steps ?? []) }}; // Tạo biến stepIndex từ số bước hiện tại, bắt đầu từ 0
-        const stepsContainer = document.getElementById('steps-list');
-        const addStepButton = document.getElementById('add-step-btn');
+        const stepsContainer = $('#steps-list');
+        const addStepButton = $('#add-step-btn');
 
         // Thêm bước mới
-        addStepButton.addEventListener('click', () => {
-            const newStep = document.createElement('div');
-            newStep.classList.add('step-item', 'border', 'rounded', 'p-3', 'mb-3');
-            newStep.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <label class="control-label">@lang('Tiêu đề bước')</label>
-                    <button type="button" class="btn btn-danger remove-step">@lang('Xóa bước')</button>
+        addStepButton.on('click', function() {
+            const newStep = $(`
+                <div class="step-item border rounded p-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <label class="control-label d-block text-start">@lang('Thứ tự')</label>
+                            <span class="form-control-plaintext text-start" id="order-${stepIndex}">${stepIndex + 1}</span>
+                        </div>
+                        <button type="button" class="btn btn-danger remove-step">@lang('Xóa bước')</button>
+                    </div>
+                    <div class="mb-3">
+                        <label class="control-label">@lang('Tiêu đề bước')</label>
+                        <x-input name="steps[${stepIndex}][title]" :required="true" :placeholder="__('Tiêu đề bước')" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="control-label d-block text-start">@lang('Mô tả bước')</label>
+                        <textarea name="steps[${stepIndex}][description]" class="form-control ckeditor visually-hidden" placeholder="@lang('Mô tả bước')"></textarea>
+                    </div>
                 </div>
-                <x-input name="steps[${stepIndex}][title]" :required="true" :placeholder="__('Tiêu đề bước')" />
-                <br>
-                <div class="mb-3">
-                    <label class="control-label d-block text-start">@lang('Mô tả bước')</label>
-                    <textarea name="steps[${stepIndex}][description]" class="form-control" placeholder="@lang('Mô tả bước')"></textarea>
-                </div>
+            `);
 
-               <div class="mb-3">
-                    <label class="control-label d-block text-start">@lang('Thứ tự')</label>
-                    <span class="form-control-plaintext text-start" id="order-${stepIndex}">${stepIndex + 1}</span>
-                </div>
-            `;
-
-            stepsContainer.appendChild(newStep);
+            stepsContainer.append(newStep);
             stepIndex++; // Tăng chỉ số bước khi thêm bước mới
+
+            // Khởi tạo CKEditor cho textarea mới
+            CKEDITOR.replace(newStep.find('textarea')[0]);
+            updateOrderNumbers(); // Cập nhật lại số thứ tự
         });
 
         // Xóa bước
-        stepsContainer.addEventListener('click', (e) => {
-            if (e.target.classList.contains('remove-step')) {
-                const stepItem = e.target.closest('.step-item');
-                stepItem.remove();
-
-                // Cập nhật lại chỉ số thứ tự của các bước còn lại
-                const allSteps = document.querySelectorAll('.step-item');
-                allSteps.forEach((step, index) => {
-                    const orderInput = step.querySelector('input[name^="steps"][name$="[order]"]');
-                    if (orderInput) {
-                        orderInput.value = index + 1; // Cập nhật lại giá trị thứ tự
-                    }
-                });
-            }
+        stepsContainer.on('click', '.remove-step', function() {
+            const stepItem = $(this).closest('.step-item');
+            stepItem.remove();
+            updateOrderNumbers(); // Cập nhật lại số thứ tự sau khi xóa bước
         });
+
+        // Hàm cập nhật lại số thứ tự
+        function updateOrderNumbers() {
+            $('.step-item').each(function(index) {
+                $(this).find('.form-control-plaintext').text(index + 1); // Cập nhật lại thứ tự
+            });
+        }
     });
 </script>
