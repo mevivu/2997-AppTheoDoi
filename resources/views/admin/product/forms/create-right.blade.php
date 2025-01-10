@@ -45,4 +45,14 @@
             </x-select>
         </div>
     </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <span class="ti ti-photo me-1"></span>
+            {{ __('Ảnh đại diện') }}
+        </div>
+        <div class="card-body p-2">
+            <x-input-image-ckfinder name="image" showImage="image" />
+        </div>
+    </div>
 </div>

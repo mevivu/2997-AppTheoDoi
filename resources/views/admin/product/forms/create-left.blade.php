@@ -14,6 +14,18 @@
                 </div>
             </div>
 
+            <!-- description -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">
+                        <span class="ti ti-message"></span>
+                        {{ __('description') }}:</label>
+                    <textarea name="description" class="ckeditor visually-hidden">
+                        {{ old('content') }}
+                    </textarea>
+                </div>
+            </div>
+
             <div class="col-md-6 col-12 mb-3">
                 <label class="form-label fw-bold">@lang('brand')</label>
                 <select class="form-select" name="brand_id" required>

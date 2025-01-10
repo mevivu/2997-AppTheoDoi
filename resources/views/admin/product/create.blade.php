@@ -16,10 +16,10 @@
         <div class="container-xl">
             <x-form :action="route('admin.product.store')" type="post" :validate="true">
                 <div class="row justify-content-center">
-                    @include('admin.product.forms.create-left')  <!-- Gồm phần bên trái của form -->
-                    @include('admin.product.forms.create-right') <!-- Gồm phần bên phải của form -->
+                    @include('admin.product.forms.create-left')
+                    @include('admin.product.forms.create-right')
                 </div>
-                @include('admin.forms.actions-fixed')  <!-- Gồm các nút hành động -->
+                @include('admin.forms.actions-fixed')
             </x-form>
         </div>
     </div>
@@ -28,6 +28,7 @@
 @push('libs-js')
     <script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
     <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
+    @include('ckfinder::setup')
 @endpush
 
 @push('custom-js')

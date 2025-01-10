@@ -14,6 +14,16 @@
                 </div>
             </div>
 
+            <!-- description -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">
+                        <span class="ti ti-message"></span>
+                        {{ __('Mô tả') }}:</label>
+                    <textarea name="$product" class="ckeditor visually-hidden">{{ $product->description }}</textarea>
+                </div>
+            </div>
+
             <!-- Brand -->
             <div class="col-12">
                 <div class="mb-3">

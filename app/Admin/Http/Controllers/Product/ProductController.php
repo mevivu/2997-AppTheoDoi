@@ -7,6 +7,7 @@ use App\Admin\Http\Requests\Product\ProductRequest;
 use App\Admin\Repositories\Product\ProductRepositoryInterface;
 use App\Admin\Services\Product\ProductServiceInterface;
 use App\Admin\DataTables\Product\ProductDataTable;
+use App\Enums\ActiveStatus;
 use App\Enums\Product\ProductStatus;
 use App\Traits\ResponseController;
 use Exception;
@@ -14,7 +15,6 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -62,7 +62,7 @@ class ProductController extends Controller
         );
     }
 
-    public function create()
+    public function create(): Factory|View|Application
     {
 
         $productCatalogs = $this->Repository->getAllProductCatalogs();
@@ -99,7 +99,7 @@ class ProductController extends Controller
                 'productCatalogs' => $allProductCatalogs,
                 'selectedProductCatalogIds' => $productCatalogIds,
                 'brands' => $brands,
-                'status' => \App\Enums\ActiveStatus::asSelectArray(),
+                'status' => ActiveStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(__('productList'),
                     route($this->route['index']))->add(__('edit')),
             ]
