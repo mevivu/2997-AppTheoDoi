@@ -1,5 +1,5 @@
 # Disable directory browsing
-Options All -Indexes
+#Options All -Indexes
 
 # <IfModule mod_headers.c>
 #     Header set Access-Control-Allow-Origin "*"
@@ -45,7 +45,7 @@ Options All -Indexes
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-    
+
     # chặn truy cập tất cả các thư mục trừ public. 1 (apply comment you want to SSL)
     RewriteCond %{REQUEST_FILENAME} -d [OR]
     RewriteCond %{REQUEST_FILENAME} -f
@@ -53,10 +53,10 @@ Options All -Indexes
 
     RewriteCond %{REQUEST_URI} (\.\w+$) [NC]
     RewriteRule ^(.*)$ public/$1
-    
-    
+
+
     # 2 uncomment you want to SSL
-    
+
     # start
     # Handle Authorization Header
     # RewriteCond %{HTTP:Authorization} .
@@ -67,7 +67,7 @@ Options All -Indexes
     # RewriteCond %{REQUEST_URI} (.+)/$
     # RewriteRule ^ %1 [L,R=301]
     # END
-    
+
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
