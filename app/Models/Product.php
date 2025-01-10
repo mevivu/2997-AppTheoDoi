@@ -19,6 +19,10 @@ class Product extends Model
     protected $fillable = [
         /** Tên sản phẩm */
         'name',
+        /** Mô tả */
+        'description',
+        /** Hình ảnh */
+        'image',
         /** Danh mục sản phẩm */
         'product_catalog_id',
         /** Thương hiệu */

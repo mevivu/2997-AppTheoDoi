@@ -79,7 +79,7 @@ class ProductController extends Controller
     public function store(ProductRequest $request): RedirectResponse
     {
         return $this->handleResponse($request, function ($request) {
-            return $this->Service->store($request); // Using ProductService
+            return $this->Service->store($request);
         }, $this->route['index'], $this->route['edit']);
     }
 
