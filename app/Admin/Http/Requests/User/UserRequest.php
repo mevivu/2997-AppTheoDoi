@@ -38,6 +38,12 @@ class UserRequest extends BaseRequest
             'lat' => ['nullable'],
             'birthday' => ['nullable', 'date_format:Y-m-d'],
             'avatar' => ['nullable'],
+            'father_name' => ['nullable', 'string'],
+            'father_height' => ['nullable', 'integer', 'min:0'],
+            'father_birthday' => ['nullable', 'date_format:Y-m-d'],
+            'mother_name' => ['nullable', 'string'],
+            'mother_height' => ['nullable', 'integer', 'min:0'],
+            'mother_birthday' => ['nullable', 'date_format:Y-m-d'],
         ];
     }
 
@@ -63,6 +69,12 @@ class UserRequest extends BaseRequest
             'lng' => ['nullable'],
             'lat' => ['nullable'],
             'address' => ['nullable'],
+            'father_name' => ['nullable', 'string'],
+            'father_height' => ['nullable', 'integer', 'min:0'],
+            'father_birthday' => ['nullable', 'date_format:Y-m-d'],
+            'mother_name' => ['nullable', 'string'],
+            'mother_height' => ['nullable', 'integer', 'min:0'],
+            'mother_birthday' => ['nullable', 'date_format:Y-m-d'],
         ];
     }
 }

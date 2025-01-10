@@ -61,7 +61,18 @@ class User extends Authenticatable implements JWTSubject
         'lat',
         /** Kinh độ */
         'lng',
-        /** Loại địa chỉ */
+        /** Tên của bố */
+        'father_name',
+        /** Chiều cao của bố (cm) */
+        'father_height',
+        /** Ngày sinh của bố */
+        'father_birthday',
+        /** Tên của mẹ */
+        'mother_name',
+        /** Chiều cao của mẹ */
+        'mother_height',
+        /** Ngày sinh của mẹ */
+        'mother_birthday',
 
     ];
 

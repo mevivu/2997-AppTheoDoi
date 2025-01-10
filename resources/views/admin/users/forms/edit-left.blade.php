@@ -17,6 +17,20 @@
                     </button>
                 </li>
 
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link"
+                            id="parent-info-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#parentInfo"
+                            type="button"
+                            role="tab"
+                            aria-controls="parentInfo"
+                            aria-selected="false">
+                        <i class="ti ti-users"></i>
+                        {{ __('Thông Tin Phụ Huynh') }}
+                    </button>
+                </li>
+
             </ul>
 
             <!-- Tab Content -->
@@ -26,6 +40,12 @@
                      role="tabpanel"
                      aria-labelledby="basic-info-tab">
                     @include('admin.users.partials.edit-info-user')
+                </div>
+                <div class="tab-pane fade"
+                     id="parentInfo"
+                     role="tabpanel"
+                     aria-labelledby="parent-info-tab">
+                    @include('admin.users.partials.edit-info-parent')
                 </div>
 
             </div>

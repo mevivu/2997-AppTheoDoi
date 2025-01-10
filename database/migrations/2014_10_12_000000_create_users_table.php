@@ -34,6 +34,12 @@ return new class extends Migration {
             $table->string('address');
             $table->double('latitude', 15, 10)->nullable();
             $table->double('longitude', 15, 10)->nullable();
+            $table->string('father_name')->nullable();
+            $table->integer('father_height')->nullable();
+            $table->date('father_birthday')->nullable();
+            $table->string('mother_name')->nullable();
+            $table->integer('mother_height')->nullable();
+            $table->date('mother_birthday')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
