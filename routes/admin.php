@@ -442,7 +442,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
     //vaccinationType
-    Route::controller(\App\Admin\Http\Controllers\VaccinationType\vaccinationTypeController::class)
+    Route::controller(\App\Admin\Http\Controllers\VaccinationType\VaccinationTypeController::class)
         ->prefix('/loai-tiem-chung')
         ->as('vaccinationType.')
         ->group(function () {
