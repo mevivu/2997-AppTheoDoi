@@ -1,6 +1,8 @@
 @extends('admin.layouts.master')
+
 @push('libs-css')
 @endpush
+
 @push('custom-css')
     <style>
         .pac-container {
@@ -8,6 +10,7 @@
         }
     </style>
 @endpush
+
 @section('content')
     <div class="page-body">
         <div class="container-xl">
@@ -23,10 +26,10 @@
 @endsection
 
 @push('libs-js')
-<script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
-<script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
+    <script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
 @endpush
 
 @push('custom-js')
-
+    @include('admin.guide.scripts.script')
 @endpush

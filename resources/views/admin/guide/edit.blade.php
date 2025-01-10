@@ -3,6 +3,7 @@
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
 @endpush
+
 @section('content')
     <div class="page-body">
         <div class="container-xl">
@@ -26,6 +27,5 @@
 @endpush
 
 @push('custom-js')
-
-
+    @include('admin.guide.scripts.script')
 @endpush

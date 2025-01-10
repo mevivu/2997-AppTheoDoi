@@ -81,7 +81,9 @@ class GuideController extends Controller
     public function store(GuideRequest $request): RedirectResponse
     {
         return $this->handleResponse($request, function ($request) {
-            return $this->service->store($request);
+            $guide = $this->service->store($request);
+            $this->service->storeSteps($guide, $request->input('steps', [])); // Lưu steps
+            return $guide;
         }, $this->route['index'], $this->route['edit']);
     }
 
@@ -90,24 +92,25 @@ class GuideController extends Controller
      */
     public function edit($id): Factory|View|Application
     {
-
         $instance = $this->repository->findOrFail($id);
         return view(
             $this->view['edit'],
             [
                 'instance' => $instance,
+                'steps' => $instance->steps,
                 'type' => GuideType::asSelectArray(),
                 'status' => ActiveStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(__('Guide'), route($this->route['index']))->add(__('edit')),
             ],
         );
-
     }
 
     public function update(GuideRequest $request): RedirectResponse
     {
         return $this->handleUpdateResponse($request, function ($request) {
-            return $this->service->update($request);
+            $guide = $this->service->update($request);
+            $this->service->updateSteps($guide, $request->input('steps', [])); // Cập nhật steps
+            return $guide;
         });
     }
 

@@ -22,17 +22,25 @@ class GuideRequest extends BaseRequest
             'description' => ['nullable', 'string'],
             'status' => ['required', new Enum(ActiveStatus::class, false)],
             'type' => ['required', new Enum(GuideType::class, false)],
+            'steps' => ['nullable', 'array'],
+            'steps.*.title' => ['required', 'string'],
+            'steps.*.description' => ['nullable', 'string'],
+            'steps.*.order' => ['required', 'integer'],
         ];
     }
 
     protected function methodPut(): array
     {
         return [
-            'id' => ['required', 'exists:App\Models\ClinicType,id'],
+            'id' => ['required', 'exists:guides,id'],
             'title' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'status' => ['required', new Enum(ActiveStatus::class)],
-            'type'=> ['required', new Enum(GuideType::class)],
+            'type' => ['required', new Enum(GuideType::class)],
+            'steps' => ['nullable', 'array'],
+            'steps.*.title' => ['required', 'string'],
+            'steps.*.description' => ['nullable', 'string'],
+            'steps.*.order' => ['required', 'integer'],
         ];
     }
 }
