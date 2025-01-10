@@ -25,6 +25,8 @@ Route::prefix('auth')->controller(AuthController::class)
         Route::put('/update-password', 'forgotPassword');
         Route::put('/change-password', 'updatePassword');
         Route::put('/update-email', 'updateEmail');
+        Route::put('/update-device-token', 'updateDeviceToken')->name('updateToken');
+
     });
 
 //auth

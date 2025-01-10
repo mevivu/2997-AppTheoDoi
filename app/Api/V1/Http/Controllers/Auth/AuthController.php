@@ -6,6 +6,7 @@ use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Http\Requests\Auth\LoginRequest;
 use App\Api\V1\Http\Requests\Auth\ResetPasswordRequest;
+use App\Api\V1\Http\Requests\Auth\UpdateDeviceTokenRequest;
 use App\Api\V1\Http\Requests\Auth\UpdatePasswordRequest;
 use App\Api\V1\Http\Requests\Auth\UpdateEmailRequest;
 use App\Api\V1\Http\Requests\User\ResendOtpRequest;
@@ -398,5 +399,54 @@ class AuthController extends Controller
             $this->logError('Update password failed', $e);
             return $this->jsonResponseError('Update password failed.', 500);
         }
+    }
+
+    /**
+     * Cập nhật token của thiết bị để nhận thông báo.
+     *
+     * @authenticated
+     * Example: Bearer 1|WhUre3Td7hThZ8sNhivpt7YYSxJBWk17rdndVO8K
+     *
+     * @bodyParam device_token string required Token của thiết bị.
+     * Example: clBCowEcT8ioPgVe7LazX1:APA91bFxEz_C6fKpj6y_nNnThThtDTG3pSrH5REtn6wuu0C_0nUqiI1HqtCxpdjKBpe4bS-Ec2tiYOltI2GEx2MbtrV6vS27h6TpS0n7mggimQglIhJkdxJKUQ-cYv8tEq4-k5qK9HWZ
+     *
+     * @response 200 {
+     *      "status": 200,
+     *      "message": "notifySuccess",
+     *      "data": {
+     *          "user_id": 23,
+     *          "device_token": "1"
+     *      }
+     * }
+     *
+     * @response 400 {
+     *      "status": 400,
+     *      "message": "Bad Request",
+     *      "errors": {
+     *          "user_id": [
+     *              "The selected user_id is invalid."
+     *          ],
+     *          "device_token": [
+     *              "The device_token field is required."
+     *          ]
+     *      }
+     * }
+     *
+     * @param UpdateDeviceTokenRequest $request
+     * @return JsonResponse
+     * @throws Exception
+     */
+    public function updateDeviceToken(UpdateDeviceTokenRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $response = $this->userRepository->update($this->getCurrentUserId(), [
+            "device_token" => $data['device_token'],
+        ]);
+
+        return response()->json([
+            'status' => 200,
+            'message' => __('notifySuccess'),
+            'data' => $response,
+        ]);
     }
 }
