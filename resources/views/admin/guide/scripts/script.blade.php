@@ -11,6 +11,7 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <div>
                             <label class="control-label d-block text-start">@lang('Thứ tự')</label>
+                            <input type="hidden" name="steps[${stepIndex}][order]" value="${stepIndex + 1}" />
                             <span class="form-control-plaintext text-start" id="order-${stepIndex}">${stepIndex + 1}</span>
                         </div>
                         <button type="button" class="btn btn-danger remove-step">@lang('Xóa bước')</button>
