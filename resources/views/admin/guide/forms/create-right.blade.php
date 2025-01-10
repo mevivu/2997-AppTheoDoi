@@ -1,33 +1,45 @@
 <div class="col-12 col-md-3">
-
     <div class="card mb-3">
         <div class="card-header">
+            <span class="ti ti-upload me-1"></span>
             {{ __('Hoạt động') }}
         </div>
         <div class="card-body p-2">
             <div class="w-100 d-flex align-items-center h-100 gap-2">
                 <x-button.submit :title="__('save')" name="submitter" value="save"
-                    class="flex-column gap-1 text-wrap p-2 flex-grow-1" />
-                <x-link :href="route('admin.guide.index')" class="w-50 btn btn-outline" :title="'Quay lại'" />
+                                 class="flex-column gap-1 text-wrap p-2 flex-grow-1" />
+                <x-link :href="route('admin.guide.index')" class="btn btn-outline w-50">
+                    @lang('Quay lại')
+                </x-link>
             </div>
         </div>
     </div>
-    <div class="mb-3">
-        <label class="control-label">@lang('Loại hướng dẫn')</label>
-        <x-select name="type" :required="true">
-            @foreach(\App\Enums\Guide\GuideType::asSelectArray() as $key => $value)
-                <x-select-option value="{{ $key }}" title="{{ $value }}" />
-            @endforeach
-        </x-select>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <span class="ti ti-category me-1"></span>
+            {{ __('Loại hướng dẫn') }}
+        </div>
+        <div class="card-body p-2">
+            <x-select name="type" :required="true">
+                @foreach(\App\Enums\Guide\GuideType::asSelectArray() as $key => $value)
+                    <x-select-option value="{{ $key }}" title="{{ $value }}" />
+                @endforeach
+            </x-select>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label class="control-label">@lang('Trạng thái')</label>
-        <x-select name="status" :required="true">
-            @foreach(\App\Enums\ActiveStatus::asSelectArray() as $key => $value)
-                <x-select-option value="{{ $key }}" title="{{ $value }}" />
-            @endforeach
-        </x-select>
+    <div class="card mb-3">
+        <div class="card-header">
+            <span class="ti ti-status-change me-1"></span>
+            {{ __('Trạng thái') }}
+        </div>
+        <div class="card-body p-2">
+            <x-select name="status" :required="true">
+                @foreach(\App\Enums\ActiveStatus::asSelectArray() as $key => $value)
+                    <x-select-option value="{{ $key }}" title="{{ $value }}" />
+                @endforeach
+            </x-select>
+        </div>
     </div>
-
 </div>
