@@ -6,7 +6,7 @@
             <div class="col-12">
                 <div class="mb-3">
                     <label class="control-label">@lang('Tiêu đề')</label>
-                    <x-input name="title" :value="old('title')" :required="true" :placeholder="__('Tiêu đề ')" />
+                    <x-input name="title" :value="old('title')" :required="true" :placeholder="__('Tiêu đề')" />
                 </div>
             </div>
 
@@ -18,6 +18,22 @@
                 </div>
             </div>
 
+            <!-- Các bước hướng dẫn -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4>@lang('Các bước hướng dẫn')</h4>
+                        <button type="button" id="add-step-btn" class="btn btn-primary">@lang('Thêm bước mới')</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="steps-container">
+                            <div id="steps-list">
+                                <!-- Các bước được thêm vào đây -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </div>

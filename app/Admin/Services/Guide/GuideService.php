@@ -87,4 +87,20 @@ class GuideService implements GuideServiceInterface
                 return false;
         }
     }
+    public function storeSteps(object $guide, array $steps): void
+    {
+        foreach ($steps as $step) {
+            $guide->steps()->create([
+                'title' => $step['title'],
+                'description' => $step['description'] ?? null,
+                'order' => $step['order'],
+            ]);
+        }
+    }
+
+    public function updateSteps(object $guide, array $steps): void
+    {
+        $guide->steps()->delete();
+        $this->storeSteps($guide, $steps);
+    }
 }
