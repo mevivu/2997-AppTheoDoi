@@ -27,28 +27,29 @@
                     </div>
                     <div class="card-body">
                         <div id="steps-container">
-                            @forelse ($instance->steps ?? [] as $step)
-                                <div class="step-item border rounded p-3 mb-3" id="step-{{ $loop->index }}">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <label class="control-label">@lang('Tiêu đề bước')</label>
-                                        <button type="button" class="btn btn-danger remove-step">@lang('Xóa bước')</button>
-                                    </div>
-                                    <x-input name="steps[{{ $loop->index }}][title]" :required="true" :placeholder="__('Tiêu đề bước')" :value="$step->title" class="w-100"/>
-                                    <br>
-                                    <div class="mb-3">
-                                        <label class="control-label d-block text-start">@lang('Mô tả bước')</label>
-                                        <textarea name="steps[{{ $loop->index }}][description]" class="form-control" placeholder="@lang('Mô tả bước')">{{ $step->description }}</textarea>
-                                    </div>
+                            <div id="steps-list">
+                                @forelse ($instance->steps ?? [] as $step)
+                                    <div class="step-item border rounded p-3 mb-3" id="step-{{ $loop->index }}">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <label class="control-label">@lang('Tiêu đề bước')</label>
+                                            <button type="button" class="btn btn-danger remove-step">@lang('Xóa bước')</button>
+                                        </div>
+                                        <x-input name="steps[{{ $loop->index }}][title]" :required="true" :placeholder="__('Tiêu đề bước')" :value="$step->title" class="w-100"/>
+                                        <br>
+                                        <div class="mb-3">
+                                            <label class="control-label d-block text-start">@lang('Mô tả bước')</label>
+                                            <textarea name="steps[{{ $loop->index }}][description]" class="form-control" placeholder="@lang('Mô tả bước')">{{ $step->description }}</textarea>
+                                        </div>
 
-
-                                    <div class="mb-3">
-                                        <label class="control-label d-block text-start">@lang('Thứ tự')</label>
-                                        <x-input type="number" name="steps[{{ $loop->index }}][order]" :value="$step->order" :required="true" />
+                                        <div class="mb-3">
+                                            <label class="control-label d-block text-start">@lang('Thứ tự')</label>
+                                            <span class="form-control-plaintext text-start">{{ $step->order }}</span>
+                                        </div>
                                     </div>
-                                </div>
-                            @empty
-                                <p>@lang('Chưa có bước nào được thêm.')</p>
-                            @endforelse
+                                @empty
+                                    <p>@lang('Chưa có bước nào được thêm.')</p>
+                                @endforelse
+                            </div>
                         </div>
                     </div>
                 </div>
