@@ -2,10 +2,9 @@
 
 namespace App\Api\V1\Services\Product;
 
-use App\Models\Product;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 interface ProductServiceInterface
 {
-
+    public function getProducts($data): LengthAwarePaginator;
 }

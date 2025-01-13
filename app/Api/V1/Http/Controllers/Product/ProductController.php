@@ -5,7 +5,7 @@ namespace App\Api\V1\Http\Controllers\Product;
 use App\Api\V1\Http\Requests\Product\ProductRequest;
 use App\Api\V1\Http\Resources\Product\ProductResource;
 use App\Api\V1\Repositories\Product\ProductRepositoryInterface;
-use App\Enums\ActiveStatus;
+use App\Api\V1\Services\Product\ProductServiceInterface;
 use App\Http\Controllers\Controller;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
@@ -20,11 +20,14 @@ class ProductController extends Controller
     use AuthServiceApi, Response, UseLog;
 
     protected $repository;
+    protected $service;
 
     public function __construct(
-        ProductRepositoryInterface $repository
+        ProductRepositoryInterface $repository,
+        ProductServiceInterface $service
     ) {
         $this->repository = $repository;
+        $this->service = $service;
     }
 
     /**
@@ -65,30 +68,7 @@ class ProductController extends Controller
         try {
             $data = $request->validated();
 
-            $page = $data['page'] ?? 1;
-            $limit = $data['limit'] ?? 10;
-            $relations = $data['relations'] ?? [];
-
-
-            $filters = [
-                'status' => ActiveStatus::Active->value,
-            ];
-
-            if (!empty($data['brand_id'])) {
-                $filters['brand_id'] = $data['brand_id'];
-            }
-            if (!empty($data['keyword'])) {
-                $filters[] = ['name', 'LIKE', "%{$data['keyword']}%"];
-            }
-
-            $products = $this->repository
-                ->getByQueryBuilder($filters, $relations)
-                ->whereHas('productCatalogs', function ($query) use ($data) {
-                    if (!empty($data['product_catalog_id'])) {
-                        $query->where('product_catalog_id', $data['product_catalog_id']);
-                    }
-                })
-                ->paginate($limit, ['*'], 'page', $page);
+            $products = $this->service->getProducts($data);
 
             return $this->jsonResponseSuccess(ProductResource::collection($products));
         } catch (\Exception $e) {
@@ -112,6 +92,11 @@ class ProductController extends Controller
      *             "name": "sản phẩm",
      *             "description": "san-pham",
      *             "image": "/image.png",
+     *             "brand_name": "Thương hiệu A",
+     *             "product_catalog_name:[
+     *               "Dễ vỡ",
+     *               "Điển tử"
+     *               ]
      *         }
      *     ]
      * }
@@ -119,15 +104,15 @@ class ProductController extends Controller
      * @param mixed $id
      * @return JsonResponse
      */
-    public function show($id)
+    public function show($id): JsonResponse
     {
         try {
+
             $product = $this->repository->find($id);
 
             if ($product) {
                 return $this->jsonResponseSuccess(new ProductResource($product));
             }
-
             return $this->jsonResponseError('Không tìm thấy sản phẩm', 404);
         } catch (\Exception $e) {
             $this->logError('Get product failed:', $e);

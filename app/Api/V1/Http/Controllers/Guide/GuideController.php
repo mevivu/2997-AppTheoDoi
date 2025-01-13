@@ -5,6 +5,7 @@ namespace App\Api\V1\Http\Controllers\Guide;
 use App\Api\V1\Http\Requests\Guide\GuideRequest;
 use App\Api\V1\Http\Resources\Guide\GuideResource;
 use App\Api\V1\Repositories\Guide\GuideRepositoryInterface;
+use App\Api\V1\Services\Guide\GuideServiceInterface;
 use App\Enums\ActiveStatus;
 use App\Http\Controllers\Controller;
 use App\Api\V1\Support\AuthServiceApi;
@@ -20,11 +21,14 @@ class GuideController extends Controller
     use AuthServiceApi, Response, UseLog;
 
     protected $repository;
+    protected $service;
 
     public function __construct(
-        GuideRepositoryInterface $repository
+        GuideRepositoryInterface $repository,
+        GuideServiceInterface $service
     ) {
         $this->repository = $repository;
+        $this->service = $service;
     }
 
     /**
@@ -64,19 +68,7 @@ class GuideController extends Controller
     {
         try {
             $data = $request->validated();
-
-            $page = $data['page'] ?? 1;
-            $limit = $data['limit'] ?? 10;
-            $type = $data['type'] ?? null;
-
-
-            $guides = $this->repository->getByQueryBuilder(
-                [
-                    'status' => ActiveStatus::Active,
-                    'type' => $type,
-                ]
-            )->paginate($limit, ['*'], 'page', $page);
-
+            $guides = $this->service->getGuides($data);
             return $this->jsonResponseSuccess(GuideResource::collection($guides));
         } catch (\Exception $e) {
             $this->logError('Get guides failed:', $e);
@@ -89,7 +81,32 @@ class GuideController extends Controller
      *
      * @headersParam X-TOKEN-ACCESS string
      * token để lấy dữ liệu. Example: ijCCtggxLEkG3Yg8hNKZJvMM4EA1Rw4VjVvyIOb7
+     *
+     * @response {
+     *      "status": 200,
+     *      "message": "Thực hiện thành công.",
+     *      "data": [
+     *          {
+     *              "id": 1,
+     *              "title": "Hướng dẫn",
+     *              "description": "Chi tiết hướng dẫn",
+     *              "steps": [
+     *               {
+     *               "order": 1,
+     *               "title": "Bước 1",
+     *                  "description": "Mô tả bước 1"
+     *               },
+     *               {
+     *               "order": 2,
+     *               "title": "Bước 2",
+     *               "description": "Mô tả bước 2"
+     *               }
+     *               ]
+     *          }
+     *      ]
+     *  }
      */
+
     public function show($id): JsonResponse
     {
         try {
@@ -98,7 +115,6 @@ class GuideController extends Controller
             if ($guide) {
                 return $this->jsonResponseSuccess(new GuideResource($guide));
             }
-
             return $this->jsonResponseError('Không tìm thấy hướng dẫn', 404);
         } catch (\Exception $e) {
             $this->logError('Get guide failed:', $e);
