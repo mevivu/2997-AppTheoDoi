@@ -144,7 +144,7 @@ class User extends Authenticatable implements JWTSubject
             $user->userPackages()->create([
                 'package_id' => $trialPackage->id,
                 'start_date' => now(),
-                'end_date' => now()->addDays(14),
+                'end_date' => now()->addDays($trialPackage->days),
                 'status' => PackageStatus::Active,
                 'current_type' => PackageType::Trial
             ]);
