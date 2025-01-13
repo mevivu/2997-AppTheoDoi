@@ -577,14 +577,7 @@ return [
         ],
     ],
     'package' => [
-        'checkbox' => [
-            'title' => 'choose',
-            'orderable' => false,
-            'exportable' => false,
-            'printable' => false,
-            'addClass' => 'align-middle text-center',
-            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
-        ],
+
         'name' => [
             'title' => 'name',
             'orderable' => false,

@@ -20,6 +20,8 @@ class Package extends Model
         'name',
         /* Giá gói dịch vụ */
         'price',
+        /** Số ngày */
+        'days',
         /* Mô tả gói dịch vụ */
         'description',
         /* Trạng thái của gói dịch vụ */

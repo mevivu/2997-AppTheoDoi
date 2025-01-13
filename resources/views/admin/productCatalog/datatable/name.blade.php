@@ -1,2 +1,2 @@
 
-<x-link :href="route('admin.clinic.edit', $id)" :title="$name"/>
+<x-link :href="route('admin.category.edit', $id)" :title="$name"/>

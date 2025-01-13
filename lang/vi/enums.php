@@ -107,6 +107,7 @@ return [
         PackageType::ThreeMonths->value => '3 tháng',
         PackageType::SixMonths->value => '6 tháng',
         PackageType::OneYear->value => '1 năm',
+        PackageType::TwoYear->value => '2 năm',
         PackageType::Normal->value => 'Thường',
     ],
     Gender::class => [

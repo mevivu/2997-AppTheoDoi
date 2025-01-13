@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('name');
             $table->decimal('price', 15, 0);
             $table->text('description')->nullable();
+            $table->unsignedInteger('days')->default(30);
             $table->enum('status', PackageStatus::getValues())->default(PackageStatus::Active->value);
             $table->enum('type', PackageType::getValues())->default(PackageType::ThreeMonths->value);
             $table->timestamps();
