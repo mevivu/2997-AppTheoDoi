@@ -243,3 +243,21 @@ Route::controller(App\Api\V1\Http\Controllers\Setting\SettingController::class)
         Route::get('/general', 'general');
         Route::get('/system', 'system');
     });
+
+//***** -- Product -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Product\ProductController::class)
+    ->prefix('/products')
+    ->as('product.')
+    ->group(function () {
+        Route::get('/', 'index'); // Lấy danh sách sản phẩm
+        Route::get('/{id}', 'show'); // Lấy chi tiết sản phẩm
+    });
+
+//***** -- Guide -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Guide\GuideController::class)
+    ->prefix('/guides')
+    ->as('guide.')
+    ->group(function () {
+        Route::get('/', 'index'); // Lấy danh sách bài hướng dẫn
+        Route::get('/{id}', 'show'); // Lấy chi tiết bài hướng dẫn
+    });
