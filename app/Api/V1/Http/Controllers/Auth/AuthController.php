@@ -3,6 +3,7 @@
 namespace App\Api\V1\Http\Controllers\Auth;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Admin\Repositories\UserSession\UserSessionRepositoryInterface;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Http\Requests\Auth\LoginRequest;
 use App\Api\V1\Http\Requests\Auth\ResetPasswordRequest;
@@ -36,12 +37,16 @@ class AuthController extends Controller
 
     protected UserRepositoryInterface $userRepository;
 
+    protected UserSessionRepositoryInterface $sessionRepository;
+
 
     public function __construct(
         UserRepositoryInterface $userRepository,
-        UserServiceInterface $service
+        UserSessionRepositoryInterface $sessionRepository,
+        UserServiceInterface $service,
     ) {
         $this->userRepository = $userRepository;
+        $this->sessionRepository = $sessionRepository;
         $this->service = $service;
         $this->middleware('auth:api', [
             'except' => [
@@ -69,6 +74,8 @@ class AuthController extends Controller
      * Email của người dùng. Example: minhhuy1220011@gmail.com
      * @bodyParam password string
      *  Mật khẩu. Example: 123456
+     * @bodyParam device_token string required
+     *  Token đại diện cho thiết bị đang được sử dụng để đăng nhập.
      *
      * @response 200 {
      *     "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvMjc0MS1BcHBEaWNodnV0aHVvbmdtYWkvYXBpL3YxL2RyaXZlcnMvbG9naW4iLCJpYXQiOjE3MjEzODM2ODQsImV4cCI6MTcyNjU2NzY4NCwibmJmIjoxNzIxMzgzNjg0LCJqdGkiOiJwWnNJclVrSms2UHFzT0xrIiwic3ViIjoiOSIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.En3WpOwOpKMTMHk4PmG799dZZ0DwfrH9HraimUqSU24",
