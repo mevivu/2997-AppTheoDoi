@@ -25,6 +25,9 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Api\V1\Services\Quiz\QuizServiceInterface' => 'App\Api\V1\Services\Quiz\QuizService',
         'App\Api\V1\Services\ChildEvaluation\ChildEvaluationServiceInterface' => 'App\Api\V1\Services\ChildEvaluation\ChildEvaluationService',
         'App\Api\V1\Services\VaccinationSchedule\VaccinationScheduleServiceInterface' => 'App\Api\V1\Services\VaccinationSchedule\VaccinationScheduleService',
+        'App\Api\V1\Services\Guide\GuideServiceInterface' => 'App\Api\V1\Services\Guide\GuideService',
+        'App\Api\V1\Services\Product\ProductServiceInterface' => 'App\Api\V1\Services\Product\ProductService',
+
     ];
 
     /**
