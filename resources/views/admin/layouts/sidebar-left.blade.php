@@ -11,6 +11,10 @@
                      class="navbar-brand-image">
             </x-link>
         </h1>
+
+        <div class="p-3">
+            <input type="text" class="form-control" id="searchMenuInput" placeholder="Tìm kiếm menu...">
+        </div>
         <div class="navbar-nav flex-row d-lg-none">
             @include('admin.layouts.partials.account')
         </div>
@@ -55,3 +59,30 @@
         </div>
     </div>
 </aside>
+
+<style>
+    /* End Navbar */
+
+    #searchMenuInput {
+        background-color: #fff;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        color: black;
+    }
+</style>
+
+<script src="{{ asset('public/libs/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#searchMenuInput').on('keyup', function() {
+            const value = $(this).val();
+            $("#sidebar-menu ul.navbar-nav > li").filter(function() {
+                $(this).toggle($(this).text().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+
