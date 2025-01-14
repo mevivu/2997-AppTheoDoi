@@ -1,7 +1,7 @@
 <div class="col-12 col-md-9">
     <div class="card">
         <div class="card-header justify-content-between">
-            <h2 class="mb-0">{{ __('Thông tin Sản phẩm') }}</h2>
+            <h2 class="mb-0">{{ __('Thông tin sản phẩm') }}</h2>
         </div>
         <div class="row card-body">
             <!-- Product Name -->
@@ -20,7 +20,7 @@
                     <label class="control-label">
                         <span class="ti ti-message"></span>
                         {{ __('Mô tả') }}:</label>
-                    <textarea name="$product" class="ckeditor visually-hidden">{{ $product->description }}</textarea>
+                    <textarea name="description" class="ckeditor visually-hidden">{{ $product->description }}</textarea>
                 </div>
             </div>
 

@@ -39,6 +39,10 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\VaccinationSchedule\VaccinationScheduleRepositoryInterface' => 'App\Api\V1\Repositories\VaccinationSchedule\VaccinationScheduleRepository',
         'App\Api\V1\Repositories\Guide\GuideRepositoryInterface' =>'App\Api\V1\Repositories\Guide\GuideRepository',
         'App\Api\V1\Repositories\Product\ProductRepositoryInterface' => 'App\Api\V1\Repositories\Product\ProductRepository',
+        'App\Api\V1\Repositories\ProductCatalog\ProductCatalogRepositoryInterface' => 'App\Api\V1\Repositories\ProductCatalog\ProductCatalogRepository',
+        'App\Api\V1\Repositories\Brand\BrandRepositoryInterface' => 'App\Api\V1\Repositories\Brand\BrandRepository',
+
+
 
     ];
 

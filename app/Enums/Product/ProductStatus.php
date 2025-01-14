@@ -23,7 +23,7 @@ enum ProductStatus: string
         public static function asSelectArray(): array
         {
             return [
-                self::Active->value => 'Kích hoạt',
+                self::Active->value => 'Hoạt động',
                 self::Draft->value => 'Bản nháp',
                 self::Deleted->value => 'Đã xóa',
             ];
