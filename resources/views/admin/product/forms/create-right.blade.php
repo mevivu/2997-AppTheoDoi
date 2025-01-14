@@ -11,9 +11,8 @@
                 <x-button.submit :title="__('save')" name="submitter" value="save"
                                  class="flex-column gap-1 text-wrap p-2 flex-grow-1" />
                 <!-- Submit button (Save & Exit) -->
-                <x-button type="submit" name="submitter" value="saveAndExit" class="p-2 text-wrap w-50">
-                    @lang('save&exit')
-                </x-button>
+                <x-link :href="route('admin.product.index')" class="w-50 btn btn-outline"
+                        :title="'Quay lại'" />
             </div>
         </div>
     </div>

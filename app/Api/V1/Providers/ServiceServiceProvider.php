@@ -27,6 +27,8 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Api\V1\Services\VaccinationSchedule\VaccinationScheduleServiceInterface' => 'App\Api\V1\Services\VaccinationSchedule\VaccinationScheduleService',
         'App\Api\V1\Services\Guide\GuideServiceInterface' => 'App\Api\V1\Services\Guide\GuideService',
         'App\Api\V1\Services\Product\ProductServiceInterface' => 'App\Api\V1\Services\Product\ProductService',
+        'App\Api\V1\Services\ProductCatalog\ProductCatalogServiceInterface' => 'App\Api\V1\Services\ProductCatalog\ProductCatalogService',
+        'App\Api\V1\Services\Brand\BrandServiceInterface' => 'App\Api\V1\Services\Brand\BrandService',
 
     ];
 

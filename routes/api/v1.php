@@ -261,3 +261,19 @@ Route::controller(\App\Api\V1\Http\Controllers\Guide\GuideController::class)
         Route::get('/', 'index'); // Lấy danh sách bài hướng dẫn
         Route::get('/{id}', 'show'); // Lấy chi tiết bài hướng dẫn
     });
+
+//***** -- Product_catalog -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\ProductCatalog\ProductCatalogController::class)
+    ->prefix('/product-catalogs')
+    ->as('productCatalog.')
+    ->group(function () {
+        Route::get('/', 'index'); // Lấy danh sách danh mục sản phẩm
+    });
+
+//***** -- Brand -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Brand\BrandController::class)
+    ->prefix('/brands')
+    ->as('brand.')
+    ->group(function () {
+        Route::get('/', 'index'); // Lấy danh sách các thương hiệu
+    });
