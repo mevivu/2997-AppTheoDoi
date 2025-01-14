@@ -2,11 +2,9 @@
 
 namespace App\Api\V1\Services\Guide;
 
-use App\Models\Guide;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 interface GuideServiceInterface
 {
-
-
+    public function getGuides(array $data): LengthAwarePaginator;
 }
