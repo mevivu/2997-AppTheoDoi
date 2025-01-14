@@ -21,9 +21,6 @@ class ProductCatalogService implements ProductCatalogServiceInterface
 
         $filters = [];
 
-        if (!empty($data['keyword'])) {
-            $filters[] = ['name', 'LIKE', "%{$data['keyword']}%"];
-        }
 
         if (!empty($data['status'])) {
             $filters['status'] = $data['status'];

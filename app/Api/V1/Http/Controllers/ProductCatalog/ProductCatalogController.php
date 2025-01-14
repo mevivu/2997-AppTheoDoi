@@ -43,7 +43,6 @@ class ProductCatalogController extends Controller
      * @authenticated
      * @queryParam page int Trang hiện tại. Example: 1
      * @queryParam limit int Số lượng bản ghi trên mỗi trang. Example: 10
-     * @queryParam keyword string Từ khóa tìm kiếm trong tên danh mục sản phẩm. Examples: Điện tử
      *
      * @response 200{
      *     "status": 200,
