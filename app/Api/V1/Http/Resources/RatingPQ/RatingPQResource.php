@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Api\V1\Http\Resources\Child;
+namespace App\Api\V1\Http\Resources\RatingPQ;
 
+use App\Api\V1\Http\Resources\Child\ChildResource;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use JsonSerializable;
 
-class ChildResource extends JsonResource
+class RatingPQResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -21,16 +22,13 @@ class ChildResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'fullname' => $this->fullname,
-            'is_born' => $this->is_born,
-            'gender' => $this->gender,
-            'birthday' =>  $this->birthday ? format_date($this->birthday) : null,
-            'avatar' => formatImageUrl($this->avatar),
-            'user' => [
-                'fullname' => $this->user->fullname
-            ]
+            'assessment_date' => $this->assessment_date ?? null,
+            'height' => $this->height,
+            'weight' => $this->weight,
+            'strength' => $this->strength,
+            'endurance' => $this->endurance,
+            'child' => new ChildResource($this->child),
+
         ];
     }
-
-
 }

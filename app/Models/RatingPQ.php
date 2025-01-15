@@ -28,7 +28,7 @@ class RatingPQ extends Model
         'child_id',
     ];
     protected $casts = [
-        'assessment_date' => 'date',
+
     ];
 
 

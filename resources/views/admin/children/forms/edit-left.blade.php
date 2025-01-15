@@ -72,6 +72,28 @@
                     <x-select-option :option="$children->user_id" :value="$children->user_id" :title="$children->user->fullname . '-' . AESHelper::decrypt($children->user->phone)" :selected="old('user_id') ? old('user_id') == $children->user_id : true" />
                 </x-select>
             </div>
+
+            <!-- age -->
+            <div class="col-md-6 col-sm-12">
+                <div class="mb-3">
+                    <label class="control-label">{{ __('age') }}:</label>
+                    <x-input name="age"
+                             disabled
+                             placeholder="{{ __('age') }}"
+                             value="{{ $children->age }}" />
+                </div>
+            </div>
+
+            <!-- month -->
+            <div class="col-md-6 col-sm-12">
+                <div class="mb-3">
+                    <label class="control-label">{{ __('month') }}:</label>
+                    <x-input name="month"
+                             disabled
+                             placeholder="{{ __('month') }}"
+                             value="{{ $children->month }}" />
+                </div>
+            </div>
         </div>
 
     </div>

@@ -2,8 +2,9 @@
 
 namespace App\Api\V1\Http\Requests\Pregnancy;
 
-use App\Admin\Http\Requests\BaseRequest;
 
+
+use App\Api\V1\Http\Requests\BaseRequest;
 
 class PregnancyRequest extends BaseRequest
 {

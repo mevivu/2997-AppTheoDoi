@@ -2,8 +2,9 @@
 
 namespace App\Api\V1\Http\Requests\Journal;
 
-use App\Admin\Http\Requests\BaseRequest;
 
+
+use App\Api\V1\Http\Requests\BaseRequest;
 
 class JournalUpdateRequest extends BaseRequest
 {

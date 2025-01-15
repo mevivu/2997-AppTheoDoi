@@ -48,7 +48,13 @@ class ChildService implements ChildServiceInterface
         $avatar = $data['avatar'];
         $data['user_id'] = $this->getCurrentUserId();
         if ($data['is_born'] == BornStatus::Born->value) {
-            $data['age'] = Carbon::parse($data['birthday'])->age;
+            $birthday = $data['birthday'];
+            $birthday = new Carbon($birthday);
+            $currentDate = Carbon::now();
+            $month = $currentDate->diffInDays($birthday) / 30.5;
+            $age = $currentDate->diffInDays($birthday) / 365.3;
+            $data['age'] = $age;
+            $data['month'] = $month;
         }
         if ($avatar) {
             $data['avatar'] = $this->fileService
@@ -65,8 +71,14 @@ class ChildService implements ChildServiceInterface
         $data = $request->validated();
         $child = $this->repository->find($data['id']);
         $avatar = $data['avatar'];
-        if (isset($data['birthday'])) {
-            $data['age'] = Carbon::parse($data['birthday'])->age;
+        $birthday = $data['birthday'];
+        if (isset($birthday)) {
+            $birthday = new Carbon($birthday);
+            $currentDate = Carbon::now();
+            $month = $currentDate->diffInDays($birthday) / 30.5;
+            $age = $currentDate->diffInDays($birthday) / 365.3;
+            $data['age'] = $age;
+            $data['month'] = $month;
         }
         if ($avatar) {
             $data['avatar'] = $this->fileService

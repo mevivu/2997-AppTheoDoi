@@ -23,6 +23,8 @@ return new class extends Migration {
             $table->enum('gender', Gender::getValues())->default(Gender::Other->value);
             $table->enum('is_born', BornStatus::getValues())->default(BornStatus::Unborn->value);
             $table->text('avatar')->nullable();
+            $table->unsignedInteger('age')->nullable();
+            $table->unsignedInteger('month')->nullable();
             $table->enum('status', ChildStatus::getValues())->default(ChildStatus::Active->value);
 
             $table->timestamps();

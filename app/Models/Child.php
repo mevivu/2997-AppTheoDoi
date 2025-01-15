@@ -25,6 +25,8 @@ class Child extends Model
         'fullname',
         /** Tuổi */
         'age',
+        /** Tháng */
+        'month',
         /** Ngày sinh */
         'birthday',
         /** Ngày dự sinh */

@@ -2,7 +2,7 @@
 
 namespace App\Api\V1\Http\Requests\Journal;
 
-use App\Admin\Http\Requests\BaseRequest;
+use App\Api\V1\Http\Requests\BaseRequest;
 use App\Enums\Journal\JournalType;
 use Illuminate\Validation\Rules\Enum;
 

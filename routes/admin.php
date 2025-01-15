@@ -62,6 +62,18 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+    //RatingPQ
+    Route::controller(\App\Admin\Http\Controllers\RatingPQ\RatingPQController::class)
+        ->prefix('/rating-pqs')
+        ->as('ratingPQ.')
+        ->group(function () {
+
+            Route::group(["middleware" => ['permission:viewRatingPQ', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+            });
+
+        });
+
     //Exercises
     Route::controller(App\Admin\Http\Controllers\Exercise\ExerciseController::class)
         ->prefix('/exercises')
@@ -876,7 +888,6 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
-
 
 
     Route::post('/logout', [App\Admin\Http\Controllers\Auth\LogoutController::class, 'logout'])->name('logout');

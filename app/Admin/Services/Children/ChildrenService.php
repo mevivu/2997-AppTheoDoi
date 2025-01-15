@@ -28,7 +28,8 @@ class ChildrenService implements ChildrenServiceInterface
 
     public function __construct(
         ChildrenRepositoryInterface $repository,
-    ) {
+    )
+    {
         $this->repository = $repository;
     }
 
@@ -41,9 +42,17 @@ class ChildrenService implements ChildrenServiceInterface
 
         if ($data['is_born'] == BornStatus::Born->value) {
             $data['due_date'] = null;
-            $data['age'] = Carbon::parse($data['birthday'])->age;
+            $birthday = $data['birthday'];
+            $birthday = new Carbon($birthday);
+            $currentDate = Carbon::now();
+            $month = $currentDate->diffInDays($birthday) / 30.5;
+            $age = $currentDate->diffInDays($birthday) / 365.3;
+            $data['age'] = $age;
+            $data['month'] = $month;
         } elseif ($data['is_born'] == BornStatus::Unborn->value) {
             $data['birthday'] = null;
+            $data['age'] = null;
+            $data['month'] = null;
         }
         return $this->repository->create($data);
     }
@@ -58,9 +67,17 @@ class ChildrenService implements ChildrenServiceInterface
 
         if ($data['is_born'] == BornStatus::Born->value) {
             $data['due_date'] = null;
-            $data['age'] = Carbon::parse($data['birthday'])->age;
+            $birthday = $data['birthday'];
+            $birthday = new Carbon($birthday);
+            $currentDate = Carbon::now();
+            $month = $currentDate->diffInDays($birthday) / 30.5;
+            $age = $currentDate->diffInDays($birthday) / 365.3;
+            $data['age'] = $age;
+            $data['month'] = $month;
         } elseif ($data['is_born'] == BornStatus::Unborn->value) {
             $data['birthday'] = null;
+            $data['age'] = null;
+            $data['month'] = null;
         }
 
         return $this->repository->update($data['id'], $data);

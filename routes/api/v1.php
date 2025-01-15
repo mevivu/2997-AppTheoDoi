@@ -139,6 +139,17 @@ Route::controller(\App\Api\V1\Http\Controllers\Rating\RatingController::class)
         Route::delete('/{id}', 'delete');
     });
 
+// Rating PQ
+Route::controller(\App\Api\V1\Http\Controllers\RatingPQ\RatingPQController::class)
+    ->prefix('/rating-pqs')
+    ->as('ratingPQ.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+        Route::post('/', 'store');
+        Route::delete('/{id}', 'delete');
+    });
+
 // ChildEvaluation
 Route::controller(\App\Api\V1\Http\Controllers\ChildEvaluation\ChildEvaluationController::class)
     ->prefix('/child-evaluations')
