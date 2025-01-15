@@ -425,12 +425,9 @@ return [
             'printable' => false,
             'addClass' => 'align-middle text-center',
             'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+            'visible' => false
         ],
-        'id' => [
-            'title' => 'ID',
-            'orderable' => false,
-            'addClass' => 'text-center align-middle'
-        ],
+
         'gender' => [
             'title' => 'Giới tính',
             'orderable' => false,
@@ -441,8 +438,38 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
-        'bmi' => [
-            'title' => 'Chỉ số BMI tiêu chuẩn',
+        'z_score_minus_3' => [
+            'title' => 'Z-score -3',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'z_score_minus_2' => [
+            'title' => 'Z-score -2',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'z_score_minus_1' => [
+            'title' => 'Z-score -1',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'z_score_0' => [
+            'title' => 'Z-score 0',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'z_score_plus_1' => [
+            'title' => 'Z-score +1',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'z_score_plus_2' => [
+            'title' => 'Z-score +2',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'z_score_plus_3' => [
+            'title' => 'Z-score +3',
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],

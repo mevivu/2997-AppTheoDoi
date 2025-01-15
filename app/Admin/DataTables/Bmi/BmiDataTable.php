@@ -16,7 +16,8 @@ class BmiDataTable extends BaseDataTable
 
     public function __construct(
         BmiRepositoryInterface $repository
-    ) {
+    )
+    {
         $this->repository = $repository;
 
         parent::__construct();
@@ -37,11 +38,11 @@ class BmiDataTable extends BaseDataTable
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4, 5];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
         $this->columnSearchSelect = [
             [
-                'column' => 5,
+                'column' => 10,
                 'data' => ActiveStatus::asSelectArray()
             ],
             [

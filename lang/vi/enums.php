@@ -113,7 +113,6 @@ return [
     Gender::class => [
         Gender::Male->value => 'Nam',
         Gender::Female->value => 'Nữ',
-        Gender::Other->value => 'Khác',
     ],
     VaccinationStatus::class => [
         VaccinationStatus::Vaccinated->value => 'Đã tiêm vắc-xin',

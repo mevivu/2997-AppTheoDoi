@@ -8,7 +8,7 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="control-label">{{ __('Tuổi') }}:</label>
-                    <x-input type="number" min="0" name="age" :value="$response->age" :required="true" />
+                    <x-input type="number" min="0" name="age" :value="$response->age" :required="true"/>
                 </div>
             </div>
 
@@ -17,17 +17,81 @@
                     <label class="control-label">{{ __('Giới tính') }}:</label>
                     <x-select name="gender" :required="true">
                         @foreach ($gender as $key => $value)
-                            <x-select-option :value="$key" :title="$value" :option="$response->gender->value" />
+                            <x-select-option :value="$key" :title="$value" :option="$response->gender->value"/>
                         @endforeach
                     </x-select>
                 </div>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Chỉ số BMI tiêu chuẩn') }}:</label>
-                    <x-input type="number" min="0" step="0.01" name="bmi" :value="$response->bmi"
-                        :required="true" />
+                    <label class="control-label">{{ __('Z-score -3') }}:</label>
+                    <x-input type="number"
+                             min="0" step="0.01"
+                             name="z_score_minus_3"
+                             :value="$response->z_score_minus_3"
+                             :required="true"/>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="control-label">{{ __('Z-score -2') }}:</label>
+                    <x-input type="number"
+                             step="0.01"
+                             name="z_score_minus_2"
+                             :value="$response->z_score_minus_2"
+                             :required="true"/>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="control-label">{{ __('Z-score -1') }}:</label>
+                    <x-input type="number"
+                             step="0.01"
+                             name="z_score_minus_1"
+                             :value="$response->z_score_minus_1"
+                             :required="true"/>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="control-label">{{ __('Z-score 0') }}:</label>
+                    <x-input type="number"
+                             step="0.01"
+                             name="z_score_0"
+                             :value="$response->z_score_0"
+                             :required="true"/>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="control-label">{{ __('Z-score +1') }}:</label>
+                    <x-input type="number"
+                             step="0.01"
+                             name="z_score_plus_1"
+                             :value="$response->z_score_plus_1"
+                             :required="true"/>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="control-label">{{ __('Z-score +2') }}:</label>
+                    <x-input type="number"
+                             step="0.01"
+                             name="z_score_plus_2"
+                             :value="$response->z_score_plus_2"
+                             :required="true"/>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <label class="control-label">{{ __('Z-score +3') }}:</label>
+                    <x-input type="number"
+                             step="0.01"
+                             name="z_score_plus_3"
+                             :value="$response->z_score_plus_3"
+                             :required="true"/>
                 </div>
             </div>
         </div>
