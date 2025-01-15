@@ -27,6 +27,7 @@ class ProductDataTable extends BaseDataTable
         $this->view = [
             'action' => 'admin.product.datatable.action',
             'name' => 'admin.product.datatable.name',
+            'code' => 'admin.product.datatable.code',
             'status' => 'admin.product.datatable.status',
             'brand' => 'admin.product.datatable.brand',
             'product_catalog' => 'admin.product.datatable.product_catalog',
@@ -48,11 +49,11 @@ class ProductDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [ 0,1, 2, 3, 4];
-        $this->columnSearchDate = [4];
+        $this->columnAllSearch = [ 0,1, 2, 3, 4,5];
+        $this->columnSearchDate = [5];
         $this->columnSearchSelect = [
             [
-                'column' => 3,
+                'column' => 4,
                 'data' => ProductStatus::asSelectArray()
             ],
         ];
@@ -69,6 +70,7 @@ class ProductDataTable extends BaseDataTable
             'created_at' => '{{ $created_at ? format_datetime($created_at) : "" }}',
             'action' => $this->view['action'],
             'name' => $this->view['name'],
+            'code' => $this->view['code'],
             'status' => $this->view['status'],
             'brand_id' => function ($product) {
                 return view($this->view['brand'], [
@@ -93,7 +95,7 @@ class ProductDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['action', 'name', 'created_at', 'status','brand_id','product_catalog_id','checkbox'];
+        $this->customRawColumns = ['action', 'name', 'created_at', 'status','brand_id','product_catalog_id','checkbox','code'];
     }
     public function setCustomFilterColumns(): void
     {

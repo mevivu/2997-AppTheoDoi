@@ -260,8 +260,8 @@ Route::controller(\App\Api\V1\Http\Controllers\Product\ProductController::class)
     ->prefix('/products')
     ->as('product.')
     ->group(function () {
-        Route::get('/', 'index'); // Lấy danh sách sản phẩm
-        Route::get('/{id}', 'show'); // Lấy chi tiết sản phẩm
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
     });
 
 //***** -- Guide -- ******* //
@@ -269,8 +269,8 @@ Route::controller(\App\Api\V1\Http\Controllers\Guide\GuideController::class)
     ->prefix('/guides')
     ->as('guide.')
     ->group(function () {
-        Route::get('/', 'index'); // Lấy danh sách bài hướng dẫn
-        Route::get('/{id}', 'show'); // Lấy chi tiết bài hướng dẫn
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
     });
 
 //***** -- Product_catalog -- ******* //
@@ -278,7 +278,7 @@ Route::controller(\App\Api\V1\Http\Controllers\ProductCatalog\ProductCatalogCont
     ->prefix('/product-catalogs')
     ->as('productCatalog.')
     ->group(function () {
-        Route::get('/', 'index'); // Lấy danh sách danh mục sản phẩm
+        Route::get('/', 'index');
     });
 
 //***** -- Brand -- ******* //
@@ -286,5 +286,5 @@ Route::controller(\App\Api\V1\Http\Controllers\Brand\BrandController::class)
     ->prefix('/brands')
     ->as('brand.')
     ->group(function () {
-        Route::get('/', 'index'); // Lấy danh sách các thương hiệu
+        Route::get('/', 'index');
     });

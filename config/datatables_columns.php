@@ -1349,9 +1349,13 @@ return [
         ],
     ],
     'product' => [
+        'code' =>[
+            'title' => 'code',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
         'name' => [
             'title' => 'name',
-            'width' => '150px',
             'addClass' => 'text-center align-middle',
             'orderable' => true
         ],
