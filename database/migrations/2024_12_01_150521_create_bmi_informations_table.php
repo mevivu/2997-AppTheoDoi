@@ -18,6 +18,13 @@ return new class extends Migration {
             $table->id();
             $table->integer('age');
             $table->decimal('bmi', 10, 2);
+            $table->decimal('Z_score_-3', 10, 2);
+            $table->decimal('Z_score_-2', 10, 2);
+            $table->decimal('Z_score_-1', 10, 2);
+            $table->decimal('Z_score_0', 10, 2);
+            $table->decimal('Z_score_+1', 10, 2);
+            $table->decimal('Z_score_+2', 10, 2);
+            $table->decimal('Z_score_+3', 10, 2);
             $table->enum('gender', Gender::getValues())->default(Gender::Other->value);
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
             $table->timestamps();
