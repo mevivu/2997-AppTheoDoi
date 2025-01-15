@@ -14,14 +14,26 @@ class Bmi extends Model
     protected $table = 'bmi_informations';
 
     protected $fillable = [
-        /* Tuổi */
+        /** Tuổi */
         'age',
-        /* Giới tính */
+        /** Giới tính */
         'gender',
-        /* Chỉ số BMI */
-        'bmi',
-        /* Trạng thái */
+        /** Trạng thái */
         'status',
+        /** Z-score -3 */
+        'z_score_minus_3',
+        /** Z-score -2 */
+        'z_score_minus_2',
+        /** Z-score -1*/
+        'z_score_minus_1',
+        /** Z-score 0 */
+        'z_score_0',
+        /** Z-score +1 */
+        'z_score_plus_1',
+        /** Z-score +2 */
+        'z_score_plus_2',
+        /** Z-score +3 */
+        'z_score_plus_3'
     ];
 
     protected $casts = [
