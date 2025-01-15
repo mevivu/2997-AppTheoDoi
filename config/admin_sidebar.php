@@ -50,48 +50,15 @@ return [
         'icon' => '<i class="ti ti-calendar-dollar"></i>',
         'roles' => [],
         'permissions' => ['createGuide', 'viewGuide', 'updateGuide', 'deleteGuide'],
-
         'sub' => [
+
             [
-                'title' => 'Tạo bài Hướng dẫn',
-                'routeName' => 'admin.guide.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createGuide'],
-            ],
-            [
-                'title' => 'Hướng dẫn sức mạnh',
+                'title' => 'DS Hướng dẫn',
                 'routeName' => 'admin.guide.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewGuide'],
             ],
-        ]
-    ],
-    [
-        'title' => 'Loại Tiêm chủng',
-        'routeName' => null,
-        'icon' => '<i class="ti ti-vaccine-bottle"></i>',
-        'roles' => [],
-        'permissions' => ['createTypeVaccination', 'viewTypeVaccination', 'updateTypeVaccination', 'deleteTypeVaccination'],
-        'sub' => [
-
-            [
-                'title' => 'Thêm loại Tiêm chủng',
-                'routeName' => 'admin.vaccinationType.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createTypeVaccination'],
-            ],
-            [
-                'title' => 'DS loại Tiêm chủng',
-                'routeName' => 'admin.vaccinationType.index',
-                'icon' => '<i class="ti ti-list"></i>',
-                'roles' => [],
-                'permissions' => ['viewTypeVaccination'],
-            ],
-
-
         ]
     ],
     [
@@ -532,7 +499,16 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-calendar-bolt"></i>',
         'roles' => [],
-        'permissions' => ['createVaccinationSchedule', 'viewVaccinationSchedule', 'updateVaccinationSchedule', 'deleteVaccinationSchedule'],
+        'permissions' => [
+            'createVaccinationSchedule',
+            'viewVaccinationSchedule',
+            'updateVaccinationSchedule',
+            'deleteVaccinationSchedule',
+            'createTypeVaccination',
+            'viewTypeVaccination',
+            'updateTypeVaccination',
+            'deleteTypeVaccination'
+        ],
         'sub' => [
             [
                 'title' => 'add',
@@ -554,7 +530,14 @@ return [
                 'icon' => '<i class="ti ti-user"></i>',
                 'roles' => [],
                 'permissions' => ['viewVaccinationSchedule'],
-            ]
+            ],
+            [
+                'title' => 'DS loại Tiêm chủng',
+                'routeName' => 'admin.vaccinationType.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewTypeVaccination'],
+            ],
         ]
     ],
     [

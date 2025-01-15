@@ -21,6 +21,8 @@ class Product extends Model
         'name',
         /** Mô tả */
         'description',
+        /** Mã code */
+        'code',
         /** Hình ảnh */
         'image',
         /** Danh mục sản phẩm */

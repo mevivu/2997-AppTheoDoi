@@ -82,35 +82,5 @@ class PackageService implements PackageServiceInterface
 
     }
 
-    //    public function purchasePackage(Request $request): ?Model
-//    {
-//        $data = $request->validated();
-//        $user = $this->getCurrentUser();
-//        $image = $data['payment_confirmation_image'];
-//        if ($image) {
-//            $data['payment_confirmation_image'] = $this->fileService
-//                ->uploadAvatar('images/package', $image, $image->payment_confirmation_image);
-//        }
-//        $packageId = $data['id'];
-//        $package = $this->repository->findOrFail($packageId);
-//        $startDate = now();
-//        $endDate = $startDate->copy()->add($package->type->duration());
-//        $userPackage = $this->userPackageRepository->findByField('user_id', $user->id);
-//        if ($userPackage) {
-//            $userPackage->update(
-//                [
-//                    'package_id' => $packageId,
-//                    'start_date' => $startDate,
-//                    'end_date' => $endDate,
-//                    'current_type' => $package->type
-//
-//                ]
-//            );
-//        }
-//
-//        return $userPackage;
-//
-//    }
-//
 
 }

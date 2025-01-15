@@ -26,7 +26,8 @@ class ProductService implements ProductServiceInterface
 
     public function __construct(
         ProductRepositoryInterface $repository,
-    ) {
+    )
+    {
         $this->repository = $repository;
     }
 
@@ -37,6 +38,7 @@ class ProductService implements ProductServiceInterface
     public function store(Request $request): object|false
     {
         $data = $request->validated();
+        $data['code'] = uniqid_real(8);
 
         if (isset($data['product_catalog_id'])) {
             $productCatalogs = $data['product_catalog_id'];
@@ -55,8 +57,6 @@ class ProductService implements ProductServiceInterface
 
         return false;
     }
-
-
 
 
     /**

@@ -22,6 +22,7 @@ class PackageRequest extends BaseRequest
             'description' => ['nullable', 'array'],
             'description.*' => ['required', 'string'],
             'price' => ['required', 'string'],
+            'days' => ['required', 'numeric'],
             'type' => ['required', new Enum(PackageType::class)],
         ];
     }
@@ -33,6 +34,7 @@ class PackageRequest extends BaseRequest
             'name' => ['required', 'string'],
             'description' => ['nullable'],
             'price' => ['required', 'string'],
+            'days' => ['required', 'numeric'],
             'type' => ['required', new Enum(PackageType::class)],
             'status' => ['required', new Enum(ActiveStatus::class)],
 

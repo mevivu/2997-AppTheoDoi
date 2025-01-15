@@ -109,7 +109,7 @@ class GuideController extends Controller
     {
         return $this->handleUpdateResponse($request, function ($request) {
             $guide = $this->service->update($request);
-            $this->service->updateSteps($guide, $request->input('steps', [])); // Cập nhật steps
+            $this->service->updateSteps($guide, $request->input('steps', []));
             return $guide;
         });
     }
@@ -130,7 +130,6 @@ class GuideController extends Controller
         return [
             'active' => ActiveStatus::Active->description(),
             'draft' => ActiveStatus::Draft->description(),
-            'deleted' => ActiveStatus::Deleted->description()
         ];
     }
 

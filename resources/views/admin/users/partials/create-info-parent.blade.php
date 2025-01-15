@@ -75,7 +75,6 @@
                     {{ __('Ngày sinh của mẹ') }}:</label>
                 <x-input type="date" name="mother_birthday"
                          :value="old('mother_birthday')"
-                         required
                          placeholder="{{ __('Ngày sinh của mẹ') }}" />
             </div>
         </div>

@@ -26,7 +26,7 @@ class ProductCatalogRequest extends BaseRequest
     {
 
         return [
-            'id' => ['required', 'exists:App\Models\Clinic,id'],
+            'id' => ['required', 'exists:App\Models\ProductCatalog,id'],
             'name' => ['required', 'string'],
             'status' => ['required', new Enum(ActiveStatus::class)],
         ];

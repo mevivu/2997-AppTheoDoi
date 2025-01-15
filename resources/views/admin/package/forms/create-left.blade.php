@@ -30,6 +30,18 @@
                 </div>
             </div>
 
+            <!-- days -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('Số ngày')</label>
+                    <x-input name="days"
+                             type="number"
+                             :value="old('days')"
+                             :required="true"
+                             :placeholder="__('Số ngày')" />
+                </div>
+            </div>
+
             <!-- description -->
             <div class="col-12">
                 <div class="mb-3">

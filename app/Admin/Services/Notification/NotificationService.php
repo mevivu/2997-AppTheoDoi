@@ -223,7 +223,8 @@ class NotificationService implements NotificationServiceInterface
         $package = $notification->package;
         $user = $this->userRepository->findOrFail($notification->user_id_attribute);
         $startDate = now();
-        $endDate = $startDate->copy()->add($package->type->duration());
+//        $endDate = $startDate->copy()->add($package->type->duration());
+        $endDate = $startDate->copy()->addDays($package->days);
         $userPackage = $this->userPackageRepository
             ->findByField('user_id', $notification->user_id_attribute);
         $userPackage?->update(

@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\AES\AESHelper;
 use App\Api\V1\Http\Resources\Package\AuthPackageResource;
+use App\Enums\Package\PackageType;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -45,6 +46,9 @@ trait JwtService
         return JWTAuth::getJWTProvider()->encode($data);
     }
 
+    /**
+     * @throws Exception
+     */
     public function loginUser(Request $request): JsonResponse
     {
         $this->login = $request->validated();
@@ -53,9 +57,45 @@ trait JwtService
         $user = $this->userRepository->findByField('email', $emailEncrypted);
 
         if ($user && Hash::check($this->login['password'], $user->password)) {
+
+            // check package
+            $package = $user->userPackages->first();
+            if ($package->current_type == PackageType::Normal) {
+                $existingSession = $this->sessionRepository->getBy([
+                    'user_id' => $user->id,
+                    'device_token' => $this->login['device_token']
+                ])->first();
+                if ($existingSession) {
+                    $token = JWTAuth::fromUser($user);
+                    $refreshToken = $this->createRefreshToken($user);
+                    $this->sessionRepository->create([
+                        'user_id' => $user->id,
+                        'access_token' => $token,
+                        'device_token' => $this->login['device_token'],
+                    ]);
+                    return $this->respondWithToken($token, $refreshToken, $user);
+                } else {
+                    $anySession = $this->sessionRepository->getBy([
+                        'user_id' => $user->id
+                    ])->first();
+                    if ($anySession) {
+                        return response()->json([
+                            'status' => 401,
+                            'type' => 'already_logged_in_different_device',
+                            'message' => __('Bạn đã đăng nhập ở thiết bị khác')
+                        ], 401);
+                    }
+                }
+            }
             $token = JWTAuth::fromUser($user);
             $refreshToken = $this->createRefreshToken($user);
+            $this->sessionRepository->create([
+                'user_id' => $user->id,
+                'access_token' => $token,
+                'device_token' => $this->login['device_token'],
+            ]);
             return $this->respondWithToken($token, $refreshToken, $user);
+
         }
 
         return response()->json([
@@ -63,7 +103,6 @@ trait JwtService
             'message' => __('Thông tin đăng nhập chưa chính xác.')
         ], 401);
     }
-
 
 
     /**

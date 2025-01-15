@@ -15,6 +15,7 @@ enum PackageType: string
     case SixMonths = '6';
     case OneYear = '12';
     case Trial = '0';
+    case TwoYear = '24';
 
     case Normal = 'normal';
 
@@ -26,7 +27,7 @@ enum PackageType: string
             self::SixMonths => 'bg-gray-lt',
             self::OneYear => 'bg-pink-lt',
             self::Trial => 'bg-yellow-lt',
-            self::Normal => 'bg-orange-lt',
+            self::Normal, self::TwoYear => 'bg-orange-lt',
         };
     }
 
@@ -38,7 +39,9 @@ enum PackageType: string
             self::SixMonths => new DateInterval('P6M'),
             self::OneYear => new DateInterval('P1Y'),
             self::Trial => new DateInterval('P14D'),
+            self::TwoYear => new DateInterval('P2Y'),
             default => new DateInterval('P30D'),
+
         };
     }
 

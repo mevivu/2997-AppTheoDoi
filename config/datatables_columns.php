@@ -577,14 +577,7 @@ return [
         ],
     ],
     'package' => [
-        'checkbox' => [
-            'title' => 'choose',
-            'orderable' => false,
-            'exportable' => false,
-            'printable' => false,
-            'addClass' => 'align-middle text-center',
-            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
-        ],
+
         'name' => [
             'title' => 'name',
             'orderable' => false,
@@ -1356,9 +1349,13 @@ return [
         ],
     ],
     'product' => [
+        'code' =>[
+            'title' => 'code',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
         'name' => [
             'title' => 'name',
-            'width' => '150px',
             'addClass' => 'text-center align-middle',
             'orderable' => true
         ],
