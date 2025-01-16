@@ -24,6 +24,10 @@ class RatingPQ extends Model
         'strength',
         /** Điểm sức bền */
         'endurance',
+        /** Chỉ số BMI */
+        'bmi',
+        /** Kết quả chỉ số BMI */
+        'bmi_result',
         /** Child ID */
         'child_id',
     ];

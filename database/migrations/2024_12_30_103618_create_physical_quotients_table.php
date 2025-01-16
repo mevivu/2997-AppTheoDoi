@@ -20,6 +20,8 @@ return new class extends Migration
             $table->unsignedInteger('weight'); // Cân nặng, đơn vị kg
             $table->unsignedInteger('strength'); // Điểm sức mạnh
             $table->unsignedInteger('endurance'); // Điểm sức bền
+            $table->decimal('bmi', 5, 2)->nullable();
+            $table->string('bmi_result')->nullable();
             $table->timestamps();
             $table->foreignId('child_id')->nullable()->constrained('children')->onDelete('cascade');
 
