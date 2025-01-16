@@ -495,11 +495,6 @@ return [
             'addClass' => 'align-middle text-center',
             'footer' => '<input type="checkbox" class="form-check-input check-all" />',
         ],
-        'id' => [
-            'title' => 'ID',
-            'orderable' => false,
-            'addClass' => 'text-center align-middle'
-        ],
         'gender' => [
             'title' => 'Giới tính',
             'orderable' => false,
@@ -513,6 +508,16 @@ return [
         ],
         'month' => [
             'title' => 'Tháng',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'weight_change' => [
+            'title' => 'Thay đổi cân nặng (kg)',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'height_change' => [
+            'title' => 'Thay đổi chiều cao (cm)',
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
@@ -1376,7 +1381,7 @@ return [
         ],
     ],
     'product' => [
-        'code' =>[
+        'code' => [
             'title' => 'code',
             'addClass' => 'text-center align-middle',
             'orderable' => false,
@@ -1452,8 +1457,6 @@ return [
             'addClass' => 'text-center align-middle'
         ],
     ]
-
-
 
 
 ];

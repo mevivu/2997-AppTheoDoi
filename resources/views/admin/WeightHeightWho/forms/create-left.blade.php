@@ -35,6 +35,31 @@
                     <x-input type="number" min="1" max="12" placeholder="Nhập tháng của bạn" name="month" :required="true"/>
                 </div>
             </div>
+            <!-- New field for weight change -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="control-label"><span class="ti ti-exchange-vertical"></span>
+                        {{ __('Tằn cân so với kỳ trước') }}(Kg):</label>
+                    <x-input type="number"
+                             step="0.01"
+                             name="weight_change"
+                             placeholder="Nhập thay đổi cân nặng(kg)"
+                             :required="false"/>
+                </div>
+            </div>
+
+            <!-- New field for height change -->
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="control-label"><span class="ti ti-exchange-vertical"></span>
+                        {{ __('Tằn chiều cao so với kỳ trước') }}(cm):</label>
+                    <x-input type="number"
+                             step="0.01"
+                             name="height_change"
+                             placeholder="Nhập thay đổi chiều cao(cm)"
+                             :required="false"/>
+                </div>
+            </div>
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-gender-genderfluid"></span>

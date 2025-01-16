@@ -3,10 +3,8 @@
 namespace App\Admin\DataTables\WeightHeightWho;
 
 use App\Admin\DataTables\BaseDataTable;
-use App\Admin\Repositories\Bmi\BmiRepositoryInterface;
 use App\Admin\Repositories\WeightHeightWho\WeightHeightWhoRepositoryInterface;
 use App\Enums\ActiveStatus;
-use App\Enums\Exercise\ExerciseType;
 use App\Enums\User\Gender;
 
 
@@ -17,7 +15,8 @@ class WeightHeightWhoDatatable extends BaseDataTable
 
     public function __construct(
         WeightHeightWhoRepositoryInterface $repository
-    ) {
+    )
+    {
         $this->repository = $repository;
 
         parent::__construct();
@@ -28,27 +27,26 @@ class WeightHeightWhoDatatable extends BaseDataTable
     {
         $this->view = [
             'action' => 'admin.WeightHeightWho.datatable.action',
-            'age'=>'admin.WeightHeightWho.datatable.age',
-            'checkbox'=>'admin.common.checkbox',
-            'month'=>'admin.WeightHeightWho.datatable.month',
+            'age' => 'admin.WeightHeightWho.datatable.age',
+            'checkbox' => 'admin.common.checkbox',
+            'month' => 'admin.WeightHeightWho.datatable.month',
             'status' => 'admin.WeightHeightWho.datatable.status',
             'gender' => 'admin.WeightHeightWho.datatable.gender',
-            'id' => 'admin.WeightHeightWho.datatable.id',
         ];
     }
 
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3,4,5];
+        $this->columnAllSearch = [1, 2, 3, 4, 5,6];
 
         $this->columnSearchSelect = [
             [
-                'column' => 5,
+                'column' => 6,
                 'data' => ActiveStatus::asSelectArray()
             ],
             [
-                'column' => 2,
+                'column' => 1,
                 'data' => Gender::asSelectArray()
             ]
         ];
@@ -71,7 +69,6 @@ class WeightHeightWhoDatatable extends BaseDataTable
             'status' => $this->view['status'],
             'checkbox' => $this->view['checkbox'],
             'gender' => $this->view['gender'],
-            'id' => $this->view['id'],
         ];
     }
 
@@ -84,6 +81,6 @@ class WeightHeightWhoDatatable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['id', 'gender', 'action', 'status','checkbox'];
+        $this->customRawColumns = ['gender', 'action', 'status', 'checkbox'];
     }
 }

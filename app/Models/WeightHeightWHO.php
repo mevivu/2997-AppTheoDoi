@@ -23,6 +23,10 @@ class WeightHeightWHO extends Model
         'age',
         /* Tháng tuổi của đối tượng (nếu có) */
         'month',
+        /* Sự thay đổi cân nặng so với kỳ trước */
+        'weight_change',
+        /* Sự thay đổi chiều cao so với kỳ trước */
+        'height_change',
         /* Giới tính của đối tượng */
         'gender',
         /* Trạng thái hoạt động của dữ liệu */

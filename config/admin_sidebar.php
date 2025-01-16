@@ -294,29 +294,29 @@ return [
             ],
         ]
     ],
-//    [
-//        'title' => 'Thông tin Who',
-//        'routeName' => 'admin.module.summary',
-//        'icon' => '<i class="ti ti-woman"></i>',
-//        'roles' => [],
-//        'permissions' => ['createHeightWeight', 'viewHeightWeight', 'updateHeightWeight', 'deleteHeightWeight'],
-//        'sub' => [
-//            [
-//                'title' => 'Thêm',
-//                'routeName' => 'admin.weight-height-who.create',
-//                'icon' => '<i class="ti ti-plus"></i>',
-//                'roles' => [],
-//                'permissions' => ['createHeightWeight'],
-//            ],
-//            [
-//                'title' => 'DS Thông tin',
-//                'routeName' => 'admin.weight-height-who.index',
-//                'icon' => '<i class="ti ti-list"></i>',
-//                'roles' => [],
-//                'permissions' => ['viewHeightWeight'],
-//            ]
-//        ]
-//    ],
+    [
+        'title' => 'Thông tin Who',
+        'routeName' => 'admin.module.summary',
+        'icon' => '<i class="ti ti-woman"></i>',
+        'roles' => [],
+        'permissions' => ['createHeightWeight', 'viewHeightWeight', 'updateHeightWeight', 'deleteHeightWeight'],
+        'sub' => [
+            [
+                'title' => 'Thêm',
+                'routeName' => 'admin.weight-height-who.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createHeightWeight'],
+            ],
+            [
+                'title' => 'DS Thông tin',
+                'routeName' => 'admin.weight-height-who.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewHeightWeight'],
+            ]
+        ]
+    ],
     [
         'title' => 'Thông tin dự kiến',
         'routeName' => 'admin.expected.index',

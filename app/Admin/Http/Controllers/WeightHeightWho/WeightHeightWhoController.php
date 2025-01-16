@@ -5,8 +5,6 @@ namespace App\Admin\Http\Controllers\WeightHeightWho;
 use App\Admin\DataTables\WeightHeightWho\WeightHeightWhoDatatable;
 use App\Admin\Http\Controllers\BaseSearchSelectController;
 use App\Admin\Http\Requests\WeightHeight\WeightHeightRequest;
-use App\Admin\Repositories\Ward\WardRepositoryInterface;
-use App\Admin\Http\Resources\Ward\WardSearchSelectResource;
 use App\Admin\Repositories\WeightHeightWho\WeightHeightWhoRepositoryInterface;
 use App\Admin\Services\WeightHeightWho\WeightHeightWhoServiceInterface;
 use App\Enums\ActiveStatus;
@@ -19,32 +17,39 @@ use Illuminate\Http\Request;
 
 class WeightHeightWhoController extends BaseSearchSelectController
 {
-    public function __construct(WeightHeightWhoServiceInterface $service,WeightHeightWhoRepositoryInterface $repository)
+    public function __construct(WeightHeightWhoServiceInterface    $service,
+                                WeightHeightWhoRepositoryInterface $repository)
     {
         parent::__construct();
         $this->service = $service;
         $this->repository = $repository;
     }
-    public function getView():array
+
+    public function getView(): array
     {
         return [
-            'create'=>'admin.WeightHeightWho.create',
-            'index'=>'admin.WeightHeightWho.index',
-            'edit'=>'admin.WeightHeightWho.edit',
+            'create' => 'admin.WeightHeightWho.create',
+            'index' => 'admin.WeightHeightWho.index',
+            'edit' => 'admin.WeightHeightWho.edit',
         ];
     }
-    public function getRoute():array
+
+    public function getRoute(): array
     {
         return [
             'index' => 'admin.weight-height-who.index',
-            'create'=>'admin.weight-height-who.create',
-            'edit'=>'admin.weight-height-who.edit',
-            'delete'=>'admin.weight-height-who.delete',
+            'create' => 'admin.weight-height-who.create',
+            'edit' => 'admin.weight-height-who.edit',
+            'delete' => 'admin.weight-height-who.delete',
         ];
     }
-    public function edit($id):Factory|View|Application
+
+    /**
+     * @throws \Exception
+     */
+    public function edit($id): Factory|View|Application
     {
-        $response=$this->repository->findOrFail($id);
+        $response = $this->repository->findOrFail($id);
         return view($this->view['edit'],
             [
                 'response' => $response,
@@ -53,6 +58,7 @@ class WeightHeightWhoController extends BaseSearchSelectController
                 'breadcrumbs' => $this->crums->add('Danh sách Cân nặng chiều cao theo chuẩn Who', route($this->route['index']))->add('Cập nhật'),
             ]);
     }
+
     public function index(WeightHeightWhoDatatable $dataTable)
     {
         return $dataTable->render(
@@ -63,6 +69,7 @@ class WeightHeightWhoController extends BaseSearchSelectController
             ]
         );
     }
+
     protected function getActionMultiple(): array
     {
         return [
@@ -71,7 +78,8 @@ class WeightHeightWhoController extends BaseSearchSelectController
             ActiveStatus::Deleted->value => ActiveStatus::Deleted->description(),
         ];
     }
-    public function actionMultipleRecords(Request $request)
+
+    public function actionMultipleRecords(Request $request): RedirectResponse
     {
         $boolean = $this->service->actionMultipleRecords($request);
         if ($boolean) {
@@ -79,32 +87,39 @@ class WeightHeightWhoController extends BaseSearchSelectController
         }
         return back()->with('error', __('notifyFail'));
     }
+
     public function create(): Factory|View|Application
     {
-        return view($this->view['create'],[
-            'status'=>ActiveStatus::asSelectArray(),
-            'gender'=>Gender::asSelectArray(),
+        return view($this->view['create'], [
+            'status' => ActiveStatus::asSelectArray(),
+            'gender' => Gender::asSelectArray(),
             'breadcrumbs' => $this->crums->add('Danh sách Chiều cao cân nặng theo tiêu chuẩn Who', route($this->route['index']))->add('Thêm mới'),
         ]);
 
     }
+
     public function store(WeightHeightRequest $request): RedirectResponse
     {
-        $response=$this->service->store($request);
-        if($response){
-            return to_route($this->route['edit'],$response)->with('success', __('notifySuccess'));
+        $response = $this->service->store($request);
+        if ($response) {
+            return to_route($this->route['edit'], $response)->with('success', __('notifySuccess'));
         }
-        return  back()->with('error', __('notifyError'));
+        return back()->with('error', __('notifyError'));
     }
+
     public function update(WeightHeightRequest $request): RedirectResponse
     {
         $this->service->update($request);
 
         return back()->with('success', __('notifySuccess'));
     }
-    public function delete($id):RedirectResponse
+
+    /**
+     * @throws \Exception
+     */
+    public function delete($id): RedirectResponse
     {
-        $response=$this->repository->delete($id);
+        $this->repository->delete($id);
 
         return redirect()->back()->with('success', __('notifySuccess'));
     }

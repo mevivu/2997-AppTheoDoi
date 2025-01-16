@@ -21,6 +21,8 @@ return new class extends Migration
             $table->decimal('height', 5, 2)->nullable();
             $table->integer('age')->nullable();
             $table->integer('month')->nullable();
+            $table->decimal('weight_change', 5, 2)->nullable();
+            $table->decimal('height_change', 5, 2)->nullable();
             $table->enum('gender', Gender::getValues())->default(Gender::Male->value);
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
 
