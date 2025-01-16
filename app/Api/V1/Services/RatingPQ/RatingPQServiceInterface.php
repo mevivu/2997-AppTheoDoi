@@ -15,7 +15,6 @@ interface RatingPQServiceInterface
 
     public function index(Request $request);
 
-    public function actionMultipleRecords(Request $request);
 
 
 }

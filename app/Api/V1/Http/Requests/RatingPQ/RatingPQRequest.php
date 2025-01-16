@@ -3,6 +3,8 @@
 namespace App\Api\V1\Http\Requests\RatingPQ;
 
 use App\Api\V1\Http\Requests\BaseRequest;
+use App\Api\V1\Rules\ValidChild;
+use App\Api\V1\Rules\ValidChildAge;
 
 
 class RatingPQRequest extends BaseRequest
@@ -30,7 +32,7 @@ class RatingPQRequest extends BaseRequest
             'weight' => 'required|integer|min:1',
             'strength' => 'required|integer|min:0',
             'endurance' => 'required|integer|min:0',
-            'child_id' => 'required|integer|exists:children,id',
+            'child_id' => ['required', 'integer', new ValidChildAge()],
         ];
     }
 

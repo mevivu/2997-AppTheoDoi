@@ -3,6 +3,7 @@
 namespace App\Api\V1\Http\Requests\Rating;
 
 use App\Admin\Http\Requests\BaseRequest;
+use App\Api\V1\Rules\ValidChild;
 use App\Enums\Question\QuestionType;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Facades\Log;
@@ -17,7 +18,7 @@ class RatingEQAndAQRequest extends BaseRequest
     protected function methodPost(): array
     {
         return [
-            'child_id' => 'required|integer|exists:children,id',
+            'child_id' => ['required', 'integer', new ValidChild()],
             'answers' => 'required|array',
             'answers.*.question_id' => 'required|integer|exists:questions,id',
             'answers.*.answer_id' => 'required|integer|exists:answers,id',

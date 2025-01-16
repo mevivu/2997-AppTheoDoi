@@ -3,6 +3,7 @@
 namespace App\Api\V1\Http\Requests\Journal;
 
 use App\Api\V1\Http\Requests\BaseRequest;
+use App\Api\V1\Rules\ValidChild;
 use App\Enums\Journal\JournalType;
 use Illuminate\Validation\Rules\Enum;
 
@@ -28,7 +29,7 @@ class JournalRequest extends BaseRequest
     protected function methodPost(): array
     {
         return [
-            'child_id' => 'required|exists:children,id',
+            'child_id' => ['required', 'integer', new ValidChild()],
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'type' => ['required', new Enum(JournalType::class)],

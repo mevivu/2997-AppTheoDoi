@@ -5,6 +5,7 @@ namespace App\Api\V1\Http\Requests\Pregnancy;
 
 
 use App\Api\V1\Http\Requests\BaseRequest;
+use App\Api\V1\Rules\ValidChild;
 
 class PregnancyRequest extends BaseRequest
 {
@@ -25,7 +26,7 @@ class PregnancyRequest extends BaseRequest
     protected function methodPost(): array
     {
         return [
-            'child_id' => 'required|integer|exists:children,id',
+            'child_id' => ['required', 'integer', new ValidChild()],
             'start_date' => 'required|date_format:Y-m-d',
             'end_date' => 'required|date_format:Y-m-d',
             'week' => 'sometimes|integer|min:1',
