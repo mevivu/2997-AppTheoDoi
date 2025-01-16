@@ -130,6 +130,8 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
             Route::group(["middleware" => ['permission:viewHeightWeight', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
+                Route::post('/import', 'import')->name('import');
+                Route::get('/export', 'export')->name('export');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
             Route::group(['middleware' => ['permission:updateHeightWeight', 'auth:admin']], function () {

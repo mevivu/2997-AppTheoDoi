@@ -38,11 +38,11 @@ class WeightHeightWhoDatatable extends BaseDataTable
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4, 5,6];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7, 8];
 
         $this->columnSearchSelect = [
             [
-                'column' => 6,
+                'column' => 8,
                 'data' => ActiveStatus::asSelectArray()
             ],
             [

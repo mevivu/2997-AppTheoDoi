@@ -511,6 +511,16 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
+        'height' => [
+            'title' => 'Chiều cao (cm)',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'weight' => [
+            'title' => 'Cân nặng (kg)',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
         'weight_change' => [
             'title' => 'Thay đổi cân nặng (kg)',
             'orderable' => false,

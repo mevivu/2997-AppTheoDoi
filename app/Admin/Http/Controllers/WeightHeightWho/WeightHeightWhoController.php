@@ -5,15 +5,19 @@ namespace App\Admin\Http\Controllers\WeightHeightWho;
 use App\Admin\DataTables\WeightHeightWho\WeightHeightWhoDatatable;
 use App\Admin\Http\Controllers\BaseSearchSelectController;
 use App\Admin\Http\Requests\WeightHeight\WeightHeightRequest;
+use App\Admin\Http\Requests\WeightHeight\WhoImportRequest;
 use App\Admin\Repositories\WeightHeightWho\WeightHeightWhoRepositoryInterface;
 use App\Admin\Services\WeightHeightWho\WeightHeightWhoServiceInterface;
 use App\Enums\ActiveStatus;
 use App\Enums\User\Gender;
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class WeightHeightWhoController extends BaseSearchSelectController
 {
@@ -44,8 +48,30 @@ class WeightHeightWhoController extends BaseSearchSelectController
         ];
     }
 
+    public function import(WhoImportRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+        try {
+            Excel::import(new WhoImport($data['gender']), $request->file('excelFile'));
+            return back()->with('success', __('notifySuccess'));
+        } catch (Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function export(): BinaryFileResponse
+    {
+        $filePath = public_path('assets/exel/who.xlsx');
+
+        if (!file_exists($filePath)) {
+            return abort(404);
+        }
+
+        return response()->download($filePath);
+    }
+
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function edit($id): Factory|View|Application
     {
@@ -64,6 +90,7 @@ class WeightHeightWhoController extends BaseSearchSelectController
         return $dataTable->render(
             $this->view['index'],
             [
+                'gender' => Gender::asSelectArray(),
                 'actionMultiple' => $this->getActionMultiple(),
                 'breadcrumbs' => $this->crums->add('Danh sách Cân nặng chiều cao tiêu chuẩn Who'),
             ]
@@ -115,7 +142,7 @@ class WeightHeightWhoController extends BaseSearchSelectController
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function delete($id): RedirectResponse
     {
