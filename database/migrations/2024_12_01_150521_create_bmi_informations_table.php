@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->decimal('z_score_plus_1', 10, 2);
             $table->decimal('z_score_plus_2', 10, 2);
             $table->decimal('z_score_plus_3', 10, 2);
-            $table->enum('gender', Gender::getValues())->default(Gender::Other->value);
+            $table->enum('gender', Gender::getValues())->default(Gender::Male->value);
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
             $table->timestamps();
         });

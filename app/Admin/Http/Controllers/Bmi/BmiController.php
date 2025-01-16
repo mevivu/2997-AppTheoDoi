@@ -4,6 +4,7 @@ namespace App\Admin\Http\Controllers\Bmi;
 
 use App\Admin\DataTables\Bmi\BmiDataTable;
 use App\Admin\Http\Controllers\Controller;
+use App\Admin\Http\Requests\Bmi\BmiImportRequest;
 use App\Admin\Http\Requests\Bmi\BmiRequest;
 use App\Admin\Repositories\Bmi\BmiRepositoryInterface;
 use App\Admin\Services\Bmi\BmiServiceInterface;
@@ -15,14 +16,18 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rules\Enum;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 
 class BmiController extends Controller
 {
     public function __construct(
         BmiRepositoryInterface $repository,
-        BmiServiceInterface $service
-    ) {
+        BmiServiceInterface    $service
+    )
+    {
         parent::__construct();
         $this->repository = $repository;
         $this->service = $service;
@@ -47,12 +52,35 @@ class BmiController extends Controller
         ];
     }
 
+    public function import(BmiImportRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+        try {
+            Excel::import(new BmiImport($data['gender']), $request->file('excelFile'));
+            return back()->with('success', __('notifySuccess'));
+        } catch (Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
+
+    public function export(): BinaryFileResponse
+    {
+        $filePath = public_path('assets/exel/bmi.xlsx');
+
+        if (!file_exists($filePath)) {
+            return abort(404);
+        }
+
+        return response()->download($filePath);
+    }
+
     public function index(BmiDataTable $dataTable)
     {
         return $dataTable->render(
             $this->view['index'],
             [
                 'actionMultiple' => $this->getActionMultiple(),
+                'gender' => Gender::asSelectArray(),
                 'breadcrumbs' => $this->crums->add('Danh sách BMI tiêu chuẩn'),
             ]
         );

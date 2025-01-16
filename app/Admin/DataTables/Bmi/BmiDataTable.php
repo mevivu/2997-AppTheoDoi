@@ -46,7 +46,7 @@ class BmiDataTable extends BaseDataTable
                 'data' => ActiveStatus::asSelectArray()
             ],
             [
-                'column' => 2,
+                'column' => 1,
                 'data' => Gender::asSelectArray()
             ]
         ];
