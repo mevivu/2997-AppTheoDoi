@@ -72,6 +72,11 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::get('/', 'index')->name('index');
             });
 
+            Route::group(['middleware' => ['permission:deletePQ', 'auth:admin']], function () {
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+
         });
 
     //Exercises

@@ -274,6 +274,75 @@ return [
             'addClass' => 'text-center align-middle'
         ],
     ],
+    'rating_pqs' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'child_id' => [
+            'title' => 'Trẻ',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle'
+        ],
+        'assessment_date' => [
+            'title' => 'Ngày đánh giá',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle'
+        ],
+        'height' => [
+            'title' => 'Chiều cao (cm)',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+            'visible' => false
+        ],
+        'weight' => [
+            'title' => 'Cân nặng (kg)',
+            'orderable' => true,
+            'visible' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+        'strength' => [
+            'title' => 'Điểm sức mạnh',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle'
+        ],
+        'endurance' => [
+            'title' => 'Điểm sức bền',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle'
+        ],
+        'bmi' => [
+            'title' => 'Chỉ số BMI',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle'
+        ],
+        'bmi_result' => [
+            'title' => 'Kết quả BMI',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle'
+        ],
+        'height_result' => [
+            'title' => 'Kết quả chiều cao',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle'
+        ],
+        'height_change' => [
+            'title' => 'Thay đổi chiều cao',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle'
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
     'pregnancy' => [
         'checkbox' => [
             'title' => 'choose',

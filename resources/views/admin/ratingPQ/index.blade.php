@@ -15,7 +15,7 @@
                     </x-link>
                 </div>
                 <div class="card-body">
-                    <x-form id="formMultiple" :action="route('admin.pregnancy.multiple')" type="post" :validate="true">
+                    <x-form id="formMultiple" :action="route('admin.ratingPQ.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">
                             <x-admin.partials.toggle-column-datatable/>
                             @isset($actionMultiple)

@@ -29,14 +29,14 @@ return [
         ]
     ],
     [
-        'title' => 'GPA',
+        'title' => 'Đánh giá học lực',
         'routeName' => null,
-        'icon' => '<i class="ti ti-calendar-dollar"></i>',
+        'icon' => '<i class="ti ti-bell-school"></i>',
         'roles' => [],
         'permissions' => ['viewGPA'],
         'sub' => [
             [
-                'title' => 'DS GPA',
+                'title' => 'DS Đánh giá',
                 'routeName' => 'admin.gpa.index',
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
@@ -49,9 +49,15 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-calendar-dollar"></i>',
         'roles' => [],
-        'permissions' => ['createGuide', 'viewGuide', 'updateGuide', 'deleteGuide'],
+        'permissions' => ['createGuide', 'viewGuide', 'updateGuide', 'deleteGuide', 'viewPQ', 'deletePQ'],
         'sub' => [
-
+            [
+                'title' => 'DS Đánh giá',
+                'routeName' => 'admin.ratingPQ.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewPQ'],
+            ],
             [
                 'title' => 'DS Hướng dẫn',
                 'routeName' => 'admin.guide.index',

@@ -25,9 +25,8 @@ class RatingPQDataTable extends BaseDataTable
     public function setView(): void
     {
         $this->view = [
-            'child' => 'admin.pregnancy.datatable.child',
-            'action' => 'admin.pregnancy.datatable.action',
-            'status' => 'admin.pregnancy.datatable.status',
+            'child' => 'admin.ratingPQ.datatable.child',
+            'action' => 'admin.ratingPQ.datatable.action',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
@@ -35,16 +34,12 @@ class RatingPQDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 2, 3, 4];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
         $this->columnSearchDate = [2];
 
         $this->columnSearchSelect = [
 
-            [
-                'column' => 4,
-                'data' => ActiveStatus::asSelectArray()
-            ],
         ];
     }
 
@@ -56,16 +51,12 @@ class RatingPQDataTable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getByQueryBuilder(
-            [
-                ['status', '!=', ActiveStatus::Deleted],
-            ]
-        );
+        return $this->repository->getQueryBuilder();
     }
 
     protected function setCustomColumns(): void
     {
-        $this->customColumns = config('datatables_columns.pregnancy', []);
+        $this->customColumns = config('datatables_columns.rating_pqs', []);
     }
 
     public function setCustomFilterColumns(): void
@@ -83,15 +74,12 @@ class RatingPQDataTable extends BaseDataTable
     protected function setCustomEditColumns(): void
     {
         $this->customEditColumns = [
-            'status' => $this->view['status'],
             'checkbox' => $this->view['checkbox'],
             'child_id' => function ($children) {
                 return view($this->view['child'], [
                     'child' => $children->child,
                 ])->render();
             },
-            'start_date' => '{{ date("d-m-Y", strtotime($start_date)) }}',
-            'end_date' => '{{ date("d-m-Y", strtotime($end_date)) }}',
 
         ];
     }
@@ -108,7 +96,6 @@ class RatingPQDataTable extends BaseDataTable
     {
         $this->customRawColumns = [
             'child_id',
-            'status',
             'action',
             'checkbox',
 

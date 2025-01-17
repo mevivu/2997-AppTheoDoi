@@ -40,6 +40,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\Brand\BrandServiceInterface' => 'App\Admin\Services\Brand\BrandService',
         'App\Admin\Services\Product\ProductServiceInterface' => 'App\Admin\Services\Product\ProductService',
         'App\Admin\Services\Guide\GuideServiceInterface' => 'App\Admin\Services\Guide\GuideService',
+        'App\Admin\Services\RatingPQ\RatingPQServiceInterface' => 'App\Admin\Services\RatingPQ\RatingPQService',
 
 
     ];
