@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('bmi_result')->nullable();
             $table->string('height_result')->nullable();
             $table->decimal('height_change', 8, 2)->nullable();
+            $table->unsignedInteger('score')->nullable();
             $table->timestamps();
             $table->foreignId('child_id')->nullable()->constrained('children')->onDelete('cascade');
 

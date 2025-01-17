@@ -32,6 +32,8 @@ class RatingPQ extends Model
         'height_result',
         /** Giá trị thay đổi chiều cao */
         'height_change',
+        /** Điểm */
+        'score',
         /** Child ID */
         'child_id',
     ];
