@@ -42,6 +42,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\Product\ProductRepositoryInterface' => 'App\Api\V1\Repositories\Product\ProductRepository',
         'App\Api\V1\Repositories\ProductCatalog\ProductCatalogRepositoryInterface' => 'App\Api\V1\Repositories\ProductCatalog\ProductCatalogRepository',
         'App\Api\V1\Repositories\Brand\BrandRepositoryInterface' => 'App\Api\V1\Repositories\Brand\BrandRepository',
+        'App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface' => 'App\Api\V1\Repositories\WeightHeightWho\WhoRepository',
 
 
 

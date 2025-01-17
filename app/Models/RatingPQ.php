@@ -28,6 +28,10 @@ class RatingPQ extends Model
         'bmi',
         /** Kết quả chỉ số BMI */
         'bmi_result',
+        /** Kết quả chiều cao */
+        'height_result',
+        /** Giá trị thay đổi chiều cao */
+        'height_change',
         /** Child ID */
         'child_id',
     ];

@@ -7,8 +7,10 @@ use App\Admin\Services\File\FileService;
 use App\Api\V1\Repositories\BMI\BMIRepositoryInterface;
 use App\Api\V1\Repositories\Child\ChildRepositoryInterface;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
+use App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
+use App\Enums\ActiveStatus;
 use App\Enums\Child\BornStatus;
 use Exception;
 use Illuminate\Http\Request;
@@ -27,21 +29,23 @@ class RatingPQService implements RatingPQServiceInterface
 
     protected RatingPQRepositoryInterface $repository;
     protected ChildRepositoryInterface $childRepository;
-
     protected BMIRepositoryInterface $bmiRepository;
 
+    protected WhoRepositoryInterface $whoRepository;
     protected FileService $fileService;
 
     public function __construct(
         RatingPQRepositoryInterface $repository,
         ChildRepositoryInterface    $childRepository,
         BMIRepositoryInterface      $bmiRepository,
+        WhoRepositoryInterface      $whoRepository,
         FileService                 $fileService
     )
     {
         $this->repository = $repository;
         $this->childRepository = $childRepository;
         $this->bmiRepository = $bmiRepository;
+        $this->whoRepository = $whoRepository;
         $this->fileService = $fileService;
     }
 
@@ -72,17 +76,69 @@ class RatingPQService implements RatingPQServiceInterface
         $bmi = $this->calculateBMI($height, $weight);
         $age = $child->age;
         $gender = $child->gender;
+        $month = $child->month;
+        $bmiCategory = $this->getBmiCategory($bmi, $age, $gender);
+        $data['bmi'] = $bmi;
+        $data['bmi_result'] = $bmiCategory;
+        $data['height_result'] = $this->getHeightResult($height, $month, $gender);
+        return $this->repository->create($data);
+    }
+
+    public function getHeightResult($currentHeight, $month, $gender): string
+    {
+        $who = $this->whoRepository->getBy(
+            [
+                'month' => $month,
+                'gender' => $gender,
+                'status' => ActiveStatus::Active,
+            ]
+        )->first();
+        if (!$who) {
+            return 'Dữ liệu không xác định';
+        }
+        $heightWho = $who->height;
+        $heightChangeWho = $who->height_change;
+        $baseLow = ($heightWho - $heightChangeWho);
+        $baseHigh = ($heightWho + $heightChangeWho);
+        $veryLow = $baseLow * 12;
+        $low = $baseLow * 6;
+        $slightlyLow = $baseLow * 3;
+        $normal = $baseLow;
+        $slightlyHigh = $baseHigh * 3;
+        $high = $baseHigh * 6;
+        $veryHigh = $baseHigh * 12;
+        if ($currentHeight <= $veryLow) {
+            return 'Rất thấp';
+        } elseif ($currentHeight > $veryLow && $currentHeight <= $low) {
+            return 'Tương đối thấp';
+        } elseif ($currentHeight > $low && $currentHeight <= $slightlyLow) {
+            return 'Hơi thấp';
+        } elseif ($currentHeight > $slightlyLow && $currentHeight <= $normal) {
+            return 'Bình thường';
+        } elseif ($currentHeight > $normal && $currentHeight <= $slightlyHigh) {
+            return 'Vượt chuẩn';
+        } elseif ($currentHeight > $slightlyHigh && $currentHeight <= $high) {
+            return 'Tương đối cao';
+        } elseif ($currentHeight > $high) {
+            return 'Rất cao';
+        }
+        return 'Không xác định';
+    }
+
+    public function getBmiCategory($bmi, $age, $gender): ?string
+    {
         $bmiCategory = null;
         if ($age) {
             $bmiThresholds = $this->bmiRepository->getBy([
                 'age' => $age,
-                'gender' => $gender
+                'gender' => $gender,
+                'status' => ActiveStatus::Active
             ])->first();
-            $bmiCategory = $this->classifyBMI($bmi, $bmiThresholds);
+            if ($bmiThresholds) {
+                $bmiCategory = $this->classifyBMI($bmi, $bmiThresholds);
+            }
         }
-        $data['bmi'] = $bmi;
-        $data['bmi_result'] = $bmiCategory;
-        return $this->repository->create($data);
+        return $bmiCategory;
     }
 
     public function calculateBMI($height, $weight): float|int
@@ -90,7 +146,9 @@ class RatingPQService implements RatingPQServiceInterface
         if ($height <= 0) return 0;
 
         $heightInMeters = $height / 100;
-        return $weight / ($heightInMeters * $heightInMeters);
+        $bmi = $weight / ($heightInMeters * $heightInMeters);
+
+        return round($bmi, 1);
     }
 
     public function classifyBMI($bmi, $bmiThresholds): string
@@ -138,12 +196,6 @@ class RatingPQService implements RatingPQServiceInterface
     {
         $this->repository->delete($id);
 
-    }
-
-
-    public function update(Request $request)
-    {
-        // TODO: Implement update() method.
     }
 
 
