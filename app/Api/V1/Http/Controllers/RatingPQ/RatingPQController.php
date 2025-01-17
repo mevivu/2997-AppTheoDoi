@@ -81,22 +81,31 @@ class RatingPQController extends Controller
     }
 
     /**
-     * Tạo đánh giá theo loại IQ
+     * Tạo đánh giá thể chất
      *
      * @authenticated
+     *
+     * @bodyParam assessment_date string required Ngày đánh giá. Example: 2023-01-16
+     * @bodyParam height int required Chiều cao của trẻ (cm). Example: 110
+     * @bodyParam weight int required Cân nặng của trẻ (kg). Example: 35
+     * @bodyParam strength int required Điểm sức mạnh của trẻ. Example: 15
+     * @bodyParam endurance int required Điểm sức bền của trẻ. Example: 10
      * @bodyParam child_id int required ID của trẻ mà đánh giá được tạo cho. Example: 1
-     * @bodyParam type string required Loại câu hỏi đang được đánh giá. Example: iq
-     * @bodyParam answers array required Một mảng các câu trả lời với ID câu hỏi và ID câu trả lời.
-     * @bodyParam answers[].question_id int required ID của câu hỏi đang được trả lời.
-     * @bodyParam answers[].answer_id int required ID của câu trả lời được cung cấp.
-     * @bodyParam tag string required Thẻ để phân loại đánh giá. Example: Bố
      *
      * @response 201 {
      *     "status": 201,
-     *     "message": "Theo dõi thai kì đã được tạo thành công.",
+     *     "message": "Đánh giá đã được tạo thành công.",
      *     "data": {
      *         "id": 1,
      *         "child_id": 1,
+     *         "assessment_date": "2023-01-16",
+     *         "height": 110,
+     *         "weight": 35,
+     *         "strength": 15,
+     *         "endurance": 10,
+     *         "bmi": 28.9,
+     *         "bmi_result": "Hơi béo"
+     *     }
      * }
      *
      * @response 400 {

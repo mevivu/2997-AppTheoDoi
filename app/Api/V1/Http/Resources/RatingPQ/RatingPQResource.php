@@ -30,6 +30,7 @@ class RatingPQResource extends JsonResource
             'bmi' => $this->bmi,
             'bmi_result' => $this->bmi_result,
             'height_result' => $this->height_result,
+            'height_change' => round($this->height_change, 2),
             'child' => new ChildResource($this->child),
 
         ];

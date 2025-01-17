@@ -11,7 +11,6 @@ use App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\ActiveStatus;
-use App\Enums\Child\BornStatus;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -77,22 +76,29 @@ class RatingPQService implements RatingPQServiceInterface
         $age = $child->age;
         $gender = $child->gender;
         $month = $child->month;
+        $who = $this->getWho($month, $gender);
+        $whoHeight = $who->height;
         $bmiCategory = $this->getBmiCategory($bmi, $age, $gender);
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
-        $data['height_result'] = $this->getHeightResult($height, $month, $gender);
+        $data['height_change'] = $height - $whoHeight;
+        $data['height_result'] = $this->getHeightResult($height, $who);
         return $this->repository->create($data);
     }
 
-    public function getHeightResult($currentHeight, $month, $gender): string
+    public function getWho($month, $gender)
     {
-        $who = $this->whoRepository->getBy(
+        return $this->whoRepository->getBy(
             [
                 'month' => $month,
                 'gender' => $gender,
                 'status' => ActiveStatus::Active,
             ]
         )->first();
+    }
+
+    public function getHeightResult($currentHeight, $who): string
+    {
         if (!$who) {
             return 'Dữ liệu không xác định';
         }
