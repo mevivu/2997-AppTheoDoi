@@ -5,9 +5,8 @@ namespace App\Api\V1\Http\Controllers\RatingPQ;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Exception\NotFoundException;
-use App\Api\V1\Http\Requests\Rating\RatingRequest;
 use App\Api\V1\Http\Requests\RatingPQ\RatingPQRequest;
-use App\Api\V1\Http\Resources\Rating\RatingCollection;
+use App\Api\V1\Http\Resources\RatingPQ\RatingPQCollection;
 use App\Api\V1\Http\Resources\RatingPQ\RatingPQResource;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
 use App\Api\V1\Services\RatingPQ\RatingPQServiceInterface;
@@ -68,15 +67,15 @@ class RatingPQController extends Controller
      *     "message": "Lỗi hệ thống khi lấy danh sách theo dõi thai kỳ."
      * }
      *
-     * @param RatingRequest $request
+     * @param RatingPQRequest $request
      * @return JsonResponse
      */
 
-    public function index(RatingRequest $request): JsonResponse
+    public function index(RatingPQRequest $request): JsonResponse
     {
         try {
             $response = $this->service->index($request);
-            return $this->jsonResponseSuccess(new RatingCollection($response));
+            return $this->jsonResponseSuccess(new RatingPQCollection($response));
         } catch (Exception $exception) {
             $this->logError('Get journals failed:', $exception);
             return $this->jsonResponseError('Get journals failed', 500);

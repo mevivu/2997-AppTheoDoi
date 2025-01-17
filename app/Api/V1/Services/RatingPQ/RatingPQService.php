@@ -54,11 +54,9 @@ class RatingPQService implements RatingPQServiceInterface
         $data = $request->validated();
         $limit = $data['limit'] ?? 10;
         $page = $data['page'] ?? 1;
-        $type = $data['type'];
 
         $query = $this->repository->getByQueryBuilder([
             'child_id' => $data['child_id'],
-            'type' => $type,
         ]);
         return $query->paginate($limit, ['*'], 'page', $page);
     }

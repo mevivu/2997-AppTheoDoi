@@ -3,6 +3,7 @@
 namespace App\Api\V1\Http\Resources\RatingPQ;
 
 use App\Api\V1\Http\Resources\Child\ChildResource;
+use App\Api\V1\Support\CheckPackage;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use JsonSerializable;
 
 class RatingPQResource extends JsonResource
 {
+    use CheckPackage;
     /**
      * Transform the resource into an array.
      *
@@ -20,6 +22,7 @@ class RatingPQResource extends JsonResource
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
+        $isContentVisible = $this->checkUserPackage($this->assessment_date);
         return [
             'id' => $this->id,
             'assessment_date' => $this->assessment_date ?? null,
@@ -32,6 +35,7 @@ class RatingPQResource extends JsonResource
             'height_result' => $this->height_result,
             'height_change' => round($this->height_change, 2),
             'child' => new ChildResource($this->child),
+            'checked' => $isContentVisible
 
         ];
     }
