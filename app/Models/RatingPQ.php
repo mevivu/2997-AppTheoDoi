@@ -13,6 +13,8 @@ class RatingPQ extends Model
 
     protected $table = 'ratings_pqs';
 
+    protected $dates = ['assessment_date'];
+
     protected $fillable = [
         /** Ngày đánh giá */
         'assessment_date',

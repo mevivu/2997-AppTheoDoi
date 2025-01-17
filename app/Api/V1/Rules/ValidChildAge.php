@@ -3,6 +3,7 @@
 namespace App\Api\V1\Rules;
 
 use App\Enums\Child\BornStatus;
+use App\Enums\User\Gender;
 use App\Models\Child;
 use Illuminate\Contracts\Validation\Rule;
 
@@ -13,6 +14,11 @@ class ValidChildAge implements Rule
     public function passes($attribute, $value): bool
     {
         $child = Child::find($value);
+        $user = $child->user;
+        if ($user->father_height == null || $user->mother_height == null) {
+            $this->errorMessage = 'Chưa có chiều cao của Bố hoặc mẹ.';
+            return false;
+        }
 
         if (!$child) {
             $this->errorMessage = 'Đứa trẻ không tồn tại trong hệ thống.';
@@ -24,8 +30,13 @@ class ValidChildAge implements Rule
             return false;
         }
 
-        if ($child->age < 5) {
-            $this->errorMessage = 'Đứa trẻ phải ít nhất 5 tuổi.';
+        if ($child->age > 16 && $child->gender == Gender::Male) {
+            $this->errorMessage = 'Tuổi của trẻ nam không được lớn hơn 16';
+            return false;
+        }
+
+        if ($child->age > 15 && $child->gender == Gender::Female) {
+            $this->errorMessage = 'Tuổi của trẻ nữ không được lớn hơn 15';
             return false;
         }
 
