@@ -36,9 +36,25 @@ class RatingPQRequest extends BaseRequest
         ];
     }
 
+    protected function methodPut(): array
+    {
+        return [
+            'id' => 'required|integer|exists:ratings_pqs,id',
+            'assessment_date' => 'required|date_format:Y-m-d',
+            'height' => 'required|integer|min:1',
+            'weight' => 'required|integer|min:1',
+            'strength' => 'required|integer|min:0',
+            'endurance' => 'required|integer|min:0',
+            'child_id' => ['required', 'integer', new ValidChildAge()],
+        ];
+    }
+
     public function messages(): array
     {
         return [
+            'id.required' => 'ID đánh giá là bắt buộc.',
+            'id.integer' => 'ID đánh giá phải là một số nguyên.',
+            'id.exists' => 'ID đánh giá không tồn tại trong hệ thống.',
             'limit.required' => 'Số lượng là bắt buộc.',
             'limit.integer' => 'Số lượng phải là một số nguyên.',
             'limit.min' => 'Số lượng tối thiểu là 1.',

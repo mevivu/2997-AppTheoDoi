@@ -86,6 +86,29 @@ class RatingPQService implements RatingPQServiceInterface
         return $this->repository->create($data);
     }
 
+    /**
+     * @throws Exception
+     */
+    public function update(Request $request): object
+    {
+        $data = $request->validated();
+        $height = $data['height'];
+        $weight = $data['weight'];
+        $child = $this->childRepository->findOrFail($data['child_id']);
+        $bmi = $this->calculateBMI($height, $weight);
+        $age = $child->age;
+        $gender = $child->gender;
+        $month = $child->month;
+        $who = $this->getWho($month, $gender);
+        $whoHeight = $who->height;
+        $bmiCategory = $this->getBmiCategory($bmi, $age, $gender);
+        $data['bmi'] = $bmi;
+        $data['bmi_result'] = $bmiCategory;
+        $data['height_change'] = $height - $whoHeight;
+        $data['height_result'] = $this->getHeightResult($height, $who);
+        return $this->repository->update($data['id'], $data);
+    }
+
     public function getWho($month, $gender)
     {
         return $this->whoRepository->getBy(

@@ -20,7 +20,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 /**
- * @group Đánh giá
+ * @group Đánh giá EQ,AQ,IQ
  */
 class RatingController extends Controller
 {

@@ -241,8 +241,8 @@ class JournalController extends Controller
         } catch (NotFoundException|BadRequestException $e) {
             return $this->jsonResponseError($e->getMessage());
         } catch (Exception $exception) {
-            $this->logError('Deleted failed:', $exception);
-            return $this->jsonResponseError('Deleted failed', 500);
+            $this->logError('Show failed:', $exception);
+            return $this->jsonResponseError('Show failed', 500);
         }
     }
 

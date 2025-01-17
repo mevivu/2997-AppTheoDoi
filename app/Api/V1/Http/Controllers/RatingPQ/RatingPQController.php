@@ -3,6 +3,8 @@
 namespace App\Api\V1\Http\Controllers\RatingPQ;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Api\V1\Exception\BadRequestException;
+use App\Api\V1\Exception\NotFoundException;
 use App\Api\V1\Http\Requests\Rating\RatingRequest;
 use App\Api\V1\Http\Requests\RatingPQ\RatingPQRequest;
 use App\Api\V1\Http\Resources\Rating\RatingCollection;
@@ -12,6 +14,7 @@ use App\Api\V1\Services\RatingPQ\RatingPQServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
+use App\Api\V1\Validate\Validator;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -131,8 +134,152 @@ class RatingPQController extends Controller
             return $this->jsonResponseSuccess(new RatingPQResource($response));
         } catch (Exception $exception) {
             DB::rollBack();
-            $this->logError('Create pregnancy failed:', $exception);
-            return $this->jsonResponseError('Create pregnancy failed', 500);
+            $this->logError('Create Rating PQ failed:', $exception);
+            return $this->jsonResponseError('Create Rating PQ failed', 500);
+        }
+    }
+
+    /**
+     * Cập nhật đánh giá thể chất
+     *
+     * @authenticated
+     *
+     * @bodyParam id int required ID đánh giá. Example: 1
+     * @bodyParam assessment_date string required Ngày đánh giá. Example: 2023-01-16
+     * @bodyParam height int required Chiều cao của trẻ (cm). Example: 110
+     * @bodyParam weight int required Cân nặng của trẻ (kg). Example: 35
+     * @bodyParam strength int required Điểm sức mạnh của trẻ. Example: 15
+     * @bodyParam endurance int required Điểm sức bền của trẻ. Example: 10
+     * @bodyParam child_id int required ID của trẻ mà đánh giá được tạo cho. Example: 1
+     *
+     * @response 201 {
+     *     "status": 201,
+     *     "message": "Đánh giá đã được tạo thành công.",
+     *     "data": {
+     *         "id": 1,
+     *         "child_id": 1,
+     *         "assessment_date": "2023-01-16",
+     *         "height": 110,
+     *         "weight": 35,
+     *         "strength": 15,
+     *         "endurance": 10,
+     *         "bmi": 28.9,
+     *         "bmi_result": "Hơi béo"
+     *     }
+     * }
+     *
+     * @response 400 {
+     *     "status": 400,
+     *     "message": "Lỗi dữ liệu nhập vào."
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống."
+     * }
+     *
+     * @param RatingPQRequest $request
+     * @return JsonResponse
+     */
+
+    public function update(RatingPQRequest $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $response = $this->service->update($request);
+            DB::commit();
+            return $this->jsonResponseSuccess(new RatingPQResource($response));
+        } catch (Exception $exception) {
+            DB::rollBack();
+            $this->logError('Update RatingPQ failed:', $exception);
+            return $this->jsonResponseError('Update RatingPQ failed', 500);
+        }
+    }
+
+    /**
+     * Lấy chi tiết Đánh giá
+     *
+     *
+     * @authenticated
+     * @urlParam id int required ID của nhật ký cần xem chi tiết. Example: 1
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Chi tiết nhật ký.",
+     *     "data": {
+     *         "id": 1,
+     *         "child_id": 1,
+     *         "title": "Toa Thuốc Hàng Tuần",
+     *         "content": "Nội dung chi tiết của toa thuốc...",
+     *         "image": "/images/prescriptions/example.jpg",
+     *         "type": "prescription",
+     *         "created_at": "2024-01-01",
+     *         "updated_at": "2024-01-02"
+     *     }
+     * }
+     *
+     * @response 404 {
+     *     "status": 404,
+     *     "message": "Nhật ký không tìm thấy."
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống."
+     * }
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function show(int $id): JsonResponse
+    {
+        try {
+            Validator::validateExists($this->repository, $id);
+            $response = $this->repository->findOrFail($id);
+            return $this->jsonResponseSuccess(new RatingPQResource($response));
+        } catch (NotFoundException|BadRequestException $e) {
+            return $this->jsonResponseError($e->getMessage());
+        } catch (Exception $exception) {
+            $this->logError('Deleted failed:', $exception);
+            return $this->jsonResponseError('Deleted failed', 500);
+        }
+    }
+
+    /**
+     * Xóa
+     *
+     * @authenticated
+     * @pathParam  id int required ID của nhật ký cần xóa. Example: 1
+     *
+     * @response 204 {
+     *     "status": 204,
+     *     "message": "Đánh giá đã được xóa thành công."
+     * }
+     *
+     * @response 404 {
+     *     "status": 404,
+     *     "message": "Đánh giá không tìm thấy."
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống khi xóa nhật ký."
+     * }
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function delete(int $id): JsonResponse
+    {
+        try {
+            Validator::validateExists($this->repository, $id);
+            $this->service->delete($id);
+            return $this->jsonResponseSuccessNoData();
+        } catch (NotFoundException|BadRequestException $e) {
+            return $this->jsonResponseError($e->getMessage());
+        } catch (Exception $exception) {
+            $this->logError('Deleted failed:', $exception);
+            return $this->jsonResponseError('Deleted failed', 500);
         }
     }
 

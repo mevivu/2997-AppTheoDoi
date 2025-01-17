@@ -147,6 +147,7 @@ Route::controller(\App\Api\V1\Http\Controllers\RatingPQ\RatingPQController::clas
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
         Route::post('/', 'store');
+        Route::put('/', 'update');
         Route::delete('/{id}', 'delete');
     });
 
