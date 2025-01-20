@@ -80,6 +80,7 @@ class RatingPQDataTable extends BaseDataTable
                     'child' => $children->child,
                 ])->render();
             },
+            'assessment_date' => '{{ format_date($assessment_date) }}',
 
         ];
     }

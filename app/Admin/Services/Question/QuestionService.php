@@ -5,25 +5,29 @@ namespace App\Admin\Services\Question;
 use App\Admin\Repositories\Answer\AnswerRepositoryInterface;
 use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Enums\Answser\AnswerType;
+use Exception;
 use Illuminate\Http\Request;
 use App\Enums\ActiveStatus;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class QuestionService implements QuestionServiceInterface
 {
-    protected $repository;
-    protected $answerRepository;
+
+    protected QuestionRepositoryInterface $repository;
+    protected AnswerRepositoryInterface $answerRepository;
 
     public function __construct(
         QuestionRepositoryInterface $repository,
-        AnswerRepositoryInterface $answerRepository
-    ) {
+        AnswerRepositoryInterface   $answerRepository
+    )
+    {
         $this->repository = $repository;
         $this->answerRepository = $answerRepository;
     }
 
-    public function storeIq(Request $request)
+    public function storeIq(Request $request): object|bool
     {
         $data = $request->validated();
         DB::beginTransaction();
@@ -53,14 +57,14 @@ class QuestionService implements QuestionServiceInterface
             DB::commit();
             return $question;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
-            \Log::error($e->getMessage());
+            Log::error($e->getMessage());
             return false;
         }
     }
 
-    public function updateIq(Request $request)
+    public function updateIq(Request $request): object|bool
     {
         $data = $request->validated();
         DB::beginTransaction();
@@ -99,14 +103,14 @@ class QuestionService implements QuestionServiceInterface
 
             DB::commit();
             return $question;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
-            \Log::error($e->getMessage());
+            Log::error($e->getMessage());
             return false;
         }
     }
 
-    public function storeEqAq(Request $request)
+    public function storeEqAq(Request $request): object|bool
     {
         $data = $request->validated();
 
@@ -133,14 +137,14 @@ class QuestionService implements QuestionServiceInterface
 
             DB::commit();
             return $question;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
-            \Log::error($e->getMessage());
+            Log::error($e->getMessage());
             return false;
         }
     }
 
-    public function updateEqAq(Request $request)
+    public function updateEqAq(Request $request): object|bool
     {
         $data = $request->validated();
         DB::beginTransaction();
@@ -158,7 +162,10 @@ class QuestionService implements QuestionServiceInterface
 
             foreach ($answerData as $key => $value) {
                 if (isset($existAnswers[$key])) {
-                    $this->answerRepository->update($key, ['answer' => $value, 'score' => $data['answers']['score'][$key]]);
+                    $this->answerRepository->update($key,
+                        [
+                            'answer' => $value, 'score' => $data['answers']['score'][$key]
+                        ]);
                     unset($existAnswers[$key]);
                 } else {
                     $answer = [
@@ -177,9 +184,9 @@ class QuestionService implements QuestionServiceInterface
 
             DB::commit();
             return $question;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
-            \Log::error($e->getMessage());
+            Log::error($e->getMessage());
             return false;
         }
     }
