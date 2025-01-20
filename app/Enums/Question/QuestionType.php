@@ -18,8 +18,6 @@ enum QuestionType: string
     /** AQ */
     case AQ = 'aq';
 
-    /** Thể chất */
-    case PQ = 'pq';
 
 
     public function badge(): string

@@ -79,6 +79,25 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
         });
 
+    //Rating
+    Route::controller(\App\Admin\Http\Controllers\Rating\RatingController::class)
+        ->prefix('/ratings')
+        ->as('rating.')
+        ->group(function () {
+
+            Route::group(["middleware" => ['permission:viewEQ', 'auth:admin']], function () {
+                Route::get('/eqs', 'eq')->name('eq');
+                Route::get('/iqs', 'iq')->name('iq');
+                Route::get('/aqs', 'aq')->name('aq');
+            });
+
+            Route::group(['middleware' => ['permission:deleteEQAQIQ', 'auth:admin']], function () {
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+
+        });
+
     //Exercises
     Route::controller(App\Admin\Http\Controllers\Exercise\ExerciseController::class)
         ->prefix('/exercises')

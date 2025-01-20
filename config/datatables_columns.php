@@ -151,6 +151,178 @@ return [
             'addClass' => 'text-center align-middle'
         ],
     ],
+    'eq' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'child_id' => [
+            'title' => 'Trẻ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'self_regulation' => [
+            'title' => 'Kiểm soát cảm xúc',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'social_awareness' => [
+            'title' => 'Nhận thức cảm xúc',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'relationship_management' => [
+            'title' => 'Đồng cảm',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'decision_making' => [
+            'title' => 'Động lực',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'optimism' => [
+            'title' => 'Kỹ năng xã hội',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'score' => [
+            'title' => 'Điểm ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'description' => [
+            'title' => 'Mô tả ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+            'visible' => false
+        ],
+
+        'created_at' => [
+            'title' => 'Ngày tạo',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
+    'aq' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'child_id' => [
+            'title' => 'Trẻ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'self_regulation' => [
+            'title' => 'Kiểm soát cảm xúc',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'social_awareness' => [
+            'title' => 'Nhận thức cảm xúc',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'relationship_management' => [
+            'title' => 'Đồng cảm',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'decision_making' => [
+            'title' => 'Động lực',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'optimism' => [
+            'title' => 'Kỹ năng xã hội',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'score' => [
+            'title' => 'Điểm ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'description' => [
+            'title' => 'Mô tả ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+            'visible' => false
+        ],
+
+        'created_at' => [
+            'title' => 'Ngày tạo',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
+    'iq' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'child_id' => [
+            'title' => 'Trẻ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'tag' => [
+            'title' => 'tag ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+
+        'score' => [
+            'title' => 'Điểm ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'badge_image' => [
+            'title' => 'hình ảnh ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'description' => [
+            'title' => 'Mô tả ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+            'visible' => false
+        ],
+
+        'created_at' => [
+            'title' => 'Ngày tạo',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+    ],
     'expected' => [
         'checkbox' => [
             'title' => 'choose',

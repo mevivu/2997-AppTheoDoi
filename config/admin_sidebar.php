@@ -29,7 +29,7 @@ return [
         ]
     ],
     [
-        'title' => 'Đánh giá học lực',
+        'title' => 'Đánh giá học lực (GPA)',
         'routeName' => null,
         'icon' => '<i class="ti ti-bell-school"></i>',
         'roles' => [],
@@ -45,9 +45,9 @@ return [
         ]
     ],
     [
-        'title' => 'Đánh giá thể chất',
+        'title' => 'Đánh giá thể chất (PQ)',
         'routeName' => null,
-        'icon' => '<i class="ti ti-calendar-dollar"></i>',
+        'icon' => '<i class="ti ti-writing"></i>',
         'roles' => [],
         'permissions' => ['createGuide', 'viewGuide', 'updateGuide', 'deleteGuide', 'viewPQ', 'deletePQ'],
         'sub' => [
@@ -68,18 +68,48 @@ return [
         ]
     ],
     [
+        'title' => 'Đánh giá (EQ,IQ,AQ)',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-writing"></i>',
+        'roles' => [],
+        'permissions' => ['viewEQ', 'viewAQ', 'viewIQ',],
+        'sub' => [
+            [
+                'title' => 'DS Đánh giá EQ',
+                'routeName' => 'admin.rating.eq',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewEQ'],
+            ],
+            [
+                'title' => 'DS Đánh giá IQ',
+                'routeName' => 'admin.rating.iq',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewIQ'],
+            ],
+            [
+                'title' => 'DS Đánh giá AQ',
+                'routeName' => 'admin.rating.aq',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewAQ'],
+            ],
+        ]
+    ],
+    [
         'title' => 'Nhật ký',
         'routeName' => null,
         'icon' => '<i class="ti ti-external-link"></i>',
         'roles' => [],
-        'permissions' => ['CreateJournal', 'viewJournal'],
+        'permissions' => ['createJournal', 'viewJournal'],
         'sub' => [
             [
                 'title' => 'Thêm Nhật ký',
                 'routeName' => 'admin.journal.create',
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
-                'permissions' => ['CreateJournal'],
+                'permissions' => ['createJournal'],
             ],
             [
                 'title' => 'Nhật ký đơn thuốc',

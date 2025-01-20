@@ -2,8 +2,7 @@
 
 namespace App\Api\V1\Http\Requests\Rating;
 
-use App\Admin\Http\Requests\BaseRequest;
-use App\Enums\Journal\JournalType;
+use App\Api\V1\Http\Requests\BaseRequest;
 use App\Enums\Question\QuestionType;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Facades\Log;

@@ -2,7 +2,7 @@
 
 namespace App\Api\V1\Http\Requests\Rating;
 
-use App\Admin\Http\Requests\BaseRequest;
+use App\Api\V1\Http\Requests\BaseRequest;
 use App\Api\V1\Rules\ValidChild;
 use App\Enums\Question\QuestionType;
 use Illuminate\Contracts\Validation\Validator;
