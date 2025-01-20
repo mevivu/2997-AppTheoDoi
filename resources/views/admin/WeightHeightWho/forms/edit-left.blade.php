@@ -36,6 +36,7 @@
                     <x-input type="number"
                              min="0"
                              name="age"
+                             disabled
                              placeholder="Nhập Tuổi của bạn"
                              :value="$response->age"
                              :required="true"/>
@@ -48,6 +49,7 @@
                     <x-input type="number"
                              min="1"
                              max="12"
+                             disabled
                              name="month"
                              placeholder="Nhập Tháng của bạn"
                              :value="$response->month"

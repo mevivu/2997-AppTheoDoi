@@ -30,18 +30,21 @@ class WeightHeightWhoService implements WeightHeightWhoServiceInterface
     public function store(Request $request)
     {
         // TODO: Implement store() method.
-        $data=$request->validated();
+        $data = $request->validated();
         return $this->repository->create($data);
     }
 
     public function update(Request $request)
     {
         // TODO: Implement update() method.
-        $data=$request->validated();
+        $data = $request->validated();
         return $this->repository->update($data['id'], $data);
     }
 
-    public function actionMultipleRecords(Request $request):bool
+    /**
+     * @throws \Exception
+     */
+    public function actionMultipleRecords(Request $request): bool
     {
         // TODO: Implement actionMultipleRecords() method.
         $data = $request->all();
@@ -59,7 +62,7 @@ class WeightHeightWhoService implements WeightHeightWhoServiceInterface
                 return true;
             case ActiveStatus::Deleted->value:
                 foreach ($data['id'] as $value) {
-                    $this->repository->updateAttribute($value, 'status', ActiveStatus::Deleted);
+                    $this->repository->delete($value);
                 }
                 return true;
 
