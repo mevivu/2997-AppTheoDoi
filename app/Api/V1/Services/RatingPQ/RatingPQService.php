@@ -11,6 +11,7 @@ use App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\ActiveStatus;
+use App\Enums\User\Gender;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -85,16 +86,84 @@ class RatingPQService implements RatingPQServiceInterface
         $data['bmi_result'] = $bmiCategory;
         $data['height_change'] = $height - $whoHeight;
         $data['height_result'] = $this->getHeightResult($height, $who);
-        $this->calculateScore($bmi, $age, $gender, $child->id, $currentEndurance, $currentStrength);
+        $data['score'] = $this->calculateScore($bmi, $age, $gender,
+            $child->id, $currentEndurance, $currentStrength, $height);
+
         return $this->repository->create($data);
     }
 
-    public function calculateScore($currentBmi, $age, $gender, $childId, $currentEndurance, $currentStrength): void
+    /**
+     * @throws Exception
+     */
+    public function calculateScore($currentBmi, $age, $gender, $childId, $currentEndurance, $currentStrength, $currenHeight): float
     {
         $bmi = $this->getBmi($age, $gender);
+        $child = $this->childRepository->findOrFail($childId);
         $bmiPercent = $this->getBmiPercent($bmi, $currentBmi);
         $endurancePercent = $this->getEndurance($childId, $currentEndurance);
         $strengthPercent = $this->getStrength($childId, $currentStrength);
+        $currentHeight = $this->getCurrentHeight($child, $gender);
+        $heightAdulthood = $this->getHeightAdulthood($child, $currenHeight, $gender);
+
+        if ($age > 5) {
+            $totalScore = $bmiPercent + $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
+            return round($totalScore / 5, 1);
+        } else {
+            $totalScore = $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
+            return round($totalScore / 4);
+        }
+
+    }
+
+    public function getCurrentHeight($child, $gender)
+    {
+        $currentDate = Carbon::now()->startOfDay();
+        $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
+        $nearestRatingPQ = $this->findRatingPQ($child->id, $currentDate, $oneYearAgo);
+        $nearestHeight = $nearestRatingPQ->height;
+        $who228 = $this->getWho(228, $gender);
+        $heightWho = $who228->height;
+        $result = ($nearestHeight / $heightWho) / 0.1;
+        return min($result, 10);
+    }
+
+    /**
+     * param float| int currenHeight người dùng nhập
+     */
+    public function getHeightAdulthood($child, $currenHeight, $gender)
+    {
+
+        $currentDate = Carbon::now()->startOfDay();
+        $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
+        $childBirthDate = $child->birthday;
+        $nearestRatingPQ = $this->findRatingPQ($child->id, $currentDate, $oneYearAgo);
+        $nearestHeight = $nearestRatingPQ->height;
+        $nearestAssessmentDate = $nearestRatingPQ->assessment_date;
+        $heightIncreaseInOneYear = $nearestHeight - $currenHeight;
+        $diffInDaysCurrent = $currentDate->diffInDays($nearestAssessmentDate);
+        $diffInDaysBirth = $childBirthDate->diffInDays($nearestAssessmentDate);
+        $monthCompare = $diffInDaysCurrent / 30.5;
+        $currentAge = $diffInDaysBirth / 365.3;
+        if ($gender == Gender::Male) {
+            $yearsToAdulthood = 16 - $currentAge;
+        } else {
+            $yearsToAdulthood = 15 - $currentAge;
+        }
+        $predictedHeight = $yearsToAdulthood + $heightIncreaseInOneYear;
+        $predictedHeightAchieved = $predictedHeight + $nearestHeight;
+        $heightFather = $child->user->father_height;
+        $heightMother = $child->user->mother_height;
+        $predictedHeightMale = ($heightFather + $heightMother + 13) / 2 + 5;
+        $predictedHeightFemale = ($heightMother + $heightMother - 13) / 2 + 3;
+        if ($gender == Gender::Male) {
+            $predictedHeightChild = ($predictedHeightMale * 0.3) + ($predictedHeightAchieved * 0.7);
+        } else {
+            $predictedHeightChild = ($predictedHeightFemale * 0.3) + ($predictedHeightAchieved * 0.7);
+        }
+        $who228 = $this->getWho(228, $gender);
+        $heightWho = $who228->height;
+        $result = ($predictedHeightChild / $heightWho) / 0.1;
+        return min($result, 10);
 
     }
 
