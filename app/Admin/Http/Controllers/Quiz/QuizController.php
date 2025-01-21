@@ -157,6 +157,7 @@ class QuizController extends Controller
         return view($this->view['create-eq-aq'], [
             'status' => ActiveStatus::asSelectArray(),
             'type' => QuestionType::asSelectArray(),
+            'age_group' => AgeGroup::asSelectArray(),
             'breadcrumbs' => $breadcrumbs->add(__('add')),
             'title' => __('Bài kiểm tra EQ'),
             'route' => $this->route['eq'],

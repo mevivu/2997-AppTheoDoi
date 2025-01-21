@@ -15,13 +15,26 @@
 
     <div class="card mb-3">
         <div class="card-header">
-            <span class="ti ti-typography"></span>
-            @lang('loại')
+            <span>Loại</span>
         </div>
         <div class="card-body p-2">
             <x-select name="age_group" :required="true">
                 @foreach ($age_group as $key => $value)
                     <x-select-option :value="$key" :title="$value"/>
+                @endforeach
+            </x-select>
+        </div>
+    </div>
+
+
+    <div class="card mb-3">
+        <div class="card-header">
+            @lang('Trạng thái')
+        </div>
+        <div class="card-body p-2">
+            <x-select name="status" :required="true">
+                @foreach ($status as $key => $value)
+                    <x-select-option :value="$key" :title="$value" />
                 @endforeach
             </x-select>
         </div>

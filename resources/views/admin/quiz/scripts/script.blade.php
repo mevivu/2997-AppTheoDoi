@@ -53,24 +53,46 @@
             if (questions && questions.length > 0) {
                 questions.forEach(function(question) {
                     const questionHtml = `
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="question_ids[]" value="${question.id}" id="question-${question.id}">
-                            <label class="form-check-label" for="question-${question.id}">
-                                ${question.question}
-                            </label>
-                        </div>
-                    `;
+                <div class="form-check" data-question-group-id="${question.question_group_id}">
+                    <input class="form-check-input" type="checkbox" name="question_ids[]" value="${question.id}" id="question-${question.id}">
+                    <input type="hidden" name="question_group_ids[]" value="${question.question_group_id}">
+                    <label class="form-check-label" for="question-${question.id}">
+                        ${question.question} <span class="fw-bold">(${question.question_group_name})</span>
+                    </label>
+                </div>
+            `;
                     container.append(questionHtml);
                 });
 
-                $('input[name="question_ids[]"]').on('change', function() {
+                function restrictMultipleGroupSelection() {
+                    const selectedGroups = {};
+                    $('input[name="question_ids[]"]:checked').each(function() {
+                        const groupId = $(this).closest('.form-check').data('question-group-id');
+                        if (selectedGroups[groupId]) {
+                            $(this).prop('checked', false);
+                            alert('Chỉ được chọn một câu hỏi trong mỗi nhóm.');
+                        } else {
+                            selectedGroups[groupId] = true;
+                        }
+                    });
+                    updateCheckedCount();
+                }
+
+                function updateCheckedCount() {
                     const checkedCount = $('input[name="question_ids[]"]:checked').length;
                     checkCountElement.text(checkedCount);
+                }
+
+                $('input[name="question_ids[]"]').on('change', function() {
+                    restrictMultipleGroupSelection();
+                    updateCheckedCount();
                 });
+
             } else {
                 container.html('<div>Không có câu hỏi nào.</div>');
                 checkCountElement.text(0);
             }
         }
+
     });
 </script>

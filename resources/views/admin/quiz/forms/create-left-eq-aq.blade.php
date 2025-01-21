@@ -13,7 +13,7 @@
                 </div>
             </div>
 
-            @if (request()->routeIs('admin.quiz.createIq'))
+            @if (request()->routeIs('admin.quiz.createEq'))
                 <!-- age -->
                 <div class="col-12">
                     <div class="mb-3">
