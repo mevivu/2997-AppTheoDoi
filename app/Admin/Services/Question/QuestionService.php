@@ -80,25 +80,18 @@ class QuestionService implements QuestionServiceInterface
             }
 
             $question = $this->repository->update($questionData['id'], $questionData);
-            $existAnswers = $question->answers->pluck('answer', 'id')->toArray();
-
+            $this->answerRepository->deleteWhere(['question_id' => $question->id]);
+            $index = 0;
             foreach ($answerData as $key => $value) {
-                if (isset($existAnswers[$key])) {
-                    $this->answerRepository->update($key, ['answer' => $value, 'is_correct' => $key == $isCorrect ? true : false]);
-                    unset($existAnswers[$key]);
-                } else {
-                    $answer = [
-                        'question_id' => $question->id,
-                        'answer' => $value,
-                        'is_correct' => $key == $isCorrect ? true : false,
-                        'type' => $data['answers']['type']
-                    ];
-                    $this->answerRepository->create($answer);
-                }
-            }
-
-            if (count($existAnswers) > 0) {
-                $this->answerRepository->deleteMany(array_keys($existAnswers));
+                $correct = $index == $isCorrect;
+                $answer = [
+                    'question_id' => $question->id,
+                    'answer' => $value,
+                    'is_correct' => $correct,
+                    'type' => $data['answers']['type']
+                ];
+                $this->answerRepository->create($answer);
+                $index++;
             }
 
             DB::commit();

@@ -27,5 +27,5 @@
 @endpush
 
 @push('custom-js')
-    @include('admin.question.scripts.scripts-iq')
+    @include('admin.question.scripts.scripts-create-iq')
 @endpush
