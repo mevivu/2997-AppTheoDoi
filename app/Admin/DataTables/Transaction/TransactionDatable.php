@@ -29,13 +29,16 @@ class TransactionDatable extends BaseDataTable
     {
         $this->view = [
             'status' => 'admin.transaction.datatable.status',
+            'user' => 'admin.transaction.datatable.user',
+            'package' => 'admin.transaction.datatable.package',
         ];
     }
 
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [0,1, 3, 4];
+        $this->columnAllSearch = [0,1, 3, 4,5];
+        $this->columnSearchDate = [5];
         $this->columnSearchSelect = [
             [
                 'column' => 4,
@@ -64,12 +67,18 @@ class TransactionDatable extends BaseDataTable
     protected function setCustomEditColumns(): void
     {
         $this->customEditColumns = [
+            'created_at' => '{{ $created_at ? format_datetime($created_at) : "" }}',
+            'amount' => '{{ $amount ? number_format($amount, 0) . " VND" : "" }}',
             'status' => $this->view['status'],
-            'user_id' => function ($children) {
-                return $children->user->fullname;
+            'user_id' => function ($transaction) {
+                return view($this->view['user'], [
+                    'user' => $transaction->user,
+                ])->render();
             },
-            'package_id' => function ($children) {
-                return $children->package->name;
+            'package_id' => function ($transaction) {
+                return view($this->view['package'], [
+                    'package' => $transaction->package,
+                ])->render();
             }
         ];
     }
@@ -86,7 +95,6 @@ class TransactionDatable extends BaseDataTable
             'user_id',
             'amount',
             'package_id'
-
         ];
     }
 
