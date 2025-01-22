@@ -24,6 +24,7 @@ class QuizRequest extends BaseRequest
             'age' => ['nullable', 'numeric', new UniqueQuiz(request()->type)],
             'type' => ['required', new Enum(QuestionType::class)],
             'description' => ['nullable', 'string'],
+            'status' => ['required', new Enum(ActiveStatus::class)],
             'question_ids' => ['required', 'array', 'min:3'],
             'question_ids.*' => ['exists:questions,id'],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
@@ -42,7 +43,6 @@ class QuizRequest extends BaseRequest
             'question_ids.*' => ['exists:questions,id'],
             'status' => ['required', new Enum(ActiveStatus::class)],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
-
         ];
     }
     public function messages(): array

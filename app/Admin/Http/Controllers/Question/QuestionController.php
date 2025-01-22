@@ -229,6 +229,11 @@ class QuestionController extends Controller
                 'question_type' => $type,
                 'status' => ActiveStatus::Active
             ]);
+            $questions->load('group');
+            $questionsData = $questions->map(function($question) {
+                $question->question_group_name = $question->group ? $question->group->name : null;
+                return $question;
+            });
 
             return response()->json(['data' => $questions], 200);
         } catch (Exception $e) {
