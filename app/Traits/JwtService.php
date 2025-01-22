@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 
@@ -58,42 +59,18 @@ trait JwtService
 
         if ($user && Hash::check($this->login['password'], $user->password)) {
 
+            $token = JWTAuth::fromUser($user);
+            $refreshToken = $this->createRefreshToken($user);
             // check package
             $package = $user->userPackages->first();
             if ($package->current_type == PackageType::Normal) {
-                $existingSession = $this->sessionRepository->getBy([
+                $this->deleteSessionToken($user->id);
+                $this->sessionRepository->create([
                     'user_id' => $user->id,
-                    'device_token' => $this->login['device_token']
-                ])->first();
-                if ($existingSession) {
-                    $token = JWTAuth::fromUser($user);
-                    $refreshToken = $this->createRefreshToken($user);
-                    $this->sessionRepository->create([
-                        'user_id' => $user->id,
-                        'access_token' => $token,
-                        'device_token' => $this->login['device_token'],
-                    ]);
-                    return $this->respondWithToken($token, $refreshToken, $user);
-                } else {
-                    $anySession = $this->sessionRepository->getBy([
-                        'user_id' => $user->id
-                    ])->first();
-                    if ($anySession) {
-                        return response()->json([
-                            'status' => 401,
-                            'type' => 'already_logged_in_different_device',
-                            'message' => __('Bạn đã đăng nhập ở thiết bị khác')
-                        ], 401);
-                    }
-                }
+                    'access_token' => $token,
+                    'device_token' => $this->login['device_token'],
+                ]);
             }
-            $token = JWTAuth::fromUser($user);
-            $refreshToken = $this->createRefreshToken($user);
-            $this->sessionRepository->create([
-                'user_id' => $user->id,
-                'access_token' => $token,
-                'device_token' => $this->login['device_token'],
-            ]);
             return $this->respondWithToken($token, $refreshToken, $user);
 
         }
@@ -102,6 +79,29 @@ trait JwtService
             'status' => 401,
             'message' => __('Thông tin đăng nhập chưa chính xác.')
         ], 401);
+    }
+
+    public function invalidateToken(string $token): bool
+    {
+        try {
+            JWTAuth::setToken($token)->invalidate();
+            return true;
+        } catch (JWTException $e) {
+            report($e);
+            return false;
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function deleteSessionToken($userId): void
+    {
+        $sessions = $this->sessionRepository->findByField('user_id', $userId);
+        $accessToken = $sessions->access_token;
+        if ($this->invalidateToken($accessToken)) {
+            $sessions->delete();
+        }
     }
 
 
