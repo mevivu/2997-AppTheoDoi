@@ -659,11 +659,6 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::group(['middleware' => ['permission:settingGeneral', 'auth:admin']], function () {
                 Route::get('/general', 'general')->name('general');
                 Route::get('/systems', 'system')->name('system');
-                Route::get('/c_rides', 'c_ride')->name('c_ride');
-                Route::get('/c_cars', 'c_car')->name('c_car');
-                Route::get('/c_deliverys', 'c_delivery')->name('c_delivery');
-                Route::get('/c_intercitys', 'c_intercity')->name('c_intercity');
-                Route::get('/c_multi', 'c_multi')->name('c_multi');
             });
 
             Route::get('/user-shopping', 'userShopping')->name('user_shopping');
