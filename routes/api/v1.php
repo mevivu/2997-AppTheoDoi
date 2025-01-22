@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->controller(AuthController::class)
     ->group(function () {
         Route::post('/login', 'login');
+        Route::post('/logout', 'logout');
+        Route::post('/check-token', 'checkToken');
         Route::get('/', 'show');
         Route::post('/verification-otp', 'verificationOtp');
         Route::post('/resend-otp', 'resendOtp');

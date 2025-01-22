@@ -3,6 +3,7 @@
 namespace App\Api\V1\Http\Requests\Rating;
 
 use App\Api\V1\Http\Requests\BaseRequest;
+use App\Api\V1\Rules\ValidChild;
 use App\Enums\Question\QuestionType;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Facades\Log;
@@ -22,7 +23,7 @@ class RatingRequest extends BaseRequest
         return [
             'limit' => 'required|integer|min:1',
             'page' => 'required|integer|min:1',
-            'child_id' => ['required', 'numeric', 'exists:children,id'],
+            'child_id' => ['required', 'numeric', new ValidChild()],
             'type' => ['required', new Enum(QuestionType::class)],
 
         ];

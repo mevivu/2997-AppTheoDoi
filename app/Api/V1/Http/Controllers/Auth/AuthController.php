@@ -41,10 +41,11 @@ class AuthController extends Controller
 
 
     public function __construct(
-        UserRepositoryInterface $userRepository,
+        UserRepositoryInterface        $userRepository,
         UserSessionRepositoryInterface $sessionRepository,
-        UserServiceInterface $service,
-    ) {
+        UserServiceInterface           $service,
+    )
+    {
         $this->userRepository = $userRepository;
         $this->sessionRepository = $sessionRepository;
         $this->service = $service;
@@ -55,7 +56,8 @@ class AuthController extends Controller
                 'verificationOtp',
                 'resendOtp',
                 'updatePassword',
-                'forgotPassword'
+                'forgotPassword',
+                'checkToken'
             ]
         ]);
     }
@@ -100,6 +102,77 @@ class AuthController extends Controller
             return $this->jsonResponseError($e->getMessage());
         }
     }
+
+    /**
+     * Đăng xuất
+     *
+     * API này dùng để đăng xuất người dùng bằng cách huỷ token JWT.
+     *
+     * @authenticated
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Đăng xuất thành công."
+     * }
+     *
+     * @response 401 {
+     *     "status": 401,
+     *     "message": "Bạn không được ủy quyền để thực hiện thao tác này."
+     * }
+     *
+     * @return JsonResponse
+     */
+    public function logout(): JsonResponse
+    {
+        try {
+            return $this->logoutUser();
+        } catch (Exception $e) {
+            $this->logError("Logout failed", $e);
+            return $this->jsonResponseError($e->getMessage());
+        }
+    }
+
+    /**
+     * Kiểm tra thời hạn token
+     *
+     * API này dùng để kiểm tra xem access_token đăng nhập còn hạn hay không.
+     *
+     * @authenticated
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Token is valid."
+     * }
+     *
+     * @response 401 {
+     *     "status": 401,
+     *     "message": "Unauthorized - Token is invalid or expired."
+     * }
+     *
+     * @return JsonResponse
+     */
+    public function checkToken(): JsonResponse
+    {
+        try {
+            if (Auth::guard('api')->check()) {
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'access_token còn hạn.'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 401,
+                    'message' => 'Unauthorized - Access_token hết hạn.'
+                ], 401);
+            }
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Internal server error - ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     /**
      * Cập nhật email
