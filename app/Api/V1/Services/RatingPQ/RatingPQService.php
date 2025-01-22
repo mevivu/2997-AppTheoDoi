@@ -31,7 +31,6 @@ class RatingPQService implements RatingPQServiceInterface
     protected RatingPQRepositoryInterface $repository;
     protected ChildRepositoryInterface $childRepository;
     protected BMIRepositoryInterface $bmiRepository;
-
     protected WhoRepositoryInterface $whoRepository;
     protected FileService $fileService;
 
@@ -48,6 +47,24 @@ class RatingPQService implements RatingPQServiceInterface
         $this->bmiRepository = $bmiRepository;
         $this->whoRepository = $whoRepository;
         $this->fileService = $fileService;
+    }
+
+    public function getMonthlyEnduranceData(Request $request)
+    {
+        $validated = $request->validated();
+        $limit = $validated['limit'] ?? 10;
+        $page = $validated['page'] ?? 1;
+        $childId = $validated['child_id'];
+        $month = $validated['month'];
+        $year = $validated['year'];
+
+        $query = $this->repository->getQueryBuilder()
+            ->where('child_id', $childId)
+            ->whereMonth('assessment_date', '=', $month)
+            ->whereYear('assessment_date', '=', $year)
+            ->orderBy('assessment_date', 'asc');
+
+        return $query->paginate($limit, ['*'], 'page', $page);
     }
 
 

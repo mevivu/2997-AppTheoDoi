@@ -15,6 +15,8 @@ interface RatingPQServiceInterface
 
     public function index(Request $request);
 
+    public function getMonthlyEnduranceData(Request $request);
+
 
 
 }

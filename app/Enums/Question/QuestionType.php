@@ -18,6 +18,7 @@ enum QuestionType: string
     /** AQ */
     case AQ = 'aq';
 
+    case PQ = 'pq';
 
 
     public function badge(): string
@@ -25,7 +26,7 @@ enum QuestionType: string
         return match ($this) {
             QuestionType::IQ => 'bg-red',
             QuestionType::EQ => 'bg-blue',
-            QuestionType::AQ => 'bg-green',
+            QuestionType::AQ, QuestionType::PQ => 'bg-green',
         };
     }
 }

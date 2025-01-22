@@ -5,6 +5,7 @@ namespace App\Api\V1\Http\Controllers\RatingPQ;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Exception\NotFoundException;
+use App\Api\V1\Http\Requests\RatingPQ\RatingPQMonthRequest;
 use App\Api\V1\Http\Requests\RatingPQ\RatingPQRequest;
 use App\Api\V1\Http\Resources\RatingPQ\RatingPQCollection;
 use App\Api\V1\Http\Resources\RatingPQ\RatingPQResource;
@@ -35,6 +36,52 @@ class RatingPQController extends Controller
         $this->service = $service;
         $this->middleware('auth:api');
 
+    }
+
+    /**
+     * Lấy DS thống kê theo tháng và theo con
+     *
+     * @authenticated
+     * @queryParam child_id int required ID của trẻ. Example: 1
+     * @queryParam limit int optional Số lượng bản ghi trên mỗi trang, mặc định là 10. Example: 10
+     * @queryParam page int optional Trang cần hiển thị, mặc định là 1. Example: 1
+     * @queryParam month int required Tháng cần lấy dữ liệu. Example: 7
+     * @queryParam year int required Năm cần lấy dữ liệu. Example: 2025
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Lấy danh sách theo dõi thai kỳ thành công.",
+     *     "data": {
+     *         "total": 10,
+     *         "per_page": 10,
+     *         "current_page": 1,
+     *         "records": [
+     *             {
+     *                 "id": 1,
+     *                 "child_id": 1,
+     *             }
+     *         ]
+     *     }
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống khi lấy danh sách theo dõi thai kỳ."
+     * }
+     *
+     * @param RatingPQMonthRequest $request
+     * @return JsonResponse
+     */
+
+    public function getMonthlyEnduranceStats(RatingPQMonthRequest $request): JsonResponse
+    {
+        try {
+            $response = $this->service->getMonthlyEnduranceData($request);
+            return $this->jsonResponseSuccess(new RatingPQCollection($response));
+        } catch (Exception $exception) {
+            $this->logError('Get journals failed:', $exception);
+            return $this->jsonResponseError('Get journals failed', 500);
+        }
     }
 
     /**

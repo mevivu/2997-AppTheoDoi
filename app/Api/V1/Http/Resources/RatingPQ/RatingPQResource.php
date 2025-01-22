@@ -25,7 +25,7 @@ class RatingPQResource extends JsonResource
         $isContentVisible = $this->checkUserPackage($this->assessment_date);
         return [
             'id' => $this->id,
-            'assessment_date' => $this->assessment_date ?? null,
+            'assessment_date' => format_date($this->assessment_date),
             'height' => $this->height,
             'weight' => $this->weight,
             'strength' => $this->strength,
