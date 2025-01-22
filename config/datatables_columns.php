@@ -137,6 +137,7 @@ return [
         ],
         'amount' => [
             'title' => 'giá',
+            'width' => '150px',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
@@ -150,6 +151,12 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
+        'created_at' => [
+            'title' => 'Ngày tạo',
+            'width' => '150px',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ]
     ],
     'eq' => [
         'checkbox' => [
