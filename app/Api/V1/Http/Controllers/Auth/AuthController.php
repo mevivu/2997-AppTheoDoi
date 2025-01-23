@@ -139,6 +139,7 @@ class AuthController extends Controller
      * API này dùng để kiểm tra xem access_token đăng nhập còn hạn hay không.
      *
      * @authenticated
+     * @bodyParam access_token string required . Example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODAvMjk5Ny1BcHBUaGVvRG9pL2FwaS92MS9hdXRoL2xvZ2luIiwiaWF0IjoxNzM3NjIwODE2LCJleHAiOjE3NDI4MDQ4MTYsIm5iZiI6MTczNzYyMDgxNiwianRpIjoiUTZpbnJ2MlU3NHJacHRtbSIsInN1YiI6IjI1IiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.gSyE4H3J_2llq8q9gdikpB_xxLBZsc_G948dWLU_6I8
      *
      * @response 200 {
      *     "status": 200,
@@ -150,6 +151,7 @@ class AuthController extends Controller
      *     "message": "Unauthorized - Token is invalid or expired."
      * }
      *
+     * @param CheckTokenRequest $request
      * @return JsonResponse
      */
     public function checkToken(CheckTokenRequest $request): JsonResponse
@@ -165,6 +167,7 @@ class AuthController extends Controller
             } else {
                 $session = $this->sessionRepository->findByField('access_token', $token);
                 $user = $session?->user;
+                $session->delete();
                 return response()->json([
                     'status' => 401,
                     'type' => $user ? $user->userPackages->first()->package->type : null,
