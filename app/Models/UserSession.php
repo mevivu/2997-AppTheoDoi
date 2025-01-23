@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\DeleteStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,10 +16,11 @@ class UserSession extends Model
     protected $fillable = [
         'user_id',
         'access_token',
-        'device_token'
+        'device_token',
+        'status'
     ];
     protected $casts = [
-
+        'status' => DeleteStatus::class,
     ];
 
     public function user(): BelongsTo

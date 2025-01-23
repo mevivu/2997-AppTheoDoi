@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\DeleteStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,6 +19,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('access_token');
             $table->text('device_token');
+            $table->enum('status', DeleteStatus::getValues())->default(DeleteStatus::NotDeleted->value);
             $table->timestamps();
         });
     }

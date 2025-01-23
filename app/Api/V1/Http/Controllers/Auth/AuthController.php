@@ -5,6 +5,7 @@ namespace App\Api\V1\Http\Controllers\Auth;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Repositories\UserSession\UserSessionRepositoryInterface;
 use App\Api\V1\Exception\BadRequestException;
+use App\Api\V1\Http\Requests\Auth\CheckTokenRequest;
 use App\Api\V1\Http\Requests\Auth\LoginRequest;
 use App\Api\V1\Http\Requests\Auth\ResetPasswordRequest;
 use App\Api\V1\Http\Requests\Auth\UpdateDeviceTokenRequest;
@@ -151,17 +152,22 @@ class AuthController extends Controller
      *
      * @return JsonResponse
      */
-    public function checkToken(): JsonResponse
+    public function checkToken(CheckTokenRequest $request): JsonResponse
     {
         try {
+            $data = $request->validated();
+            $token = $data['access_token'];
             if (Auth::guard('api')->check()) {
                 return response()->json([
                     'status' => 200,
                     'message' => 'access_token còn hạn.'
                 ]);
             } else {
+                $session = $this->sessionRepository->findByField('access_token', $token);
+                $user = $session?->user;
                 return response()->json([
                     'status' => 401,
+                    'type' => $user ? $user->userPackages->first()->package->type : null,
                     'message' => 'Unauthorized - Access_token hết hạn.'
                 ], 401);
             }

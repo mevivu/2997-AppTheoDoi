@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\AES\AESHelper;
 use App\Api\V1\Http\Resources\Package\AuthPackageResource;
+use App\Enums\DeleteStatus;
 use App\Enums\Package\PackageType;
 use App\Models\User;
 use Exception;
@@ -69,6 +70,7 @@ trait JwtService
                     'user_id' => $user->id,
                     'access_token' => $token,
                     'device_token' => $this->login['device_token'],
+                    'status' => DeleteStatus::NotDeleted
                 ]);
             }
             return $this->respondWithToken($token, $refreshToken, $user);
@@ -97,10 +99,15 @@ trait JwtService
      */
     public function deleteSessionToken($userId): void
     {
-        $sessions = $this->sessionRepository->findByField('user_id', $userId);
+        $sessions = $this->sessionRepository->getBy(
+            [
+                'user_id' => $userId,
+                'status' => DeleteStatus::NotDeleted
+            ]
+        )->first();
         $accessToken = $sessions->access_token;
         if ($this->invalidateToken($accessToken)) {
-            $sessions->delete();
+            $sessions->update(['status' => DeleteStatus::Deleted]);
         }
     }
 
