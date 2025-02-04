@@ -39,6 +39,27 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
+    // Develop Guide
+    Route::controller(\App\Admin\Http\Controllers\Develop\DevelopController::class)
+        ->prefix('/develop')
+        ->as('develop.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createDevelopGuide', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(["middleware" => ['permission:viewDevelopGuide', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['permission:updateDevelopGuide', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:deleteDevelopGuide', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
 
     //Guide
     Route::controller(\App\Admin\Http\Controllers\Guide\GuideController::class)

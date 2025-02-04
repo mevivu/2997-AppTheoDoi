@@ -212,5 +212,6 @@ return [
     GuideType::class => [
         GuideType::Strength->value => 'Sức mạnh',
         GuideType::Endurance->value => 'Sức bền',
+        GuideType::Develop->value=> 'Phát triển',
     ]
 ];

@@ -30,7 +30,7 @@
                     <label class="control-label">
                         <span class="ti ti-package"></span>
                         {{ __('Thương hiệu') }}:</label>
-                    <select class="form-control" name="brand_id">
+                    <select class="form-control" id="brand_id" name="brand_id">
                         @foreach($brands as $brand)
                             <option value="{{ $brand->id }}" @selected($brand->id == $product->brand_id)>
                                 {{ $brand->name }}

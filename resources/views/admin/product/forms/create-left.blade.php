@@ -28,7 +28,7 @@
 
             <div class="col-md-6 col-12 mb-3">
                 <label class="form-label fw-bold">@lang('brand')</label>
-                <select class="form-select" name="brand_id" required>
+                <select class="form-select" id="brand_id" name="brand_id" required>
                     <option value="" disabled selected>Chọn Thương Hiệu</option>
                     @foreach($brands as $brand)
                         <option value="{{ $brand->id }}">{{ $brand->name }}</option>

@@ -29,6 +29,30 @@ return [
         ]
     ],
     [
+        'title' => 'Quá trình phát triển',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-writing"></i>',
+        'roles' => [],
+        'permissions' => ['createDevelopGuide', 'viewDevelopGuide', 'updateDevelopGuide', 'deleteDevelopGuide'],
+        'sub' => [
+            [
+                'title' => 'Thêm Quá trình',
+                'routeName' => 'admin.develop.create',
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createDevelopGuide'],
+            ],
+            [
+                'title' => 'DS Bài phát triển',
+                'routeName' => 'admin.develop.index',
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewDevelopGuide'],
+            ],
+        ]
+    ],
+
+    [
         'title' => 'Đánh giá học lực (GPA)',
         'routeName' => null,
         'icon' => '<i class="ti ti-bell-school"></i>',

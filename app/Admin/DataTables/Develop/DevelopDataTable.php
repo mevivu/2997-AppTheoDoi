@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Admin\DataTables\Guide;
+namespace App\Admin\DataTables\Develop;
 
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Guide\GuideRepositoryInterface;
@@ -8,9 +8,9 @@ use App\Enums\ActiveStatus;
 use App\Enums\Guide\GuideType;
 use Illuminate\Database\Eloquent\Builder;
 
-class GuideDataTable extends BaseDataTable
+class DevelopDataTable extends BaseDataTable
 {
-    protected $nameTable = 'guideTable';
+    protected $nameTable = 'developTable';
 
     protected array $actions = ['reset', 'reload'];
 
@@ -24,10 +24,10 @@ class GuideDataTable extends BaseDataTable
     public function setView(): void
     {
         $this->view = [
-            'action' => 'admin.guide.datatable.action',
-            'title' => 'admin.guide.datatable.title',
-            'status' => 'admin.guide.datatable.status',
-            'type' => 'admin.guide.datatable.type',
+            'action' => 'admin.develop.datatable.action',
+            'title' => 'admin.develop.datatable.title',
+            'status' => 'admin.develop.datatable.status',
+            'type' => 'admin.develop.datatable.type',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
@@ -40,14 +40,14 @@ class GuideDataTable extends BaseDataTable
     public function query(): Builder
     {
         return $this->repository->getByQueryBuilder([
-            ['type', '=', GuideType::Strength],
+            ['type', '=', GuideType::Develop],
             ['status', '!=', ActiveStatus::Deleted],
         ]);
     }
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [ 1, 2, 3, 4];
+        $this->columnAllSearch = [1, 2, 3, 4];
         $this->columnSearchDate = [4];
         $this->columnSearchSelect = [
             [
@@ -63,7 +63,7 @@ class GuideDataTable extends BaseDataTable
 
     protected function setCustomColumns(): void
     {
-        $this->customColumns = config('datatables_columns.guide', []);
+        $this->customColumns = config('datatables_columns.develop', []);
     }
 
     protected function setCustomEditColumns(): void

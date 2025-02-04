@@ -1714,7 +1714,46 @@ return [
             'printable' => false,
             'addClass' => 'text-center align-middle'
         ],
-    ]
+    ],
+    'develop' => [
+        'checkbox' => [
+            'title'      => 'choose',
+            'orderable'  => false,
+            'exportable' => false,
+            'printable'  => false,
+            'addClass'   => 'align-middle text-center',
+            'footer'     => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'title' => [
+            'title'     => 'Title',
+            'width'     => '200px',
+            'addClass'  => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'type' => [
+            'title'     => 'Loại hướng dẫn',
+            'addClass'  => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'status' => [
+            'title'     => 'Trạng thái',
+            'addClass'  => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'created_at' => [
+            'title'     => 'Ngày tạo',
+            'addClass'  => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'action' => [
+            'title'     => 'Thao tác',
+            'orderable'  => false,
+            'exportable' => false,
+            'printable'  => false,
+            'addClass'   => 'text-center align-middle',
+        ],
+    ],
+
 
 
 ];
