@@ -23,7 +23,6 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h4>@lang('Các bước hướng dẫn')</h4>
-                        <button type="button" id="add-step-btn" class="btn btn-primary">@lang('Thêm bước mới')</button>
                     </div>
                     <div class="card-body">
                         <div id="steps-container">
@@ -52,6 +51,9 @@
                                 @empty
                                     <p>@lang('Chưa có bước nào được thêm.')</p>
                                 @endforelse
+                            </div>
+                            <div class="text-end mt-3">
+                                <button type="button" id="add-step-btn" class="btn btn-primary">@lang('Thêm bước mới')</button>
                             </div>
                         </div>
                     </div>

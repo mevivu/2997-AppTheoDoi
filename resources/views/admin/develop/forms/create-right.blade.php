@@ -14,18 +14,7 @@
             </div>
         </div>
     </div>
-
-    <div class="card mb-3">
-        <div class="card-header">
-            <span class="ti ti-category me-1"></span>
-            {{ __('Loại hướng dẫn') }}
-        </div>
-        <div class="card-body p-2">
-            <label class="control-label">{{ __('Loại hướng dẫn') }}:</label>
-            <input type="text" value="{{ \App\Enums\Guide\GuideType::Develop->description() }}" class="form-control" disabled>
-            <input type="hidden" name="type" value="{{ \App\Enums\Guide\GuideType::Develop->value }}">
-        </div>
-    </div>
+    <input type="hidden" name="type" value="{{ \App\Enums\Guide\GuideType::Develop->value }}">
 
     <div class="card mb-3">
         <div class="card-header">
