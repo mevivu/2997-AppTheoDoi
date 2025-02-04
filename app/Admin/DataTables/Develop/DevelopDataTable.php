@@ -47,15 +47,12 @@ class DevelopDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 2, 3, 4];
-        $this->columnSearchDate = [4];
+        $this->columnAllSearch = [1, 2, 3];
+        $this->columnSearchDate = [3];
         $this->columnSearchSelect = [
+
             [
                 'column' => 2,
-                'data' => GuideType::asSelectArray()
-            ],
-            [
-                'column' => 3,
                 'data' => ActiveStatus::asSelectArray()
             ]
         ];

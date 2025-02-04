@@ -118,7 +118,7 @@ class DevelopController extends Controller
     {
         return $this->handleDeleteResponse($id, function ($id) {
             $response = $this->repository->findOrFail($id);
-            return $response->update(['status' => ActiveStatus::Deleted->value]);
+            return $response->delete();
         });
     }
 
