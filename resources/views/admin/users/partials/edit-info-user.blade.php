@@ -61,20 +61,21 @@
             </div>
         </div>
 
-        <!-- gender -->
         <div class="col-md-6 col-sm-12">
             <div class="mb-3">
                 <label class="control-label">
                     <span class="ti ti-user-circle"></span>
-                    {{ __('Giới tính') }}:</label>
+                    {{ __('Giới tính') }}:
+                </label>
                 <x-select name="gender" :required="true">
-                    <x-select-option value="" :title="__('Chọn Giới tính')" />
+                    <x-select-option value="" :title="__('Chọn Giới tính')" :selected="is_null($user->gender)" />
                     @foreach ($gender as $key => $value)
-                        <x-select-option :option="$user->gender->value" :value="$key" :title="__($value)" />
+                        <x-select-option :value="$key" :title="__($value)" :selected="!is_null($user->gender) && $user->gender == $key" />
                     @endforeach
                 </x-select>
             </div>
         </div>
+
 
         <div class="col-md-6 col-12">
             <div class="mb-3">
