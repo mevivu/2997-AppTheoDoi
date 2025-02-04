@@ -1730,11 +1730,6 @@ return [
             'addClass'  => 'text-center align-middle',
             'orderable' => true,
         ],
-        'type' => [
-            'title'     => 'Loại hướng dẫn',
-            'addClass'  => 'text-center align-middle',
-            'orderable' => true,
-        ],
         'status' => [
             'title'     => 'Trạng thái',
             'addClass'  => 'text-center align-middle',

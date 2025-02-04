@@ -21,17 +21,22 @@
                     <x-input name="steps[${stepIndex}][title]" :required="true" :placeholder="__('Tiêu đề tháng')" />
                 </div>
                 <div class="mb-3">
-                    <label class="control-label d-block text-start">@lang('Mô tả tháng ')</label>
+                    <label class="control-label d-block text-start">@lang('Mô tả tháng')</label>
                     <textarea name="steps[${stepIndex}][description]" class="form-control ckeditor visually-hidden" placeholder="@lang('Mô tả tháng')"></textarea>
                 </div>
             </div>
-        `);
+            `);
 
+            // Thêm bước mới vào container
             stepsContainer.append(newStep);
             stepIndex++; // Tăng chỉ số bước khi thêm bước mới
 
             // Khởi tạo CKEditor cho textarea mới
-            CKEDITOR.replace(newStep.find('textarea')[0]);
+            const textarea = newStep.find('textarea')[0];
+            if (textarea) {
+                CKEDITOR.replace(textarea);
+            }
+
             updateOrderNumbers(); // Cập nhật lại số thứ tự
         });
 

@@ -21,19 +21,23 @@
             <!-- Các tháng phát triển -->
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header">
                         <h4>@lang('Các tháng phát triển')</h4>
-                        <button type="button" id="add-step-btn" class="btn btn-primary">@lang('Thêm tháng mới')</button>
                     </div>
                     <div class="card-body">
                         <div id="steps-container">
                             <div id="steps-list">
                                 <!-- Các bước được thêm vào đây -->
                             </div>
+                            <!-- Nút thêm nằm dưới cuối -->
+                            <div class="text-end mt-3">
+                                <button type="button" id="add-step-btn" class="btn btn-primary">@lang('Thêm tháng mới')</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
 
         </div>
     </div>

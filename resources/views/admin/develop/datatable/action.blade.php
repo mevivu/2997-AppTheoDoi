@@ -8,7 +8,7 @@
         <div class="modal-content">
             <div class="modal-body">
                 <div class="modal-title">{{ __('Bạn có chắc?') }}</div>
-                <div>{{ __('Bạn có chắc muốn chuyển thành trạng thái không hoạt động?') }}</div>
+                <div>{{ __('Bạn có muốn xóa không?') }}</div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-link link-secondary me-auto"
