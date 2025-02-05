@@ -20,7 +20,6 @@ class AuthPackageResource extends JsonResource
     public function toArray($request): array|JsonSerializable|Arrayable
     {
         return [
-            'id' => $this->package->id,
             'type' => $this->current_type
         ];
     }

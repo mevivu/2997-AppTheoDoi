@@ -3,6 +3,7 @@
 namespace App\Api\V1\Http\Resources\Auth;
 
 use App\AES\AESHelper;
+use App\Api\V1\Http\Resources\Package\AuthPackageResource;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
@@ -44,6 +45,7 @@ class AuthResource extends JsonResource
             'mother_birthday' => $this->mother_birthday,
             'status' => $this->status,
             'created_at' => format_date($this->created_at),
+            'package' => new AuthPackageResource($this->userPackages->first())
         ];
     }
 }
