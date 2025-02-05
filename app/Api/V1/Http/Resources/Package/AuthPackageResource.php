@@ -20,7 +20,8 @@ class AuthPackageResource extends JsonResource
     public function toArray($request): array|JsonSerializable|Arrayable
     {
         return [
-            'type' => $this->current_type
+            'type' => $this->current_type,
+            'end_date' => format_datetime($this->end_date)
         ];
     }
 }
