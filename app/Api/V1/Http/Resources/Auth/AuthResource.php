@@ -28,7 +28,7 @@ class AuthResource extends JsonResource
             'slug' => $this->slug,
             'email' => AESHelper::decrypt($this->email),
             'phone' => AESHelper::decrypt($this->phone),
-            'address' => AESHelper::decrypt($this->address),
+            'address' => $this->address ? AESHelper::decrypt($this->address) : null,
             'gender' => $this->gender,
             'active' => $this->active,
             'lng' => $this->longitude,
