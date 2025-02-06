@@ -75,7 +75,6 @@ return [
     TransactionStatus::class => [
         TransactionStatus::Pending->value => 'Chưa giải quyết',
         TransactionStatus::Confirmed->value => 'Đã xác nhận',
-        TransactionStatus::Success->value => 'Xác nhận thành công'
     ],
     BornStatus::class => [
         BornStatus::Born->value => 'Đã sinh',

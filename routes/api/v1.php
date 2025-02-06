@@ -57,6 +57,14 @@ Route::controller(App\Api\V1\Http\Controllers\Support\SupportController::class)
         Route::get('/{id}', 'show');
     });
 
+Route::controller(App\Api\V1\Http\Controllers\Transaction\TransactionController::class)
+    ->prefix('/transactions')
+    ->as('transaction.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+    });
+
 // Assessment
 Route::controller(\App\Api\V1\Http\Controllers\Assessment\AssessmentController::class)
     ->prefix('/assessment')
