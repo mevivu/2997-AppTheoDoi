@@ -79,17 +79,6 @@
         </div>
 
 
-
-
-
-        <div class="col-md-6 col-12">
-            <div class="mb-3">
-                <label class="control-label">
-                    <span class="ti ti-map"></span>
-                    @lang('Địa chỉ gợi ý'):</label>
-                <x-input name="name" :value="old('Địa chỉ gợi ý')" :placeholder="__('Địa chỉ gợi ý')" />
-            </div>
-        </div>
         <!-- address -->
         <div class="col-12">
             <div class="mb-3">
