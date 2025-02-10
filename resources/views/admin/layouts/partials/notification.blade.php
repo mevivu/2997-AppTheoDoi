@@ -1,11 +1,11 @@
 <style>
     .message-box{
-        width: 300px;
+        width: 350px;
     }
 </style>
 <div class="nav-item dropdown" id="message-box">
-    <a style="width: 120px;height: 100%" href="#" class="nav-link  d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
-        <i class="bi bi-bell" style="font-size: 1.5rem;"></i>
+    <a style="width: 150px;height: 100%" href="#" class="nav-link  d-flex align-items-center" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="ti ti-bell" style="font-size: 1.5rem;"></i>
         <span class="badge bg-red">...</span>
         <span class="ms-2">Thông báo</span>
     </a>
