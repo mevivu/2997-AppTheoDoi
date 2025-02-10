@@ -1,3 +1,4 @@
+@php use App\Enums\Question\QuestionType; @endphp
 <div class="col-12 col-md-9">
     <div class="card">
         <div class="row card-body">
@@ -22,7 +23,7 @@
                              :placeholder="__('title')"/>
                 </div>
             </div>
-            @if ($instance->type == \App\Enums\Question\QuestionType::IQ->value)
+            @if ($instance->type == QuestionType::IQ->value)
                 <!-- age -->
                 <div class="col-12">
                     <div class="mb-3">
@@ -51,18 +52,32 @@
                         </div>
                     </div>
                     <div>
-                        @foreach ($questions_type as $question)
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="question_ids[]"
-                                       value="{{ $question->id }}"
-                                       id="question-{{ $question->id }}"
-                                       data-group-id="{{ $question->group->id }}"
-                                    {{ $selected_questions->contains($question->id) ? 'checked' : '' }}>
-                                <label class="form-check-label" for="question-{{ $question->id }}">
-                                    {{ $question->question }} <span class="fw-bold">({{ $question->group->name }})</span>
-                                </label>
-                            </div>
-                        @endforeach
+                        @if($instance->type == QuestionType::EQ)
+                            @foreach ($questions_type as $question)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="question_ids[]"
+                                           value="{{ $question->id }}"
+                                           id="question-{{ $question->id }}"
+                                           data-group-id="{{ $question->group->id }}"
+                                        {{ $selected_questions->contains($question->id) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="question-{{ $question->id }}">
+                                        {{ $question->question }} <span
+                                            class="fw-bold">({{ $question->group->name }})</span>
+                                    </label>
+                                </div>
+                            @endforeach
+                        @else
+                            @foreach ($questions_type as $question)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="question_ids[]"
+                                           value="{{ $question->id }}" id="question-{{ $question->id }}"
+                                        {{ $selected_questions->contains($question->id) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="question-{{ $question->id }}">
+                                        {{ $question->question }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
                 </div>
             </div>
