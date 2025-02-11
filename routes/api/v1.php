@@ -47,6 +47,7 @@ Route::controller(App\Api\V1\Http\Controllers\Notification\NotificationControlle
         Route::get('/{id}', 'detail');
         Route::put('/read', 'updateStatusRead');
         Route::post('/read-all', 'updateAllStatusReadAll');
+        Route::delete('/delete-all', 'deleteAllByUser');
         Route::delete('/{id}', 'delete');
     });
 Route::controller(App\Api\V1\Http\Controllers\Support\SupportController::class)

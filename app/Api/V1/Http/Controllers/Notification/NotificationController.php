@@ -12,6 +12,7 @@ use App\Api\V1\Http\Resources\Notification\ShowNotificationResource;
 use App\Api\V1\Services\Notification\NotificationServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Validate\Validator;
+use App\Models\Notification;
 use Exception;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
@@ -205,7 +206,7 @@ class NotificationController extends Controller
      * @param $id
      * @return JsonResponse
      */
-    public function detail($id)
+    public function detail($id): JsonResponse
     {
         try {
             Validator::validateExists($this->repository, $id);
@@ -255,4 +256,45 @@ class NotificationController extends Controller
             return $this->jsonResponseError('Deleted failed', 500);
         }
     }
+
+    /**
+     * Xóa tất cả thông báo của user
+     *
+     * @headersParam X-TOKEN-ACCESS string token để lấy dữ liệu. Ví dụ: ijCCtggxLEkG3Yg8hNKZJvMM4EA1Rw4VjVvyIOb7
+     *
+     * @response 200 {
+     *    "status": 200,
+     *    "message": "Xóa tất cả thông báo thành công."
+     * }
+     * @response 400 {
+     *    "status": 400,
+     *    "message": "Xóa tất cả thông báo thất bại."
+     * }
+     *
+     * @authenticated Authorization string required
+     * access_token được cấp sau khi đăng nhập. Ví dụ: Bearer 1|WhUre3Td7hThZ8sNhivpt7YYSxJBWk17rdndVO8K
+     *
+     * @return JsonResponse
+     */
+    public function deleteAllByUser(): JsonResponse
+    {
+        try {
+            $userId = $this->getCurrentUserId();
+
+            $notifications = Notification::where('user_id', $userId)->count();
+
+            if ($notifications == 0) {
+                return $this->jsonResponseError('Không có thông báo nào để xóa.', 400);
+            }
+
+            Notification::where('user_id', $userId)->delete();
+
+            return $this->jsonResponseSuccessNoData('Xóa tất cả thông báo thành công.');
+        } catch (Exception $e) {
+            $this->logError('Delete all notifications failed:', $e);
+            return $this->jsonResponseError('Xóa tất cả thông báo thất bại', 500);
+        }
+    }
+
+
 }
