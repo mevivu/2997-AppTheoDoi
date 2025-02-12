@@ -67,5 +67,17 @@ trait CommonTable {
         $this->customRawColumns = ['action', 'status', 'checkbox', 'user_id', 'admin_id', 'title'];
     }
 
+    public function setCustomFilterColumns(): void
+    {
+        $this->customFilterColumns = [
+
+            'user_id' => function ($query, $keyword) {
+                $query->whereHas('user', function ($subQuery) use ($keyword) {
+                    $subQuery->where('fullname', 'like', '%' . $keyword . '%');
+                });
+            },
+        ];
+    }
+
 
 }

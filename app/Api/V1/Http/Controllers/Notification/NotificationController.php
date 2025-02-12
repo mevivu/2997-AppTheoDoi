@@ -136,7 +136,7 @@ class NotificationController extends Controller
     }
 
     /**
-     * Cập nhật trạng thái Tất cả Thông báo
+     * Cập nhật trạng thái Tất cả Thông báo theo người dùng
      *
      *
      * @headersParam X-TOKEN-ACCESS string
