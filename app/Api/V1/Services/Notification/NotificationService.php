@@ -68,11 +68,17 @@ class NotificationService implements NotificationServiceInterface
         }
     }
 
-    public function updateAllStatusIsRead(Request $request): bool
+    public function updateAllStatusIsRead(): bool
     {
         try {
-            $response = $this->repository->getNotificationIsNotRead($this->getCurrentUserId());
-            foreach ($response as $notification) {
+            $userId = $this->getCurrentUserId();
+            $notifications = $this->repository->getBy(
+                [
+                    'user_id' => $userId,
+                    'status' => NotificationStatus::NOT_READ
+                ]
+            );
+            foreach ($notifications as $notification) {
 
                 $notification->update(["status" => NotificationStatus::READ]);
             }
@@ -108,7 +114,6 @@ class NotificationService implements NotificationServiceInterface
         $this->sendFirebaseNotificationToUser($user, $title, $body, MessageType::UNCLASSIFIED);
 
     }
-
 
 
 }

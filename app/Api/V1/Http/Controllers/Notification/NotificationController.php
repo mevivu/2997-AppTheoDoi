@@ -157,14 +157,12 @@ class NotificationController extends Controller
      *
      * }
      *
-     * @param NotificationRequest $request
-     *
      * @return JsonResponse
      */
-    public function updateAllStatusReadAll(NotificationRequest $request): JsonResponse
+    public function updateAllStatusReadAll(): JsonResponse
     {
         try {
-            $notification = $this->service->updateAllStatusIsRead($request);
+            $notification = $this->service->updateAllStatusIsRead();
             if ($notification) {
                 return $this->jsonResponseSuccessNoData();
             } else {

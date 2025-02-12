@@ -12,7 +12,7 @@ interface NotificationServiceInterface
 
     public function updateStatusIsRead(Request $request): bool;
 
-    public function updateAllStatusIsRead(Request $request): bool;
+    public function updateAllStatusIsRead(): bool;
 
     public function delete($id);
 
