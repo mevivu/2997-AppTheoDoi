@@ -3,13 +3,16 @@
 namespace App\Api\V1\Http\Controllers\Clinic;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Admin\Repositories\ClinicType\ClinicTypeRepositoryInterface;
 use App\Api\V1\Http\Requests\Clinic\ClinicRequest;
 use App\Api\V1\Http\Requests\Notification\NotificationRequest;
 use App\Api\V1\Http\Resources\Clinic\ClinicResourceCollection;
+use App\Api\V1\Http\Resources\ClinicType\ClinicTypeResource;
 use App\Api\V1\Services\Clinic\ClinicServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
+use App\Enums\ActiveStatus;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -19,12 +22,46 @@ class ClinicController extends Controller
 {
     use AuthServiceApi, Response, UseLog;
 
+    protected ClinicTypeRepositoryInterface $clinicTypeRepository;
+
     public function __construct(
-        ClinicServiceInterface $service
+        ClinicServiceInterface        $service,
+        ClinicTypeRepositoryInterface $clinicTypeRepository
 
     )
     {
         $this->service = $service;
+        $this->clinicTypeRepository = $clinicTypeRepository;
+    }
+
+    /**
+     * Lấy danh sách các loại phòng khám
+     *
+     * @response 200 {
+     *    "status": true,
+     *    "message": "Danh sách loại phòng khám",
+     *    "data": [
+     *        {
+     *            "id": 1,
+     *            "name": "Răng hàm mặt",
+     *            "description": "Chuyên khoa răng hàm mặt"
+     *        },
+     *        {
+     *            "id": 2,
+     *            "name": "Thai sản",
+     *            "description": "Chuyên khoa thai sản"
+     *        }
+     *    ]
+     * }
+     *
+     * @return JsonResponse
+     */
+    public function index(): JsonResponse
+    {
+        $clinicTypes = $this->clinicTypeRepository->getBy([
+            'status' => ActiveStatus::Active
+        ]);
+        return $this->jsonResponseSuccess(ClinicTypeResource::collection($clinicTypes));
     }
 
     /**
@@ -82,17 +119,17 @@ class ClinicController extends Controller
      *    ]
      * }
      *
-     * @param NotificationRequest $request
+     * @param ClinicRequest $request
      *
      * @return JsonResponse
      */
-    public function search(ClinicRequest $request)
+    public function search(ClinicRequest $request): JsonResponse
     {
         try {
             $this->data = $request->validated();
             $clinics = $this->service->search($this->data);
             return $this->jsonResponseSuccess(new ClinicResourceCollection($clinics));
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             $this->logError('Get Clinic notifications failed:', $exception);
             return $this->jsonResponseError('Get user notifications failed', 500);
         }

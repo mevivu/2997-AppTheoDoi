@@ -204,6 +204,7 @@ Route::controller(App\Api\V1\Http\Controllers\Clinic\ClinicController::class)
     ->as('clinic.')
     ->group(function () {
         Route::get('/search', 'search');
+        Route::get('/types', 'index');
     });
 
 
