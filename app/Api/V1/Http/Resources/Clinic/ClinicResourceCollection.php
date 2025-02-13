@@ -9,7 +9,7 @@ class ClinicResourceCollection extends ResourceCollection
     public function toArray($request): array
     {
         return [
-            'Clinic' => $this->collection->map(function ($item) {
+            'clinics' => $this->collection->map(function ($item) {
                 return [
                     'id' => $item->id,
                     'name' => $item->name,
@@ -21,7 +21,7 @@ class ClinicResourceCollection extends ResourceCollection
                     'province' => $item->province->name,
                     'district' => $item->district->name,
                     'ward' => $item->ward->name,
-                    'avatar' => formatImageUrl($this->avatar)
+                    'avatar' => $item->avatar ? formatImageUrl($item->avatar) : null
                 ];
             }),
             'links' => [
