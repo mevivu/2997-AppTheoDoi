@@ -207,6 +207,14 @@ Route::controller(App\Api\V1\Http\Controllers\Clinic\ClinicController::class)
         Route::get('/types', 'index');
     });
 
+//***** -- Address -- ******* //
+Route::controller(App\Api\V1\Http\Controllers\Address\AddressController::class)
+    ->prefix('/address')
+    ->as('clinic.')
+    ->group(function () {
+        Route::get('/provinces', 'getProvinces');
+    });
+
 
 //***** -- Question -- ******* //
 Route::controller(\App\Api\V1\Http\Controllers\Question\QuestionController::class)

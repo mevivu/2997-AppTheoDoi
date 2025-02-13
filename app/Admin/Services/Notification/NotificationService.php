@@ -312,7 +312,7 @@ class NotificationService implements NotificationServiceInterface
         try {
             $data = $request->validated();
 
-            $filters = [];
+            $filters = ['status' => NotificationStatus::NOT_READ];
             if (!empty($data['admin_id'])) {
                 $filters['admin_id'] = $data['admin_id'];
             }
