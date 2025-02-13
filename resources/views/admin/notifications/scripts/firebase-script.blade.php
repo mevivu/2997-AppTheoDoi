@@ -16,7 +16,7 @@
         }
 
         const messaging = firebase.messaging();
-        
+
         navigator.serviceWorker.addEventListener('message', function(event) {
             // console.log("Message from Service Worker:", event.data);
             reloadData()
@@ -204,8 +204,8 @@
 
         function updateNotificationStatus(userId) {
             $.ajax({
-                url: urlHome + '/admin/thong-bao/status',
-                type: 'PATCH',
+                url: '{{ route('admin.notification.status') }}',
+                type: 'POST',
                 data: {
                     admin_id: userId
                 },

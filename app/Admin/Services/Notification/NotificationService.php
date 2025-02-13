@@ -14,13 +14,14 @@ use App\Enums\Notification\MessageType;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
 use App\Enums\Notification\NotificationOption;
+use App\Traits\UseLog;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class NotificationService implements NotificationServiceInterface
 {
-    use AuthService, Roles;
+    use AuthService, Roles, UseLog;
 
     /**
      * Current Object instance
@@ -299,34 +300,35 @@ class NotificationService implements NotificationServiceInterface
     public function getNotifications(Request $request): mixed
     {
         $data = $request->validated();
-        return $this->repository->getBy(['admin_id' => $data['admin_id'], 'status' => NotificationStatus::NOT_READ]);
+        return $this->repository->getBy(
+            [
+                'admin_id' => $data['admin_id'],
+                'status' => NotificationStatus::NOT_READ
+            ]);
     }
-
-    /**
-     * Gets notifications for store
-     *
-     * @param Request $request
-     * @return mixed
-     * @throws Exception
-     */
 
     public function updateStatus(Request $request): JsonResponse
     {
-        $data = $request->validated();
+        try {
+            $data = $request->validated();
 
-        $filters = [];
-        if (!empty($data['admin_id'])) {
-            $filters['admin_id'] = $data['admin_id'];
+            $filters = [];
+            if (!empty($data['admin_id'])) {
+                $filters['admin_id'] = $data['admin_id'];
+            }
+
+            $notifications = $this->repository->getBy($filters);
+
+            foreach ($notifications as $notification) {
+                $this->repository->update($notification->id, ['status' => NotificationStatus::READ]);
+            }
+
+            return response()->json(['success' => "Updated successfully"]);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Failed to update notification status'], 500);
         }
-
-        $notifications = $this->repository->getBy($filters);
-
-        foreach ($notifications as $notification) {
-            $this->repository->update($notification->id, ['status' => NotificationStatus::READ]);
-        }
-
-        return response()->json(['success' => "Updated successfully"]);
     }
+
 
     public function actionMultipleRecode(Request $request): bool
     {

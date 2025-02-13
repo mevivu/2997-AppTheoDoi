@@ -7,6 +7,7 @@ use App\Admin\DataTables\Notification\NotificationPackageDataTable;
 use App\Admin\DataTables\Notification\NotificationUserDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Notification\NotificationRequest;
+use App\Admin\Http\Requests\Notification\NotificationStatusRequest;
 use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Services\Notification\NotificationServiceInterface;
@@ -137,7 +138,7 @@ class NotificationController extends Controller
         return $this->service->updateDeviceToken($request);
     }
 
-    public function updateStatus(NotificationRequest $request)
+    public function updateStatus(NotificationStatusRequest $request)
     {
         return $this->service->updateStatus($request);
     }

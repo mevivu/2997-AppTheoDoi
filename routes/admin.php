@@ -404,7 +404,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->as('notification.')
         ->group(function () {
             Route::get('/not-read-admin', 'getNotificationsForAdmin')->name('getNotificationAdmin');
-            Route::patch('/status', 'updateStatus')->name('status');
+            Route::post('/status', 'updateStatus')->name('status');
             Route::post('/update-device-token', 'updateDeviceToken')->name('updateDeviceToken');
 
 
