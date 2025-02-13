@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Api\V1\Http\Resources\Clinic;
+
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class ClinicResourceCollection extends ResourceCollection
@@ -9,19 +10,19 @@ class ClinicResourceCollection extends ResourceCollection
     {
         return [
             'Clinic' => $this->collection->map(function ($item) {
-                $data = [
+                return [
                     'id' => $item->id,
                     'name' => $item->name,
-                    'address'=>$item->address,
-                    'hotline'=>$item->hotline,
-                    'opening_time'=>$item->opening_time,
-                    'closing_time'=>$item->closing_time,
-                    'clinic_type' =>  $item->clinicType->name,
-                    'province' =>  $item->province->name,
-                    'district'=>$item->district->name,
-                    'ward'=>$item->ward->name,
+                    'address' => $item->address,
+                    'hotline' => $item->hotline,
+                    'opening_time' => $item->opening_time,
+                    'closing_time' => $item->closing_time,
+                    'clinic_type' => $item->clinicType->name,
+                    'province' => $item->province->name,
+                    'district' => $item->district->name,
+                    'ward' => $item->ward->name,
+                    'avatar' => formatImageUrl($this->avatar)
                 ];
-                return $data;
             }),
             'links' => [
                 'first' => $this->url(1),
