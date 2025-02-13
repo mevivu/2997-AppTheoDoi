@@ -75,7 +75,6 @@ class PackageService implements PackageServiceInterface
             $data['payment_confirmation_image'] = $this->fileService
                 ->uploadAvatar('images/package', $image);
         }
-        $this->notificationService->sendCustomerPaymentNotification($user);
         $admins = $this->adminRepository->getAll();
         $title = config('notifications.admin_approval_required.title');
         $message = config('notifications.admin_approval_required.message');
@@ -92,6 +91,7 @@ class PackageService implements PackageServiceInterface
             ]);
 
         }
+        $this->notificationService->sendCustomerPaymentNotification($user);
 //        $this->notificationService->sendNotificationsPaymentToAdmins($user, $data['payment_confirmation_image'], $packageId);
         return true;
 
