@@ -5,7 +5,6 @@ namespace App\Api\V1\Http\Controllers\Clinic;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Repositories\ClinicType\ClinicTypeRepositoryInterface;
 use App\Api\V1\Http\Requests\Clinic\ClinicRequest;
-use App\Api\V1\Http\Requests\Notification\NotificationRequest;
 use App\Api\V1\Http\Resources\Clinic\ClinicResourceCollection;
 use App\Api\V1\Http\Resources\ClinicType\ClinicTypeResource;
 use App\Api\V1\Services\Clinic\ClinicServiceInterface;

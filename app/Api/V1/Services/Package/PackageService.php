@@ -34,7 +34,6 @@ class PackageService implements PackageServiceInterface
     protected NotificationServiceInterface $notificationService;
     protected AdminRepositoryInterface $adminRepository;
     protected NotificationRepositoryInterface $notificationRepository;
-
     protected FileService $fileService;
 
 
@@ -77,7 +76,23 @@ class PackageService implements PackageServiceInterface
                 ->uploadAvatar('images/package', $image);
         }
         $this->notificationService->sendCustomerPaymentNotification($user);
-        $this->notificationService->sendNotificationsPaymentToAdmins($user, $data['payment_confirmation_image'], $packageId);
+        $admins = $this->adminRepository->getAll();
+        $title = config('notifications.admin_approval_required.title');
+        $message = config('notifications.admin_approval_required.message');
+        $body = str_replace('{fullname}', $user->fullname, $message);
+        foreach ($admins as $admin) {
+            $this->notificationRepository->create([
+                'admin_id' => $admin->id,
+                'user_id_attribute' => $user->id,
+                'title' => $title,
+                'package_id' => $packageId,
+                'message' => $body,
+                'type' => MessageType::PAYMENT,
+                'payment_confirmation_image' => $image
+            ]);
+
+        }
+//        $this->notificationService->sendNotificationsPaymentToAdmins($user, $data['payment_confirmation_image'], $packageId);
         return true;
 
     }
