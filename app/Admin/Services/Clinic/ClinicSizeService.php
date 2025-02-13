@@ -52,6 +52,9 @@ class ClinicSizeService implements ClinicServiceInterface
     public function store(Request $request): object|false
     {
         $data = $request->validated();
+        if (isset($data['schedule']) && is_array($data['schedule'])) {
+            $data['schedule'] = json_encode($data['schedule']);
+        }
         return $this->repository->create($data);
     }
 

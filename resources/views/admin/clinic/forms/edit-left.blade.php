@@ -62,6 +62,7 @@
                         @lang('closing_time')</label>
                     <x-input type="time"
                              name="closing_time"
+                             :required="true"
                              :value="$instance->closing_time"
                              :placeholder="__('closing_time')" />
                 </div>

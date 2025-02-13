@@ -52,7 +52,9 @@
                     <label class="control-label">
                         <i class="ti ti-clock"></i>
                         @lang('closing_time')</label>
-                    <x-input type="time" name="closing_time"
+                    <x-input type="time"
+                             name="closing_time"
+                             :required="true"
                              :value="old('closing_time')"
                              :placeholder="__('closing_time')" />
                 </div>

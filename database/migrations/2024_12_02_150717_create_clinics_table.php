@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('hotline')->nullable();
             $table->time('opening_time')->nullable();
             $table->time('closing_time')->nullable();
+            $table->string('avatar')->nullable();
+            $table->json('schedule')->nullable();
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
 
             $table->timestamps();

@@ -35,6 +35,10 @@ class Clinic extends Model
         'district_id',
         /* ID phường */
         'ward_id',
+        /* Lịch trình */
+        'schedule',
+        /** Hình ảnh */
+        'avatar'
     ];
     protected $casts = [
 

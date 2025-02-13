@@ -8,6 +8,7 @@ use App\Admin\Http\Requests\Clinic\ClinicRequest;
 use App\Admin\Repositories\Clinic\ClinicRepositoryInterface;
 use App\Admin\Services\Clinic\ClinicServiceInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Date\DayOfWeek;
 use App\Traits\ResponseController;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -72,6 +73,7 @@ class ClinicController extends Controller
     {
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
+            'dayOfWeek' => DayOfWeek::cases(),
             'breadcrumbs' => $this->crums->add(__('clinic'),
                 route($this->route['index']))->add(__('add')),
         ]);
@@ -95,6 +97,7 @@ class ClinicController extends Controller
             $this->view['edit'],
             [
                 'instance' => $instance,
+                'dayOfWeek' => DayOfWeek::cases(),
                 'status' => ActiveStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),
             ],

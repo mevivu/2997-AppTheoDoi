@@ -26,6 +26,8 @@ class ClinicRequest extends BaseRequest
             'clinic_type_id' => ['required', 'exists:App\Models\ClinicType,id'],
             'closing_time' => ['required', 'date_format:H:i'],
             'opening_time' => ['required', 'date_format:H:i'],
+            'avatar' => ['nullable'],
+            'schedule' => ['required', 'array'],
         ];
     }
 
@@ -44,6 +46,8 @@ class ClinicRequest extends BaseRequest
             'status' => ['required', new Enum(ActiveStatus::class)],
             'opening_time' => ['required'],
             'closing_time' => ['required'],
+            'avatar' => ['nullable'],
+            'schedule' => ['required', 'array'],
 
         ];
     }

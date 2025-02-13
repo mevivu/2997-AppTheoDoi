@@ -13,7 +13,6 @@
         </div>
     </div>
 
-
     <div class="card mb-3">
         <div class="card-header">
             @lang('status')
@@ -24,6 +23,34 @@
                     <x-select-option :value="$key" :title="$value" :selected="$instance->status->value == $key" />
                 @endforeach
             </x-select>
+        </div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header">
+            {{ __('Lịch') }}
+        </div>
+        <div class="card-body p-2 wrap-list-checkbox">
+            @foreach($dayOfWeek as $day)
+                <x-input-checkbox
+                    :checked="json_decode($instance->schedule, true) ?? []"
+                    :value="$day->value"
+                    name="schedule[]"
+                    label="{{ $day->label() }}"
+                />
+            @endforeach
+        </div>
+    </div>
+
+    <!-- avatar -->
+    <div class="col-12">
+        <div class="card mb-3">
+            <div class="card-header">
+                <span class="ti ti-photo me-1"></span>
+                @lang('avatar')
+            </div>
+            <div class="card-body p-2">
+                <x-input-image-ckfinder name="avatar" showImage="avatar" class="img-fluid" :value="$instance->avatar" />
+            </div>
         </div>
     </div>
 </div>

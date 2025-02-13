@@ -12,5 +12,26 @@
             </div>
         </div>
     </div>
+    <div class="card mb-3">
+        <div class="card-header">
+            {{ __('Lịch') }}
+        </div>
+
+        <div class="card-body p-2 wrap-list-checkbox">
+            @foreach($dayOfWeek as $day)
+                <x-input-checkbox :value="$day->value" name="schedule[]" label="{{ $day->label() }}"/>
+            @endforeach
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header">
+            <span class="ti ti-photo me-1"></span>
+            @lang('avatar')
+        </div>
+        <div class="card-body p-2">
+            <x-input-image-ckfinder name="avatar" :value="old('avatar')" showImage="featureImage" />
+        </div>
+    </div>
 
 </div>
