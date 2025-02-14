@@ -6,7 +6,7 @@
         <div class="container-xl">
             <div class="row">
                 <div class="col">
-                    <div class="card">
+                    <div class="card custom-shadow">
                         <div class="card-header">
                             <h2>{{ __('Dashboard') }}</h2>
                         </div>

@@ -4,11 +4,10 @@
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
 @endpush
-
 @section('content')
     <div class="page-body">
         <div class="container-xl">
-            <div class="card">
+            <div class="card custom-shadow">
                 <div class="card-header justify-content-between">
                     <h2 class="mb-0">@lang('list')</h2>
                     <x-link :href="route('admin.clinic.create')" class="btn btn-primary">

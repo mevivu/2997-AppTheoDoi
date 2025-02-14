@@ -7,7 +7,7 @@
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
-            <div class="card">
+            <div class="card custom-shadow">
                 <div class="card-header justify-content-between">
                     <h2 class="mb-0">@lang('Danh Sách Thông Báo')</h2>
                     <div class="d-flex justify-content-between gap-2">

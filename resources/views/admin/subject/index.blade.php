@@ -6,7 +6,7 @@
 @section('content')
     <div class="page-body">
         <div class="container-xl">
-            <div class="card">
+            <div class="card custom-shadow">
                 <div class="card-header justify-content-between">
                     <h2 class="mb-0">{{ __('Quản lý môn học') }}</h2>
                     <x-link :href="route('admin.subject.create')" class="btn btn-primary"><i class="ti ti-plus"></i>{{ __('Thêm mới') }}</x-link>
