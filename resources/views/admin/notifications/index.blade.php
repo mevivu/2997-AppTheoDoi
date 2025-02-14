@@ -49,4 +49,6 @@
     @include('admin.scripts.datatable-toggle-columns', [
         'id_table' => $dataTable->getTableAttribute('id'),
     ])
+    @include('admin.common.selected-row')
+
 @endpush

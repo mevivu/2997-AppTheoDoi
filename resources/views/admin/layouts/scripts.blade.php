@@ -28,9 +28,9 @@
             if (typeof initMap === 'function') {
                 initMap();
             }
-            if (typeof initEndMap === 'function') {
-                initEndMap();
-            }
+            // if (typeof initEndMap === 'function') {
+            //     initEndMap();
+            // }
 
         } catch (error) {
             handleAjaxError();

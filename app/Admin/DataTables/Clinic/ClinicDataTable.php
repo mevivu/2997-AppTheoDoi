@@ -54,19 +54,6 @@ class ClinicDataTable extends BaseDataTable
             ],
 
         ];
-//        $clinicTypeRepository = app(ClinicTypeRepositoryInterface::class);
-//
-//        $clinicTypes = $clinicTypeRepository->getAllClinicTypes()->map(function ($clinic) {
-//            return [$clinic->id => $clinic->name];
-//        });
-//
-//        $this->columnSearchSelect2 = [
-//            [
-//                'column' => 3,
-//                'data' => $clinicTypes
-//            ]
-//        ];
-
 
     }
 

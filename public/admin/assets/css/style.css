@@ -460,4 +460,10 @@ span.select2-selection.select2-selection--single {
     }
 }
 
+.selected-row {
+    background-color: #d4edda !important;
+}
+
+
+
 
