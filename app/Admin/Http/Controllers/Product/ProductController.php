@@ -15,6 +15,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -53,10 +54,12 @@ class ProductController extends Controller
 
     public function index(ProductDataTable $dataTable)
     {
+        $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
             $this->view['index'],
             [
                 'status' => ProductStatus::asSelectArray(),
+                'actionMultiple' => $actionMultiple,
                 'breadcrumbs' => $this->crums->add(__('productList')),
             ]
         );
@@ -124,5 +127,21 @@ class ProductController extends Controller
             $product = $this->Repository->findOrFail($id);
             return $product->update(['status' => ProductStatus::Deleted->value]);
         });
+    }
+    protected function getActionMultiple(): array
+    {
+        return [
+            'active' => ActiveStatus::Active->description(),
+            'draft' => ActiveStatus::Draft->description(),
+        ];
+    }
+
+    public function actionMultipleRecords(Request $request): RedirectResponse
+    {
+        $boolean = $this->Service->actionMultipleRecords($request);
+        if ($boolean) {
+            return back()->with('success', __('notifySuccess'));
+        }
+        return back()->with('error', __('notifyFail'));
     }
 }

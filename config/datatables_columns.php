@@ -1639,6 +1639,14 @@ return [
         ],
     ],
     'product' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
         'code' => [
             'title' => 'code',
             'addClass' => 'text-center align-middle',

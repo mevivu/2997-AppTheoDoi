@@ -49,11 +49,11 @@ class ProductDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [ 0,1, 2, 3, 4,5];
-        $this->columnSearchDate = [5];
+        $this->columnAllSearch = [ 1, 2, 3, 4,5,6];
+        $this->columnSearchDate = [6];
         $this->columnSearchSelect = [
             [
-                'column' => 4,
+                'column' => 5,
                 'data' => ProductStatus::asSelectArray()
             ],
         ];
