@@ -2,9 +2,10 @@
 
 namespace App\Api\V1\Http\Requests\Assessment;
 
-use App\Admin\Http\Requests\BaseRequest;
 
 
+
+use App\Api\V1\Http\Requests\BaseRequest;
 
 class AssessmentRequest extends BaseRequest
 {

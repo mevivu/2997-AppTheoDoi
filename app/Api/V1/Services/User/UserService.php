@@ -168,7 +168,7 @@ class UserService implements UserServiceInterface
 
         $this->deleteOtpWithEmail($email);
 
-        if ($this->generateAndSendOtp($email, 1)) {
+        if ($this->generateAndSendOtp($email, 15)) {
             return true;
         } else {
             throw new BadRequestException('Failed to generate OTP.');

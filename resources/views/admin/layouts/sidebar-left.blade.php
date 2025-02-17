@@ -78,9 +78,9 @@
 <script>
     $(document).ready(function() {
         $('#searchMenuInput').on('keyup', function() {
-            const value = $(this).val();
+            const value = $(this).val().toLowerCase();
             $("#sidebar-menu ul.navbar-nav > li").filter(function() {
-                $(this).toggle($(this).text().indexOf(value) > -1)
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
     });

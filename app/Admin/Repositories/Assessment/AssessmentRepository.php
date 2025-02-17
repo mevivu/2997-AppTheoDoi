@@ -6,7 +6,7 @@ use App\Admin\Repositories\Answer\AnswerRepositoryInterface;
 use App\Admin\Repositories\EloquentRepository;
 use App\Models\Assessment;
 
-class AssessmentRepository extends EloquentRepository implements AnswerRepositoryInterface
+class AssessmentRepository extends EloquentRepository implements AssessmentRepositoryInterface
 {
     public function getModel(): string
     {
