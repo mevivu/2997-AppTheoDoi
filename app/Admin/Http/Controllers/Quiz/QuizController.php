@@ -28,10 +28,11 @@ class QuizController extends Controller
 
 
     public function __construct(
-        QuizRepositoryInterface $repository,
+        QuizRepositoryInterface     $repository,
         QuestionRepositoryInterface $questionRepository,
-        QuizServiceInterface $service
-    ) {
+        QuizServiceInterface        $service
+    )
+    {
 
         parent::__construct();
 
@@ -47,6 +48,7 @@ class QuizController extends Controller
             'index' => 'admin.quiz.index',
             'create' => 'admin.quiz.create',
             'edit' => 'admin.quiz.edit',
+            'edit-iq' => 'admin.quiz.edit-iq',
             'create-eq-aq' => 'admin.quiz.create-eq-aq',
         ];
     }
@@ -255,8 +257,9 @@ class QuizController extends Controller
             $route = $this->route['iq'];
         }
 
+        $view = $instance->type == QuestionType::IQ ? $this->view['edit-iq'] : $this->view['edit'];
         return view(
-            $this->view['edit'],
+            $view,
             [
                 'instance' => $instance,
                 'status' => ActiveStatus::asSelectArray(),
