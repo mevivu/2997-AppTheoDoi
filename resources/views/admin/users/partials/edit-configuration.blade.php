@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card custom-shadow">
     <div class="card-header">
         <h4>{{ __('Thông tin Cấu hình sắp xếp C-Ride/Car') }}</h4>
     </div>

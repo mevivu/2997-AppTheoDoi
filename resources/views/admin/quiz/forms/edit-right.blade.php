@@ -1,7 +1,7 @@
 @php use App\Enums\Question\QuestionType; @endphp
 <div class="col-12 col-md-3">
 
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             {{ __('Đăng') }}
         </div>
@@ -17,7 +17,7 @@
     </div>
 
     @if($instance->type == QuestionType::AQ || $instance->type == QuestionType::EQ)
-        <div class="card mb-3">
+        <div class="card mb-3 custom-shadow">
             <div class="card-header">
                 @lang('type')
             </div>
@@ -33,7 +33,7 @@
     @endif
 
 
-    <div class="card mb-3">
+    <div class="card custom-shadow mb-3">
         <div class="card-header">
             @lang('status')
         </div>

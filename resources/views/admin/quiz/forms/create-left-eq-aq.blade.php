@@ -1,9 +1,9 @@
 <div class="col-12 col-md-9">
-    <div class="card">
+    <div class="card custom-shadow">
         <div class="card-header justify-content-center">
             <h2 class="mb-0">{{ $title }}</h2>
         </div>
-        <div class="row card-body">
+        <div class="row card-body ">
 
             <!-- title -->
             <div class="col-12">

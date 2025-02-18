@@ -1,5 +1,5 @@
 @php use App\AES\AESHelper; @endphp
-<div class="card">
+<div class="card ">
     <div class="card-header justify-content-center">
         <h2 class="mb-0">{{ __('Thông tin khách hàng') }}</h2>
 

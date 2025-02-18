@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card custom-shadow">
     <div class="cart-header">
         <div class="card-header">
             <h4>{{ __('Thông tin phụ huynh') }}</h4>
