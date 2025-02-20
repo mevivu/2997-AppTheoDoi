@@ -45,7 +45,7 @@ class ChildService implements ChildServiceInterface
     public function store(Request $request): object
     {
         $data = $request->validated();
-        $avatar = $data['avatar'];
+        $avatar = $data['avatar'] ?? null;
         $data['user_id'] = $this->getCurrentUserId();
         if ($data['is_born'] == BornStatus::Born->value) {
             $birthday = $data['birthday'];
