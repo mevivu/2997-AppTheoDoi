@@ -70,8 +70,8 @@ class ChildService implements ChildServiceInterface
     {
         $data = $request->validated();
         $child = $this->repository->find($data['id']);
-        $avatar = $data['avatar'];
-        $birthday = $data['birthday'];
+        $avatar = $data['avatar'] ?? null;
+        $birthday = $data['birthday'] ?? null;
         if (isset($birthday)) {
             $birthday = new Carbon($birthday);
             $currentDate = Carbon::now();
