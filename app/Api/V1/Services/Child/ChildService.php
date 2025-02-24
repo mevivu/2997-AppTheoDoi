@@ -99,4 +99,64 @@ class ChildService implements ChildServiceInterface
         ]);
         return $query->paginate($limit, ['*'], 'page', $page);
     }
+
+    /**
+     * @throws Exception
+     */
+    public function syncChildren(Request $request): void
+    {
+        $data = $request->validated();
+        $children = $data['children'] ?? [];
+        $userId = $this->getCurrentUserId();
+        foreach ($children as $childData) {
+            $id = $childData['id'];
+            $childData['user_id'] = $userId;
+            $birthday = $childData['birthday'] ?? null;
+            $born = $childData['is_born'];
+            if (isset($id) && $this->repository->exists($id)) {
+                $child = $this->repository->findOrFail($id);
+
+                $childData['avatar'] = $this->fileService
+                    ->uploadAvatar('images/children', $childData['avatar'], $child->avatar);
+                if ($born == BornStatus::Born->value) {
+                    $this->calculateAgeAndMonth($birthday, $childData);
+                } else {
+                    $childData['birthday'] = null;
+                    $childData['age'] = null;
+                    $childData['month'] = null;
+                }
+                $this->repository->update($id, $childData);
+            } else {
+                if ($born == BornStatus::Born->value) {
+                    $this->calculateAgeAndMonth($birthday, $childData);
+                } else {
+                    $childData['birthday'] = null;
+                    $childData['age'] = null;
+                    $childData['month'] = null;
+                }
+                $childData['avatar'] = $this->fileService
+                    ->uploadAvatar('images/children', $childData['avatar']);
+                $this->repository->create($childData);
+            }
+        }
+    }
+
+    /**
+     * Tính toán tuổi và tháng từ ngày sinh.
+     *
+     * @param string $birthday
+     * @param array $childData
+     * @return void
+     */
+    private function calculateAgeAndMonth(string $birthday, array &$childData): void
+    {
+        $birthday = new Carbon($birthday);
+        $currentDate = Carbon::now();
+
+        $month = $currentDate->diffInDays($birthday) / 30.5;
+        $age = $currentDate->diffInDays($birthday) / 365.3;
+
+        $childData['age'] = $age;
+        $childData['month'] = $month;
+    }
 }

@@ -6,6 +6,7 @@ use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Exception\NotFoundException;
 use App\Api\V1\Http\Requests\Child\ChildRequest;
+use App\Api\V1\Http\Requests\Child\ChildSyncRequest;
 use App\Api\V1\Http\Requests\Child\ChildUpdateRequest;
 use App\Api\V1\Http\Resources\Child\ChildResource;
 use App\Api\V1\Http\Resources\Child\ChildResourceCollection;
@@ -303,10 +304,10 @@ class ChildController extends Controller
      *     "message": "Lỗi hệ thống khi lấy thông tin đứa trẻ."
      * }
      *
-     * @param int $id
+     * @param  $id
      * @return JsonResponse
      */
-    public function show(int $id): JsonResponse
+    public function show($id): JsonResponse
     {
         try {
             Validator::validateExists($this->repository, $id);
@@ -317,6 +318,58 @@ class ChildController extends Controller
         } catch (Exception $e) {
             $this->logError('Show detail child failed:', $e);
             return $this->jsonResponseError('Show detail child failed', 500);
+        }
+    }
+
+    /**
+     * Đồng bộ thông tin các đứa trẻ
+     *
+     * API này cho phép người dùng đồng bộ danh sách các đứa trẻ, kiểm tra nếu ID đã tồn tại sẽ cập nhật, nếu không sẽ tạo mới.
+     *
+     * @bodyParam children array required Danh sách các đứa trẻ với các trường thông tin như id, fullname, gender, is_born, birthday, avatar.
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Đồng bộ thông tin đứa trẻ thành công.",
+     *     "data": [
+     *         {
+     *             "id": 49,
+     *             "fullname": "mn3",
+     *             "gender": 1,
+     *             "is_born": "unborn",
+     *             "birthday": "2025-02-28",
+     *             "avatar": null
+     *         }
+     *     ]
+     * }
+     *
+     * @response 422 {
+     *     "status": 422,
+     *     "message": "Dữ liệu không hợp lệ.",
+     *     "errors": {
+     *         "children": ["Danh sách không hợp lệ."]
+     *     }
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống khi đồng bộ thông tin đứa trẻ."
+     * }
+     *
+     * @param ChildSyncRequest $request
+     * @return JsonResponse
+     */
+    public function syncChildren(ChildSyncRequest $request): JsonResponse
+    {
+        DB::beginTransaction();
+        try {
+            $response = $this->service->syncChildren($request);
+            DB::commit();
+            return $this->jsonResponseSuccessNoData();
+        } catch (Exception $exception) {
+            DB::rollBack();
+            $this->logError('Sync Children failed:', $exception);
+            return $this->jsonResponseError('Lỗi hệ thống khi đồng bộ thông tin đứa trẻ.', 500);
         }
     }
 

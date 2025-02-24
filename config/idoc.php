@@ -98,7 +98,7 @@ return [
     |
      */
 
-    'output' => '/docs/api/v123',
+    'output' => '//docs/api/v123',
 
 
     /*

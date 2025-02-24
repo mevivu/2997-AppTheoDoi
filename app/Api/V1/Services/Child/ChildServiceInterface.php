@@ -12,4 +12,6 @@ interface ChildServiceInterface
     public  function update(Request $request);
 
     public function index(Request $request);
+
+    public function syncChildren(Request $request);
 }
