@@ -115,9 +115,11 @@ class ChildService implements ChildServiceInterface
             $born = $childData['is_born'];
             if (isset($id) && $this->repository->exists($id)) {
                 $child = $this->repository->findOrFail($id);
+                if (isset($childData['avatar']) && $childData['avatar']) {
+                    $childData['avatar'] = $this->fileService
+                        ->uploadAvatar('images/children', $childData['avatar'], $child->avatar);
+                }
 
-                $childData['avatar'] = $this->fileService
-                    ->uploadAvatar('images/children', $childData['avatar'], $child->avatar);
                 if ($born == BornStatus::Born->value) {
                     $this->calculateAgeAndMonth($birthday, $childData);
                 } else {
@@ -134,8 +136,10 @@ class ChildService implements ChildServiceInterface
                     $childData['age'] = null;
                     $childData['month'] = null;
                 }
-                $childData['avatar'] = $this->fileService
-                    ->uploadAvatar('images/children', $childData['avatar']);
+                if (isset($childData['avatar']) && $childData['avatar']) {
+                    $childData['avatar'] = $this->fileService
+                        ->uploadAvatar('images/children', $childData['avatar'], $child->avatar);
+                }
                 $this->repository->create($childData);
             }
         }

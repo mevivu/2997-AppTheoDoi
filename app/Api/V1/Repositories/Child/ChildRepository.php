@@ -8,7 +8,7 @@ use App\Models\Child;
 
 class ChildRepository extends AdminRepository implements ChildRepositoryInterface
 {
-    public function exists(int $id): bool
+    public function exists($id): bool
     {
         return Child::where('id', $id)->exists();
     }

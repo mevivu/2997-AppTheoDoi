@@ -6,5 +6,5 @@ use App\Admin\Repositories\EloquentRepositoryInterface;
 
 interface ChildRepositoryInterface extends EloquentRepositoryInterface
 {
-    public function exists(int $id): bool;
+    public function exists($id): bool;
 }
