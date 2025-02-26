@@ -3,8 +3,8 @@
 namespace App\Api\V1\Services\RatingPQ;
 
 
+use App\Admin\Repositories\Bmi\BmiRepositoryInterface;
 use App\Admin\Services\File\FileService;
-use App\Api\V1\Repositories\BMI\BMIRepositoryInterface;
 use App\Api\V1\Repositories\Child\ChildRepositoryInterface;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
 use App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface;
@@ -30,14 +30,14 @@ class RatingPQService implements RatingPQServiceInterface
 
     protected RatingPQRepositoryInterface $repository;
     protected ChildRepositoryInterface $childRepository;
-    protected BMIRepositoryInterface $bmiRepository;
+    protected BmiRepositoryInterface $bmiRepository;
     protected WhoRepositoryInterface $whoRepository;
     protected FileService $fileService;
 
     public function __construct(
         RatingPQRepositoryInterface $repository,
         ChildRepositoryInterface    $childRepository,
-        BMIRepositoryInterface      $bmiRepository,
+        BmiRepositoryInterface      $bmiRepository,
         WhoRepositoryInterface      $whoRepository,
         FileService                 $fileService
     )

@@ -1,19 +1,12 @@
 <?php
 
-namespace App\Api\V1\Repositories\BMI;
+namespace App\Api\V1\Repositories\Bmi;
 
 use App\Admin\Repositories\Bmi\BmiRepository as AdminArea;
 use App\Enums\ActiveStatus;
-use App\Models\Bmi;
-use App\Api\V1\Repositories\BMI\BmiRepositoryInterface;
-class BMIRepository extends AdminArea implements BMIRepositoryInterface
+class BmiRepository extends AdminArea implements BmiRepositoryInterface
 {
-    protected $model;
 
-    public function __construct(Bmi $note)
-    {
-        $this->model = $note;
-    }
 
 
     public function index($limit = 10, $page = 1)

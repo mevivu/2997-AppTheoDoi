@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Api\V1\Repositories\BMI;
-
-
+namespace App\Api\V1\Repositories\Bmi;
 use App\Admin\Repositories\EloquentRepositoryInterface;
 
-interface BMIRepositoryInterface extends EloquentRepositoryInterface
+interface BmiRepositoryInterface extends EloquentRepositoryInterface
 {
 
     public function index($limit = 10, $page = 1);
