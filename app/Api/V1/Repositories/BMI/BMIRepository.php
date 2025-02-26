@@ -2,11 +2,11 @@
 
 namespace App\Api\V1\Repositories\BMI;
 
-use \App\Admin\Repositories\Bmi\BmiRepository as AdminArea;
+use App\Admin\Repositories\Bmi\BmiRepository as AdminArea;
 use App\Enums\ActiveStatus;
 use App\Models\Bmi;
-
-class BMIRepository extends AdminArea implements BmiRepositoryInterface
+use App\Api\V1\Repositories\BMI\BmiRepositoryInterface;
+class BMIRepository extends AdminArea implements BMIRepositoryInterface
 {
     protected $model;
 

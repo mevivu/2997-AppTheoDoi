@@ -4,7 +4,6 @@ namespace App\Api\V1\Http\Requests\RatingPQ;
 
 use App\Api\V1\Http\Requests\BaseRequest;
 use App\Api\V1\Rules\ValidChild;
-use App\Api\V1\Rules\ValidChildAge;
 
 
 class RatingPQMonthRequest extends BaseRequest
