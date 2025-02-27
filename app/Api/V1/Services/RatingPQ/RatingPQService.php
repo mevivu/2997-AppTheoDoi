@@ -137,7 +137,7 @@ class RatingPQService implements RatingPQServiceInterface
         $currentDate = Carbon::now()->startOfDay();
         $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
         $nearestRatingPQ = $this->findRatingPQ($child->id, $currentDate, $oneYearAgo);
-        $nearestHeight = $nearestRatingPQ->height;
+        $nearestHeight = ($nearestRatingPQ && isset($nearestRatingPQ->height)) ? $nearestRatingPQ->height : 0;
         $who228 = $this->getWho(228, $gender);
         $heightWho = $who228->height;
         $result = ($nearestHeight / $heightWho) / 0.1;
@@ -154,8 +154,9 @@ class RatingPQService implements RatingPQServiceInterface
         $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
         $childBirthDate = $child->birthday;
         $nearestRatingPQ = $this->findRatingPQ($child->id, $currentDate, $oneYearAgo);
-        $nearestHeight = $nearestRatingPQ->height;
-        $nearestAssessmentDate = $nearestRatingPQ->assessment_date;
+        $nearestHeight = $nearestRatingPQ->height ?? 0;
+        $nearestAssessmentDate = $nearestRatingPQ ? $nearestRatingPQ->assessment_date : $currentDate;
+
         $heightIncreaseInOneYear = $nearestHeight - $currenHeight;
         $diffInDaysCurrent = $currentDate->diffInDays($nearestAssessmentDate);
         $diffInDaysBirth = $childBirthDate->diffInDays($nearestAssessmentDate);
@@ -241,7 +242,7 @@ class RatingPQService implements RatingPQServiceInterface
 
     public function getBmiPercent($bmi, $currentBmi): float|int
     {
-        $zScore0 = $bmi->z_score_0;
+        $zScore0 = $bmi->z_score_0 ?? 0;
         if ($zScore0 < $currentBmi) {
             return round(($zScore0 / $currentBmi) / 0.1, 1);
         } else {
