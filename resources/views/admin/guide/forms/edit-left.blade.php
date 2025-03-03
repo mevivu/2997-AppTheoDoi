@@ -18,6 +18,13 @@
                 </div>
             </div>
 
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('Ghi chú')</label>
+                    <textarea name="note" class="ckeditor visually-hidden">{{ old('note', $instance->note ?? '') }}</textarea>
+                </div>
+            </div>
+
             <!-- Các bước hướng dẫn -->
             <div class="col-12">
                 <div class="card">

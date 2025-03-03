@@ -20,6 +20,7 @@ class GuideRequest extends BaseRequest
         return [
             'title' => ['required', 'string'],
             'description' => ['nullable', 'string'],
+            'note' => ['nullable', 'string'],
             'status' => ['required', new Enum(ActiveStatus::class, false)],
             'type' => ['required', new Enum(GuideType::class, false), 'unique:guides,type'],
             'steps' => ['nullable', 'array'],
@@ -35,6 +36,7 @@ class GuideRequest extends BaseRequest
             'id' => ['required', 'exists:guides,id'],
             'title' => ['required', 'string'],
             'description' => ['nullable', 'string'],
+            'note' => ['nullable', 'string'],
             'status' => ['required', new Enum(ActiveStatus::class)],
             'type' => [
                 'required',
@@ -53,6 +55,7 @@ class GuideRequest extends BaseRequest
             'title.required' => 'Tiêu đề là bắt buộc.',
             'title.string' => 'Tiêu đề phải là một chuỗi ký tự.',
             'description.string' => 'Mô tả phải là một chuỗi ký tự.',
+            'note.string'   => 'Ghi chú phải là một chuỗi ký tự.',
             'status.required' => 'Trạng thái là bắt buộc.',
             'status.Enum' => 'Trạng thái không hợp lệ.',
             'type.required' => 'Loại hướng dẫn là bắt buộc.',

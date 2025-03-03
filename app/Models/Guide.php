@@ -26,6 +26,8 @@ class Guide extends Model
         'type',
         /* Trạng thái của hướng dẫn (Dự thảo hoặc Kích hoạt) */
         'status',
+        /* Ghi chú của hướng dẫn */
+        'note'
     ];
 
     protected $casts = [
