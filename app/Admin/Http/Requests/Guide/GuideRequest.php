@@ -21,7 +21,7 @@ class GuideRequest extends BaseRequest
             'title' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'status' => ['required', new Enum(ActiveStatus::class, false)],
-            'type' => ['required', new Enum(GuideType::class, false)],
+            'type' => ['required', new Enum(GuideType::class, false), 'unique:guides,type'],
             'steps' => ['nullable', 'array'],
             'steps.*.title' => ['required', 'string'],
             'steps.*.description' => ['nullable', 'string'],
@@ -36,11 +36,16 @@ class GuideRequest extends BaseRequest
             'title' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'status' => ['required', new Enum(ActiveStatus::class)],
-            'type' => ['required', new Enum(GuideType::class)],
+            'type' => [
+                'required',
+                new Enum(GuideType::class),
+                'unique:guides,type,' . request()->id
+            ],
             'steps' => ['nullable', 'array'],
             'steps.*.title' => ['required', 'string'],
             'steps.*.description' => ['nullable', 'string'],
             'steps.*.order' => ['required', 'integer'],
         ];
     }
+
 }

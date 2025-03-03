@@ -120,10 +120,11 @@ class GuideController extends Controller
     public function delete($id): RedirectResponse
     {
         return $this->handleDeleteResponse($id, function ($id) {
-            $response = $this->repository->findOrFail($id);
-            return $response->update(['status' => ActiveStatus::Deleted->value]);
+            $model = $this->repository->findOrFail($id);
+            return $model->delete();
         });
     }
+
 
     protected function getActionMultiple(): array
     {

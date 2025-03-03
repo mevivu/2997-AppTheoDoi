@@ -40,7 +40,7 @@ class GuideDataTable extends BaseDataTable
     public function query(): Builder
     {
         return $this->repository->getByQueryBuilder([
-            ['type', '=', GuideType::Strength],
+            ['type', '!=', GuideType::Develop],
             ['status', '!=', ActiveStatus::Deleted],
         ]);
     }
