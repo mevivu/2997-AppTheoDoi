@@ -27,6 +27,8 @@ class Product extends Model
         'link',
         /** Hình ảnh */
         'image',
+        /** Bộ sưu tập hình ảnh của sản phẩm */
+        'gallery',
         /** Danh mục sản phẩm */
         'product_catalog_id',
         /** Thương hiệu */

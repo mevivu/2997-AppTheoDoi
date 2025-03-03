@@ -45,6 +45,18 @@
                 </select>
             </div>
 
+            <div class="col-12 mt-3">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="ti ti-photo me-2"></i>
+                        {{ __('Thư viện ảnh') }}
+                    </div>
+                    <div class="card-body p-2">
+                        <x-input-gallery-ckfinder required name="gallery[]" type="multiple" />
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

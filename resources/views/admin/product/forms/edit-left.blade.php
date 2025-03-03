@@ -48,6 +48,23 @@
                     </select>
                 </div>
             </div>
+            <div class="col-12 mt-3">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="ti ti-photo me-2"></i>
+                        {{ __('Thư viện ảnh') }}
+                    </div>
+                    <div class="card-body row">
+                        <!-- longitude -->
+                        <div class="col-12">
+                            <div class="card-body p-2">
+                                <x-input-gallery-ckfinder required name="gallery[]" type="multiple"
+                                                          :value="json_decode($product->gallery)"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

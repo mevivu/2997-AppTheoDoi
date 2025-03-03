@@ -47,6 +47,7 @@ class ProductService implements ProductServiceInterface
         } else {
             $productCatalogs = [];
         }
+        $data['gallery'] = $data['gallery'] ? json_encode(explode(",", $data['gallery'][0])) : null;
 
         $product = $this->repository->create($data);
 
@@ -73,7 +74,7 @@ class ProductService implements ProductServiceInterface
         } else {
             $productCatalogs = [];
         }
-
+        $data['gallery'] = $data['gallery'] ? explode(",", $data['gallery'][0]) : null;
         $product = $this->repository->update($data['id'], $data);
 
         $this->repository->syncProductCatalogs($product, $productCatalogs);
