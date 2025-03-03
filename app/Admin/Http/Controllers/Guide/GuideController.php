@@ -82,7 +82,7 @@ class GuideController extends Controller
     {
         return $this->handleResponse($request, function ($request) {
             $guide = $this->service->store($request);
-            $this->service->storeSteps($guide, $request->input('steps', [])); // Lưu steps
+            $this->service->storeSteps($guide, $request->input('steps', []));
             return $guide;
         }, $this->route['index'], $this->route['edit']);
     }
