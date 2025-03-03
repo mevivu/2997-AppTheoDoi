@@ -23,6 +23,8 @@ class Product extends Model
         'description',
         /** Mã code */
         'code',
+        /** Link */
+        'link',
         /** Hình ảnh */
         'image',
         /** Danh mục sản phẩm */

@@ -18,6 +18,7 @@ class ProductRequest extends BaseRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'image' => ['required', 'string'],
+            'link' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'brand_id' => ['required', 'exists:App\Models\Brand,id'],
             'status' => ['required', new Enum(ProductStatus::class)],
@@ -31,6 +32,7 @@ class ProductRequest extends BaseRequest
         return [
             'id' => ['required', 'exists:App\Models\Product,id'],
             'name' => ['required', 'string', 'max:255'],
+            'link' => ['required', 'string'],
             'image' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'brand_id' => ['required', 'exists:App\Models\Brand,id'],

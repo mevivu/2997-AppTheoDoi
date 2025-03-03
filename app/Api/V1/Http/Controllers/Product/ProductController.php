@@ -23,8 +23,9 @@ class ProductController extends Controller
 {
     use AuthServiceApi, Response, UseLog;
 
-    protected $repository;
-    protected $service;
+    protected ProductRepositoryInterface $repository;
+
+    protected ProductServiceInterface $service;
 
     public function __construct(
         ProductRepositoryInterface $repository,

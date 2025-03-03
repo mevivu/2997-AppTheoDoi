@@ -17,8 +17,8 @@ class RatingPQRequest extends BaseRequest
     protected function methodGet(): array
     {
         return [
-            'limit' => 'required|integer|min:1',
-            'page' => 'required|integer|min:1',
+            'limit' => 'nullable|integer',
+            'page' => 'nullable|integer',
             'child_id' => ['required', 'numeric', 'exists:children,id'],
 
         ];

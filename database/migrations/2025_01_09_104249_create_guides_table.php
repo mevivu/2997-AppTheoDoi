@@ -19,6 +19,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
+            $table->text('note')->nullable();
             $table->enum('type', GuideType::getValues())->default(GuideType::Strength->value);
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Draft->value);
             $table->timestamps();

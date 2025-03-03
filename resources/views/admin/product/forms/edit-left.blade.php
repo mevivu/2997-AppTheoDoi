@@ -23,6 +23,15 @@
                     <textarea name="description" class="ckeditor visually-hidden">{{ $product->description }}</textarea>
                 </div>
             </div>
+            <!-- Link -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">
+                        <span class="ti ti-tag"></span>
+                        {{ __('Link') }}:</label>
+                    <x-input name="link" :value="$product->link" :required="true" placeholder="{{ __('Link') }}" />
+                </div>
+            </div>
 
             <!-- Brand -->
             <div class="col-12">

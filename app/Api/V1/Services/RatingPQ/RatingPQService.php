@@ -5,6 +5,8 @@ namespace App\Api\V1\Services\RatingPQ;
 
 use App\Admin\Repositories\Bmi\BmiRepositoryInterface;
 use App\Admin\Services\File\FileService;
+use App\Api\V1\Http\Resources\RatingPQ\RatingPQCollection;
+use App\Api\V1\Http\Resources\RatingPQ\RatingPQResource;
 use App\Api\V1\Repositories\Child\ChildRepositoryInterface;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
 use App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface;
@@ -71,14 +73,19 @@ class RatingPQService implements RatingPQServiceInterface
     public function index(Request $request)
     {
         $data = $request->validated();
-        $limit = $data['limit'] ?? 10;
+
+        $limit = $data['limit'] ?? null;
         $page = $data['page'] ?? 1;
 
         $query = $this->repository->getByQueryBuilder([
             'child_id' => $data['child_id'],
         ]);
-        return $query->paginate($limit, ['*'], 'page', $page);
+        $totalCount = $query->count();
+        $newLimit = $limit != null ? $limit : $totalCount;
+
+        return $query->paginate($newLimit, ['*'], 'page', $page);
     }
+
 
     /**
      * @throws Exception
@@ -211,7 +218,7 @@ class RatingPQService implements RatingPQServiceInterface
      */
     private function calculatePerformance($currentValue, $pastValue, $daysBetween): float|int
     {
-        if($daysBetween <= 0){
+        if ($daysBetween <= 0) {
             return 1;
         }
         $performanceRatio = $daysBetween / 365.3;

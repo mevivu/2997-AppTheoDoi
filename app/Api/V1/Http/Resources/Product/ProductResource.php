@@ -21,6 +21,7 @@ class ProductResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
+            'link' => $this->link,
             'image' => formatImageUrl($this->image),
             'brand_name' => $this->brand ? $this->brand->name : null,
             'product_catalog_name' => $this->productCatalogs->pluck('name')->toArray(),

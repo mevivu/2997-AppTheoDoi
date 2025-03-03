@@ -21,8 +21,8 @@ class ProductController extends Controller
 {
     use ResponseController;
 
-    protected $Repository;
-    protected $Service;
+    protected ProductRepositoryInterface $Repository;
+    protected ProductServiceInterface $Service;
 
     public function __construct(
         ProductRepositoryInterface $productRepository,

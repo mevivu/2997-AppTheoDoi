@@ -25,6 +25,15 @@
                     </textarea>
                 </div>
             </div>
+            <!-- Link -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">
+                        <span class="ti ti-tag"></span>
+                        {{ __('Link') }}:</label>
+                    <x-input name="link" :value="old('link')" :required="true" placeholder="{{ __('Link') }}" />
+                </div>
+            </div>
 
             <div class="col-md-6 col-12 mb-3">
                 <label class="form-label fw-bold">@lang('brand')</label>

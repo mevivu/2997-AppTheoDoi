@@ -23,6 +23,7 @@ class GuideResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
+            'note' => $this->note,
             'type' => $this->type ,
             'steps' => StepResource::collection($this->steps),
         ];
