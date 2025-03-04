@@ -6,5 +6,6 @@ use App\Admin\Repositories\EloquentRepositoryInterface;
 
 interface RatingRepositoryInterface extends EloquentRepositoryInterface
 {
+    public function exists(array $conditions): bool;
 
 }
