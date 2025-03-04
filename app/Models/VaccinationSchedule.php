@@ -52,7 +52,7 @@ class VaccinationSchedule extends Model
 
     public function child(): BelongsTo
     {
-        return $this->belongsTo(Child::class);
+        return $this->belongsTo(Child::class, 'child_id');
     }
 
 }

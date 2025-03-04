@@ -806,6 +806,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
+        'child_id' => [
+            'title' => 'Tên trẻ',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
         'vaccination_type_id' => [
             'title' => 'Loại tiêm chủng',
             'orderable' => false,

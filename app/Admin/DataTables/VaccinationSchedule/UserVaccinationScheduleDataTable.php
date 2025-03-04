@@ -27,6 +27,7 @@ class UserVaccinationScheduleDataTable extends BaseDataTable
     {
         $this->view = [
             'action' => 'admin.vaccinationSchedule.datatable.action',
+            'child_id' => 'admin.vaccinationSchedule.datatable.child',
             'name' => 'admin.vaccinationSchedule.datatable.name',
             'status' => 'admin.vaccinationSchedule.datatable.status',
             'vaccinationType' => 'admin.vaccinationSchedule.datatable.vaccinationType',
@@ -41,7 +42,7 @@ class UserVaccinationScheduleDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 2, 3, 4, 5];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6];
         $this->columnSearchDate = [3];
         $this->columnSearchSelect = [
             [
@@ -65,6 +66,11 @@ class UserVaccinationScheduleDataTable extends BaseDataTable
                     $subQuery->where('name', 'like', "%$keyword%");
                 });
             },
+            'child_id' => function ($query, $keyword) {
+            $query->whereHas('children', function ($subQuery) use ($keyword) {
+                $subQuery->where('name', 'like', "%$keyword%");
+            });
+            }
 
 
         ];
@@ -76,6 +82,11 @@ class UserVaccinationScheduleDataTable extends BaseDataTable
             'created_at' => '{{ $created_at ? format_datetime($created_at) : "" }}',
             'performed_on' => '{{ $created_at ? format_datetime($created_at) : "" }}',
             'name' => $this->view['name'],
+            'child_id' => function ($children) {
+                return view($this->view['child_id'], [
+                    'child' => $children->child,
+                ])->render();
+            },
 
             'vaccination_type_id' => function ($vaccinationType) {
                 return view($this->view['vaccinationType'], [
@@ -96,6 +107,6 @@ class UserVaccinationScheduleDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['action', 'vaccination_type_id', 'name', 'status', 'checkbox'];
+        $this->customRawColumns = ['action', 'vaccination_type_id', 'name', 'status', 'checkbox','child_id'];
     }
 }
