@@ -24,6 +24,10 @@ class VaccinationScheduleResource extends JsonResource
             'vaccination_status' => $this->vaccination_status,
             'performed_on' => format_date($this->performed_on),
             'image' => $this->image,
+            'vaccination_types' => [
+                'name' => $this->vaccinationType->name ?? null,
+            ],
+
         ];
     }
 }

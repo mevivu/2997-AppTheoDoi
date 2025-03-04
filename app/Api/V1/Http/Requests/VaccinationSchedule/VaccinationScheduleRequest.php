@@ -2,7 +2,7 @@
 
 namespace App\Api\V1\Http\Requests\VaccinationSchedule;
 
-use App\Admin\Http\Requests\BaseRequest;
+use App\Api\V1\Http\Requests\BaseRequest;
 use App\Enums\Vaccination\VaccinationStatus;
 use Illuminate\Validation\Rules\Enum;
 

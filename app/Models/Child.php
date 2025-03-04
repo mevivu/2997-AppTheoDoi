@@ -6,6 +6,7 @@ use App\Enums\ActiveStatus;
 use App\Enums\Assessment\AssessmentType;
 use App\Enums\Child\BornStatus;
 use App\Enums\OpenStatus;
+use App\Enums\Permission\PermissionType;
 use App\Enums\User\Gender;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -65,10 +66,9 @@ class Child extends Model
         return $this->hasMany(ClassGrade::class, 'child_id');
     }
 
-    public function vaccinationSchedules(): BelongsToMany
+    public function vaccinationSchedules(): HasMany
     {
-        return $this->belongsToMany(VaccinationSchedule::class, 'child_vaccination_schedule', 'child_id', 'vaccination_schedule_id')
-            ->withTimestamps();
+        return $this->hasMany(VaccinationSchedule::class);
     }
 
     protected static function boot(): void
@@ -98,6 +98,21 @@ class Child extends Model
                     'semester2_grade' => 0,
                     'full_year_grade' => 0,
                     'status' => ActiveStatus::Draft->value,
+                ]);
+            }
+
+            //create vaccination schedule admin
+            $vaccinationSchedules = VaccinationSchedule::where('type', PermissionType::ADMIN)->get();
+            foreach ($vaccinationSchedules as $schedule) {
+                VaccinationSchedule::create([
+                    'child_id' => $child->id,
+                    'name' => $schedule->name,
+                    'description' => $schedule->description,
+                    'image' => $schedule->image,
+                    'performed_on' => $schedule->performed_on,
+                    'vaccination_status' => $schedule->vaccination_status,
+                    'vaccination_type_id' => $schedule->vaccination_type_id,
+                    'type' => PermissionType::USER
                 ]);
             }
         });

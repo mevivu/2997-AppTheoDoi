@@ -19,6 +19,7 @@ return new class extends Migration
         Schema::create('vaccination_schedules', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('vaccination_type_id')->nullable();
+            $table->unsignedBigInteger('child_id')->nullable();
             $table->string('name');
             $table->text('description')->nullable();
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
@@ -28,6 +29,8 @@ return new class extends Migration
             $table->enum('vaccination_status', VaccinationStatus::getValues())->default(VaccinationStatus::NotVaccinated->value);
             $table->foreign('vaccination_type_id')->references('id')->on('vaccination_types')->onDelete('set null');
             $table->timestamps();
+            $table->foreign('child_id')->references('id')->on('children')->onDelete('set null');
+
         });
     }
 

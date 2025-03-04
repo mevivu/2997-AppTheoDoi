@@ -20,6 +20,8 @@ class VaccinationSchedule extends Model
     protected $fillable = [
         /* Loại tiêm chủng ID */
         'vaccination_type_id',
+        /* ID của bé */
+        'child_id',
         /* Tên */
         'name',
         /** Mô tả */
@@ -48,14 +50,9 @@ class VaccinationSchedule extends Model
         return $this->belongsTo(VaccinationType::class, 'vaccination_type_id');
     }
 
-    public function children(): BelongsToMany
+    public function child(): BelongsTo
     {
-        return $this->belongsToMany(
-            Child::class,
-            'child_vaccination_schedule',
-            'vaccination_schedule_id',
-            'child_id'
-        );
+        return $this->belongsTo(Child::class);
     }
 
 }

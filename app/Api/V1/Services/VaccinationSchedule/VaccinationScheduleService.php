@@ -44,14 +44,11 @@ class VaccinationScheduleService implements VaccinationScheduleServiceInterface
         $childId = $data['child_id'];
         $query = $this->repository->getByQueryBuilder(
             [
-                'type' => PermissionType::USER
+                'child_id' => $childId,
+                'type' => PermissionType::USER,
             ]
         );
-        if ($childId) {
-            $query = $query->whereHas('children', function ($q) use ($childId) {
-                $q->where('children.id', $childId);
-            });
-        }
+
         if (!empty($date)) {
             $query->whereDate('performed_on', '=', date('Y-m-d', strtotime($date)));
         }

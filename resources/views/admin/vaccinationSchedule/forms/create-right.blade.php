@@ -32,7 +32,7 @@
             @lang('loại')
         </div>
         <div class="card-body p-2">
-            <x-select name="type" :required="true">
+            <x-select name="type" disabled :required="true">
                 @foreach ($type as $key => $value)
                     <x-select-option :value="$key" :title="$value"/>
                 @endforeach
