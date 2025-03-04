@@ -290,15 +290,13 @@ class RatingPQService implements RatingPQServiceInterface
         }
         $heightWho = $who->height;
         $heightChangeWho = $who->height_change;
-        $baseLow = ($heightWho - $heightChangeWho);
-        $baseHigh = ($heightWho + $heightChangeWho);
-        $veryLow = $baseLow * 12;
-        $low = $baseLow * 6;
-        $slightlyLow = $baseLow * 3;
-        $normal = $baseLow;
-        $slightlyHigh = $baseHigh * 3;
-        $high = $baseHigh * 6;
-        $veryHigh = $baseHigh * 12;
+        $veryLow = $heightWho - $heightChangeWho * 12;
+        $low = $heightWho - $heightChangeWho * 6;
+        $slightlyLow = $heightWho - $heightChangeWho * 3;
+        $normal = $heightWho;
+        $slightlyHigh = $heightWho + $heightChangeWho * 3;
+        $high = $heightWho + $heightChangeWho * 6;
+        $veryHigh = $heightWho + $heightChangeWho * 12;
         if ($currentHeight <= $veryLow) {
             return 'Rất thấp';
         } elseif ($currentHeight > $veryLow && $currentHeight <= $low) {
