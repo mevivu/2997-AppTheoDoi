@@ -41,7 +41,6 @@ class GuideDataTable extends BaseDataTable
     {
         return $this->repository->getByQueryBuilder([
             ['type', '!=', GuideType::Develop],
-            ['status', '!=', ActiveStatus::Deleted],
         ]);
     }
 
