@@ -61,15 +61,9 @@ class VaccinationScheduleService implements VaccinationScheduleServiceInterface
     public function store(Request $request): object
     {
         $data = $request->validated();
-        $childId = $data['child_id'];
         $image = $data['image'];
         $data['image'] = $this->fileService->uploadAvatar('images/vaccinations', $image);
-        $vaccinationSchedule = $this->repository->create($data);
-        if ($vaccinationSchedule && $childId) {
-            $vaccinationSchedule->children()->attach($childId);
-        }
-
-        return $vaccinationSchedule;
+        return $this->repository->create($data);
     }
 
 
