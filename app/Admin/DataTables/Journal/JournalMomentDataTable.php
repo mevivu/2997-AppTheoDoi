@@ -40,7 +40,7 @@ class JournalMomentDataTable extends BaseDataTable
     {
         $this->columnAllSearch = [0, 1,2];
 
-        $this->columnSearchDate = [1,2];
+        $this->columnSearchDate = [2];
 
 
     }

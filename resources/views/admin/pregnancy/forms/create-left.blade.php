@@ -15,24 +15,7 @@
                           :data-url="route('admin.search.select.childrenBorn')">
                 </x-select>
             </div>
-            <!-- Start Date -->
-            <div class="col-md-6 col-12 mt-2">
-                <div class="mb-3">
-                    <label class="control-label">
-                        <span class="ti ti-calendar"></span>
-                        @lang('Ngày bắt đầu'):</label>
-                    <x-input type="date" name="start_date" :value="old('start_date')"/>
-                </div>
-            </div>
-            {{--  end_date--}}
-            <div class="col-md-6 col-12 mt-2">
-                <div class="mb-3">
-                    <label class="control-label">
-                        <span class="ti ti-calendar"></span>
-                        @lang('Ngày kết thúc'):</label>
-                    <x-input type="date" name="end_date" :value="old('end_date')"/>
-                </div>
-            </div>
+
             {{--  week--}}
             <div class="col-md-6 col-12 mt-2">
                 <div class="mb-3">
