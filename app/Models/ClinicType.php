@@ -5,12 +5,11 @@ namespace App\Models;
 use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Kalnoy\Nestedset\NodeTrait;
 
 /** Loại phòng khám */
 class ClinicType extends Model
 {
-    use HasFactory, NodeTrait;
+    use HasFactory;
 
     protected $table = 'clinic_types';
 
