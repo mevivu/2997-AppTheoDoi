@@ -1422,6 +1422,11 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
+        'is_born' => [
+            'title' => 'Tình trạng',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
         'status' => [
             'title' => 'status',
             'addClass' => 'text-center align-middle',

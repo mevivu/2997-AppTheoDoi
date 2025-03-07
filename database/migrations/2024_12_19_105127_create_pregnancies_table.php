@@ -17,8 +17,8 @@ return new class extends Migration
         Schema::create('pregnancies', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('child_id');
-            $table->date('start_date');
-            $table->date('end_date');
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->tinyInteger('week')->nullable();
             $table->float('weight')->nullable();
             $table->integer('length')->nullable();

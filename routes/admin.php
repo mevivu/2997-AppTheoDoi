@@ -877,6 +877,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::get('/ward', [App\Admin\Http\Controllers\Ward\WardSearchSelectController::class, 'selectSearch'])->name('ward');
             Route::get('/clinic-types', [App\Admin\Http\Controllers\ClinicType\ClinicTypeSearchSelectController::class, 'selectSearch'])->name('clinicType');
             Route::get('/children', [\App\Admin\Http\Controllers\Children\ChildrenSelectController::class, 'selectSearch'])->name('children');
+            Route::get('/children-born', [\App\Admin\Http\Controllers\Children\ChildrenUnBornSelectController::class, 'selectSearch'])->name('childrenBorn');
             Route::get('/subject', [App\Admin\Http\Controllers\Subject\SubjectSearchSelectController::class, 'selectSearch'])->name('subject');
             Route::get('/classes', [App\Admin\Http\Controllers\Classes\ClassesSearchSelectController::class, 'selectSearch'])->name('classes');
             Route::get('/vaccinationType', [\App\Admin\Http\Controllers\VaccinationType\VaccinationTypeSelectController::class, 'selectSearch'])->name('vaccinationType');
