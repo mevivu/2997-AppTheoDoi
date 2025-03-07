@@ -22,7 +22,7 @@
             {{ __('Tình trạng') }}
         </div>
         <div class="card-body p-2">
-            <x-select name="type" :required="true">
+            <x-select name="status" :required="true">
                 @foreach ($status as $key => $value)
                     <x-select-option :value="$key" :title="$value"/>
                 @endforeach

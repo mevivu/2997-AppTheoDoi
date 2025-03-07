@@ -6,11 +6,10 @@
             @lang('action')
         </div>
         <div class="card-body p-2 d-flex justify-content-between">
-            @if($notification->type == MessageType::PAYMENT)
+
                 <div class="d-flex align-items-center h-100 gap-2">
                     <x-button.submit :title="__('save')" name="submitter" value="save" />
                 </div>
-            @endif
 
             <x-button.modal-delete data-route="{{ route('admin.notification.delete', $notification->id) }}"
                 :title="__('delete')" />
