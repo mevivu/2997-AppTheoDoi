@@ -36,7 +36,7 @@ class NotificationRequest extends BaseRequest
             'title' => ['required', 'string'],
             'message' => ['required'],
             'status' => ['required', new Enum(NotificationStatus::class)],
-            'approval_status' => ['required', new Enum(ApprovalStatus::class)],
+            'approval_status' => ['nullable', new Enum(ApprovalStatus::class)],
         ];
     }
 
