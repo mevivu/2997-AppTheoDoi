@@ -1,4 +1,4 @@
-@php use App\Enums\Notification\MessageType; @endphp
+@php use App\Enums\Notification\MessageType;use App\Models\User; @endphp
 
 <div class="col-12 col-md-9">
     <div class="card">
@@ -42,8 +42,22 @@
                 </div>
             </div>
 
+            @if($notification->type  == MessageType::PAYMENT)
+                @php
+                    $user = User::find($notification->user_id_attribute);
+                @endphp
+                <div class="col-12">
+                    <div class="mb-3">
+                        <i class="ti ti-user"></i>
+                        <label class="control-label">@lang('fullname'):</label>
+                        <x-link :href="route('admin.user.edit', $user->id)" class="w" :title="$user->fullname" />
 
-        @if($notification->type  == MessageType::PAYMENT)
+                    </div>
+                </div>
+            @endif
+
+
+            @if($notification->type  == MessageType::PAYMENT)
                 <!-- package -->
                 <div class="col-12">
                     <div class="mb-3">
@@ -56,6 +70,8 @@
                     </div>
                 </div>
             @endif
+
+
         </div>
     </div>
 </div>
