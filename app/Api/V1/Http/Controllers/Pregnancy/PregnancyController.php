@@ -96,8 +96,6 @@ class PregnancyController extends Controller
      *
      * @authenticated
      * @bodyParam child_id int required ID của trẻ. Example: 1
-     * @bodyParam start_date date required Ngày bắt đầu thai kì. Example: 2024-01-01
-     * @bodyParam end_date date required Ngày dự sinh. Example: 2024-09-01
      * @bodyParam week int optional Tuần thai hiện tại. Example: 20
      * @bodyParam weight float optional Cân nặng của em bé. Example: 0.5
      * @bodyParam length int optional Chiều dài của em bé. Example: 30
@@ -158,8 +156,6 @@ class PregnancyController extends Controller
      * @authenticated
      * @bodyParam id int required ID của bản ghi thai kỳ cần cập nhật. Example: 1
      * @bodyParam child_id int required ID của trẻ. Example: 1
-     * @bodyParam start_date date required Ngày bắt đầu thai kỳ. Example: "2024-01-01"
-     * @bodyParam end_date date required Ngày dự sinh. Example: "2024-09-01"
      * @bodyParam week int optional Tuần thai hiện tại. Example: 20
      * @bodyParam weight float optional Cân nặng của em bé (kg). Example: 0.5
      * @bodyParam length int optional Chiều dài của em bé (cm). Example: 30

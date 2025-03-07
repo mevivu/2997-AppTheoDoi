@@ -98,7 +98,7 @@ return [
     |
      */
 
-    'output' => '/docs/api/v123',
+    'output' => '/2997-AppTheoDoi/docs/api/v1',
 
 
     /*

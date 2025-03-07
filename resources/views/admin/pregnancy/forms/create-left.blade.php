@@ -12,7 +12,7 @@
                     <span class="ti ti-user"></span>
                     @lang('Trẻ em'):</label>
                 <x-select class="select2-bs5-ajax" name="child_id" id="child_id"
-                          :data-url="route('admin.search.select.children')">
+                          :data-url="route('admin.search.select.childrenBorn')">
                 </x-select>
             </div>
             <!-- Start Date -->

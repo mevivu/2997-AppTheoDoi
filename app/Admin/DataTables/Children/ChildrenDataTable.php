@@ -5,6 +5,7 @@ namespace App\Admin\DataTables\Children;
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Children\ChildrenRepositoryInterface;
 use App\Admin\Traits\Roles;
+use App\Enums\Child\BornStatus;
 use App\Enums\Child\ChildStatus;
 use App\Enums\User\Gender;
 use Illuminate\Database\Eloquent\Builder;
@@ -29,6 +30,7 @@ class ChildrenDataTable extends BaseDataTable
             'action' => 'admin.children.datatable.action',
             'fullname' => 'admin.children.datatable.fullname',
             'status' => 'admin.children.datatable.status',
+            'is_born' => 'admin.children.datatable.born_status',
             'gender' => 'admin.children.datatable.gender',
             'user' => 'admin.children.datatable.user',
             'checkbox' => 'admin.common.checkbox',
@@ -38,7 +40,7 @@ class ChildrenDataTable extends BaseDataTable
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4, 5];
+        $this->columnAllSearch = [1, 2, 3, 4, 5,6];
 
         $this->columnSearchDate = [3];
 
@@ -49,6 +51,10 @@ class ChildrenDataTable extends BaseDataTable
             ],
             [
                 'column' => 5,
+                'data' => BornStatus::asSelectArray()
+            ],
+            [
+                'column' => 6,
                 'data' => ChildStatus::asSelectArray()
             ],
         ];
@@ -75,6 +81,7 @@ class ChildrenDataTable extends BaseDataTable
     {
         $this->customEditColumns = [
             'status' => $this->view['status'],
+            'is_born' => $this->view['is_born'],
             'fullname' => $this->view['fullname'],
             'user_id' => function ($children) {
                 return view($this->view['user'], [
@@ -103,7 +110,7 @@ class ChildrenDataTable extends BaseDataTable
             'user_id',
             'fullname',
             'checkbox',
-
+            'is_born'
         ];
     }
 
