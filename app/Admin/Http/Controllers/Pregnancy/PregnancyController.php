@@ -82,7 +82,7 @@ class PregnancyController extends Controller
         return view($this->view['edit'], [
             'response' => $response,
             'status' => ActiveStatus::asSelectArray(),
-            'breadcrumbs' => $this->crums->add('DS thai kì')->add('Cập nhật'),
+            'breadcrumbs' => $this->crums->add('Danh sách Thai kì', route($this->route['index']))->add('Cập nhật'),
         ]);
     }
 

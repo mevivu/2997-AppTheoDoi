@@ -57,7 +57,7 @@ class PregnancyDataTable extends BaseDataTable
     {
         return $this->repository->getByQueryBuilder(
             [
-                ['status', '!=', ActiveStatus::Deleted],
+               
             ]
         );
     }

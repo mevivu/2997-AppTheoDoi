@@ -89,7 +89,7 @@ class SliderController extends Controller
             [
                 'slider' => $response,
                 'status' => SliderStatus::asSelectArray(),
-                'breadcrumbs' => $this->crums->add(__('post_categories'), route($this->route['index']))->add(__('edit'))
+                'breadcrumbs' => $this->crums->add(__('slider'), route($this->route['index']))->add(__('edit'))
             ]
         );
 
