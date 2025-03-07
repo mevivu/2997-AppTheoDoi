@@ -18,7 +18,7 @@
                     <x-select-option
                         :option="$response->child_id"
                         :value="$response->child_id"
-                        :title="$response->child->fullname . '-' . $response->child->gender->value"
+                        :title="$response->child->fullname "
                         :selected="old('child_id') ? (old('child_id') == $child->child_id) : true"
                     />
                 </x-select>
