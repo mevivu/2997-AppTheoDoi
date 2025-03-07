@@ -68,6 +68,7 @@ class SliderDataTable extends BaseDataTable
     protected function setCustomEditColumns(): void
     {
         $this->customEditColumns = [
+            'action' => $this->view['action'],
             'items' => $this->view['items'],
             'status' => $this->view['status'],
             'name' => $this->view['editlink'],
@@ -89,7 +90,7 @@ class SliderDataTable extends BaseDataTable
     }
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['name', 'status', 'items'];
+        $this->customRawColumns = ['name', 'status', 'items','action'];
     }
 
 }

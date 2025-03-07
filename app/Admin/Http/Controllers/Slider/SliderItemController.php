@@ -4,6 +4,7 @@ namespace App\Admin\Http\Controllers\Slider;
 
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\DataTables\Slider\SliderItemDataTable;
+use App\Enums\Slider\SliderStatus;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -82,6 +83,7 @@ class SliderItemController extends Controller
         $sliderItem = $this->repository->findOrFailWithRelations($id);
         return view($this->view['edit'], [
             'sliderItem' => $sliderItem,
+            'status' => SliderStatus::asSelectArray(),
             'breadcrumbs' => $this->crums->add(__('SliderItem'))
         ]);
     }

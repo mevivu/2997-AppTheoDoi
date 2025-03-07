@@ -14,7 +14,7 @@ class SliderItemRequest extends BaseRequest
     protected function methodPost()
     {
         return [
-            'title' => ['required', 'string'],
+            'title' => ['required', 'string','unique:sliders,name'],
             'slider_id' => ['required', 'exists:App\Models\Slider,id'],
             'link' => ['nullable'],
             'position' => ['required', 'integer'],
@@ -28,7 +28,7 @@ class SliderItemRequest extends BaseRequest
         return [
             'id' => ['required', 'exists:App\Models\SliderItem,id'],
             'slider_id' => ['required', 'exists:App\Models\Slider,id'],
-            'title' => ['required', 'string'],
+            'title' => ['required', 'string','unique:sliders,name'],
             'link' => ['nullable'],
             'position' => ['required', 'integer'],
             'image' => ['required'],

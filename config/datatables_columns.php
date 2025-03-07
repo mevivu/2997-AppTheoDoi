@@ -1471,6 +1471,13 @@ return [
             'visible' => false,
             'addClass' => 'text-center align-middle'
         ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
     ],
     'slider_item' => [
         'title' => [
