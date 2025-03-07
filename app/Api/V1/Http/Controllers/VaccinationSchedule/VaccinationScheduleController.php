@@ -119,10 +119,14 @@ class VaccinationScheduleController extends Controller
      *         "name": "Name Vaccin 1",
      *         "description": "Vaccin for child",
      *         "vaccination_status": "vaccinated",
+     *         "vaccination_type_id": "1",
      *         "performed_on": "2024-12-30",
      *         "image": [
      *             "/public/uploads/files/fVDCLZyJbAaVBKzCHE1kEfyn2UDRY75e3vzHmzRp.png"
-     *         ]
+     *         ],
+     *          "vaccination_types": {
+     *              "name": "Sơ sinh"
+     *          }
      *     }
      * }
      *
