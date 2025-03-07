@@ -18,8 +18,6 @@ class PregnancyRequest extends BaseRequest
     {
         return [
             'child_id' => ['required', 'exists:App\Models\Child,id'],
-            'start_date' => ['required', 'date_format:Y-m-d'],
-            'end_date' => ['required', 'date_format:Y-m-d'],
             'week' => ['nullable', 'integer'],
             'weight' => ['nullable', 'numeric'],
             'length' => ['nullable', 'integer'],
@@ -35,8 +33,6 @@ class PregnancyRequest extends BaseRequest
         return [
             'id' => 'required|exists:App\Models\Pregnancy,id',
             'child_id' => ['required', 'exists:App\Models\Child,id'],
-            'start_date' => ['required', 'date_format:Y-m-d'],
-            'end_date' => ['required', 'date_format:Y-m-d'],
             'week' => ['nullable', 'integer'],
             'weight' => ['nullable', 'numeric'],
             'length' => ['nullable', 'integer'],

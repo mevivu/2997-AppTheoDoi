@@ -24,26 +24,6 @@
                 </x-select>
 
             </div>
-            <!-- Start Date -->
-            <div class="col-md-6 col-12 mt-2">
-                <div class="mb-3">
-                    <label class="control-label">
-                        <span class="ti ti-calendar"></span>
-                        @lang('Ngày bắt đầu'):</label>
-                    <x-input type="date" name="start_date"
-                             :value="isset($response->start_date) ? format_date($response->start_date, 'Y-m-d') : null"/>
-                </div>
-            </div>
-            {{--  end_date--}}
-            <div class="col-md-6 col-12 mt-2">
-                <div class="mb-3">
-                    <label class="control-label">
-                        <span class="ti ti-calendar"></span>
-                        @lang('Ngày kết thúc'):</label>
-                    <x-input type="date" name="end_date"
-                             :value="isset($response->end_date) ? format_date($response->end_date, 'Y-m-d') : null"/>
-                </div>
-            </div>
             {{--  week--}}
             <div class="col-md-6 col-12 mt-2">
                 <div class="mb-3">

@@ -17,10 +17,6 @@ class Pregnancy extends Model
     protected $fillable = [
         /** ID của đứa trẻ */
         'child_id',
-        /** Ngày bắt đầu thai kì */
-        'start_date',
-        /** Ngày dự sinh */
-        'end_date',
         /** Tuần thai hiện tại */
         'week',
         /** Cân nặng của em bé (kg) */
@@ -36,8 +32,6 @@ class Pregnancy extends Model
     ];
 
     protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
         'status' => ActiveStatus::class,
     ];
 

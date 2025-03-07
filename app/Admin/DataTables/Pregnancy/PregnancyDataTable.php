@@ -35,14 +35,13 @@ class PregnancyDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 2, 3, 4];
+        $this->columnAllSearch = [1, 2];
 
-        $this->columnSearchDate = [2];
 
         $this->columnSearchSelect = [
 
             [
-                'column' => 4,
+                'column' => 2,
                 'data' => ActiveStatus::asSelectArray()
             ],
         ];
@@ -90,8 +89,7 @@ class PregnancyDataTable extends BaseDataTable
                     'child' => $children->child,
                 ])->render();
             },
-            'start_date' => '{{ date("d-m-Y", strtotime($start_date)) }}',
-            'end_date' => '{{ date("d-m-Y", strtotime($end_date)) }}',
+
 
         ];
     }
