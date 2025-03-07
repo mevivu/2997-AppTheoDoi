@@ -5,6 +5,7 @@ namespace App\Api\V1\Http\Controllers\Product;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Exception\NotFoundException;
 use App\Api\V1\Http\Requests\Product\ProductRequest;
+use App\Api\V1\Http\Resources\Product\ProductCollection;
 use App\Api\V1\Http\Resources\Product\ProductResource;
 use App\Api\V1\Repositories\Product\ProductRepositoryInterface;
 use App\Api\V1\Services\Product\ProductServiceInterface;
@@ -84,7 +85,7 @@ class ProductController extends Controller
 
             $products = $this->service->getProducts($data);
 
-            return $this->jsonResponseSuccess(ProductResource::collection($products));
+            return $this->jsonResponseSuccess(new ProductCollection($products));
         } catch (\Exception $e) {
             $this->logError('Get products failed:', $e);
             return $this->jsonResponseError('Get products failed', 500);
