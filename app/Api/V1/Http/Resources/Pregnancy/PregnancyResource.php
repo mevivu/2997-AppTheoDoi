@@ -24,8 +24,6 @@ class PregnancyResource extends JsonResource
         $isContentVisible = $this->checkUserPackage($this->created_at);
         return [
             'id' => $this->id,
-            'start_date' => format_date($this->start_date),
-            'end_date' => format_date($this->end_date),
             'week' => $this->week,
             'weight' => $this->weight,
             'length' => $this->length,
