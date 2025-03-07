@@ -12,12 +12,19 @@
         </div>
     </div>
     <!-- Trạng thái -->
-    <div class="mb-3">
-        <label class="control-label">@lang('Trạng thái')</label>
-        <x-select name="status" :required="true">
-            @foreach(\App\Enums\Brand\BrandStatus::asSelectArray() as $key => $value)
-                <x-select-option value="{{ $key }}" title="{{ $value }}" />
-            @endforeach
-        </x-select>
+    <div class="card mb-3">
+        <div class="card-header">
+            @lang('Trạng thái')
+        </div>
+        <div class="card-body p-2">
+            <x-select name="status" :required="true">
+                @foreach(\App\Enums\Brand\BrandStatus::asSelectArray() as $key => $value)
+                    <x-select-option
+                        value="{{ $key }}"
+                        title="{{ $value }}"
+                        :selected="(string) old('status', $instance->status->value ?? '') === (string) $key" />
+                @endforeach
+            </x-select>
+        </div>
     </div>
 </div>
