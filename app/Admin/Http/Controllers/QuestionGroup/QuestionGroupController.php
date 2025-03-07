@@ -114,7 +114,6 @@ class QuestionGroupController extends Controller
         return [
             ActiveStatus::Active->value => ActiveStatus::Active->description(),
             ActiveStatus::Draft->value => ActiveStatus::Draft->description(),
-            ActiveStatus::Deleted->value => ActiveStatus::Deleted->description(),
         ];
     }
 

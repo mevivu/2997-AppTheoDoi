@@ -1,3 +1,3 @@
-<x-button.modal-delete class="btn-icon" data-route="{{ route('admin.exercise.delete', $id) }}">
-    <i class="ti ti-trash"></i>
-</x-button.modal-delete>
+{{--<x-button.modal-delete class="btn-icon" data-route="{{ route('admin.exercise.delete', $id) }}">--}}
+{{--    <i class="ti ti-trash"></i>--}}
+{{--</x-button.modal-delete>--}}

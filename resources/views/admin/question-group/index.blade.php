@@ -7,10 +7,10 @@
     <div class="page-body">
         <div class="container-xl">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách nhóm câu hỏi') }}</h2>
-                    <x-link :href="route('admin.question-group.create')" class="btn btn-primary"><i class="ti ti-plus"></i>{{ __('Thêm mới') }}</x-link>
-                </div>
+{{--                <div class="card-header justify-content-between">--}}
+{{--                    <h2 class="mb-0">{{ __('Danh sách nhóm câu hỏi') }}</h2>--}}
+{{--                    <x-link :href="route('admin.question-group.create')" class="btn btn-primary"><i class="ti ti-plus"></i>{{ __('Thêm mới') }}</x-link>--}}
+{{--                </div>--}}
                 <div class="card-body">
                     <div class="card-body">
                         <x-form id="formMultiple" :action="route('admin.question-group.multiple')" type="post" :validate="true">
