@@ -42,19 +42,29 @@
                 </div>
             </div>
 
-            @if($notification->type  == MessageType::PAYMENT)
+            @if($notification->type == MessageType::PAYMENT)
                 @php
                     $user = User::find($notification->user_id_attribute);
                 @endphp
-                <div class="col-12">
-                    <div class="mb-3">
-                        <i class="ti ti-user"></i>
-                        <label class="control-label">@lang('fullname'):</label>
-                        <x-link :href="route('admin.user.edit', $user->id)" class="w" :title="$user->fullname" />
 
+                @if($user)
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <i class="ti ti-user"></i>
+                            <label class="control-label">@lang('fullname'):</label>
+                            <x-link :href="route('admin.user.edit', $user->id)" class="w" :title="$user->fullname"/>
+                        </div>
                     </div>
-                </div>
+                @else
+                    <div class="col-12">
+                        <div class="mb-3">
+                            <i class="ti ti-user"></i>
+                            <label class="control-label">@lang('User not found')</label>
+                        </div>
+                    </div>
+                @endif
             @endif
+
 
 
             @if($notification->type  == MessageType::PAYMENT)
