@@ -53,7 +53,7 @@ class RatingPQController extends Controller
             [
                 'actionMultiple' => $actionMultiple,
                 'status' => ActiveStatus::asSelectArray(),
-                'breadcrumbs' => $this->crums->add('Danh sách Thai kì'),
+                'breadcrumbs' => $this->crums->add('Danh sách Đánh giá'),
             ]
         );
     }

@@ -8,7 +8,7 @@
         <div class="container-xl">
             <div class="card custom-shadow">
                 <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách Thai kì') }}</h2>
+                    <h2 class="mb-0">{{ __('Danh sách Đánh giá') }}</h2>
                     <x-link :href="route('admin.pregnancy.create')" class="btn btn-primary">
                         <i class="ti ti-plus"></i>
                         <span class="ms-1">@lang('add')</span>

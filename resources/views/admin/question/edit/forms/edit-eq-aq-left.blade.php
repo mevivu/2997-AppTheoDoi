@@ -48,6 +48,18 @@
                 </div>
             </div>
 
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="control-label">{{ __('Nhóm tuổi') }}:</label>
+                    <x-select name="question[age_group]" :required="true">
+                        @foreach ($age_group as $key => $value)
+                            <x-select-option :value="$key" :title="$value" :selected="$response->age_group && $response->age_group->value == $key" />
+                        @endforeach
+                    </x-select>
+                </div>
+            </div>
+
+
             <div class="col-12">
                 <div class="d-flex align-items-center justify-content-between">
                     <label

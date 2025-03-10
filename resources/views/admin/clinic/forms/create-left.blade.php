@@ -1,3 +1,8 @@
+<style>
+    .select2-bs5-ajax {
+        width: 100% !important;
+    }
+</style>
 <div class="col-12 col-md-9">
     <div class="card custom-shadow">
         <div class="row card-body">

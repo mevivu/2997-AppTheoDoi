@@ -12,7 +12,7 @@ class SupportRequest extends BaseRequest
     protected function methodPost()
     {
         return [
-            'title' => ['required'],
+            'title' => ['required', 'unique:supports,title'],
             'content' => ['required'],
             'type' => ['required', new Enum(SupportType::class)],
             'status' => ['required', new Enum(ActiveStatus::class)],
@@ -23,7 +23,7 @@ class SupportRequest extends BaseRequest
     {
         return [
             'id' => ['required', 'exists:App\Models\Support,id'],
-            'title' => ['required'],
+            'title' => ['required', 'unique:supports,title,' . $this->id],
             'content' => ['required'],
             'type' => ['required', new Enum(SupportType::class)],
             'status' => ['required', new Enum(ActiveStatus::class)],

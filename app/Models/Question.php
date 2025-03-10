@@ -22,6 +22,8 @@ class Question extends Model
         'question_group_id',
         /* Tuổi - Áp dụng cho IQ */
         'age',
+        /* Tuổi áp dụng - Áp dụng cho EQ, AQ */
+        'age_group',
         /* Câu hỏi */
         'question',
         /* Loại câu hỏi */
@@ -33,7 +35,7 @@ class Question extends Model
     protected $casts = [
         'status' => ActiveStatus::class,
         'question_type' => QuestionType::class,
-
+        'age_group' => AgeGroup::class,
     ];
 
     public function group(): BelongsTo
