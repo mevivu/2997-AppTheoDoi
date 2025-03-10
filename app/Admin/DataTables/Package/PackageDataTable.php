@@ -38,7 +38,7 @@ class PackageDataTable extends BaseDataTable
     {
         return $this->repository->getByQueryBuilder(
             [
-                ['status', '!=', ActiveStatus::Deleted],
+
             ]
         );
     }

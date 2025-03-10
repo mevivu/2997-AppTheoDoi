@@ -20,7 +20,7 @@ class PackageRequest extends BaseRequest
         return [
             'name' => ['required', 'string'],
             'description' => ['nullable', 'array'],
-            'description.*' => ['required', 'string'],
+            'description.*' => ['nullable', 'string'],
             'price' => ['required', 'string'],
             'days' => ['required', 'numeric'],
             'type' => ['required', new Enum(PackageType::class)],
