@@ -3,6 +3,7 @@
 namespace App\Admin\Http\Requests\PostCategory;
 
 use App\Admin\Http\Requests\BaseRequest;
+use App\Admin\Rules\PostCategoryNameUnique;
 use App\Enums\PostCategory\PostCategoryStatus;
 use BenSampo\Enum\Rules\EnumValue;
 use App\Admin\Rules\Category\CategoryParent;
@@ -17,7 +18,7 @@ class PostCategoryRequest extends BaseRequest
     protected function methodPost(): array
     {
         return [
-            'name' => ['required', 'string'],
+            'name' => ['required', 'string', new PostCategoryNameUnique()],
             'desc' => ['required', 'string'],
             'avatar' => ['required', 'string'],
             'parent_id' => ['nullable', 'exists:App\Models\PostCategory,id'],
@@ -31,7 +32,7 @@ class PostCategoryRequest extends BaseRequest
         return [
             'id' => ['required', 'exists:App\Models\PostCategory,id'],
             'desc' => ['required', 'string'],
-            'name' => ['required', 'string'],
+            'name' => ['required', 'string', new PostCategoryNameUnique($this->id)],
             'position' => ['nullable', 'integer'],
             'avatar' => ['required', 'string'],
             'status' => ['required', new EnumValue(PostCategoryStatus::class, false)]

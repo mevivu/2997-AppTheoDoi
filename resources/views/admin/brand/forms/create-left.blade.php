@@ -6,27 +6,28 @@
             <div class="col-12">
                 <div class="mb-3">
                     <label class="control-label">@lang('Tên thương hiệu')</label>
-                    <x-input name="name" :value="old('name')" :required="true" :placeholder="__('Tên thương hiệu')" />
+                    <x-input type="text" name="name" :value="old('name')" :required="true"
+                             :placeholder="__('Tên thương hiệu')"/>
+                </div>
+            </div>
+
+
+            <!-- Quốc gia -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('Quốc gia')</label>
+                    <x-input type="text" name="country" :value="old('country')" :required="false"
+                             :placeholder="__('Quốc gia thương hiệu')"/>
                 </div>
             </div>
 
             <!-- Mô tả -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Mô tả')</label>
-                    <x-input name="description" :value="old('description')" :required="false" :placeholder="__('Mô tả thương hiệu')" />
+                    <label class="control-label">{{ __('Mô tả') }}:</label>
+                    <textarea name="description" class="ckeditor visually-hidden">{{old('description')}}</textarea>
                 </div>
             </div>
-
-            <!-- Quốc gia -->
-            <div class="col-12">
-                <div class="mb-3">
-                    <label class="control-label">@lang('Quốc gia')</label>
-                    <x-input name="country" :value="old('country')" :required="false" :placeholder="__('Quốc gia thương hiệu')" />
-                </div>
-            </div>
-
-
 
         </div>
     </div>
