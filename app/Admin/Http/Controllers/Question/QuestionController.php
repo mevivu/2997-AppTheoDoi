@@ -12,6 +12,7 @@ use App\Admin\Repositories\QuestionGroup\QuestionGroupRepositoryInterface;
 use App\Admin\Services\Question\QuestionServiceInterface;
 use App\Enums\ActiveStatus;
 use App\Enums\Answser\AnswerType;
+use App\Enums\Question\AgeGroup;
 use App\Enums\Question\QuestionType;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -150,6 +151,7 @@ class QuestionController extends Controller
             'answer_types' => AnswerType::asSelectArray(),
             'status' => ActiveStatus::asSelectArray(),
             'types' => QuestionType::asSelectArray(),
+            'age_group' => AgeGroup::asSelectArray(),
             'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
             'breadcrumbs' => $this->crums->add('Danh sách câu hỏi EQ', route($this->route['eq']))->add('Thêm mới'),
         ]);
@@ -161,6 +163,7 @@ class QuestionController extends Controller
             'answer_types' => AnswerType::asSelectArray(),
             'status' => ActiveStatus::asSelectArray(),
             'types' => QuestionType::asSelectArray(),
+            'age_group' => AgeGroup::asSelectArray(),
             'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
             'breadcrumbs' => $this->crums->add('Danh sách câu hỏi AQ', route($this->route['aq']))->add('Thêm mới'),
         ]);
@@ -186,6 +189,7 @@ class QuestionController extends Controller
             'answer_types' => AnswerType::asSelectArray(),
             'status' => ActiveStatus::asSelectArray(),
             'types' => QuestionType::asSelectArray(),
+            'age_group' => AgeGroup::asSelectArray(),
             'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
             'breadcrumbs' => $this->crums->add('Danh sách câu hỏi', route($this->route['eq']))->add('Cập nhật'),
         ]);
