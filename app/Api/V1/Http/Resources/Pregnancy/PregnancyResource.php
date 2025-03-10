@@ -30,6 +30,7 @@ class PregnancyResource extends JsonResource
             'head_circumference' => $this->head_circumference,
             'image' => formatImageUrl($this->image),
             'created_at' => format_date($this->created_at),
+            'child_id' => $this->child_id,
             'checked' => $isContentVisible
 
         ];
