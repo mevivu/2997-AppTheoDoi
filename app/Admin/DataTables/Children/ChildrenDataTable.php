@@ -125,6 +125,9 @@ class ChildrenDataTable extends BaseDataTable
             'fullname' => function ($query, $keyword) {
                 $query->where('fullname', 'like', "%$keyword%");
             },
+            'is_born' => function ($query, $keyword) {
+                $query->where('is_born', $keyword);
+            },
 
         ];
     }
