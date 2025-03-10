@@ -52,7 +52,7 @@
                 </div>
             </div>
 
-            <div class="col-12">
+                <div class="col-12">
                 <div class="d-flex align-items-center justify-content-between">
                     <label
                         class="control-label">{{ __('Câu trả lời (Nhập điểm đánh giá ở mục đầu tiên của mỗi câu trả lời)') }}:</label>
