@@ -24,8 +24,8 @@ class ProductRequest extends BaseRequest
             'status' => ['required', new Enum(ProductStatus::class)],
             'gallery' => ['required', 'array', 'min:1'],
             'gallery.*' => ['required', 'string'],
-            'product_catalog_id' => ['nullable', 'array'],
-            'product_catalog_id.*' => ['nullable', 'exists:App\Models\ProductCatalog,id'],
+            'product_catalog_id' => ['required', 'array'],
+            'product_catalog_id.*' => ['required', 'exists:App\Models\ProductCatalog,id'],
         ];
     }
 
@@ -41,8 +41,8 @@ class ProductRequest extends BaseRequest
             'description' => ['nullable', 'string'],
             'brand_id' => ['required', 'exists:App\Models\Brand,id'],
             'status' => ['required', new Enum(ProductStatus::class)],
-            'product_catalog_id' => ['nullable', 'array'],
-            'product_catalog_id.*' => ['nullable', 'exists:App\Models\ProductCatalog,id'],
+            'product_catalog_id' => ['required', 'array'],
+            'product_catalog_id.*' => ['required', 'exists:App\Models\ProductCatalog,id'],
         ];
     }
     public function messages(): array
