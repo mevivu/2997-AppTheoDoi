@@ -1,5 +1,5 @@
 <div class="col-12 col-md-9">
-    <div class="card">
+    <div class="card custom-shadow">
         <div class="card-header justify-content-center">
             @if ($response->type->value == \App\Enums\Support\SupportType::HelpCenter->value)
                 <h2 class="mb-0">{{ __('Trung tâm trợ giúp') }}</h2>

@@ -1,7 +1,7 @@
 @php use App\Enums\Notification\MessageType;use App\Models\User; @endphp
 
 <div class="col-12 col-md-9">
-    <div class="card">
+    <div class="card custom-shadow">
         <div class="row card-body">
             <div class="col-12">
                 <div class="mb-3">

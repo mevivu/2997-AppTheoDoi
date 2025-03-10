@@ -1,7 +1,7 @@
 <div class="col-12 col-md-3">
 
 
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             {{ __('Hoạt động') }}
         </div>
@@ -26,7 +26,7 @@
             </div>
         </div>
     </div>
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             <span class="ti ti-typography"></span>
             @lang('loại')
@@ -40,7 +40,7 @@
         </div>
     </div>
 
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             <span class="ti ti-photo me-1"></span>
             @lang('avatar')

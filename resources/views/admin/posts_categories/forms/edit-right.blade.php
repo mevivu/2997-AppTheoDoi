@@ -1,5 +1,5 @@
 <div class="col-12 col-md-3">
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             {{ __('Đăng') }}
         </div>
@@ -14,7 +14,7 @@
         </div>
     </div>
     <!-- status -->
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             @lang('status')
         </div>
@@ -28,7 +28,7 @@
     </div>
     <!-- avatar -->
     <div class="col-12">
-        <div class="card mb-3">
+        <div class="card mb-3 custom-shadow">
             <div class="card-header">
                 @lang('avatar')
             </div>

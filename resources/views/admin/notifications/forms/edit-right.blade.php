@@ -1,6 +1,6 @@
 @php use App\Enums\Notification\MessageType; @endphp
 <div class="col-12 col-md-3">
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header gap-1">
             <i class="ti ti-settings"></i>
             @lang('action')
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header gap-1">
             <i class="ti ti-settings-cancel"></i>
             @lang('status')
@@ -30,7 +30,7 @@
         </div>
     </div>
     @if($notification->type == MessageType::PAYMENT)
-        <div class="card mb-3">
+        <div class="card mb-3 custom-shadow">
             <div class="card-header gap-1">
                 <i class="ti ti-settings-cancel"></i>
                 @lang('ADMIN xác nhận')
@@ -50,7 +50,7 @@
     @if($notification->type == MessageType::PAYMENT)
         <!-- payment_confirmation_image -->
         <div class="col-12">
-            <div class="card mb-3">
+            <div class="card mb-3 custom-shadow">
                 <div class="card-header">
                     <span class="ti ti-photo me-1"></span>
                     @lang('avatar')

@@ -1,5 +1,5 @@
 <div class="col-12 col-md-9">
-    <div class="card">
+    <div class="card custom-shadow">
         <div class="card-header justify-content-between">
             <h2 class="mb-0">{{ __('Thông tin slider') }}</h2>
             <x-link :href="route('admin.slider.item.index', $slider->id)" :title="__('Các Slider items')" />

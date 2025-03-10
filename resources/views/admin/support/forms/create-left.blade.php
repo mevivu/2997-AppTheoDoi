@@ -1,5 +1,5 @@
 <div class="col-12 col-md-9">
-    <div class="card">
+    <div class="card custom-shadow">
         <div class="card-header justify-content-center">
             <h2 class="mb-0">{{ __('Hỗ trợ khách hàng') }}</h2>
         </div>

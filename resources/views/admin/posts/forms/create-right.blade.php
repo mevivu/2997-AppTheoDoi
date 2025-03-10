@@ -1,5 +1,5 @@
 <div class="col-12 col-md-3">
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             <span class="ti ti-upload me-1"></span>
             {{ __('Đăng') }}
@@ -14,7 +14,7 @@
             </div>
         </div>
     </div>
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             <span class="ti ti-category me-1"></span>
             {{ __('Danh mục') }}
@@ -25,7 +25,7 @@
             @endforeach
         </div>
     </div>
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             <span class="ti ti-tag me-1"></span>
             {{ __('Nổi bật') }}
@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             <span class="ti ti-status-change me-1"></span>
             {{ __('Trạng thái') }}
@@ -51,7 +51,7 @@
         </div>
     </div>
 
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             <span class="ti ti-photo me-1"></span>
             {{ __('Ảnh đại diện') }}

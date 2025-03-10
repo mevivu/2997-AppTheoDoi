@@ -1,5 +1,5 @@
 <div class="col-12 col-md-3">
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             <span class="ti ti-upload me-1"></span>
             {{ __('Hành động') }}
@@ -15,7 +15,7 @@
     </div>
 
             <!-- Product Catalog -->
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             @lang('Danh mục sản phẩm')
         </div>
@@ -34,7 +34,7 @@
     </div>
 
             <!-- Status -->
-            <div class="card mb-3">
+            <div class="card mb-3 custom-shadow">
                 <div class="card-header">
                     @lang('Trạng thái')
                 </div>
@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <div class="card mb-3">
+            <div class="card mb-3 custom-shadow">
                 <div class="card-header">
                     <span class="ti ti-photo me-1"></span>
                     {{ __('Ảnh đại diện') }}

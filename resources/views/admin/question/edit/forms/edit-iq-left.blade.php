@@ -1,6 +1,6 @@
 @php use App\Enums\Answser\AnswerType; @endphp
 <div class="col-12 col-md-9">
-    <div class="card">
+    <div class="card custom-shadow">
         <div class="card-header justify-content-center">
             <h2 class="mb-0">{{ __('Thông tin câu hỏi IQ') }}</h2>
         </div>

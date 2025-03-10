@@ -1,5 +1,5 @@
 <div class="col-12 col-md-3">
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             {{ __('Đăng') }}
         </div>
@@ -14,7 +14,7 @@
     </div>
 
 
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             <span class="ti ti-status-change me-1"></span>
             {{ __('Tình trạng') }}
@@ -27,7 +27,7 @@
             </x-select>
         </div>
     </div>
-    <div class="card mb-3">
+    <div class="card mb-3 custom-shadow">
         <div class="card-header">
             <span class="ti ti-photo me-1"></span>
             {{ __('Ảnh đại diện') }}
