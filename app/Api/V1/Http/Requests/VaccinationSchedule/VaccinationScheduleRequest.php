@@ -3,6 +3,7 @@
 namespace App\Api\V1\Http\Requests\VaccinationSchedule;
 
 use App\Api\V1\Http\Requests\BaseRequest;
+use App\Api\V1\Rules\ValidChild;
 use App\Enums\Vaccination\VaccinationStatus;
 use Illuminate\Validation\Rules\Enum;
 
@@ -32,7 +33,7 @@ class VaccinationScheduleRequest extends BaseRequest
             'description' => ['nullable', 'string'],
             'performed_on' => ['nullable', 'date_format:d-m-Y'],
             'image' => ['file', 'image', 'max:5000'],
-            'child_id' => ['required', 'exists:children,id'],
+            'child_id' => ['required', 'integer', new ValidChild()],
         ];
     }
 
