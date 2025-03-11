@@ -47,6 +47,15 @@ class NotificationRequest extends BaseRequest
         ];
     }
 
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if ($this->has('approval_status') && $this->input('approval_status') == ApprovalStatus::PENDING->value) {
+                    $validator->errors()->add('approval_status', __('Trạng thái phê duyệt không thể là Chưa duyệt.'));
+            }
+        });
+    }
+
     public function messages()
     {
         return [
@@ -61,6 +70,7 @@ class NotificationRequest extends BaseRequest
             'status.enum' => 'Trạng thái không hợp lệ',
             'id.required' => 'Id không được để trống',
             'id.exists' => 'Id không hợp lệ',
+            'approval_status.enum' => 'Trạng thái phê duyệt không hợp lệ',
         ];
     }
 }
