@@ -99,7 +99,7 @@ class ClinicController extends Controller
                 'instance' => $instance,
                 'dayOfWeek' => DayOfWeek::cases(),
                 'status' => ActiveStatus::asSelectArray(),
-                'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),
+                'breadcrumbs' => $this->crums->add(__('DS Phòng khám'), route($this->route['index']))->add(__('edit')),
             ],
         );
 

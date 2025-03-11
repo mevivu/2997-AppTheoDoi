@@ -45,15 +45,15 @@ class PackageDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [0, 1, 2, 3];
-        $this->columnSearchDate = [3];
+        $this->columnAllSearch = [ 1, 2, 3, 4];
+        $this->columnSearchDate = [4];
         $this->columnSearchSelect = [
             [
-                'column' => 1,
+                'column' => 2,
                 'data' => PackageType::asSelectArray()
             ],
             [
-                'column' => 2,
+                'column' => 3,
                 'data' => ActiveStatus::asSelectArray()
             ],
 
@@ -72,13 +72,14 @@ class PackageDataTable extends BaseDataTable
             'name' => $this->view['name'],
             'status' => $this->view['status'],
             'type' => $this->view['type'],
-            'checkbox' => $this->view['checkbox'],
         ];
     }
 
     protected function setCustomAddColumns(): void
     {
-        $this->customAddColumns = [];
+        $this->customAddColumns = [
+            'checkbox' => $this->view['checkbox'],
+        ];
     }
 
     protected function setCustomRawColumns(): void
