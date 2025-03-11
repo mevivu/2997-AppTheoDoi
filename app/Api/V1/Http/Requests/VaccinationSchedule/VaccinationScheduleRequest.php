@@ -33,7 +33,6 @@ class VaccinationScheduleRequest extends BaseRequest
             'performed_on' => ['nullable', 'date_format:d-m-Y'],
             'image' => ['file', 'image', 'max:5000'],
             'child_id' => ['required', 'exists:children,id'],
-            'vaccination_type_id' => ['required', 'exists:vaccination_types,id'],
         ];
     }
 

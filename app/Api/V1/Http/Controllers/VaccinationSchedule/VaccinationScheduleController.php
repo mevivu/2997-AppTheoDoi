@@ -108,7 +108,6 @@ class VaccinationScheduleController extends Controller
      * @bodyParam image string optional Đường dẫn hình ảnh liên quan đến lịch tiêm chủng. Ví dụ: "/images/vaccines/example.jpg"
      * @bodyParam performed_on string required Ngày thực hiện tiêm chủng. Ví dụ: "2024-12-30"
      * @bodyParam vaccination_status string required Trạng thái tiêm chủng. Ví dụ: "not_vaccinated", "vaccinated"
-     * @bodyParam vaccination_type_id int required ID của loại vắc xin. Ví dụ: 1
      *
      * @response 201 {
      *     "status": 200,
@@ -167,7 +166,6 @@ class VaccinationScheduleController extends Controller
      * @bodyParam description string optional Nội dung chi tiết của lịch tiêm chủng. Ví dụ: "Tiêm phòng viêm gan B"
      * @bodyParam performed_on string optional Ngày thực hiện tiêm chủng. Ví dụ: "2024-12-30"
      * @bodyParam vaccination_status string optional Trạng thái tiêm chủng. Ví dụ: "not_vaccinated", "vaccinated"
-     * @bodyParam vaccination_type_id int optional ID của loại vắc xin. Ví dụ: 1
      * @bodyParam image string optional Đường dẫn hình ảnh mới liên quan đến lịch tiêm chủng. Ví dụ: "/images/vaccines/updated_image.jpg"
      *
      * @response 200 {
