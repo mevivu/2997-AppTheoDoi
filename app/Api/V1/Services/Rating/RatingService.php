@@ -57,7 +57,7 @@ class RatingService implements RatingServiceInterface
         $type = $data['type'];
 
         $query = $this->repository->getByQueryBuilder([
-            'child_id' => $data['child_id'],
+            'child_id' => request()->get('child_id'),
             'type' => $type,
         ]);
         return $query->paginate($limit, ['*'], 'page', $page);
