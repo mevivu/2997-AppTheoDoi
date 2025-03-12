@@ -164,7 +164,7 @@ class RatingPQService implements RatingPQServiceInterface
         $nearestHeight = $nearestRatingPQ->height ?? 0;
         $nearestAssessmentDate = $nearestRatingPQ ? $nearestRatingPQ->assessment_date : $currentDate;
 
-        $heightIncreaseInOneYear = $nearestHeight - $currenHeight;
+        $heightIncreaseInOneYear = abs($currenHeight - $nearestHeight );
         $diffInDaysCurrent = $currentDate->diffInDays($nearestAssessmentDate);
         $diffInDaysBirth = $childBirthDate->diffInDays($nearestAssessmentDate);
         $monthCompare = $diffInDaysCurrent / 30.5;
