@@ -2,8 +2,7 @@
 
 namespace App\Admin\Http\Requests\Question;
 
-use App\Api\V1\Http\Requests\BaseRequest;
-use App\Enums\ActiveStatus;
+use App\Admin\Http\Requests\BaseRequest;
 use App\Enums\Answser\AnswerType;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\Question\QuestionType;
@@ -17,7 +16,7 @@ class QuestionEqAqRequest extends BaseRequest
     {
         $rules = [
             'question.question_type' => ['required', new Enum(QuestionType::class)],
-            'question.question_group_id' => 'required|exists:question_groups,id',
+            'question.question_group_id' => 'nullable|exists:question_groups,id',
             'question.question' => 'required',
             'question.question_image' => 'nullable',
             'question.age_group' => ['required', new Enum(AgeGroup::class)],
@@ -42,7 +41,7 @@ class QuestionEqAqRequest extends BaseRequest
         $rules = [
             'question.id' => 'required|exists:questions,id',
             'question.question_type' => ['required', new Enum(QuestionType::class)],
-            'question.question_group_id' => 'required|exists:question_groups,id',
+            'question.question_group_id' => 'nullable|exists:question_groups,id',
             'question.question' => 'required',
             'question.question_image' => 'nullable',
             'question.age_group' => ['required', new Enum(AgeGroup::class)],
