@@ -258,6 +258,7 @@ class QuizController extends Controller
         }
 
         $view = $instance->type == QuestionType::IQ ? $this->view['edit-iq'] : $this->view['edit'];
+
         return view(
             $view,
             [
