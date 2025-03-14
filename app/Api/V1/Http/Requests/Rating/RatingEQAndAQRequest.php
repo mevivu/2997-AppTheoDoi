@@ -20,7 +20,7 @@ class RatingEQAndAQRequest extends BaseRequest
         return [
             'child_id' => ['required', 'integer', new ValidChild()],
             'answers' => 'required|array',
-            'tag' => 'required|array',
+            'tag' => 'required',
             'answers.*.question_id' => 'required|integer|exists:questions,id',
             'answers.*.answer_id' => 'required|integer|exists:answers,id',
             'type' => ['required', new Enum(QuestionType::class)],
