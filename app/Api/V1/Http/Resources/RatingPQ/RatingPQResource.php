@@ -4,6 +4,7 @@ namespace App\Api\V1\Http\Resources\RatingPQ;
 
 use App\Api\V1\Http\Resources\Child\ChildResource;
 use App\Api\V1\Support\CheckPackage;
+use App\Enums\User\Gender;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
@@ -13,6 +14,7 @@ use JsonSerializable;
 class RatingPQResource extends JsonResource
 {
     use CheckPackage;
+
     /**
      * Transform the resource into an array.
      *
@@ -23,6 +25,17 @@ class RatingPQResource extends JsonResource
     public function toArray($request): array|JsonSerializable|Arrayable
     {
         $isContentVisible = $this->checkUserPackage($this->assessment_date);
+        $child = $this->child;
+        $heightFather = $child->user->father_height;
+        $heightMother = $child->user->mother_height;
+        $predictedHeightMale = ($heightFather + $heightMother + 13) / 2 + 5;
+        $predictedHeightFemale = ($heightMother + $heightMother - 13) / 2 + 3;
+        if($child->gender == Gender::Male){
+            $heightMature = $predictedHeightMale * 0.3 + $this->height * 0.7;
+        }
+        else{
+            $heightMature = $predictedHeightFemale * 0.3 + $this->height * 0.7;
+        }
         return [
             'id' => $this->id,
             'assessment_date' => format_date($this->assessment_date),
@@ -34,6 +47,7 @@ class RatingPQResource extends JsonResource
             'bmi_result' => $this->bmi_result,
             'height_result' => $this->height_result,
             'height_change' => round($this->height_change, 2),
+            'height_mature' =>$heightMature,
             'child' => new ChildResource($this->child),
             'checked' => $isContentVisible
 
