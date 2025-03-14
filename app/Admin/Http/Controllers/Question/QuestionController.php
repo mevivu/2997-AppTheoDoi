@@ -188,7 +188,7 @@ class QuestionController extends Controller
     {
         $response = $this->repository->find($id);
         $type = $response->answers->first()->type->value;
-        $back = $response->question_type == QuestionType::EQ->value ? route('admin.question.eq'):route('admin.question.aq');
+        $back = $response->question_type == QuestionType::EQ ? route('admin.question.eq'):route('admin.question.aq');
         return view($this->view['editEqAq'], [
             'response' => $response,
             'type' => $type,

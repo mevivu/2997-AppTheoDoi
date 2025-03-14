@@ -3,6 +3,7 @@
 namespace App\Admin\Repositories\Quiz;
 
 use App\Admin\Repositories\EloquentRepository;
+use App\Enums\ActiveStatus;
 use App\Models\Quiz;
 
 class QuizRepository extends EloquentRepository implements QuizRepositoryInterface
@@ -13,6 +14,6 @@ class QuizRepository extends EloquentRepository implements QuizRepositoryInterfa
     }
     public function existsWithTypes(array $types): bool
     {
-        return Quiz::whereIn('type', $types)->exists();
+        return Quiz::whereIn('type', $types)->where('status',ActiveStatus::Active->value)->exists();
     }
 }

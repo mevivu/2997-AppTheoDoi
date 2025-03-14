@@ -17,7 +17,6 @@ class QuizAQAndEQRequest extends BaseRequest
     {
         return [
             'type' => ['required', new Enum(QuestionType::class)],
-
         ];
     }
 
