@@ -26,6 +26,8 @@ class Question extends Model
         'age_group',
         /* Câu hỏi */
         'question',
+        /* Hình ảnh câu hỏi */
+        'question_image',
         /* Loại câu hỏi */
         'question_type',
         /* Trạng thái */

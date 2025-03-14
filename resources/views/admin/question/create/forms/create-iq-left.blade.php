@@ -25,8 +25,22 @@
                     <x-input type="text" name="question[question]" :value="old('question.question')" :required="true" />
                 </div>
             </div>
+            <div class="col-4">
+                <div class="mb-3">
+                    <label class="control-label">{{ __('Hình ảnh câu hỏi') }}:</label>
+                    <div class="card-body p-2">
+                        <input type="file"  onchange="showPreviewImage()" class="form-control" name="question[question_image]"
+                               id="customFile" accept=".jpg, .jpeg, .png"/>
 
-            <div class="col-md-6">
+                        <div class="preview-image">
+                            <image id="preview-image" src=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-12">
                 <div class="mb-3">
                     <label class="control-label">{{ __('Loại câu trả lời') }}:</label>
                     <x-select name="answers[type]" :required="true" id="answer_type">
@@ -66,3 +80,26 @@
 <script>
     let index = 0;
 </script>
+
+@push('custom-js')
+    <script>
+        function showPreviewImage() {
+            const fileInput = document.getElementById("customFile");
+            let image = $("#preview-image");
+            const selectedFiles = fileInput.files;
+
+            if (selectedFiles.length > 0) {
+                const file = selectedFiles[0];
+                const fileType = file.type;
+
+                if (fileType === "image/jpeg" || fileType === "image/png") {
+                    image.attr('src', URL.createObjectURL(file));
+                } else {
+                    alert("Chỉ chấp nhận file JPG và PNG.");
+                    fileInput.value = "";
+                    image.attr('src', "");
+                }
+            }
+        }
+    </script>
+@endpush

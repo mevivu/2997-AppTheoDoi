@@ -4,6 +4,7 @@ namespace App\Admin\Services\Question;
 
 use App\Admin\Repositories\Answer\AnswerRepositoryInterface;
 use App\Admin\Repositories\Question\QuestionRepositoryInterface;
+use App\Admin\Services\File\FileService;
 use App\Enums\Answser\AnswerType;
 use Exception;
 use Illuminate\Http\Request;
@@ -18,13 +19,17 @@ class QuestionService implements QuestionServiceInterface
     protected QuestionRepositoryInterface $repository;
     protected AnswerRepositoryInterface $answerRepository;
 
+    protected FileService $fileService;
+
     public function __construct(
         QuestionRepositoryInterface $repository,
-        AnswerRepositoryInterface   $answerRepository
+        AnswerRepositoryInterface   $answerRepository,
+        FileService                 $fileService
     )
     {
         $this->repository = $repository;
         $this->answerRepository = $answerRepository;
+        $this->fileService = $fileService;
     }
 
     public function storeIq(Request $request): object|bool
@@ -34,6 +39,11 @@ class QuestionService implements QuestionServiceInterface
 
         try {
             $questionData = $data['question'];
+            $questionImage = $data['question']['question_image'] ?? null;
+            if ($questionImage) {
+                $questionData['question_image'] =
+                    $this->fileService->uploadAvatar('images/questions', $questionImage);
+            }
             $isCorrect = $data['answers']['is_correct'];
 
             if ($data['answers']['type'] == AnswerType::Normal->value) {
@@ -71,15 +81,23 @@ class QuestionService implements QuestionServiceInterface
 
         try {
             $questionData = $data['question'];
+            $questionImage = $data['question']['question_image'] ?? null;
             $isCorrect = $data['answers']['is_correct'];
-
+            $question = $this->repository->findOrFail($questionData['id']);
+            if ($questionImage) {
+                $questionData['question_image'] =
+                    $this->fileService->uploadAvatar('images/questions', $questionImage, $question->question_image);
+            }
+            else{
+                $questionData['question_image'] = null;
+            }
             if ($data['answers']['type'] == AnswerType::Normal->value) {
                 $answerData = $data['answers']['answer'];
             } else {
                 $answerData = $data['answers']['image'];
             }
 
-            $question = $this->repository->update($questionData['id'], $questionData);
+            $question->update($questionData);
             $this->answerRepository->deleteWhere(['question_id' => $question->id]);
             $index = 0;
             foreach ($answerData as $key => $value) {

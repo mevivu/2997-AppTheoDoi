@@ -13,13 +13,14 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('question_group_id')->nullable();
             $table->integer('age')->nullable();
             $table->string('question');
+            $table->string('question_image')->nullable();
             $table->enum('age_group', AgeGroup::getValues())->nullable();
             $table->enum('question_type', QuestionType::getValues())->default(QuestionType::IQ->value);
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
@@ -33,7 +34,7 @@ return new class extends Migration {
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('questions');
     }

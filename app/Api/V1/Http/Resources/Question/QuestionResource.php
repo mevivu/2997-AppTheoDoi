@@ -12,6 +12,7 @@ class QuestionResource extends JsonResource
         return [
             'id' => $this->id,
             'question' => $this->question,
+            'question_image' => $this->question_image ? formatImageUrl($this->question_image) : null,
             'answers' => AnswerResource::collection($this->answers),
             'group' => [
                 'name' => $this->group->name ?? null

@@ -10,11 +10,12 @@ use App\Enums\Question\QuestionType;
 
 class QuestionIqRequest extends BaseRequest
 {
-    protected function methodPost()
+    protected function methodPost(): array
     {
         $rules = [
             'question.question_type' => ['required', new Enum(QuestionType::class)],
             'question.age' => 'required|numeric',
+            'question.question_image' => 'nullable',
             'question.question' => 'required',
             'question.status' => ['required', new Enum(ActiveStatus::class)],
             'answers.type' => ['required', new Enum(AnswerType::class)],
@@ -32,7 +33,7 @@ class QuestionIqRequest extends BaseRequest
         return $rules;
     }
 
-    protected function methodPut()
+    protected function methodPut(): array
     {
         $rules = [
             'question.id' => 'required|exists:questions,id',
@@ -42,6 +43,7 @@ class QuestionIqRequest extends BaseRequest
             'question.status' => ['required', new Enum(ActiveStatus::class)],
             'answers.type' => ['required', new Enum(AnswerType::class)],
             'answers.is_correct' => 'required',
+            'question.question_image' => 'nullable',
         ];
 
         if ($this->input('answers.type') == AnswerType::Normal->value) {
@@ -55,7 +57,7 @@ class QuestionIqRequest extends BaseRequest
         return $rules;
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'question.question_type.required' => 'Loại câu hỏi không được để trống',

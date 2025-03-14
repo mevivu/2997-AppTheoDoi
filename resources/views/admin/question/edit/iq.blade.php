@@ -4,7 +4,7 @@
 @section('content')
     <div class="page-body">
         <div class="container-xl">
-            <x-form :action="route('admin.question.updateIq')" type="put" :validate="true" id="form_iq">
+            <x-form :action="route('admin.question.updateIq')" enctype="multipart/form-data" type="put" :validate="true" id="form_iq">
                 <x-input type="hidden" name="question[id]" :value="$response->id" />
                 <div class="row justify-content-center">
                     @include('admin.question.edit.forms.edit-iq-left')

@@ -13,7 +13,7 @@ use Illuminate\Http\JsonResponse;
 
 
 /**
- * @group Đánh giá thể chất
+ * @group Dự đoán chiều cao
  */
 class HeightPredictionController extends Controller
 {
