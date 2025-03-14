@@ -87,8 +87,7 @@ class QuestionService implements QuestionServiceInterface
             if ($questionImage) {
                 $questionData['question_image'] =
                     $this->fileService->uploadAvatar('images/questions', $questionImage, $question->question_image);
-            }
-            else{
+            } else {
                 $questionData['question_image'] = null;
             }
             if ($data['answers']['type'] == AnswerType::Normal->value) {
@@ -129,6 +128,11 @@ class QuestionService implements QuestionServiceInterface
 
         try {
             $questionData = $data['question'];
+            $questionImage = $data['question']['question_image'] ?? null;
+            if ($questionImage) {
+                $questionData['question_image'] =
+                    $this->fileService->uploadAvatar('images/questions', $questionImage);
+            }
             $question = $this->repository->create($questionData);
             if ($data['answers']['type'] == AnswerType::Normal->value) {
                 $answerData = $data['answers']['answer'];
@@ -162,7 +166,15 @@ class QuestionService implements QuestionServiceInterface
 
         try {
             $questionData = $data['question'];
-            $question = $this->repository->update($questionData['id'], $questionData);
+            $question = $this->repository->findOrFail($questionData['id']);
+            $questionImage = $data['question']['question_image'] ?? null;
+            if ($questionImage) {
+                $questionData['question_image'] =
+                    $this->fileService->uploadAvatar('images/questions', $questionImage, $question->question_image);
+            } else {
+                $questionData['question_image'] = null;
+            }
+            $question->update($questionData);
             $existAnswers = $question->answers->pluck('answer', 'id')->toArray();
 
             if ($data['answers']['type'] == AnswerType::Normal->value) {

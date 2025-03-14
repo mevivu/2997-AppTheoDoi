@@ -37,6 +37,27 @@
                 </div>
             </div>
 
+            <div class="col-4">
+                <div class="mb-3">
+                    <label class="control-label">{{ __('Hình ảnh câu hỏi') }}:</label>
+                    <div class="card-body p-2">
+                        <input type="file" onchange="showPreviewImage()" class="form-control"
+                               name="question[question_image]"
+                               id="customFile" accept=".jpg, .jpeg, .png"/>
+
+                        <div class="preview-image">
+                            <img id="preview-image" src="{{ $response->question_image ? asset($response->question_image) : asset('/public/assets/images/default-image.png') }}" style="max-width: 100%;">
+                        </div>
+                        @if($response->question_image)
+                            <button type="button" id="remove-image" class="btn btn-danger" onclick="removeImage()">Xoá
+                                ảnh
+                            </button>
+
+                        @endif
+                    </div>
+                </div>
+            </div>
+
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="control-label">{{ __('Loại câu trả lời') }}:</label>
@@ -111,3 +132,37 @@
 <script>
     let index = {{ $response->answers->last()->id }};
 </script>
+
+@push('custom-js')
+    <script>
+        function showPreviewImage() {
+            const fileInput = document.getElementById("customFile");
+            let image = $("#preview-image");
+            const selectedFiles = fileInput.files;
+
+            if (selectedFiles.length > 0) {
+                const file = selectedFiles[0];
+                const fileType = file.type;
+
+                if (fileType === "image/jpeg" || fileType === "image/png") {
+                    image.attr('src', URL.createObjectURL(file));
+                } else {
+                    alert("Chỉ chấp nhận file JPG và PNG.");
+                    fileInput.value = "";
+                    image.attr('src', "");
+                }
+            }
+        }
+
+        function removeImage() {
+            const fileInput = document.getElementById("customFile");
+            const image = document.getElementById("preview-image");
+            const removeButton = document.getElementById("remove-image");
+
+            fileInput.value = "";
+            image.src = "";
+            image.style.display = "none";
+            removeButton.style.display = 'none';
+        }
+    </script>
+@endpush
