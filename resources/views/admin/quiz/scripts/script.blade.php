@@ -50,14 +50,17 @@
         }
 
         function renderQuestions(questions, container, checkCountElement) {
+            const selectedType = $('#type-select').val();
+
             if (questions && questions.length > 0) {
                 questions.forEach(function(question) {
+                    const questionGroupName = selectedType === 'aq' ? '' : ` <span class="fw-bold">(${question.question_group_name})</span>`;
                     const questionHtml = `
                 <div class="form-check" data-question-group-id="${question.question_group_id}">
                     <input class="form-check-input" type="checkbox" name="question_ids[]" value="${question.id}" id="question-${question.id}">
                     <input type="hidden" name="question_group_ids[]" value="${question.question_group_id}">
                     <label class="form-check-label" for="question-${question.id}">
-                        ${question.question} <span class="fw-bold">(${question.question_group_name})</span>
+                          ${question.question}${questionGroupName}
                     </label>
                 </div>
             `;

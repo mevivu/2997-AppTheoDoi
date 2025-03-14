@@ -25,7 +25,15 @@ class QuizRequest extends BaseRequest
             'type' => ['required', new Enum(QuestionType::class)],
             'description' => ['nullable', 'string'],
             'status' => ['required', new Enum(ActiveStatus::class)],
-            'question_ids' => ['required', 'array', 'min:15'],
+            'question_ids' => [
+                'required',
+                'array',
+                function ($attribute, $value, $fail) {
+                    if (request()->type === QuestionType::IQ->value && count($value) < 15) {
+                        $fail('Bài kiểm tra phải có đủ 15 câu hỏi.');
+                    }
+                },
+            ],
             'question_ids.*' => ['exists:questions,id'],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
         ];
@@ -37,9 +45,18 @@ class QuizRequest extends BaseRequest
         return [
             'id' => ['required', 'exists:App\Models\Quiz,id'],
             'title' => ['required', 'string'],
+            'type' => ['required', new Enum(QuestionType::class)],
             'description' => ['nullable', 'string'],
             'age' => ['nullable', 'numeric', new UniqueQuiz(request()->type, $quizId)],
-            'question_ids' => ['required', 'array', 'min:15'],
+            'question_ids' => [
+                'required',
+                'array',
+                function ($attribute, $value, $fail) {
+                    if (request()->type === QuestionType::IQ->value && count($value) < 15) {
+                        $fail('Bài kiểm tra phải có đủ 15 câu hỏi.');
+                    }
+                },
+            ],
             'question_ids.*' => ['exists:questions,id'],
             'status' => ['required', new Enum(ActiveStatus::class)],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
