@@ -1,4 +1,4 @@
 <x-link :href="route('admin.package.edit', $package_id)"
         :title="$name"
-        class="text-decoration-none" />
+        class="text-decoration-none" target="_blank"/>
 

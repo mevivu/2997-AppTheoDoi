@@ -1,1 +1,1 @@
-<x-link :href="route('admin.quality.edit', $id)" :title="$name" />
+<x-link target="_blank" :href="route('admin.quality.edit', $id)" :title="$name" />

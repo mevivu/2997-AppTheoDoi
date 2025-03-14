@@ -1,2 +1,1 @@
-
-<x-link :href="route('admin.slider.edit', $id)" :title="$name"/>
+<x-link target="_blank" :href="route('admin.slider.edit', $id)" :title="$name"/>

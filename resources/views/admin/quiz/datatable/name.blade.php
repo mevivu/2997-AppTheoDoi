@@ -1,2 +1,1 @@
-
-<x-link :href="route('admin.quiz.edit', $id)" :title="$title"/>
+<x-link target="_blank" :href="route('admin.quiz.edit', $id)" :title="$title"/>

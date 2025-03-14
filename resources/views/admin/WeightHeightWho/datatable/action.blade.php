@@ -1,6 +1,6 @@
 
 <div class="d-flex align-items-center ">
-    <a href="{{ route('admin.weight-height-who.edit', $id) }}"
+    <a target="_blank" href="{{ route('admin.weight-height-who.edit', $id) }}"
        class="btn btn-icon btn-primary">
         <i class="ti ti-pencil"></i>
     </a>

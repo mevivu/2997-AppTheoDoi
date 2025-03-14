@@ -1,1 +1,1 @@
-<x-link :href="route('admin.children.edit', $children->id)" :title="$children->fullname" />
+<x-link target="_blank" :href="route('admin.children.edit', $children->id)" :title="$children->fullname" />
