@@ -159,7 +159,7 @@ class AuthController extends Controller
         try {
             $data = $request->validated();
             $token = $data['access_token'];
-            if (Auth::guard('api')->check()) {
+            if (Auth::guard('api')->setToken($token)->check()) {
                 return response()->json([
                     'status' => 200,
                     'message' => 'access_token còn hạn.'

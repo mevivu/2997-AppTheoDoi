@@ -105,9 +105,11 @@ trait JwtService
                 'status' => DeleteStatus::NotDeleted
             ]
         )->first();
-        $accessToken = $sessions->access_token;
-        if ($this->invalidateToken($accessToken)) {
-            $sessions->update(['status' => DeleteStatus::Deleted]);
+        if($sessions){
+            $accessToken = $sessions->access_token;
+            if ($this->invalidateToken($accessToken)) {
+                $sessions->update(['status' => DeleteStatus::Deleted]);
+            }
         }
     }
 

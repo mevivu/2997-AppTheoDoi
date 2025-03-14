@@ -26,16 +26,23 @@ class ChildRequest extends BaseRequest
      */
     protected function methodPost(): array
     {
-        return [
+        $validate = [];
 
+        if ($this->input('is_born') === BornStatus::Born->value) {
+            $validate['birthday'] = ['required', 'date_format:Y-m-d'];
+        } else {
+            $validate['due_date'] = ['required', 'date_format:Y-m-d'];
+        }
+
+        return array_merge($validate, [
             'fullname' => ['required', 'string'],
             'gender' => ['required', new Enum(Gender::class)],
             'is_born' => ['required', new Enum(BornStatus::class)],
-            'birthday' => ['nullable', 'date_format:Y-m-d'],
-            'due_date' => ['nullable', 'date_format:Y-m-d'],
             'avatar' => ['nullable'],
-        ];
+        ]);
     }
+
+
 
     protected function methodPut(): array
     {

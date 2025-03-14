@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ActiveStatus;
+use App\Enums\Question\AgeGroup;
 use App\Enums\Question\QuestionType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -19,6 +20,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('question_group_id')->nullable();
             $table->integer('age')->nullable();
             $table->string('question');
+            $table->enum('age_group', AgeGroup::getValues())->nullable();
             $table->enum('question_type', QuestionType::getValues())->default(QuestionType::IQ->value);
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
             $table->foreign('question_group_id')->references('id')->on('question_groups')->onDelete('cascade');

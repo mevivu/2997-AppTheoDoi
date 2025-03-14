@@ -45,7 +45,7 @@ class ChildrenService implements ChildrenServiceInterface
             $birthday = $data['birthday'];
             $birthday = new Carbon($birthday);
             $currentDate = Carbon::now();
-            $month = $currentDate->diffInDays($birthday) / 30.5;
+            $month = floor($currentDate->diffInDays($birthday) / 30.5);
             $age = $currentDate->diffInDays($birthday) / 365.3;
             $data['age'] = $age;
             $data['month'] = $month;

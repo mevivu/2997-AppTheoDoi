@@ -287,6 +287,14 @@ Route::controller(\App\Api\V1\Http\Controllers\Product\ProductController::class)
         Route::get('/{id}', 'show');
     });
 
+//***** -- Height Prediction -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\HeightPrediction\HeightPredictionController::class)
+    ->prefix('/height-prediction')
+    ->as('height-prediction.')
+    ->group(function () {
+        Route::get('/', 'index');
+    });
+
 //***** -- Guide -- ******* //
 Route::controller(\App\Api\V1\Http\Controllers\Guide\GuideController::class)
     ->prefix('/guides')
