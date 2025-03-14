@@ -1,5 +1,5 @@
 <div class="d-flex align-items-center ">
-    <a href="{{ route('admin.bmi.edit', $id) }}"
+    <a target="_blank" href="{{ route('admin.bmi.edit', $id) }}"
        class="btn btn-icon btn-primary">
         <i class="ti ti-pencil"></i>
     </a>

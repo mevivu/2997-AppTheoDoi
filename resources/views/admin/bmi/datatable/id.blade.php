@@ -1,1 +1,1 @@
-<x-link :href="route('admin.bmi.edit', $id)" :title="'Xem thông tin'" />
+<x-link target="_blank" :href="route('admin.bmi.edit', $id)" :title="'Xem thông tin'" />

@@ -1,1 +1,1 @@
-<x-link :href="route('admin.journal.edit', $id)" :title="$title"/>
+<x-link target="_blank" :href="route('admin.journal.edit', $id)" :title="$title"/>

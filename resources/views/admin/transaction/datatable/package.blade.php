@@ -1,3 +1,3 @@
-<x-link :href="route('admin.package.edit', $package->id)" >
+<x-link target="_blank" :href="route('admin.package.edit', $package->id)">
     {{ $package->name }}
 </x-link>
