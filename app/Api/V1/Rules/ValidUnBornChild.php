@@ -12,7 +12,8 @@ class ValidUnBornChild implements Rule
 
     public function passes($attribute, $value): bool
     {
-        $child = Child::find($value);
+        $child_id = request()->get('child_id') ?  request()->get('child_id') : $value;
+        $child = Child::find($child_id);
 
         if (!$child) {
             $this->errorMessage = 'Đứa trẻ không tồn tại trong hệ thống.';

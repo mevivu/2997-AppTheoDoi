@@ -3,7 +3,7 @@
 namespace App\Api\V1\Http\Requests\RatingPQ;
 
 use App\Api\V1\Http\Requests\BaseRequest;
-
+use App\Api\V1\Rules\ValidUnBornChild;
 
 
 class RatingPQLastedRequest extends BaseRequest
@@ -17,11 +17,11 @@ class RatingPQLastedRequest extends BaseRequest
     {
         return [
 
-            'child_id' => ['required', 'exists:children,id'],
+            'child_id' => ['required', new ValidUnBornChild()],
+
 
         ];
     }
-
 
 
     public function messages(): array
