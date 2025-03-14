@@ -5,9 +5,11 @@ namespace App\Api\V1\Http\Controllers\RatingPQ;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Exception\NotFoundException;
+use App\Api\V1\Http\Requests\RatingPQ\RatingPQLastedRequest;
 use App\Api\V1\Http\Requests\RatingPQ\RatingPQMonthRequest;
 use App\Api\V1\Http\Requests\RatingPQ\RatingPQRequest;
 use App\Api\V1\Http\Resources\RatingPQ\RatingPQCollection;
+use App\Api\V1\Http\Resources\RatingPQ\RatingPQMonthResource;
 use App\Api\V1\Http\Resources\RatingPQ\RatingPQResource;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
 use App\Api\V1\Services\RatingPQ\RatingPQServiceInterface;
@@ -128,6 +130,46 @@ class RatingPQController extends Controller
             return $this->jsonResponseError('Get journals failed', 500);
         }
     }
+
+    /**
+     * Lấy đánh giá tổng thể của trẻ (mới nhất)
+     *
+     * @authenticated
+     * @queryParam child_id int required ID của trẻ. Example: 1
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Lấy đánh giá tổng thể thành công.",
+     *     "data": {
+     *         "child_id": 1,
+     *         "average_height": 120,
+     *         "average_weight": 35,
+     *         "average_strength": 15,
+     *         "average_endurance": 14,
+     *         "average_bmi": 18.5,
+     *         "bmi_result": "Bình thường"
+     *     }
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống khi lấy đánh giá tổng thể."
+     * }
+     *
+     * @param RatingPQLastedRequest $request
+     * @return JsonResponse
+     */
+    public function getOverallStats(RatingPQLastedRequest $request): JsonResponse
+    {
+        try {
+            $response = $this->service->getOverallStats($request);
+            return $this->jsonResponseSuccess(new RatingPQMonthResource($response));
+        } catch (Exception $exception) {
+            $this->logError('Get overall stats failed:', $exception);
+            return $this->jsonResponseError('Get overall stats failed', 500);
+        }
+    }
+
 
     /**
      * Tạo đánh giá thể chất

@@ -19,7 +19,7 @@ class RatingPQRequest extends BaseRequest
         return [
             'limit' => 'nullable|integer',
             'page' => 'nullable|integer',
-            'child_id' => ['required', 'numeric', 'exists:children,id'],
+            'child_id' => ['required', 'exists:children,id'],
 
         ];
     }

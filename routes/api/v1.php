@@ -158,6 +158,7 @@ Route::controller(\App\Api\V1\Http\Controllers\RatingPQ\RatingPQController::clas
     ->group(function () {
         Route::get('/', 'index');
         Route::get('/endurance-stats', 'getMonthlyEnduranceStats');
+        Route::get('/lasted', 'getOverallStats');
         Route::get('/{id}', 'show');
         Route::post('/', 'store');
         Route::put('/', 'update');

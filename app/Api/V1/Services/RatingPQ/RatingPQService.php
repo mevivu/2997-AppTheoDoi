@@ -55,8 +55,8 @@ class RatingPQService implements RatingPQServiceInterface
         $validated = $request->validated();
 
         $childId = $validated['child_id'];
-        $month = (int) $validated['month'];
-        $year = (int) $validated['year'];
+        $month = (int)$validated['month'];
+        $year = (int)$validated['year'];
 
         $records = $this->repository->getQueryBuilder()
             ->where('child_id', $childId)
@@ -78,9 +78,6 @@ class RatingPQService implements RatingPQServiceInterface
         return $result;
 
     }
-
-
-
 
 
     public function index(Request $request)
@@ -420,4 +417,13 @@ class RatingPQService implements RatingPQServiceInterface
     }
 
 
+    public function getOverallStats(Request $request)
+    {
+        $data = $request->validated();
+        $childId = $data['child_id'];
+        return $this->repository->getQueryBuilder()
+            ->where('child_id', $childId)
+            ->orderBy('assessment_date', 'desc')
+            ->first();
+    }
 }
