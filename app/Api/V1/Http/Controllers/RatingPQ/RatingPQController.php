@@ -9,6 +9,7 @@ use App\Api\V1\Http\Requests\RatingPQ\RatingPQLastedRequest;
 use App\Api\V1\Http\Requests\RatingPQ\RatingPQMonthRequest;
 use App\Api\V1\Http\Requests\RatingPQ\RatingPQRequest;
 use App\Api\V1\Http\Resources\RatingPQ\RatingPQCollection;
+use App\Api\V1\Http\Resources\RatingPQ\RatingPQLastedResource;
 use App\Api\V1\Http\Resources\RatingPQ\RatingPQMonthResource;
 use App\Api\V1\Http\Resources\RatingPQ\RatingPQResource;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
@@ -163,7 +164,7 @@ class RatingPQController extends Controller
     {
         try {
             $response = $this->service->getOverallStats($request);
-            return $this->jsonResponseSuccess(new RatingPQMonthResource($response));
+            return $this->jsonResponseSuccess(new RatingPQLastedResource($response));
         } catch (Exception $exception) {
             $this->logError('Get overall stats failed:', $exception);
             return $this->jsonResponseError('Get overall stats failed', 500);
