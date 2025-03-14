@@ -522,13 +522,13 @@ return [
                 'roles' => [],
                 'permissions' => ['viewQuiz'],
             ],
-            [
-                'title' => 'Bài kiểm tra PQ',
-                'routeName' => 'admin.quiz.pq',
-                'icon' => '<i class="ti ti-switch"></i>',
-                'roles' => [],
-                'permissions' => ['viewQuiz'],
-            ]
+//            [
+//                'title' => 'Bài kiểm tra PQ',
+//                'routeName' => 'admin.quiz.pq',
+//                'icon' => '<i class="ti ti-switch"></i>',
+//                'roles' => [],
+//                'permissions' => ['viewQuiz'],
+//            ]
         ]
     ],
     [
