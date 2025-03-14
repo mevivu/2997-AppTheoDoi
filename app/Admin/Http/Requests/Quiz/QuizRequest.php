@@ -39,7 +39,7 @@ class QuizRequest extends BaseRequest
             'title' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'age' => ['nullable', 'numeric', new UniqueQuiz(request()->type, $quizId)],
-            'question_ids' => ['required', 'array', 'min:3'],
+            'question_ids' => ['required', 'array', 'min:15'],
             'question_ids.*' => ['exists:questions,id'],
             'status' => ['required', new Enum(ActiveStatus::class)],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
@@ -48,7 +48,7 @@ class QuizRequest extends BaseRequest
     public function messages(): array
     {
         return [
-            'question_ids.min' => 'Bài kiểm tra phải có đủ 3 câu hỏi.',
+            'question_ids.min' => 'Bài kiểm tra phải có đủ 15 câu hỏi.',
             'question_ids.required' => 'Bạn phải chọn ít nhất một câu hỏi cho bài kiểm tra.',
             'question_ids.*.exists' => 'Câu hỏi được chọn không tồn tại.'
         ];
