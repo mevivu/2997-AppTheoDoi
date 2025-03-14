@@ -25,7 +25,7 @@ class QuizRequest extends BaseRequest
             'type' => ['required', new Enum(QuestionType::class)],
             'description' => ['nullable', 'string'],
             'status' => ['required', new Enum(ActiveStatus::class)],
-            'question_ids' => ['required', 'array', 'min:3'],
+            'question_ids' => ['required', 'array', 'min:15'],
             'question_ids.*' => ['exists:questions,id'],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
         ];
