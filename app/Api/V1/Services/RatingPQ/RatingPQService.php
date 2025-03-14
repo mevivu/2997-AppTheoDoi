@@ -5,8 +5,7 @@ namespace App\Api\V1\Services\RatingPQ;
 
 use App\Admin\Repositories\Bmi\BmiRepositoryInterface;
 use App\Admin\Services\File\FileService;
-use App\Api\V1\Http\Resources\RatingPQ\RatingPQCollection;
-use App\Api\V1\Http\Resources\RatingPQ\RatingPQResource;
+use App\Api\V1\Http\Resources\RatingPQ\RatingPQMonthResource;
 use App\Api\V1\Repositories\Child\ChildRepositoryInterface;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
 use App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface;
@@ -51,23 +50,37 @@ class RatingPQService implements RatingPQServiceInterface
         $this->fileService = $fileService;
     }
 
-    public function getMonthlyEnduranceData(Request $request)
+    public function getMonthlyEnduranceData(Request $request): array
     {
         $validated = $request->validated();
-        $limit = $validated['limit'] ?? 10;
-        $page = $validated['page'] ?? 1;
-        $childId = $validated['child_id'];
-        $month = $validated['month'];
-        $year = $validated['year'];
 
-        $query = $this->repository->getQueryBuilder()
+        $childId = $validated['child_id'];
+        $month = (int) $validated['month'];
+        $year = (int) $validated['year'];
+
+        $records = $this->repository->getQueryBuilder()
             ->where('child_id', $childId)
             ->whereMonth('assessment_date', '=', $month)
             ->whereYear('assessment_date', '=', $year)
-            ->orderBy('assessment_date', 'asc');
+            ->orderBy('assessment_date', 'desc')
+            ->get();
 
-        return $query->paginate($limit, ['*'], 'page', $page);
+        $result = [];
+        $lastDate = null;
+        foreach ($records as $record) {
+            $date = $record->assessment_date->toDateString();
+            if ($date !== $lastDate) {
+                $result[] = new RatingPQMonthResource($record);
+                $lastDate = $date;
+            }
+        }
+
+        return $result;
+
     }
+
+
+
 
 
     public function index(Request $request)
@@ -164,7 +177,7 @@ class RatingPQService implements RatingPQServiceInterface
         $nearestHeight = $nearestRatingPQ->height ?? 0;
         $nearestAssessmentDate = $nearestRatingPQ ? $nearestRatingPQ->assessment_date : $currentDate;
 
-        $heightIncreaseInOneYear = abs($currenHeight - $nearestHeight );
+        $heightIncreaseInOneYear = abs($currenHeight - $nearestHeight);
         $diffInDaysCurrent = $currentDate->diffInDays($nearestAssessmentDate);
         $diffInDaysBirth = $childBirthDate->diffInDays($nearestAssessmentDate);
         $monthCompare = $diffInDaysCurrent / 30.5;

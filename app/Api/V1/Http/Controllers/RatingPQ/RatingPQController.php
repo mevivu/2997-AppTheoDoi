@@ -77,7 +77,7 @@ class RatingPQController extends Controller
     {
         try {
             $response = $this->service->getMonthlyEnduranceData($request);
-            return $this->jsonResponseSuccess(new RatingPQCollection($response));
+            return $this->jsonResponseSuccess($response);
         } catch (Exception $exception) {
             $this->logError('Get journals failed:', $exception);
             return $this->jsonResponseError('Get journals failed', 500);

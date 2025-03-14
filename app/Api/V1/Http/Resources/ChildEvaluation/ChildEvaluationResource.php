@@ -25,6 +25,7 @@ class ChildEvaluationResource extends JsonResource
         $isContentVisible = $this->checkUserPackage($this->created_at);
         return [
             'id' => $this->id,
+            'child_id' => $this->child_id,
             'class' => [
                 'id' => $this->class->id,
                 'name' => $this->class->name
