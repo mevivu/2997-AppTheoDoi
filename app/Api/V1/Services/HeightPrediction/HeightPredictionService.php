@@ -3,12 +3,14 @@
 namespace App\Api\V1\Services\HeightPrediction;
 
 
+use App\Api\V1\Http\Resources\Child\ChildResource;
 use App\Api\V1\Repositories\Child\ChildRepositoryInterface;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
 use App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Enums\ActiveStatus;
 use App\Enums\Package\PackageStatus;
+use App\Enums\User\Gender;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -64,6 +66,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         // Tính sự thay đổi chiều cao
         $heightChange = $this->calculateSpeedHeightChange($currentHeight, $childId, $latestDate);
+        $heightChangeLasted = $latestRecord ? $latestRecord->height_change : 0;
 
         // Tính tháng từ ngày sinh đến latestDate
         $month = floor($birthDay->diffInDays($latestDate) / 30.5);
@@ -73,11 +76,34 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $heightWho = $who->height;
 
         $adviceMessage = $this->getAdviceMessage($currentHeight, $heightWho);
+        $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight);
+        $heightWhoCurrent = abs($heightChangeLasted - $who->height );
 
         return [
             'advice_message' => $adviceMessage,
-            'speed_change' => $heightChange
+            'speed_change' => $heightChange,
+            'predicting_adult_height' => $predictingAdultHeight,
+            'height_comparison' => [
+                'height_who_current' => $heightWhoCurrent,
+                'is_taller_than_who' => $heightChangeLasted > $who->height,
+            ],
+            'child' => new ChildResource($child)
         ];
+    }
+
+    public function calculateMatureHeight($child, $currentHeight): float
+    {
+        $heightFather = $child->user->father_height;
+        $heightMother = $child->user->mother_height;
+
+        $predictedHeightMale = ($heightFather + $heightMother + 13) / 2 + 5;
+        $predictedHeightFemale = ($heightMother + $heightMother - 13) / 2 + 3;
+
+        if ($child->gender == Gender::Male) {
+            return $predictedHeightMale * 0.3 + $currentHeight * 0.7;
+        } else {
+            return $predictedHeightFemale * 0.3 + $currentHeight * 0.7;
+        }
     }
 
 
