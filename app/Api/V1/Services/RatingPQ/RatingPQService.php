@@ -66,18 +66,22 @@ class RatingPQService implements RatingPQServiceInterface
             ->get();
 
         $result = [];
-        $lastDate = null;
+        $groupedRecords = [];
+
         foreach ($records as $record) {
             $date = $record->assessment_date->toDateString();
-            if ($date !== $lastDate) {
-                $result[] = new RatingPQMonthResource($record);
-                $lastDate = $date;
+            if (!isset($groupedRecords[$date]) || $record->created_at > $groupedRecords[$date]->created_at) {
+                $groupedRecords[$date] = $record;
             }
         }
 
-        return $result;
+        foreach ($groupedRecords as $record) {
+            $result[] = new RatingPQMonthResource($record);
+        }
 
+        return $result;
     }
+
 
 
     public function index(Request $request)
