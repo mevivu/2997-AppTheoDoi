@@ -43,21 +43,26 @@ class QuizSizeService implements QuizServiceInterface
     public function store(Request $request): object|false
     {
         $data = $request->validated();
-        $questionIds = $data['question_ids'] ?? [];
+        $questionIds = json_decode($data['selected_questions'] ?? '[]', true);
+
         $quiz = $this->repository->create($data);
-        if (!empty($data['question_ids'])) {
+        if (!empty($questionIds)) {
             $quiz->questions()->attach($questionIds);
         }
         return $quiz;
     }
 
+    /**
+     * @throws Exception
+     */
     public function storeIQ(Request $request): object|false
     {
         $data = $request->validated();
         $data['status'] = ActiveStatus::Active;
-        $questionIds = $data['question_ids'] ?? [];
+        $questionIds = json_decode($data['selected_questions'] ?? '[]', true);
+
         $quiz = $this->repository->create($data);
-        if (!empty($data['question_ids'])) {
+        if (!empty($questionIds)) {
             $quiz->questions()->attach($questionIds);
         }
         return $quiz;
@@ -70,7 +75,7 @@ class QuizSizeService implements QuizServiceInterface
     {
 
         $data = $request->validated();
-        $questionIds = $data['question_ids'] ?? [];
+        $questionIds = json_decode($data['selected_questions'] ?? '[]', true);
         $quiz = $this->repository->update($data['id'], $data);
         $quiz->questions()->sync($questionIds);
         return $quiz;
@@ -80,7 +85,8 @@ class QuizSizeService implements QuizServiceInterface
     {
 
         $data = $request->validated();
-        $questionIds = $data['question_ids'] ?? [];
+        $questionIds = json_decode($data['selected_questions'] ?? '[]', true);
+
         $quiz = $this->repository->update($data['id'], $data);
         $quiz->questions()->sync($questionIds);
         return $quiz;

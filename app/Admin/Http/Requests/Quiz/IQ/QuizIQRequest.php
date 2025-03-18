@@ -28,8 +28,9 @@ class QuizIQRequest extends BaseRequest
                 'required',
                 'array',
                 function ($attribute, $value, $fail) {
+                   $count = count($value);
                     if (request()->type === QuestionType::IQ->value && count($value) < 15) {
-                        $fail('Bài kiểm tra phải có đủ 3 câu hỏi.');
+                        $fail('Bài kiểm tra phải có đủ 15 câu hỏi.');
                     }
                     if ((request()->type === QuestionType::EQ->value || request()->type === QuestionType::AQ->value) && count($value) < 1) {
                         $fail('Bài kiểm tra phải chọn ít nhất 1 câu hỏi.');
@@ -37,6 +38,7 @@ class QuizIQRequest extends BaseRequest
                 },
             ],
             'question_ids.*' => ['exists:questions,id'],
+            'selected_questions' => ['required'],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
         ];
     }
@@ -63,6 +65,7 @@ class QuizIQRequest extends BaseRequest
                 },
             ],
             'question_ids.*' => ['exists:questions,id'],
+            'selected_questions' => ['required'],
             'status' => ['required', new Enum(ActiveStatus::class)],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
         ];

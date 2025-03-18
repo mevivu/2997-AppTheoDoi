@@ -38,6 +38,7 @@ class QuizRequest extends BaseRequest
                 },
             ],
             'question_ids.*' => ['exists:questions,id'],
+            'selected_questions' => ['required'],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
         ];
     }
@@ -64,6 +65,7 @@ class QuizRequest extends BaseRequest
                 },
             ],
             'question_ids.*' => ['exists:questions,id'],
+            'selected_questions' => ['required'],
             'status' => ['required', new Enum(ActiveStatus::class)],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
         ];

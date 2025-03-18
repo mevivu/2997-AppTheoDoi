@@ -12,6 +12,7 @@
     <div class="page-body">
         <div class="container-xl">
             <x-form :action="route('admin.quiz.store')" type="post" :validate="true">
+                <input type="hidden" name="type" value="{{ $selectedType }}">
                 <div class="row justify-content-center">
                     @include('admin.quiz.forms.create-left-eq-aq')
                     @include('admin.quiz.forms.create-right-eq-aq')
@@ -28,5 +29,5 @@
 @endpush
 
 @push('custom-js')
-    @include('admin.quiz.scripts.script')
+    @include('admin.quiz.scripts.create-eq')
 @endpush
