@@ -605,6 +605,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
+        'age_group' => [
+            'title' => 'Nhóm tuổi',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
         'status' => [
             'title' => 'Trạng thái',
             'orderable' => false,
@@ -636,6 +641,11 @@ return [
             'title' => 'Câu hỏi',
             'orderable' => false,
             'addClass' => 'text-center align-middle'
+        ],
+        'age_group' => [
+            'title' => 'Nhóm tuổi',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
         ],
         'status' => [
             'title' => 'Trạng thái',

@@ -5,6 +5,7 @@ namespace App\Admin\DataTables\Question;
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Question\AgeGroup;
 use App\Enums\Question\QuestionType;
 
 
@@ -30,22 +31,27 @@ class EqQuestionDataTable extends BaseDataTable
             'checkbox' => 'admin.common.checkbox',
             'question' => 'admin.question.datatable.question',
             'question_group_id' => 'admin.question.datatable.question_group',
+            'age_group' => 'admin.question.datatable.age_group'
         ];
     }
 
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4];
+        $this->columnAllSearch = [1, 2, 3, 4, 5];
 
         $this->columnSearchSelect = [
             [
                 'column' => 3,
-                'data' => ActiveStatus::asSelectArray()
-            ]
+                'data' => AgeGroup::asSelectArray()
+            ],
+            [
+            'column' => 4,
+            'data' => ActiveStatus::asSelectArray()
+        ]
         ];
 
-        $this->columnSearchDate = [4];
+        $this->columnSearchDate = [5];
     }
 
     public function query()
@@ -74,6 +80,7 @@ class EqQuestionDataTable extends BaseDataTable
             'created_at' => function ($query) {
                 return format_datetime($query->created_at);
             },
+            'age_group' => $this->view['age_group'],
         ];
     }
 
@@ -97,6 +104,6 @@ class EqQuestionDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['question_group_id', 'question', 'action', 'status', 'checkbox'];
+        $this->customRawColumns = ['question_group_id', 'question', 'action', 'status', 'checkbox', 'age_group'];
     }
 }
