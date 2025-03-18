@@ -51,10 +51,32 @@ class QuizSizeService implements QuizServiceInterface
         return $quiz;
     }
 
+    public function storeIQ(Request $request): object|false
+    {
+        $data = $request->validated();
+        $data['status'] = ActiveStatus::Active;
+        $questionIds = $data['question_ids'] ?? [];
+        $quiz = $this->repository->create($data);
+        if (!empty($data['question_ids'])) {
+            $quiz->questions()->attach($questionIds);
+        }
+        return $quiz;
+    }
+
     /**
      * @throws Exception
      */
     public function update(Request $request): object|bool
+    {
+
+        $data = $request->validated();
+        $questionIds = $data['question_ids'] ?? [];
+        $quiz = $this->repository->update($data['id'], $data);
+        $quiz->questions()->sync($questionIds);
+        return $quiz;
+    }
+
+    public function updateIQ(Request $request): object|bool
     {
 
         $data = $request->validated();

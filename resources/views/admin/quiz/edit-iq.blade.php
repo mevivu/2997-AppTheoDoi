@@ -6,7 +6,7 @@
 @section('content')
     <div class="page-body">
         <div class="container-xl">
-            <x-form :action="route('admin.quiz.update')" type="put" :validate="true">
+            <x-form :action="route('admin.quiz.updateIQ')" type="put" :validate="true">
                 <x-input type="hidden" name="id" :value="$instance->id"/>
                 <x-input type="hidden" name="type" :value="$instance->type->value"/>
                 <div class="row justify-content-center">
@@ -27,6 +27,7 @@
 @endpush
 
 @push('custom-js')
+    @include('admin.quiz.scripts.edit-iq')
     <script>
         $(document).ready(function() {
             function updateCheckedCount() {

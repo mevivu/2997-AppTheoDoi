@@ -9,7 +9,11 @@ interface QuizServiceInterface
     public function checkTypeExists(array $types): bool;
     public function store(Request $request);
 
+    public function storeIQ(Request $request);
+
     public function update(Request $request);
+
+    public function updateIQ(Request $request);
 
     public function delete($id);
 

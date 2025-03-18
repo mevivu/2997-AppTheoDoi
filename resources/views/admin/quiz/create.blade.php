@@ -11,7 +11,7 @@
 @section('content')
     <div class="page-body">
         <div class="container-xl">
-            <x-form :action="route('admin.quiz.store')" type="post" :validate="true">
+            <x-form :action="route('admin.quiz.storeIQ')" type="post" :validate="true">
                 <div class="row justify-content-center">
                     @include('admin.quiz.forms.create-left')
                     @include('admin.quiz.forms.create-right')
@@ -28,5 +28,5 @@
 @endpush
 
 @push('custom-js')
-    @include('admin.quiz.scripts.script')
+    @include('admin.quiz.scripts.create-iq')
 @endpush

@@ -242,19 +242,43 @@ class QuestionController extends Controller
     {
         try {
             $type = $request['type'];
-            $questions = $this->repository->getBy([
+            $keyword = $request->get('keyword', '');
+            $query = $this->repository->getByQueryBuilder([
                 'question_type' => $type,
                 'status' => ActiveStatus::Active
             ]);
+            if (!empty($keyword)) {
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('question', 'like', '%' . $keyword . '%');
+
+                });
+            }
+            $questions = $query->orderBy('created_at', 'desc')->take(20)->get();
             $questions->load('group');
-            $questionsData = $questions->map(function ($question) {
-                $question->question_group_name = $question->group ? $question->group->name : null;
-                return $question;
-            });
 
             return response()->json(['data' => $questions], 200);
         } catch (Exception $e) {
             return response()->json(['message' => 'Server error'], 500);
+        }
+    }
+
+    public function getQuestionsByIds(Request $request): JsonResponse
+    {
+        try {
+            $ids = $request->input('ids', []);
+
+            if (empty($ids)) {
+                return response()->json(['data' => [], 'message' => 'No IDs provided'], 400);
+            }
+
+            $questions = $this->repository->getByQueryBuilder([
+                ['id', 'IN', $ids],
+                'status' => ActiveStatus::Active
+            ])->get();
+
+            return response()->json(['data' => $questions], 200);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Server error', 'error' => $e->getMessage()], 500);
         }
     }
 

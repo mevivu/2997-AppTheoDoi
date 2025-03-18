@@ -43,41 +43,74 @@
                 </div>
             </div>
 
-            <!-- show questions -->
-            <div class="col-12">
-                <div class="mb-3">
-                    <div class="col-12">
-                        <div id="count-checked" class="mb-3">
-                            Các câu hỏi được chọn: <span id="checked-count">0</span>
+            <input type="hidden" id="type-select" value="{{ $selectedType }}">
+
+            <div class="container mt-4">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Search Section -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="search-keyword" class="form-label">Từ khoá</label>
+                                    <div class="input-group">
+                                        <input type="text" id="search-keyword" class="form-control"
+                                               placeholder="Nhập từ khoá để tìm kiếm" aria-label="Search keyword" aria-describedby="button-addon">
+                                        <button class="btn btn-primary" type="button" id="search-button">Tìm kiếm</button>
+                                        <button class="btn btn-secondary" type="button" id="clear-button">Reload</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div>
-                        @if($instance->type == QuestionType::EQ)
-                            @foreach ($questions_type as $question)
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="question_ids[]"
-                                           value="{{ $question->id }}"
-                                           id="question-{{ $question->id }}"
-                                           data-group-id="{{ $question->group->id }}"
-                                        {{ $selected_questions->contains($question->id) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="question-{{ $question->id }}">
-                                        {{ $question->question }} <span
-                                            class="fw-bold">({{ $question->group->name }})</span>
-                                    </label>
+
+                        <!-- Count Checked Questions -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div id="count-checked" class="mb-3">
+                                    Các câu hỏi được chọn: <span id="checked-count">0</span>
                                 </div>
-                            @endforeach
-                        @else
-                            @foreach ($questions_type as $question)
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="question_ids[]"
-                                           value="{{ $question->id }}" id="question-{{ $question->id }}"
-                                        {{ $selected_questions->contains($question->id) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="question-{{ $question->id }}">
-                                        {{ $question->question }}
-                                    </label>
+                            </div>
+                        </div>
+
+                        <!-- Questions Display -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="mb-0">Danh sách câu hỏi</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="loading" class="text-center" style="display: none;">
+                                            <div class="loading-circles">
+                                                <div class="circle"></div>
+                                                <div class="circle"></div>
+                                                <div class="circle"></div>
+                                            </div>
+                                        </div>
+                                        <div id="questions-container" class="mb-3"></div>
+                                    </div>
                                 </div>
-                            @endforeach
-                        @endif
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="mb-0">Câu hỏi đã chọn</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="loading-indicator" style="display: none;" class="text-center">
+                                            <div class="loading-circles">
+                                                <div class="circle"></div>
+                                                <div class="circle"></div>
+                                                <div class="circle"></div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" id="selected_questions_input" name="selected_questions">
+                                        <ul id="selected-questions" class="list-group list-group-flush"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -5,6 +5,7 @@ namespace App\Admin\Http\Controllers\Quiz;
 use App\Admin\DataTables\Quiz\QuizDataTable;
 use App\Admin\DataTables\Quiz\QuizIQDataTable;
 use App\Admin\Http\Controllers\Controller;
+use App\Admin\Http\Requests\Quiz\IQ\QuizIQRequest;
 use App\Admin\Http\Requests\Quiz\QuizRequest;
 use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Admin\Repositories\Quiz\QuizRepositoryInterface;
@@ -200,6 +201,18 @@ class QuizController extends Controller
         ]);
     }
 
+    public function storeIQ(QuizIQRequest $request): RedirectResponse
+    {
+        $response = $this->service->storeIQ($request);
+        if ($response->type == QuestionType::IQ) {
+            return redirect()->route($this->route['iq'])
+                ->with('success', __('notifySuccess'));
+        } else {
+            return redirect()->back()
+                ->with('error', __('notifyFail'));
+        }
+    }
+
     public function store(QuizRequest $request): RedirectResponse
     {
         $response = $this->service->store($request);
@@ -239,6 +252,10 @@ class QuizController extends Controller
             'status' => ActiveStatus::Active,
             'question_type' => $instance->type,
         ]);
+        $mergedQuestions = $questionsType->filter(function ($question) use ($selectedQuestions) {
+            return !$selectedQuestions->contains('id', $question->id);
+        });
+        $mergedQuestions = $mergedQuestions->merge($selectedQuestions);
 
         if ($instance->type->value == QuestionType::IQ->value) {
             $breadcrumbs = $this->crums->add(__('Bài kiểm tra IQ'), route($this->route['iq']));
@@ -267,9 +284,10 @@ class QuizController extends Controller
                 'age_group' => AgeGroup::asSelectArray(),
                 'type' => QuestionType::asSelectArray(),
                 'selected_questions' => $selectedQuestions,
-                'questions_type' => $questionsType,
+                'questions_type' => $mergedQuestions,
                 'breadcrumbs' => $breadcrumbs->add(__('edit')),
                 'route' => $route,
+                'selectedType' => $instance->type->value,
             ],
         );
 
@@ -283,6 +301,13 @@ class QuizController extends Controller
         $response = $this->service->update($request);
         return redirect()->back()
             ->with($response ? 'success' : 'error', $response ? __('notifySuccess') : __('notifyFail'));
+    }
+
+    public function updateIQ(QuizIQRequest $request): RedirectResponse
+    {
+        return $this->handleUpdateResponse($request, function ($request) {
+            return $this->service->updateIQ($request);
+        });
     }
 
     /**
