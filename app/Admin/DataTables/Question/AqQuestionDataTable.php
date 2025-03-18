@@ -5,12 +5,13 @@ namespace App\Admin\DataTables\Question;
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Question\AgeGroup;
 use App\Enums\Question\QuestionType;
 
 
-class AqEqQuestionDataTable extends BaseDataTable
+class AqQuestionDataTable extends BaseDataTable
 {
-    protected $nameTable = 'aqEqQuestionTable';
+    protected $nameTable = 'aqQuestionTable';
 
 
     public function __construct(
@@ -30,6 +31,7 @@ class AqEqQuestionDataTable extends BaseDataTable
             'checkbox' => 'admin.common.checkbox',
             'question' => 'admin.question.datatable.question',
             'question_group_id' => 'admin.question.datatable.question_group',
+            'age_group' => 'admin.question.datatable.age_group'
         ];
     }
 
@@ -42,6 +44,10 @@ class AqEqQuestionDataTable extends BaseDataTable
             [
                 'column' => 3,
                 'data' => ActiveStatus::asSelectArray()
+            ],
+            [
+                'column' => 2,
+                'data' => AgeGroup::asSelectArray()
             ]
         ];
 
@@ -59,7 +65,7 @@ class AqEqQuestionDataTable extends BaseDataTable
 
     protected function setCustomColumns(): void
     {
-        $this->customColumns = config('datatables_columns.eq_aq_questions', []);
+        $this->customColumns = config('datatables_columns.aq_questions', []);
     }
 
     protected function setCustomEditColumns(): void
@@ -74,6 +80,7 @@ class AqEqQuestionDataTable extends BaseDataTable
             'created_at' => function ($query) {
                 return format_datetime($query->created_at);
             },
+            'age_group' => $this->view['age_group'],
         ];
     }
 
@@ -97,6 +104,6 @@ class AqEqQuestionDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['question_group_id', 'question', 'action', 'status', 'checkbox'];
+        $this->customRawColumns = ['question_group_id', 'question', 'action', 'status', 'checkbox', 'age_group'];
     }
 }
