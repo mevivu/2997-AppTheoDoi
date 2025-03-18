@@ -62,7 +62,7 @@ class NotificationController extends Controller
         return [
             'index' => 'admin.notification.index',
             'user' => 'admin.notification.user',
-            'package' => 'admin.notifications.package',
+            'package' => 'admin.notification.package',
             'create' => 'admin.notification.create',
             'edit' => 'admin.notification.edit',
             'delete' => 'admin.page.delete'
@@ -124,6 +124,11 @@ class NotificationController extends Controller
     public function update(NotificationRequest $request): RedirectResponse
     {
         $this->service->update($request);
+
+        if ($request->input('approval_status') == ApprovalStatus::ACTIVE->value) {
+            return redirect()->route($this->route['package'])->with('success', __('notifySuccess'));
+        }
+
         return redirect()->route($this->route['index'])->with('success', __('notifySuccess'));
     }
 
