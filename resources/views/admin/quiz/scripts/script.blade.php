@@ -87,7 +87,11 @@
                 }
 
                 $('input[name="question_ids[]"]').on('change', function() {
-                    restrictMultipleGroupSelection();
+                    const selectedType = $('input[name="type"]').val();
+
+                    if (selectedType === 'eq') {
+                        restrictMultipleGroupSelection();
+                    }
                     updateCheckedCount();
                 });
 

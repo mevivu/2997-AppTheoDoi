@@ -22,7 +22,10 @@
         updateCheckedCount();
 
         $(document).on('change', 'input[name="question_ids[]"]', function() {
-            restrictMultipleGroupSelection();
+            const selectedType = $('input[name="type"]').val();
+            if (selectedType === 'eq') {
+                restrictMultipleGroupSelection();
+            }
         });
     });
 </script>
