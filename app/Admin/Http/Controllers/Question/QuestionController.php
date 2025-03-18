@@ -7,7 +7,7 @@ use App\Admin\DataTables\Question\AqQuestionDataTable;
 use App\Admin\DataTables\Question\IqQuestionDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Question\QuestionEqAqRequest;
-use App\Admin\Http\Requests\Question\QuestionIQRequest;
+use App\Admin\Http\Requests\Question\QuestionIqRequest;
 use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Admin\Repositories\QuestionGroup\QuestionGroupRepositoryInterface;
 use App\Admin\Services\Question\QuestionServiceInterface;
