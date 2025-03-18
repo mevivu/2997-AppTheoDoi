@@ -129,8 +129,13 @@ class NotificationController extends Controller
 
     public function store(NotificationRequest $request): RedirectResponse
     {
-        $this->service->store($request);
-        return redirect()->route($this->route['index'])->with('success', __('notifySuccess'));
+        $isAll = $this->service->store($request);
+
+        if ($isAll) {
+            return redirect()->route($this->route['index'])->with('success', __('notifySuccess'));
+        } else {
+            return redirect()->route($this->route['user'])->with('success', __('notifySuccess'));
+        }
     }
 
     public function updateDeviceToken(Request $request)

@@ -96,8 +96,7 @@ class NotificationService implements NotificationServiceInterface
                         }
                     }
                 }
-
-                break;
+                return true;
             case NotificationType::Customer->value:
                 $this->data['admin_id'] = null;
                 $notification = $this->handleNotificationOption('user_id');
@@ -108,8 +107,7 @@ class NotificationService implements NotificationServiceInterface
                 $notification = $this->handleNotificationOption('user_id');
                 break;
         }
-
-        return $notification ? true : false;
+        return isset($notification) && $notification ? false : false;
     }
 
     /**
