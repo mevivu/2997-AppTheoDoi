@@ -133,6 +133,33 @@ class RatingPQService implements RatingPQServiceInterface
     /**
      * @throws Exception
      */
+    public function update(Request $request): object
+    {
+        $data = $request->validated();
+        $height = $data['height'];
+        $weight = $data['weight'];
+        $currentEndurance = $data['endurance'];
+        $currentStrength = $data['strength'];
+        $child = $this->childRepository->findOrFail($data['child_id']);
+        $bmi = $this->calculateBMI($height, $weight);
+        $age = $child->age;
+        $gender = $child->gender;
+        $month = $child->month;
+        $who = $this->getWho($month, $gender);
+        $whoHeight = $who->height;
+        $bmiCategory = $this->getBmiCategory($bmi, $age, $gender);
+        $data['bmi'] = $bmi;
+        $data['bmi_result'] = $bmiCategory;
+        $data['height_change'] = $height - $whoHeight;
+        $data['height_result'] = $this->getHeightResult($height, $who);
+        $data['score'] = $this->calculateScore($bmi, $age, $gender,
+            $child->id, $currentEndurance, $currentStrength, $height);
+        return $this->repository->update($data['id'], $data);
+    }
+
+    /**
+     * @throws Exception
+     */
     public function calculateScore($currentBmi, $age, $gender, $childId, $currentEndurance, $currentStrength, $currenHeight): float
     {
         $bmi = $this->getBmi($age, $gender);
@@ -274,28 +301,7 @@ class RatingPQService implements RatingPQServiceInterface
         }
     }
 
-    /**
-     * @throws Exception
-     */
-    public function update(Request $request): object
-    {
-        $data = $request->validated();
-        $height = $data['height'];
-        $weight = $data['weight'];
-        $child = $this->childRepository->findOrFail($data['child_id']);
-        $bmi = $this->calculateBMI($height, $weight);
-        $age = $child->age;
-        $gender = $child->gender;
-        $month = $child->month;
-        $who = $this->getWho($month, $gender);
-        $whoHeight = $who->height;
-        $bmiCategory = $this->getBmiCategory($bmi, $age, $gender);
-        $data['bmi'] = $bmi;
-        $data['bmi_result'] = $bmiCategory;
-        $data['height_change'] = $height - $whoHeight;
-        $data['height_result'] = $this->getHeightResult($height, $who);
-        return $this->repository->update($data['id'], $data);
-    }
+
 
     public function getHeightResult($currentHeight, $who): string
     {
