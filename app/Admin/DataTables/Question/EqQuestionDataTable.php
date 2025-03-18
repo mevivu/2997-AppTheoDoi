@@ -8,9 +8,9 @@ use App\Enums\ActiveStatus;
 use App\Enums\Question\QuestionType;
 
 
-class AqEqQuestionDataTable extends BaseDataTable
+class EqQuestionDataTable extends BaseDataTable
 {
-    protected $nameTable = 'aqEqQuestionTable';
+    protected $nameTable = 'eqQuestionTable';
 
 
     public function __construct(
@@ -59,7 +59,7 @@ class AqEqQuestionDataTable extends BaseDataTable
 
     protected function setCustomColumns(): void
     {
-        $this->customColumns = config('datatables_columns.eq_aq_questions', []);
+        $this->customColumns = config('datatables_columns.eq_questions', []);
     }
 
     protected function setCustomEditColumns(): void

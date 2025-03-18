@@ -2,7 +2,8 @@
 
 namespace App\Admin\Http\Controllers\Question;
 
-use App\Admin\DataTables\Question\AqEqQuestionDataTable;
+use App\Admin\DataTables\Question\EqQuestionDataTable;
+use App\Admin\DataTables\Question\AqQuestionDataTable;
 use App\Admin\DataTables\Question\IqQuestionDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Question\QuestionEqAqRequest;
@@ -78,7 +79,7 @@ class QuestionController extends Controller
         );
     }
 
-    public function eq(AqEqQuestionDataTable $dataTable)
+    public function eq(EqQuestionDataTable $dataTable)
     {
         return $dataTable->render(
             $this->view['eq'],
@@ -89,7 +90,7 @@ class QuestionController extends Controller
         );
     }
 
-    public function aq(AqEqQuestionDataTable $dataTable)
+    public function aq(AqQuestionDataTable $dataTable)
     {
         return $dataTable->render(
             $this->view['aq'],
