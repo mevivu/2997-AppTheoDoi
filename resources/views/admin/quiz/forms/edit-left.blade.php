@@ -49,6 +49,14 @@
                 <div class="card">
                     <div class="card-body">
                         <!-- Search Section -->
+                        <label for="search-keyword" class="form-label">Chọn độ tuổi</label>
+
+                        <x-select id="filter_age" class="mb-2" name="age_group" :required="true">
+                            @foreach ($age_group as $key => $value)
+                                <x-select-option :value="$key" :title="$value" :selected="!is_null($instance->age_group) && $instance->age_group->value == $key"/>
+                            @endforeach
+                        </x-select>
+
                         <div class="row">
                             <div class="col-12">
                                 <div class="mb-3">

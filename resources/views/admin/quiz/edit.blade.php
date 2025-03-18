@@ -28,6 +28,5 @@
 @endpush
 
 @push('custom-js')
-    @include('admin.quiz.scripts.edit-script')
-
+    @include('admin.quiz.scripts.edit-eq')
 @endpush

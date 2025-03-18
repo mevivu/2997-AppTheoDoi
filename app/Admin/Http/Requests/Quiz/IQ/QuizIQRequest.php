@@ -28,7 +28,7 @@ class QuizIQRequest extends BaseRequest
                 'required',
                 'array',
                 function ($attribute, $value, $fail) {
-                    if (request()->type === QuestionType::IQ->value && count($value) < 3) {
+                    if (request()->type === QuestionType::IQ->value && count($value) < 15) {
                         $fail('Bài kiểm tra phải có đủ 3 câu hỏi.');
                     }
                     if ((request()->type === QuestionType::EQ->value || request()->type === QuestionType::AQ->value) && count($value) < 1) {
@@ -54,7 +54,7 @@ class QuizIQRequest extends BaseRequest
                 'required',
                 'array',
                 function ($attribute, $value, $fail) {
-                    if (request()->type === QuestionType::IQ->value && count($value) < 3) {
+                    if (request()->type === QuestionType::IQ->value && count($value) < 15) {
                         $fail('Bài kiểm tra phải có đủ 15 câu hỏi.');
                     }
                     if ((request()->type === QuestionType::EQ->value || request()->type === QuestionType::AQ->value) && count($value) < 1) {

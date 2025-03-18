@@ -243,10 +243,14 @@ class QuestionController extends Controller
         try {
             $type = $request['type'];
             $keyword = $request->get('keyword', '');
+            $filterAge = $request->get('age_group', '');
             $query = $this->repository->getByQueryBuilder([
                 'question_type' => $type,
                 'status' => ActiveStatus::Active
             ]);
+            if (!empty($filterAge)) {
+                $query->where('age_group', $filterAge);
+            }
             if (!empty($keyword)) {
                 $query->where(function ($q) use ($keyword) {
                     $q->where('question', 'like', '%' . $keyword . '%');
