@@ -43,7 +43,9 @@ class Rating extends Model
         /** Tuôi */
         'age',
         /** Trạng thái */
-        'status'
+        'status',
+        /** Nhãn */
+        'label'
     ];
     protected $casts = [
         'type' => QuestionType::class,

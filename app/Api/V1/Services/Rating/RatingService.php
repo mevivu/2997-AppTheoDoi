@@ -95,6 +95,7 @@ class RatingService implements RatingServiceInterface
         $data['result'] = $result;
         $data['type'] = $type;
         $data['description'] = $this->getDescriptionByTypeAndScore($type, $correctCount);
+        $data['label'] = $this->getLabelByTypeAndScore($type, $correctCount);
         $description = "Đã xuất sắc nhận được chứng chỉ trực tuyến bằng\n cách hoàn thành bài kiểm tra IQ năng cao.Điểm IQ\n đã được xác định bởi Bài kiểm tra IQ năng cao của\n CHAMCON360.";
         $path = $this->createCertificate($childName, $result, $description, now());
         $data['badge_image'] = $path;
@@ -223,31 +224,65 @@ class RatingService implements RatingServiceInterface
         return $data;
     }
 
+    protected function getLabelByTypeAndScore($type, $score)
+    {
+        $descriptions = [
+            QuestionType::IQ->value => [
+                5 => 'Kém',
+                7 => 'Trung bình',
+                8 => 'Khá cao',
+                9 => 'Rất cao',
+                10 => 'Xuất sắc'
+            ],
+            QuestionType::EQ->value => [
+                3 => 'Tiêu cực',
+                5 => ' Tiêu cực ẩn',
+                7 => 'Trung tính',
+                9 => 'Tích cực',
+                9.1 => 'Rất tích cực'
+            ],
+            QuestionType::AQ->value => [
+                3 => 'Quiter',
+                5 => 'Quiter',
+                7 => 'Camper',
+                9 => 'Climber',
+                9.1 => 'Climber'
+            ]
+        ];
+
+        $lastDesc = "Chưa đánh giá được";
+        foreach ($descriptions[$type] as $threshold => $desc) {
+            if ($score >= $threshold) {
+                $lastDesc = $desc;
+            }
+        }
+
+        return $lastDesc;
+    }
 
     protected function getDescriptionByTypeAndScore($type, $score)
     {
         $descriptions = [
             QuestionType::AQ->value => [
-                5 => 'Miễn cưỡng hoặc không sẵn lòng đối mặt với khó khăn',
-                7 => 'Tiêu cực, đề bỏ cuộc',
-                7.6 => 'Tích cực nhưng cần hỗ trợ',
-                8 => 'Tích cực, tự lực và có sự cố gắng',
-                9.5 => 'Rất tích cực, kiên trì, vượt khó tốt'
+                3 => 'Tiêu cực, dễ bỏ cuộc.',
+                5 => 'Miễn cưỡng hoặc không sẵn lòng đối mặt với khó khăn.',
+                7 => 'Tích cực nhưng có thể cần hỗ trợ.',
+                9 => 'Tích cực, tự lực và có sự cố gắng.',
+                9.1 => 'Rất tích cực, kiên trì, vượt khó tốt'
             ],
             QuestionType::IQ->value => [
-                3 => 'Tiêu cực, khó kiểm soát cảm xúc',
-                5 => 'Tiêu cực, nhưng không thể hiện ra ngoài',
-                7 => 'Trung tính, có cố gắng kiểm soát nhưng chưa hoàn toàn tự tin',
-                9 => 'Tích cực, biết cách kiểm soát và xử lý tình huống',
-                '>9' => 'Rất tích cực, dễ dàng kiểm soát cảm xúc và giúp người khác'
+                5 => 'Kém',
+                7 => 'Trung bình',
+                8 => 'Khá cao',
+                9 => 'Rất cao',
+                9.1 => 'Xuất sắc'
             ],
             QuestionType::EQ->value => [
+                3 => 'Tiêu cực, khó kiểm soát cảm xúc.',
                 5 => 'Tiêu cực, nhưng không thể hiện ra ngoài',
-                7 => 'Trung tính, có cố gắng kiểm soát nhưng chưa hoàn toàn tự tin',
-                7.5 => 'Tích cực, biết cách kiểm soát và xử lý tình huống',
-                8 => 'Tích cực, biết cách kiểm soát và xử lý tình huống',
-                9 => 'Rất tích cực, dễ dàng kiểm soát cảm xúc và giúp người khác',
-                9.3 => 'Rất tích cực, dễ dàng kiểm soát cảm xúc và giúp người khác'
+                7 => 'Trung tính, có cố gắng kiểm soát nhưng chưa hoàn toàn tự tin.',
+                9 => 'Tích cực, biết cách kiểm soát và xử lý tình huống.',
+                9.1 => 'Rất tích cực, dễ dàng kiểm soát cảm xúc và giúp người khác'
             ]
         ];
 

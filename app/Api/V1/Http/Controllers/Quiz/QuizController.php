@@ -3,6 +3,8 @@
 namespace App\Api\V1\Http\Controllers\Quiz;
 
 use App\Api\V1\Http\Requests\Quiz\QuizAQAndEQRequest;
+use App\Api\V1\Http\Requests\Quiz\QuizEQRequest;
+use App\Api\V1\Http\Resources\Question\QuestionResource;
 use App\Api\V1\Http\Resources\Quiz\QuizEQAndAQResource;
 use App\Api\V1\Repositories\Quiz\QuizRepositoryInterface;
 use App\Api\V1\Services\Quiz\QuizServiceInterface;
@@ -135,6 +137,51 @@ class QuizController extends Controller
         } catch (Exception $exception) {
             $this->logError('Lỗi hệ thống khi lấy danh sách bài kiểm tra AQ,EQ:', $exception);
             return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách bài kiểm tra AQ,EQ', 500);
+        }
+    }
+
+    /**
+     * Lấy danh sách câu hỏi EQ ngẫu nhiên
+     *
+     * Thông tin trả về gồm câu hỏi (questions) và câu trả lời (answers)
+     *
+     * @authenticated
+     * @queryParam child_id int required ID của trẻ. Example: 1
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Thực hiện thành công.",
+     *     "data": [
+     *         {
+     *             "question_id": 6,
+     *             "question": "Which behavior is best in social situations?",
+     *             "question_type": "eq",
+     *             "answers": [
+     *                 {
+     *                     "answer_id": 25,
+     *                     "answer": "Sharing toys"
+     *                 }
+     *             ]
+     *         }
+     *     ]
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống khi lấy danh sách câu hỏi EQ."
+     * }
+     *
+     * @param QuizEQRequest $request
+     * @return JsonResponse
+     */
+    public function getRandomEQ(QuizEQRequest $request): JsonResponse
+    {
+        try {
+            $response = $this->service->getRandomEQ($request);
+            return $this->jsonResponseSuccess(QuestionResource::collection($response));
+        } catch (Exception $exception) {
+            $this->logError('Lỗi hệ thống khi lấy danh sách câu hỏi EQ:', $exception);
+            return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách câu hỏi EQ', 500);
         }
     }
 }

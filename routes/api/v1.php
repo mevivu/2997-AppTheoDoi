@@ -232,6 +232,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Quiz\QuizController::class)
     ->as('quiz.')
     ->group(function () {
         Route::get('/iq', 'getListIQ');
+        Route::get('/eq', 'getRandomEQ');
         Route::get('/', 'getListAQAndEQ');
     });
 

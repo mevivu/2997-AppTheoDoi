@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('decision_making')->nullable();
             $table->string('optimism')->nullable();
             $table->string('badge_image')->nullable();
+            $table->string('label', 255)->nullable();
             $table->enum('type', QuestionType::getValues())->default(QuestionType::EQ->value);
             $table->enum('status', VerifiedStatus::getValues())->default(VerifiedStatus::Pending->value);
             $table->foreignId('child_id')->nullable()->constrained('children')->onDelete('cascade');
