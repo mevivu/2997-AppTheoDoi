@@ -642,6 +642,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
+        'question_group_id' => [
+            'title' => 'Nhóm câu hỏi',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
         'age_group' => [
             'title' => 'Nhóm tuổi',
             'orderable' => false,

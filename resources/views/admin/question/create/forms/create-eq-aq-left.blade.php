@@ -31,6 +31,16 @@
                         <input type="hidden" name="question[question_type]" value="aq">
                     </div>
                 </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="control-label">{{ __('Nhóm câu hỏi') }}:</label>
+                        <x-select name="question[question_group_id]" :required="true">
+                            @foreach ($questionGroups as $key => $value)
+                                <x-select-option :value="$key" :title="$value" />
+                            @endforeach
+                        </x-select>
+                    </div>
+                </div>
 
             @endif
 

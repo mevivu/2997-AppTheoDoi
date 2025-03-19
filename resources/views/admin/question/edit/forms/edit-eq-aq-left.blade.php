@@ -19,7 +19,6 @@
                 </div>
             </div>
 
-            @if($response->question_type == QuestionType::EQ)
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label class="control-label">{{ __('Nhóm câu hỏi') }}:</label>
@@ -31,7 +30,6 @@
                         </x-select>
                     </div>
                 </div>
-            @endif
 
             <div class="col-12">
                 <div class="mb-3">

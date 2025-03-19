@@ -38,20 +38,20 @@ class AqQuestionDataTable extends BaseDataTable
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4];
+        $this->columnAllSearch = [1, 2, 3, 4, 5];
 
         $this->columnSearchSelect = [
             [
                 'column' => 3,
-                'data' => ActiveStatus::asSelectArray()
+                'data' => AgeGroup::asSelectArray()
             ],
             [
-                'column' => 2,
-                'data' => AgeGroup::asSelectArray()
+                'column' => 4,
+                'data' => ActiveStatus::asSelectArray()
             ]
         ];
 
-        $this->columnSearchDate = [4];
+        $this->columnSearchDate = [5];
     }
 
     public function query()
