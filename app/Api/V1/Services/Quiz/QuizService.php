@@ -88,13 +88,20 @@ class QuizService implements QuizServiceInterface
             ->where('status', ActiveStatus::Active)
             ->get();
 
-        // Group the questions by `question_group_id`, select a random question from each group, and reset the keys
-        return $questions->groupBy('question_group_id')
+        // Group the questions by `question_group_id`, select a random question from each group,
+        // reset the keys, and then randomize the order of the questions
+        $randomQuestions = $questions->groupBy('question_group_id')
             ->map(function ($groupQuestions) {
                 return $groupQuestions->random();
             })
-            ->values();
+            ->values();  // Reset the keys to sequential order
+
+        // Randomize the order of the questions after selection
+        $randomQuestions = $randomQuestions->shuffle();
+
+        return $randomQuestions;
     }
+
 
 
 }

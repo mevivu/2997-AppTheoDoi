@@ -179,7 +179,7 @@ class RatingService implements RatingServiceInterface
 
         $type = $type == QuestionType::AQ->value ? QuestionType::AQ->value : QuestionType::EQ->value;
         $data['description'] = $this->getDescriptionByTypeAndScore($type, $data['score']);
-
+        $data['label'] = $this->getLabelByTypeAndScore($type, $data['score']);
         return $this->repository->create($data);
     }
 
