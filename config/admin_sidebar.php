@@ -515,13 +515,13 @@ return [
 //                'roles' => [],
 //                'permissions' => ['viewQuiz'],
 //            ],
-            [
-                'title' => 'Bài kiểm tra AQ',
-                'routeName' => 'admin.quiz.aq',
-                'icon' => '<i class="ti ti-leaf"></i>',
-                'roles' => [],
-                'permissions' => ['viewQuiz'],
-            ],
+//            [
+//                'title' => 'Bài kiểm tra AQ',
+//                'routeName' => 'admin.quiz.aq',
+//                'icon' => '<i class="ti ti-leaf"></i>',
+//                'roles' => [],
+//                'permissions' => ['viewQuiz'],
+//            ],
 //            [
 //                'title' => 'Bài kiểm tra PQ',
 //                'routeName' => 'admin.quiz.pq',
