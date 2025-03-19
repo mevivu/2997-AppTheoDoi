@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Question\QuestionType;
+use App\Enums\VerifiedStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,6 +20,7 @@ return new class extends Migration
             $table->string('score');
             $table->text('description');
             $table->string('tag', 255)->nullable();
+            $table->integer('age')->nullable();
             $table->string('result')->nullable();
             $table->string('self_regulation')->nullable();
             $table->string('social_awareness')->nullable();
@@ -27,6 +29,7 @@ return new class extends Migration
             $table->string('optimism')->nullable();
             $table->string('badge_image')->nullable();
             $table->enum('type', QuestionType::getValues())->default(QuestionType::EQ->value);
+            $table->enum('status', VerifiedStatus::getValues())->default(VerifiedStatus::Pending->value);
             $table->foreignId('child_id')->nullable()->constrained('children')->onDelete('cascade');
             $table->timestamps();
         });

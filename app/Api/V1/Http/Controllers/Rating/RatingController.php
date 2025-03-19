@@ -88,6 +88,7 @@ class RatingController extends Controller
      *
      * @authenticated
      * @bodyParam child_id int required ID của trẻ mà đánh giá được tạo cho. Example: 1
+     * @bodyParam rating_id int required ID của đánh giá. Example: 1
      * @bodyParam type string required Loại câu hỏi đang được đánh giá. Example: iq
      * @bodyParam answers array required Một mảng các câu trả lời với ID câu hỏi và ID câu trả lời.
      * @bodyParam answers[].question_id int required ID của câu hỏi đang được trả lời.

@@ -508,13 +508,13 @@ return [
                 'roles' => [],
                 'permissions' => ['viewQuiz'],
             ],
-            [
-                'title' => 'Bài kiểm tra EQ',
-                'routeName' => 'admin.quiz.eq',
-                'icon' => '<i class="ti ti-heart"></i>',
-                'roles' => [],
-                'permissions' => ['viewQuiz'],
-            ],
+//            [
+//                'title' => 'Bài kiểm tra EQ',
+//                'routeName' => 'admin.quiz.eq',
+//                'icon' => '<i class="ti ti-heart"></i>',
+//                'roles' => [],
+//                'permissions' => ['viewQuiz'],
+//            ],
             [
                 'title' => 'Bài kiểm tra AQ',
                 'routeName' => 'admin.quiz.aq',

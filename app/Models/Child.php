@@ -7,6 +7,7 @@ use App\Enums\Assessment\AssessmentType;
 use App\Enums\Child\BornStatus;
 use App\Enums\OpenStatus;
 use App\Enums\Permission\PermissionType;
+use App\Enums\Question\QuestionType;
 use App\Enums\User\Gender;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -114,6 +115,15 @@ class Child extends Model
                     'vaccination_type_id' => $schedule->vaccination_type_id,
                     'type' => PermissionType::USER
                 ]);
+            }
+            for ($age = 1; $age <= 16; $age++) {
+                Rating::create(
+                    [
+                        'child_id' => $child->id,
+                        'age' => $age,
+                        'type' => QuestionType::IQ,
+                    ]
+                );
             }
         });
     }

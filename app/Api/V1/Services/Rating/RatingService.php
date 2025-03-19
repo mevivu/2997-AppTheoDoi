@@ -11,11 +11,11 @@ use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\Group\GroupType;
 use App\Enums\Question\QuestionType;
+use App\Enums\VerifiedStatus;
 use Exception;
 use Illuminate\Http\Request;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 
 class RatingService implements RatingServiceInterface
@@ -71,6 +71,7 @@ class RatingService implements RatingServiceInterface
         $data = $request->validated();
         $answers = $data['answers'] ?? [];
         $childId = $data['child_id'];
+        $ratingId = $data['rating_id'];
         $child = $this->childRepository->findOrFail($childId);
         $childName = $child->fullname;
         $type = QuestionType::IQ->value;
@@ -97,7 +98,8 @@ class RatingService implements RatingServiceInterface
         $description = "Đã xuất sắc nhận được chứng chỉ trực tuyến bằng\n cách hoàn thành bài kiểm tra IQ năng cao.Điểm IQ\n đã được xác định bởi Bài kiểm tra IQ năng cao của\n CHAMCON360.";
         $path = $this->createCertificate($childName, $result, $description, now());
         $data['badge_image'] = $path;
-        return $this->repository->create($data);
+        $data['status'] = VerifiedStatus::Active;
+        return $this->repository->update($ratingId, $data);
     }
 
     public function createCertificate($name, $score, $description, $date): string

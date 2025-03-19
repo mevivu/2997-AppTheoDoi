@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Question\QuestionType;
+use App\Enums\VerifiedStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,10 +39,15 @@ class Rating extends Model
         /** Kỹ năng xã hội */
         'optimism',
         /** Hình ảnh danh hiệu */
-        'badge_image'
+        'badge_image',
+        /** Tuôi */
+        'age',
+        /** Trạng thái */
+        'status'
     ];
     protected $casts = [
         'type' => QuestionType::class,
+        'status' => VerifiedStatus::class,
     ];
 
     public function child(): BelongsTo
