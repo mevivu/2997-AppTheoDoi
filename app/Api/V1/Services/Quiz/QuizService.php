@@ -71,10 +71,11 @@ class QuizService implements QuizServiceInterface
     /**
      * @throws \Exception
      */
-    public function getRandomEQ(Request $request)
+    public function getRandomEQAQ(Request $request)
     {
         $data = $request->validated();
         $childId = $data['child_id'];
+        $type = $data['type'];
         $child = $this->childRepository->findOrFail($childId);
         $age = $child->age;
 
@@ -84,7 +85,7 @@ class QuizService implements QuizServiceInterface
         // Fetch questions for the appropriate age group
         $questions = $this->questionRepository->getQueryBuilder()
             ->where('age_group', $ageGroup)
-            ->where('question_type', QuestionType::EQ)
+            ->where('question_type', $type)
             ->where('status', ActiveStatus::Active)
             ->get();
 

@@ -3,7 +3,7 @@
 namespace App\Api\V1\Http\Controllers\Quiz;
 
 use App\Api\V1\Http\Requests\Quiz\QuizAQAndEQRequest;
-use App\Api\V1\Http\Requests\Quiz\QuizEQRequest;
+use App\Api\V1\Http\Requests\Quiz\QuizEQAndAQRequest;
 use App\Api\V1\Http\Resources\Question\QuestionResource;
 use App\Api\V1\Http\Resources\Quiz\QuizEQAndAQResource;
 use App\Api\V1\Repositories\Quiz\QuizRepositoryInterface;
@@ -141,12 +141,13 @@ class QuizController extends Controller
     }
 
     /**
-     * Lấy danh sách câu hỏi EQ ngẫu nhiên
+     * Lấy danh sách câu hỏi EQ,AQ ngẫu nhiên
      *
      * Thông tin trả về gồm câu hỏi (questions) và câu trả lời (answers)
      *
      * @authenticated
      * @queryParam child_id int required ID của trẻ. Example: 1
+     * @queryParam type string required Loại. Example: aq
      *
      * @response 200 {
      *     "status": 200,
@@ -171,13 +172,13 @@ class QuizController extends Controller
      *     "message": "Lỗi hệ thống khi lấy danh sách câu hỏi EQ."
      * }
      *
-     * @param QuizEQRequest $request
+     * @param QuizEQAndAQRequest $request
      * @return JsonResponse
      */
-    public function getRandomEQ(QuizEQRequest $request): JsonResponse
+    public function getRandomEQ(QuizEQAndAQRequest $request): JsonResponse
     {
         try {
-            $response = $this->service->getRandomEQ($request);
+            $response = $this->service->getRandomEQAQ($request);
             return $this->jsonResponseSuccess(QuestionResource::collection($response));
         } catch (Exception $exception) {
             $this->logError('Lỗi hệ thống khi lấy danh sách câu hỏi EQ:', $exception);

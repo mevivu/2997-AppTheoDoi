@@ -11,5 +11,5 @@ interface QuizServiceInterface
 
     public function getListAQAndEQ(Request $request);
 
-    public function getRandomEQ(Request $request);
+    public function getRandomEQAQ(Request $request);
 }
