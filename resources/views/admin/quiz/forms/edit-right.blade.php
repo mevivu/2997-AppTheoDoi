@@ -32,6 +32,23 @@
         </div>
     @endif
 
+    @if($instance->type == QuestionType::EQ)
+        <div class="card mb-3 custom-shadow">
+            <div class="card-header">
+                @lang('Random')
+            </div>
+            <div class="card-body p-2">
+                <x-select name="random">
+                    <x-select-option value="" title="Chọn ngẫu nhiên" :selected="is_null(old('random'))"/>
+                    @foreach ($random as $key => $value)
+                        <x-select-option :value="$key" :title="$value" :selected="old('random') == $key"/>
+                    @endforeach
+                </x-select>
+            </div>
+        </div>
+    @endif
+
+
 
     <div class="card custom-shadow mb-3">
         <div class="card-header">

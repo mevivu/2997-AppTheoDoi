@@ -57,9 +57,19 @@ class AqQuestionDataTable extends BaseDataTable
     public function query()
     {
         if (request()->route()->getName() == 'admin.question.eq') {
-            return $this->repository->getByQueryBuilder(['question_type' => QuestionType::EQ->value]);
+            return $this->repository->getByQueryBuilder(
+                [
+                    'question_type' => QuestionType::EQ,
+                    ['status', '!=', ActiveStatus::Deleted]
+                ]
+            );
         } else {
-            return $this->repository->getByQueryBuilder(['question_type' => QuestionType::AQ->value]);
+            return $this->repository->getByQueryBuilder(
+                [
+                    'question_type' => QuestionType::AQ,
+                    ['status', '!=', ActiveStatus::Deleted]
+                ]
+            );
         }
     }
 

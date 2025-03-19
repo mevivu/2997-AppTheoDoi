@@ -7,6 +7,7 @@ use App\Enums\DefaultStatus;
 use App\Enums\Group\GroupType;
 use App\Enums\Permission\PermissionType;
 use App\Enums\Question\AgeGroup;
+use App\Enums\Random;
 use App\Enums\Transaction\TransactionStatus;
 use App\Enums\DeleteStatus;
 use App\Enums\FeaturedStatus;
@@ -43,6 +44,9 @@ return [
     AnswerType::class => [
         AnswerType::Image->value => 'Hình ảnh',
         AnswerType::Normal->value => 'Văn bản',
+    ],
+    Random::class => [
+        Random::YES->value => 'Có',
     ],
     AgeGroup::class => [
         AgeGroup::Under_10->value => 'Dưới 10 tuổi',

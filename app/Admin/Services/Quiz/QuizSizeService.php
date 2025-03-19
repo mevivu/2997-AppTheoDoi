@@ -3,9 +3,13 @@
 namespace App\Admin\Services\Quiz;
 
 
+use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Admin\Repositories\Quiz\QuizRepositoryInterface;
 use App\Api\V1\Support\UseLog;
 use App\Enums\ActiveStatus;
+use App\Enums\Question\AgeGroup;
+use App\Enums\Question\QuestionType;
+use App\Enums\Random;
 use Exception;
 use Illuminate\Http\Request;
 use App\Admin\Traits\Setup;
@@ -23,13 +27,17 @@ class QuizSizeService implements QuizServiceInterface
 
     protected QuizRepositoryInterface $repository;
 
+    protected QuestionRepositoryInterface $questionRepository;
+
 
     public function __construct(
-        QuizRepositoryInterface $repository,
+        QuizRepositoryInterface     $repository,
+        QuestionRepositoryInterface $questionRepository
 
     )
     {
         $this->repository = $repository;
+        $this->questionRepository = $questionRepository;
     }
 
     public function checkTypeExists(array $types): bool
@@ -37,6 +45,7 @@ class QuizSizeService implements QuizServiceInterface
         // Kiểm tra nếu có bất kỳ quiz nào với type EQ hoặc AQ
         return $this->repository->existsWithTypes($types);
     }
+
     /**
      * @throws Exception
      */
@@ -75,7 +84,25 @@ class QuizSizeService implements QuizServiceInterface
     {
 
         $data = $request->validated();
-        $questionIds = json_decode($data['selected_questions'] ?? '[]', true);
+        $random = $data['random'] ?? null;
+        $ageGroup = $data['age_group'] ?? null;
+        $type = $data['type'];
+        if ($random === Random::YES->value && $type === QuestionType::EQ->value) {
+            $questions = $this->questionRepository->getQueryBuilder()
+                ->where('age_group', $ageGroup)
+                ->where('question_type', QuestionType::EQ)
+                ->where('status', ActiveStatus::Active)
+                ->get();
+
+            $groupedQuestions = $questions->groupBy('question_group_id');
+            $randomQuestions = $groupedQuestions->map(function ($groupQuestions) {
+                return $groupQuestions->random();
+            });
+
+            $questionIds = $randomQuestions->pluck('id')->toArray();
+        } else {
+            $questionIds = json_decode($data['selected_questions'] ?? '[]', true);
+        }
         $quiz = $this->repository->update($data['id'], $data);
         $quiz->questions()->sync($questionIds);
         return $quiz;

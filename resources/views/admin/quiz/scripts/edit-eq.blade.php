@@ -16,10 +16,11 @@
         const questionsUrl = "{{ route('admin.question.type') }}";
         const questionsUrlIDS = "{{ route('admin.question.by-ids') }}";
         let selectedQuestionIds = @json($selected_questions->pluck('id'));
-        console.log(selectedQuestionIds)
+        // console.log(selectedQuestionIds)
         // Pre-selected questions from server
         let debounceTimer; // Timer for debouncing updates to selected questions
         let firstLoad = true;
+        let load = firstLoad;
 
         function loadSelectedFirstQuestions() {
             if (firstLoad) {
@@ -101,24 +102,10 @@
             }
         }
 
-        function restrictMultipleGroupSelection() {
-            const selectedGroups = {};
-            $('input[name="question_ids[]"]:checked').each(function() {
-                const groupId = $(this).data('group-id');
-                if (selectedGroups[groupId]) {
-                    $(this).prop('checked', false);
-                    alert('Chỉ được chọn một câu hỏi trong mỗi nhóm.');
-                } else {
-                    selectedGroups[groupId] = true;
-                }
-            });
-        }
-
         // Render questions in the container
         function renderQuestions(questions, container) {
             const selectedType = $('#type-select').val();
             questions.forEach(function (question) {
-                console.log(question);
                 const isChecked = selectedQuestionIds.includes(Number(question.id)) ? "checked" : "";
 
                 let groupNameHtml = '';
@@ -185,6 +172,7 @@
         async function updateSelectedQuestions() {
             const selectedQuestionsContainer = $('#selected-questions');
             const loadingIndicator = $('#loading-indicator');
+            const quizId = $('input[name="id"]').val();
             selectedQuestionsContainer.empty();
             loadingIndicator.show();
 
@@ -196,9 +184,13 @@
                         headers: {
                             'X-CSRF-TOKEN': token
                         },
-                        data: {ids: selectedQuestionIds}
+                        data: {
+                            ids: selectedQuestionIds,
+                            quiz_id: quizId,
+                            load: load
+                        }
                     });
-
+                    load = false
                     const list = $('<ul class="list-group"></ul>');
                     response.data.forEach(function (question) {
                         if ($('#selected-questions li').find(`button[data-id="${question.id}"]`).length === 0) {

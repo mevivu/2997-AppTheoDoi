@@ -51,7 +51,12 @@ class IqQuestionDataTable extends BaseDataTable
 
     public function query()
     {
-        return $this->repository->getByQueryBuilder(['question_type' => QuestionType::IQ->value]);
+        return $this->repository->getByQueryBuilder(
+            [
+                'question_type' => QuestionType::IQ,
+                ['status', '!=', ActiveStatus::Deleted]
+            ]
+        );
     }
 
     protected function setCustomColumns(): void

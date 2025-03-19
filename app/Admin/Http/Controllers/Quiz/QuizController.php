@@ -13,6 +13,7 @@ use App\Admin\Services\Quiz\QuizServiceInterface;
 use App\Enums\ActiveStatus;
 use App\Enums\Question\AgeGroup;
 use App\Enums\Question\QuestionType;
+use App\Enums\Random;
 use App\Traits\ResponseController;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -275,13 +276,15 @@ class QuizController extends Controller
         }
 
         $view = $instance->type == QuestionType::IQ ? $this->view['edit-iq'] : $this->view['edit'];
-
+        $statusOptions = ActiveStatus::asSelectArray();
+        unset($statusOptions[ActiveStatus::Deleted->value]);
         return view(
             $view,
             [
                 'instance' => $instance,
-                'status' => ActiveStatus::asSelectArray(),
+                'status' => $statusOptions,
                 'age_group' => AgeGroup::asSelectArray(),
+                'random' => Random::asSelectArray(),
                 'type' => QuestionType::asSelectArray(),
                 'selected_questions' => $selectedQuestions,
                 'questions_type' => $mergedQuestions,

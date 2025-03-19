@@ -10,6 +10,7 @@ use App\Admin\Http\Requests\Question\QuestionEqAqRequest;
 use App\Admin\Http\Requests\Question\QuestionIqRequest;
 use App\Admin\Repositories\Question\QuestionRepositoryInterface;
 use App\Admin\Repositories\QuestionGroup\QuestionGroupRepositoryInterface;
+use App\Admin\Repositories\Quiz\QuizRepositoryInterface;
 use App\Admin\Services\Question\QuestionServiceInterface;
 use App\Enums\ActiveStatus;
 use App\Enums\Answser\AnswerType;
@@ -24,17 +25,20 @@ use Illuminate\Http\Request;
 class QuestionController extends Controller
 {
     protected QuestionGroupRepositoryInterface $questionGroupRepository;
+    protected QuizRepositoryInterface $quizRepository;
 
     public function __construct(
         QuestionRepositoryInterface      $repository,
         QuestionGroupRepositoryInterface $questionGroupRepository,
         QuestionServiceInterface         $service,
+        QuizRepositoryInterface         $quizRepository
     )
     {
         parent::__construct();
         $this->repository = $repository;
         $this->questionGroupRepository = $questionGroupRepository;
         $this->service = $service;
+        $this->quizRepository = $quizRepository;
     }
 
     public function getView(): array
@@ -275,11 +279,30 @@ class QuestionController extends Controller
             if (empty($ids)) {
                 return response()->json(['data' => [], 'message' => 'No IDs provided'], 400);
             }
+            $quizId = $request['quiz_id'];
+            $load = filter_var($request->get('load'), FILTER_VALIDATE_BOOLEAN);
 
-            $questions = $this->repository->getByQueryBuilder([
-                ['id', 'IN', $ids],
-                'status' => ActiveStatus::Active
-            ])->get();
+            if($load && $quizId){
+                $quiz = $this->quizRepository->findOrFail($quizId);
+                $questions = $quiz->questions;
+                if (!empty($ids)) {
+                    $additionalVideos = $this->repository->getByQueryBuilder([
+                        ['id', 'IN', $ids],
+                        'question_type' => $quiz->type,
+                        'status' => ActiveStatus::Active
+                    ])->get();
+
+                    $questionsData = $questions->merge($additionalVideos);
+                    $questionsData->load('group');
+                }
+            }
+            else {
+                $questions = $this->repository->getByQueryBuilder([
+                    ['id', 'IN', $ids],
+                    'status' => ActiveStatus::Active
+                ])->get();
+            }
+
 
             return response()->json(['data' => $questions], 200);
         } catch (Exception $e) {
