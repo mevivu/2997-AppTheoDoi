@@ -95,6 +95,7 @@
                 }
                 $('#checked-count').text(selectedQuestionIds.length);
             } catch (error) {
+                console.log(error)
                 $('#loading').hide();
                 questionContainer.html('<div>Lỗi khi tải câu hỏi.</div>');
             }
@@ -121,8 +122,8 @@
                 const isChecked = selectedQuestionIds.includes(Number(question.id)) ? "checked" : "";
 
                 let groupNameHtml = '';
-                if (selectedType === 'eq') {
-                    groupNameHtml = `<b>${question.group.name}</b>`;
+                if (selectedType === 'eq' || selectedType === 'aq') {
+                    groupNameHtml = `<b>${question.group?.name ?? 'Chưa có'}</b>`;
                 }
 
                 const questionHtml = `
