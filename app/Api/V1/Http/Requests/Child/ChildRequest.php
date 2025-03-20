@@ -26,20 +26,13 @@ class ChildRequest extends BaseRequest
      */
     protected function methodPost(): array
     {
-        $validate = [];
-
-        if ($this->input('is_born') === BornStatus::Born->value) {
-            $validate['birthday'] = ['required', 'date_format:Y-m-d'];
-        } else {
-            $validate['due_date'] = ['required', 'date_format:Y-m-d'];
-        }
-
-        return array_merge($validate, [
-            'fullname' => ['required', 'string'],
-            'gender' => ['required', new Enum(Gender::class)],
-            'is_born' => ['required', new Enum(BornStatus::class)],
-            'avatar' => ['nullable'],
-        ]);
+       return [
+           'fullname' => ['required', 'string'],
+           'gender' => ['required', new Enum(Gender::class)],
+           'is_born' => ['required', new Enum(BornStatus::class)],
+           'avatar' => ['nullable'],
+           'birthday' => ['required', 'date_format:Y-m-d'],
+       ];
     }
 
 
@@ -51,8 +44,7 @@ class ChildRequest extends BaseRequest
             'fullname' => ['required', 'string'],
             'gender' => ['required', new Enum(Gender::class)],
             'is_born' => ['required', new Enum(BornStatus::class)],
-            'birthday' => ['nullable', 'date_format:Y-m-d'],
-            'due_date' => ['nullable', 'date_format:Y-m-d'],
+            'birthday' => ['required', 'date_format:Y-m-d'],
             'avatar' => ['nullable'],
         ];
     }
