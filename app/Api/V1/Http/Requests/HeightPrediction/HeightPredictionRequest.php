@@ -3,7 +3,7 @@
 namespace App\Api\V1\Http\Requests\HeightPrediction;
 
 use App\Api\V1\Http\Requests\BaseRequest;
-use App\Api\V1\Rules\ValidUnBornChild;
+use App\Api\V1\Rules\ValidChildPredictHeight;
 
 
 class HeightPredictionRequest extends BaseRequest
@@ -16,7 +16,7 @@ class HeightPredictionRequest extends BaseRequest
     protected function methodGet(): array
     {
         return [
-            'child_id' => ['required', 'numeric', new ValidUnBornChild()],
+            'child_id' => ['required', 'numeric', new ValidChildPredictHeight()],
         ];
     }
 
