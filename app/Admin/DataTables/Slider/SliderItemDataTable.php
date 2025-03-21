@@ -31,7 +31,6 @@ class SliderItemDataTable extends BaseDataTable
     public function setView()
     {
         $this->view = [
-            'action' => 'admin.sliders.items.datatable.action',
             'editlink' => 'admin.sliders.items.datatable.editlink',
             'image' => 'admin.sliders.items.datatable.image',
         ];
@@ -67,7 +66,6 @@ class SliderItemDataTable extends BaseDataTable
     protected function setCustomAddColumns(): void
     {
         $this->customAddColumns = [
-            'action' => $this->view['action'],
         ];
     }
 
@@ -94,14 +92,10 @@ class SliderItemDataTable extends BaseDataTable
         $this->instanceDataTable = $this->instanceDataTable->editColumn('created_at', '{{ date("d-m-Y", strtotime($created_at)) }}');
     }
 
-    protected function addColumnAction(): void
-    {
-        $this->instanceDataTable = $this->instanceDataTable->addColumn('action', $this->view['action']);
-    }
 
     protected function setCustomRawColumns()
     {
-        $this->customRawColumns = ['title', 'image', 'action'];
+        $this->customRawColumns = ['title', 'image'];
     }
 
 
