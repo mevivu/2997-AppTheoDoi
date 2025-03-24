@@ -377,29 +377,29 @@ return [
             ]
         ]
     ],
-    [
-        'title' => 'Thông tin dự kiến',
-        'routeName' => 'admin.expected.index',
-        'icon' => '<i class="ti ti-award"></i>',
-        'roles' => [],
-        'permissions' => ['createExpected', 'viewExpected', 'updateExpected', 'deleteExpected'],
-        'sub' => [
-            [
-                'title' => 'Thêm',
-                'routeName' => 'admin.expected.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createExpected'],
-            ],
-            [
-                'title' => 'DS Thông tin',
-                'routeName' => 'admin.expected.index',
-                'icon' => '<i class="ti ti-list"></i>',
-                'roles' => [],
-                'permissions' => ['viewExpected'],
-            ]
-        ]
-    ],
+//    [
+//        'title' => 'Thông tin dự kiến',
+//        'routeName' => 'admin.expected.index',
+//        'icon' => '<i class="ti ti-award"></i>',
+//        'roles' => [],
+//        'permissions' => ['createExpected', 'viewExpected', 'updateExpected', 'deleteExpected'],
+//        'sub' => [
+//            [
+//                'title' => 'Thêm',
+//                'routeName' => 'admin.expected.create',
+//                'icon' => '<i class="ti ti-plus"></i>',
+//                'roles' => [],
+//                'permissions' => ['createExpected'],
+//            ],
+//            [
+//                'title' => 'DS Thông tin',
+//                'routeName' => 'admin.expected.index',
+//                'icon' => '<i class="ti ti-list"></i>',
+//                'roles' => [],
+//                'permissions' => ['viewExpected'],
+//            ]
+//        ]
+//    ],
 
     [
         'title' => 'product',
