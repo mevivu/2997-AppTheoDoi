@@ -201,19 +201,19 @@ class RatingService implements RatingServiceInterface
 
             switch ($groupType) {
                 case GroupType::Empathy:
-                    $data['self_regulation'] = $totalCount > 0 ? "{$score}/{$totalCount}" : "0/0";
+                    $data['self_regulation'] = $totalCount > 0 ? "{$score}" : "0";
                     break;
                 case GroupType::Motivation:
-                    $data['social_awareness'] = $totalCount > 0 ? "{$score}/{$totalCount}" : "0/0";
+                    $data['social_awareness'] = $totalCount > 0 ? "{$score}" : "0";
                     break;
                 case GroupType::SocialSkills:
-                    $data['relationship_management'] = $totalCount > 0 ? "{$score}/{$totalCount}" : "0/0";
+                    $data['relationship_management'] = $totalCount > 0 ? "{$score}" : "0";
                     break;
                 case GroupType::EmotionalRegulation:
-                    $data['decision_making'] = $totalCount > 0 ? "{$score}/{$totalCount}" : "0/0";
+                    $data['decision_making'] = $totalCount > 0 ? "{$score}" : "0";
                     break;
                 case GroupType::EmotionalAwareness:
-                    $data['optimism'] = $totalCount > 0 ? "{$score}/{$totalCount}" : "0/0";
+                    $data['optimism'] = $totalCount > 0 ? "{$score}" : "0";
                     break;
                 default:
                     break;

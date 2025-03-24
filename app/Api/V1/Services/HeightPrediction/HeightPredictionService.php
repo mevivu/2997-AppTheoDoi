@@ -77,6 +77,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         $adviceMessage = $this->getAdviceMessage($currentHeight, $heightWho);
         $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight);
+
         $heightWhoCurrent = abs($heightChangeLasted - $who->height );
 
         return [
