@@ -27,6 +27,11 @@ return new class extends Migration
             $table->string('relationship_management')->nullable();
             $table->string('decision_making')->nullable();
             $table->string('optimism')->nullable();
+            $table->integer('endurance')->nullable(); // Khả năng chịu đựng
+            $table->integer('flexibility')->nullable(); // Tính linh hoạt
+            $table->integer('perseverance')->nullable(); // Tính kiên trì
+            $table->integer('positivity')->nullable(); // Tính tích cực
+            $table->integer('self_reflection')->nullable(); // Khả năng tự phản hồi
             $table->string('badge_image')->nullable();
             $table->string('label', 255)->nullable();
             $table->enum('type', QuestionType::getValues())->default(QuestionType::EQ->value);

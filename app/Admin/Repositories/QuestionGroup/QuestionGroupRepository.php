@@ -11,4 +11,11 @@ class QuestionGroupRepository extends EloquentRepository implements QuestionGrou
     {
         return QuestionGroup::class;
     }
+
+    public function getByActiveAndTypes($status, $types)
+    {
+        return QuestionGroup::where('status', $status)
+            ->whereIn('type', $types)
+            ->get();
+    }
 }

@@ -215,6 +215,21 @@ class RatingService implements RatingServiceInterface
                 case GroupType::EmotionalAwareness:
                     $data['optimism'] = $totalCount > 0 ? "{$score}" : "0";
                     break;
+                case GroupType::Tolerance:
+                    $data['endurance'] = $totalCount > 0 ? "{$score}" : "0";
+                    break;
+                case GroupType::Flexibility:
+                    $data['flexibility'] = $totalCount > 0 ? "{$score}" : "0";
+                    break;
+                case GroupType::Perseverance:
+                    $data['perseverance'] = $totalCount > 0 ? "{$score}" : "0";
+                    break;
+                case GroupType::Positivity:
+                    $data['positivity'] = $totalCount > 0 ? "{$score}" : "0";
+                    break;
+                case GroupType::SelfReflection:
+                    $data['self_reflection'] = $totalCount > 0 ? "{$score}" : "0";
+                    break;
                 default:
                     break;
             }

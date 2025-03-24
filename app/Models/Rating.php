@@ -45,7 +45,17 @@ class Rating extends Model
         /** Trạng thái */
         'status',
         /** Nhãn */
-        'label'
+        'label',
+        /** Khả năng chịu đựng */
+        'endurance',
+        /** Tính linh hoạt */
+        'flexibility',
+        /** Tính kiên trì */
+        'perseverance',
+        /** Tính tích cực */
+        'positivity',
+        /** Khả năng tự phản hồi */
+        'self_reflection'
     ];
     protected $casts = [
         'type' => QuestionType::class,

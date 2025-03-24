@@ -58,6 +58,11 @@ return [
         GroupType::SocialSkills->value => 'Kỹ năng xã hội',
         GroupType::EmotionalRegulation->value => 'Kiểm soát cảm xúc',
         GroupType::EmotionalAwareness->value => 'Nhận thức cảm xúc',
+        GroupType::Tolerance->value => 'Khả năng chịu đựng',
+        GroupType::Flexibility->value => 'Tính linh hoạt',
+        GroupType::Perseverance->value => 'Tính kiên trì',
+        GroupType::Positivity->value => 'Tính tích cực',
+        GroupType::SelfReflection->value => 'Khả năng tự phản hồi',
 
     ],
     PermissionType::class => [

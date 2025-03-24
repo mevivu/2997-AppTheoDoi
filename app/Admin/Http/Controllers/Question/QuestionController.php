@@ -14,9 +14,13 @@ use App\Admin\Repositories\Quiz\QuizRepositoryInterface;
 use App\Admin\Services\Question\QuestionServiceInterface;
 use App\Enums\ActiveStatus;
 use App\Enums\Answser\AnswerType;
+use App\Enums\Group\GroupType;
 use App\Enums\Question\AgeGroup;
 use App\Enums\Question\QuestionType;
 use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -31,7 +35,7 @@ class QuestionController extends Controller
         QuestionRepositoryInterface      $repository,
         QuestionGroupRepositoryInterface $questionGroupRepository,
         QuestionServiceInterface         $service,
-        QuizRepositoryInterface         $quizRepository
+        QuizRepositoryInterface          $quizRepository
     )
     {
         parent::__construct();
@@ -145,36 +149,56 @@ class QuestionController extends Controller
 
     public function updateIq(QuestionIqRequest $request): RedirectResponse
     {
-        if($request->question['status']==ActiveStatus::Deleted->value){
+        if ($request->question['status'] == ActiveStatus::Deleted->value) {
             $this->repository->delete($request->question['id']);
             return to_route($this->route['iq'])->with('success', __('notifySuccess'));
-        }else
+        } else
             $this->service->updateIq($request);
         return back()->with('success', __('notifySuccess'));
 
     }
 
-    public function createEq()
+    public function createEq(): Factory|View|Application
     {
+        $questionGroupEQ = [
+            GroupType::Empathy,
+            GroupType::Motivation,
+            GroupType::SocialSkills,
+            GroupType::EmotionalRegulation,
+            GroupType::EmotionalAwareness,
+        ];
+        $questionGroup = $this->questionGroupRepository
+            ->getByActiveAndTypes(ActiveStatus::Active->value, $questionGroupEQ)
+            ->pluck('name', 'id');
         return view($this->view['createEq'], [
             'answer_types' => AnswerType::asSelectArray(),
             'status' => ActiveStatus::asSelectArray(),
             'types' => QuestionType::asSelectArray(),
             'age_group' => AgeGroup::asSelectArray(),
-            'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
+            'questionGroups' => $questionGroup,
             'breadcrumbs' => $this->crums->add('Danh sách câu hỏi EQ', route($this->route['eq']))->add('Thêm mới'),
             'back' => route('admin.question.eq'),
         ]);
     }
 
-    public function createAq()
+    public function createAq(): Factory|View|Application
     {
+        $questionGroupAQ = [
+            GroupType::Tolerance,
+            GroupType::Flexibility,
+            GroupType::Perseverance,
+            GroupType::Positivity,
+            GroupType::SelfReflection,
+        ];
+        $questionGroup = $this->questionGroupRepository
+            ->getByActiveAndTypes(ActiveStatus::Active->value, $questionGroupAQ)
+            ->pluck('name', 'id');
         return view($this->view['createAq'], [
             'answer_types' => AnswerType::asSelectArray(),
             'status' => ActiveStatus::asSelectArray(),
             'types' => QuestionType::asSelectArray(),
             'age_group' => AgeGroup::asSelectArray(),
-            'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
+            'questionGroups' => $questionGroup,
             'breadcrumbs' => $this->crums->add('Danh sách câu hỏi AQ', route($this->route['aq']))->add('Thêm mới'),
             'back' => route('admin.question.aq'),
         ]);
@@ -189,11 +213,32 @@ class QuestionController extends Controller
         return back()->with('error', __('notifyFail'));
     }
 
-    public function editEqAq($id)
+    public function editEqAq($id): Factory|View|Application
     {
         $response = $this->repository->find($id);
+        $questionType = $response->question_type;
         $type = $response->answers->first()->type->value;
-        $back = $response->question_type == QuestionType::EQ ? route('admin.question.eq'):route('admin.question.aq');
+        $back = $response->question_type == QuestionType::EQ ? route('admin.question.eq') : route('admin.question.aq');
+        $questionGroupAQ = [
+            GroupType::Tolerance,
+            GroupType::Flexibility,
+            GroupType::Perseverance,
+            GroupType::Positivity,
+            GroupType::SelfReflection,
+        ];
+        $questionGroupEQ = [
+            GroupType::Empathy,
+            GroupType::Motivation,
+            GroupType::SocialSkills,
+            GroupType::EmotionalRegulation,
+            GroupType::EmotionalAwareness,
+        ];
+        $queryGroup = $questionType == QuestionType::EQ ? $questionGroupEQ : $questionGroupAQ;
+        $questionGroup = $this->questionGroupRepository
+            ->getByActiveAndTypes(ActiveStatus::Active->value, $queryGroup)
+            ->pluck('name', 'id');
+
+
         return view($this->view['editEqAq'], [
             'response' => $response,
             'type' => $type,
@@ -201,7 +246,7 @@ class QuestionController extends Controller
             'status' => ActiveStatus::asSelectArray(),
             'types' => QuestionType::asSelectArray(),
             'age_group' => AgeGroup::asSelectArray(),
-            'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
+            'questionGroups' => $questionGroup,
             'breadcrumbs' => $this->crums->add('Danh sách câu hỏi', route($this->route['eq']))->add('Cập nhật'),
             'back' => $back,
         ]);
@@ -209,12 +254,12 @@ class QuestionController extends Controller
 
     public function updateEqAq(QuestionEqAqRequest $request): RedirectResponse
     {
-        if($request->question['status']==ActiveStatus::Deleted->value){
+        if ($request->question['status'] == ActiveStatus::Deleted->value) {
             $this->repository->delete($request->question['id']);
-            if($request->question['question_type']==QuestionType::EQ->value)
+            if ($request->question['question_type'] == QuestionType::EQ->value)
                 return to_route($this->route['eq'])->with('success', __('notifySuccess'));
             return to_route($this->route['aq'])->with('success', __('notifySuccess'));
-        }else
+        } else
             $this->service->updateEqAq($request);
         return back()->with('success', __('notifySuccess'));
     }
@@ -282,7 +327,7 @@ class QuestionController extends Controller
             $quizId = $request['quiz_id'];
             $load = filter_var($request->get('load'), FILTER_VALIDATE_BOOLEAN);
 
-            if($load && $quizId){
+            if ($load && $quizId) {
                 $quiz = $this->quizRepository->findOrFail($quizId);
                 $questions = $quiz->questions;
                 if (!empty($ids)) {
@@ -295,8 +340,7 @@ class QuestionController extends Controller
                     $questionsData = $questions->merge($additionalVideos);
                     $questionsData->load('group');
                 }
-            }
-            else {
+            } else {
                 $questions = $this->repository->getByQueryBuilder([
                     ['id', 'IN', $ids],
                     'status' => ActiveStatus::Active
