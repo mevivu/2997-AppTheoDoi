@@ -17,7 +17,20 @@ class RatingCollection extends ResourceCollection
     {
         return [
             'ratings' => $this->collection->map(function ($item) {
-                return new RatingResource($item);
+                return [
+                    'child_id' => $item->child_id,
+                    'tag' => $item->tag,
+                    'type' => $item->type,
+                    'social_awareness' => $item->social_awareness,
+                    'relationship_management' => $item->relationship_management,
+                    'decision_making' => $item->decision_making,
+                    'optimism' => $item->optimism,
+                    'score' => $item->score,
+                    'description' => $item->description,
+                    'label' => $item->label,
+                    'updated_at' => $item->updated_at,
+                    'created_at' => $item->created_at
+                ];
             }),
             'links' => [
                 'first' => $this->url(1),

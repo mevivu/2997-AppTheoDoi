@@ -19,21 +19,21 @@ class AESHelper
     }
 
     /** Mã hoá  */
-    public static function encrypt($value): bool|string
+    public static function encrypt($value, $key = null): bool|string
     {
-        $key = self::getAESSecretKey();
-        return openssl_encrypt($value, 'AES-256-CBC', $key, 0, self::getIv());
+        $key = $key ?: self::getAESSecretKey();
+        return openssl_encrypt($value, 'AES-256-CBC', $key, 0, self::getIv($key));
     }
 
     /** Giải mã */
-    public static function decrypt($value): bool|string
+    public static function decrypt($value, $key = null): bool|string
     {
-        $key = self::getAESSecretKey();
-        return openssl_decrypt($value, 'AES-256-CBC', $key, 0, self::getIv());
+        $key = $key ?: self::getAESSecretKey();
+        return openssl_decrypt($value, 'AES-256-CBC', $key, 0, self::getIv($key));
     }
 
-    protected static function getIv(): string
+    protected static function getIv($key): string
     {
-        return substr(self::getAESSecretKey(), 0, 16);
+        return str_pad(substr($key, 0, 16), 16, "\0");
     }
 }

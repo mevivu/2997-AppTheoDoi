@@ -1,8 +1,11 @@
 <?php
 
 namespace App\Admin\Http\Controllers\Setting;
+
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Repositories\Setting\SettingRepositoryInterface;
+use App\Admin\Repositories\User\UserRepositoryInterface;
+use App\AES\AESHelper;
 use App\Enums\Setting\SettingGroup;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -12,13 +15,17 @@ use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
+    protected UserRepositoryInterface $userRepository;
     public function __construct(
-        SettingRepositoryInterface $repository
+        SettingRepositoryInterface $repository,
+        UserRepositoryInterface $userRepository
     )
     {
         parent::__construct();
         $this->repository = $repository;
+        $this->userRepository = $userRepository;
     }
+
     public function getView(): array
     {
         return [
@@ -26,13 +33,13 @@ class SettingController extends Controller
             'system' => 'admin.settings.system',
         ];
     }
+
     public function general(): Factory|View|Application
     {
         $settings = $this->repository->getByGroup([SettingGroup::General]);
 
         return view($this->view['general'], compact('settings'));
     }
-
 
 
     public function system(): Factory|View|Application
@@ -47,6 +54,28 @@ class SettingController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $data = $request->except('_token', '_method');
+        if($data['aes_secret_key']){
+            $aesSelectKeyOld = $this->repository->getBy(['setting_key' => 'aes_secret_key'])->first()->plain_value;
+            if ($aesSelectKeyOld !== $data['aes_secret_key']) {
+                $users = $this->userRepository->getAll();
+
+                foreach ($users as $user) {
+                    $usernameDecrypted = AESHelper::decrypt($user->username, $aesSelectKeyOld);
+                    $emailDecrypted = AESHelper::decrypt($user->email, $aesSelectKeyOld);
+                    $phoneDecrypted = AESHelper::decrypt($user->phone, $aesSelectKeyOld);
+                    $addressDecrypted = $user->address ? AESHelper::decrypt($user->address, $aesSelectKeyOld) : null;
+
+                    $user->username = AESHelper::encrypt($usernameDecrypted, $data['aes_secret_key']);
+                    $user->email = AESHelper::encrypt($emailDecrypted, $data['aes_secret_key']);
+                    $user->phone = AESHelper::encrypt($phoneDecrypted, $data['aes_secret_key']);
+                    if ($addressDecrypted) {
+                        $user->address = AESHelper::encrypt($addressDecrypted, $data['aes_secret_key']);
+                    }
+
+                    $user->save();
+                }
+            }
+        }
         $this->repository->updateMultipleRecord($data);
         return back()->with('success', __('notifySuccess'));
     }
