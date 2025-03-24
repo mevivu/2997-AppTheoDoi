@@ -25,6 +25,7 @@ class RatingCollection extends ResourceCollection
                     'relationship_management' => $item->relationship_management,
                     'decision_making' => $item->decision_making,
                     'optimism' => $item->optimism,
+                    'self_regulation' => $item->self_regulation,
                     'endurance' => $item->endurance,
                     'flexibility' => $item->flexibility,
                     'perseverance' => $item->perseverance,

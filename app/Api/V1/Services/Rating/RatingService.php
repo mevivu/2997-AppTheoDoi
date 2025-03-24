@@ -235,7 +235,7 @@ class RatingService implements RatingServiceInterface
             }
         }
 
-        $data['score'] = $totalScore / 2.5;
+        $data['score'] = ($totalScore / 2.5) /2;
         return $data;
     }
 
