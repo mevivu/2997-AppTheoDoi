@@ -11,6 +11,7 @@ use App\Api\V1\Support\AuthSupport;
 use App\Enums\Assessment\AssessmentType;
 use App\Enums\OpenStatus;
 use App\Enums\Question\QuestionType;
+use App\Enums\VerifiedStatus;
 use Illuminate\Http\Request;
 
 
@@ -53,7 +54,7 @@ class AssessmentService implements AssessmentServiceInterface
         $assessmentIq = $this->repository->getBy(
             [
                 'child_id' => $childId,
-                'type' => AssessmentType::IQ
+                'type' => AssessmentType::IQ,
             ]
         )->first();
         $assessmentEQ = $this->repository->getBy(
@@ -90,7 +91,8 @@ class AssessmentService implements AssessmentServiceInterface
         $ratingPQExists = $this->ratingRepository->exists(
             [
                 'child_id' => $childId,
-                'type' => $type
+                'type' => $type,
+                'status' => VerifiedStatus::Active
             ]
         );
         if ($ratingPQExists) {
