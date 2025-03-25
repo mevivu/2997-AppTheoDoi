@@ -19,6 +19,11 @@ class ValidChildAge implements Rule
             $this->errorMessage = 'Đứa trẻ không tồn tại trong hệ thống.';
             return false;
         }
+        if($child->gender == Gender::Unknown){
+            $this->errorMessage = 'Đứa trẻ chưa biết giới tính.';
+            return false;
+        }
+
         $user = $child->user;
         if ($user->father_height == null || $user->mother_height == null) {
             $this->errorMessage = 'Chưa có chiều cao của Bố hoặc mẹ.';
