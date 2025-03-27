@@ -88,13 +88,22 @@ class AssessmentService implements AssessmentServiceInterface
 
     public function updateAssessmentType($assessment, $childId, $type): void
     {
-        $ratingPQExists = $this->ratingRepository->exists(
-            [
-                'child_id' => $childId,
-                'type' => $type,
-                'status' => VerifiedStatus::Active
-            ]
-        );
+        if ($type == QuestionType::IQ) {
+            $ratingPQExists = $this->ratingRepository->exists(
+                [
+                    'child_id' => $childId,
+                    'type' => $type,
+                    'status' => VerifiedStatus::Active
+                ]
+            );
+        } else {
+            $ratingPQExists = $this->ratingRepository->exists(
+                [
+                    'child_id' => $childId,
+                    'type' => $type,
+                ]
+            );
+        }
         if ($ratingPQExists) {
             $assessment->update(['checked' => OpenStatus::ON]);
         }
