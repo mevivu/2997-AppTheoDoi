@@ -5,7 +5,7 @@ namespace App\Api\V1\Http\Requests\Pregnancy;
 
 
 use App\Api\V1\Http\Requests\BaseRequest;
-use App\Api\V1\Rules\ValidChild;
+use App\Api\V1\Rules\ValidBornChild;
 
 class PregnancyUpdateRequest extends BaseRequest
 {
@@ -15,7 +15,7 @@ class PregnancyUpdateRequest extends BaseRequest
     {
         return [
             'id' => 'required|integer|exists:pregnancies,id',
-            'child_id' => ['required', 'integer', new ValidChild()],
+            'child_id' => ['required', 'integer', new ValidBornChild()],
             'week' => 'sometimes|integer|min:1',
             'weight' => 'sometimes|numeric|min:0',
             'length' => 'sometimes|integer|min:0',

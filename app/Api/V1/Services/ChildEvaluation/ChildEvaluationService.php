@@ -234,15 +234,45 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     public function findByClass(Request $request): array
     {
         $data = $request->validated();
-        $class = $this->classesRepository->findOrFail($data['id']);
+        $classId = $data['class_id'];
+        $semester = $data['semester'];
+        $childId = $data['child_id'];
+        $class = $this->classesRepository->findOrFail($classId);
+        $childEvaluation = $this->findAndCreateChildEvaluations($childId, $classId, $semester);
+        $classes = $this->classesRepository->getBy(['status' => ActiveStatus::Active]);
         $subjects = $class->subjects;
-        $qualities = $this->qualityRepository->getBy(['status' => ActiveStatus::Active]);
-        $capabilities = $this->capabilityRepository->getBy(['status' => ActiveStatus::Active]);
         return [
-            'class' => $class,
-            'subjects' => $subjects,
-            'qualities' => $qualities,
-            'capabilities' => $capabilities
+            'detail' => [
+                'child_evaluation' => $childEvaluation,
+            ],
+            'systems' => [
+                'class' => $classes,
+                'subjects' => $subjects,
+                'semester' => SemesterStatus::asSelectArray(),
+            ]
+
         ];
     }
+
+    public function findAndCreateChildEvaluations($childId, $classId, $semester)
+    {
+        $classGrade = $this->classGradeRepository->getByQueryBuilder(
+            [
+                'child_id' => $childId,
+                'class_id' => $classId
+            ]
+        )->first();
+        $evaluation = $classGrade->evaluations()->where('semester', $semester)->first();
+
+        if (!$evaluation) {
+            $evaluation = $classGrade->evaluations()->create([
+                'semester' => $semester,
+                'status' => ActiveStatus::Draft,
+                'average_score' => 0,
+            ]);
+
+        }
+        return $evaluation;
+    }
+
 }

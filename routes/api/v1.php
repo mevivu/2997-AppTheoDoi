@@ -171,10 +171,8 @@ Route::controller(\App\Api\V1\Http\Controllers\ChildEvaluation\ChildEvaluationCo
     ->as('childEvaluation.')
     ->group(function () {
         Route::get('/', 'index');
-        Route::get('/search', 'search');
         Route::get('/info', 'findByClassGrade');
-        Route::get('/{id}', 'show');
-        Route::post('/', 'store');
+//        Route::post('/', 'store');
         Route::put('/', 'update');
     });
 

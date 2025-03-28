@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Api\V1\Http\Resources\ChildEvaluation;
+namespace App\Api\V1\Http\Resources\ChildEvaluation\QualitityGrade;
 
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use JsonSerializable;
 
-class ChildEvaluationSemesterResource extends JsonResource
+class QualityGradeShowResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -20,13 +20,9 @@ class ChildEvaluationSemesterResource extends JsonResource
     public function toArray($request): array|JsonSerializable|Arrayable
     {
         return [
-            'child_evaluation_id' => $this->id,
-            'semester' => $this->semester,
-            'average_score' => $this->average_score,
-            'academic_performance' => $this->academic_performance,
-            'conduct' => $this->conduct,
-            'status' => $this->status
-
+            'id' => $this->id,
+            'quality_id' => $this->quality_id,
+            'quality_status' => $this->quality_status
         ];
     }
 

@@ -3,8 +3,6 @@
 namespace App\Api\V1\Http\Controllers\ChildEvaluation;
 
 use App\Admin\Http\Controllers\Controller;
-use App\Api\V1\Exception\BadRequestException;
-use App\Api\V1\Exception\NotFoundException;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationInfoRequest;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationRequest;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationSearchRequest;
@@ -17,7 +15,6 @@ use App\Api\V1\Services\ChildEvaluation\ChildEvaluationServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
-use App\Api\V1\Validate\Validator;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -30,6 +27,7 @@ class ChildEvaluationController extends Controller
     use AuthServiceApi, Response, UseLog;
 
     protected ClassGradeRepositoryInterface $classGradeRepository;
+
     public function __construct(
         ChildEvaluationRepositoryInterface $repository,
         ClassGradeRepositoryInterface     $classGradeRepository,
@@ -74,6 +72,7 @@ class ChildEvaluationController extends Controller
             $response = $this->service->findByClass($request);
             return $this->jsonResponseSuccess(new ChildEvaluationInfoResource($response));
         } catch (Exception $e) {
+            $this->logError('findByClassGrade:', $e);
             return $this->jsonResponseError('Lỗi server nội bộ khi truy xuất đánh giá năng lực.', 500);
         }
     }
@@ -269,102 +268,7 @@ class ChildEvaluationController extends Controller
         }
     }
 
-    /**
-     * Lấy chi tiết đánh giá năng lực của một trẻ.
-     *
-     * Phương thức này trả về chi tiết đánh giá năng lực của một trẻ cụ thể bằng cách sử dụng ID đánh giá.
-     *
-     * @authenticated
-     * @urlParam evaluation_id int required ID của đánh giá năng lực cần lấy chi tiết. Example: 1
-     *
-     * @response 200 {
-     *     "status": 200,
-     *     "message": "Chi tiết đánh giá năng lực của trẻ được lấy thành công.",
-     *     "data": {
-     *         "id": 12,
-     *         "child_id": 1,
-     *         "class_grade": {
-     *             "id": 1,
-     *             "name": "Lớp 1"
-     *         },
-     *         "semester": "Học kỳ 1",
-     *         "average_score": 8.3,
-     *         "academic_performance": "Giỏi",
-     *         "conduct": "Xuất sắc",
-     *         "created_at": "2024-12-26T07:38:17.000000Z",
-     *         "updated_at": "2024-12-26T07:38:17.000000Z"
-     *     }
-     * }
-     *
-     * @response 404 {
-     *     "status": 404,
-     *     "message": "Đánh giá năng lực không tồn tại."
-     * }
-     *
-     * @response 500 {
-     *     "status": 500,
-     *     "message": "Lỗi hệ thống."
-     * }
-     *
-     * @param $id
-     * @return JsonResponse
-     */
-    public function show($id): JsonResponse
-    {
-        try {
-            Validator::validateExists($this->repository, $id);
-            $response = $this->service->show($id);
-            return $this->jsonResponseSuccess(new ChildEvaluationDetailResource($response));
-        } catch (BadRequestException|NotFoundException $e) {
-            return $this->jsonResponseError($e->getMessage());
-        } catch (Exception $e) {
-            $this->logError('Show detail child failed:', $e);
-            return $this->jsonResponseError('Show detail child failed', 500);
-        }
-    }
 
-    /**
-     * Tìm kiếm đánh giá năng lực của trẻ dựa vào ID lớp học, ID bảng điểm lớp và kỳ học.
-     *
-     * Phương thức này nhận các tham số từ query để tìm kiếm thông tin đánh giá năng lực của trẻ phù hợp với điều kiện đã cho.
-     * Nếu tìm thấy thông tin đánh giá, nó sẽ trả về chi tiết thông tin đó. Nếu không tìm thấy, trả về mảng rỗng.
-     *
-     * @authenticated
-     * @queryParam class_id int required ID của lớp học cần tìm kiếm. Example: 1
-     * @queryParam class_grade_id int required ID của bảng điểm lớp cần tìm kiếm. Example: 1
-     * @queryParam semester string required Kỳ học cần tìm kiếm. Example: semester_1
-     *
-     * @response 200 {
-     *     "status": "success",
-     *     "message": "Tìm kiếm thành công.",
-     *     "data": [Chi tiết đánh giá năng lực tìm được dựa trên các tiêu chí]
-     * }
-     * @response 200 {
-     *     "status": "success",
-     *     "message": "Không có dữ liệu phù hợp với tiêu chí tìm kiếm.",
-     *     "data": []
-     * }
-     * @response 500 {
-     *     "status": "error",
-     *     "message": "Lỗi server nội bộ."
-     * }
-     *
-     * @param ChildEvaluationSearchRequest $request Yêu cầu tìm kiếm bao gồm các tham số lọc.
-     * @return JsonResponse Trả về kết quả tìm kiếm đánh giá năng lực của trẻ hoặc lỗi nếu có.
-     */
-    public function search(ChildEvaluationSearchRequest $request): JsonResponse
-    {
-        try {
-            $response = $this->service->search($request);
-            if ($response) {
-                return $this->jsonResponseSuccess(new ChildEvaluationDetailResource($response));
 
-            }
-            return $this->jsonResponseSuccess([]);
-        } catch (Exception $exception) {
-            $this->logError('Search  failed:', $exception);
-            return $this->jsonResponseError('Search', 500);
-        }
-    }
 
 }

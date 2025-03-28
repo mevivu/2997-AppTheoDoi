@@ -2,6 +2,12 @@
 
 namespace App\Api\V1\Http\Resources\ChildEvaluation;
 
+use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluation\ChildEvaluationSearchResource;
+use App\Api\V1\Http\Resources\Classes\ClassesResource;
+use App\Api\V1\Http\Resources\Subject\SubjectResource;
+use App\Enums\ChildEvaluation\ConductRating;
+use App\Enums\ChildEvaluation\EvaluationStatus;
+use App\Enums\Semester\SemesterStatus;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
@@ -19,29 +25,20 @@ class ChildEvaluationInfoResource extends JsonResource
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
+        $detail = $this->resource['detail'];
+        $system = $this->resource['systems'];
         return [
-            'class' => [
-                'id' => $this->resource['class']->id,
-                'name' => $this->resource['class']->name
+            'detail' => [
+                'child_evaluation' => new ChildEvaluationSearchResource($detail['child_evaluation']),
             ],
-            'subjects' => $this->resource['subjects']->map(function ($subject) {
-                return [
-                    'id' => $subject->id,
-                    'name' => $subject->name,
-                ];
-            }),
-            'qualities' => $this->resource['qualities']->map(function ($quality) {
-                return [
-                    'id' => $quality->id,
-                    'name' => $quality->name,
-                ];
-            }),
-            'capabilities' => $this->resource['capabilities']->map(function ($capability) {
-                return [
-                    'id' => $capability->id,
-                    'name' => $capability->name,
-                ];
-            }),
+            'system' => [
+                'classes' => ClassesResource::collection($system['class']),
+                'subjects' => SubjectResource::collection($system['subjects']),
+                'semester' => SemesterStatus::asSelectArray(),
+                'conduct_rating' => ConductRating::asSelectArray(),
+                'capability_status' => EvaluationStatus::asSelectArray(),
+            ]
+
         ];
     }
 
