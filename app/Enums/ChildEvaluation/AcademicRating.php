@@ -25,6 +25,9 @@ enum AcademicRating: string
     /** Kém */
     case Fail = 'fail';
 
+    /** Đang chờ xử lý */
+    case Pending = 'pending';
+
 
     public function badge(): string
     {
@@ -34,7 +37,18 @@ enum AcademicRating: string
             AcademicRating::Fair => 'bg-light-blue',
             AcademicRating::Average => 'bg-yellow',
             AcademicRating::Poor => 'bg-orange',
-            AcademicRating::Fail => 'bg-red'
+            AcademicRating::Fail => 'bg-red',
+            AcademicRating::Pending => 'bg-gray'
         };
+    }
+    public static function asSelectArrayRemovePending(): array
+    {
+        return collect(self::cases())
+            ->reject(function ($case) {
+                return $case === self::Pending;
+            })
+            ->mapWithKeys(function ($case) {
+                return [$case->value => $case->name];
+            })->toArray();
     }
 }

@@ -13,6 +13,8 @@ use App\Api\V1\Repositories\SubjectGrade\SubjectGradeRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\ActiveStatus;
+use App\Enums\ChildEvaluation\AcademicRating;
+use App\Enums\ChildEvaluation\ConductRating;
 use App\Enums\Semester\SemesterStatus;
 use App\Models\ClassGrade;
 use Exception;
@@ -241,6 +243,8 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $childEvaluation = $this->findAndCreateChildEvaluations($childId, $classId, $semester);
         $classes = $this->classesRepository->getBy(['status' => ActiveStatus::Active]);
         $subjects = $class->subjects;
+        $capabilities = $this->capabilityRepository->getBy(['status' => ActiveStatus::Active]);
+        $qualities = $this->qualityRepository->getBy(['status' => ActiveStatus::Active]);
         return [
             'detail' => [
                 'child_evaluation' => $childEvaluation,
@@ -248,6 +252,8 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             'systems' => [
                 'class' => $classes,
                 'subjects' => $subjects,
+                'capabilities' => $capabilities,
+                'qualities' => $qualities,
                 'semester' => SemesterStatus::asSelectArray(),
             ]
 
@@ -268,7 +274,9 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             $evaluation = $classGrade->evaluations()->create([
                 'semester' => $semester,
                 'status' => ActiveStatus::Draft,
+                'conduct' => ConductRating::Pending,
                 'average_score' => 0,
+                'academic_performance' => AcademicRating::Pending
             ]);
 
         }

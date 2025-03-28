@@ -2,9 +2,11 @@
 
 namespace App\Api\V1\Http\Resources\ChildEvaluation;
 
+use App\Api\V1\Http\Resources\Capability\CapabilityResource;
 use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluation\ChildEvaluationSearchResource;
 use App\Api\V1\Http\Resources\Classes\ClassesResource;
 use App\Api\V1\Http\Resources\Subject\SubjectResource;
+use App\Enums\ChildEvaluation\AcademicRating;
 use App\Enums\ChildEvaluation\ConductRating;
 use App\Enums\ChildEvaluation\EvaluationStatus;
 use App\Enums\Semester\SemesterStatus;
@@ -34,9 +36,13 @@ class ChildEvaluationInfoResource extends JsonResource
             'system' => [
                 'classes' => ClassesResource::collection($system['class']),
                 'subjects' => SubjectResource::collection($system['subjects']),
+                'capabilities' => CapabilityResource::collection($system['capabilities']),
+                'qualities' => CapabilityResource::collection($system['qualities']),
                 'semester' => SemesterStatus::asSelectArray(),
-                'conduct_rating' => ConductRating::asSelectArray(),
+                'conduct_ratings' => ConductRating::asSelectArrayRemovePending(),
                 'capability_status' => EvaluationStatus::asSelectArray(),
+                'academic_performance' => AcademicRating::asSelectArrayRemovePending(),
+                'quality_status' => EvaluationStatus::asSelectArray()
             ]
 
         ];
