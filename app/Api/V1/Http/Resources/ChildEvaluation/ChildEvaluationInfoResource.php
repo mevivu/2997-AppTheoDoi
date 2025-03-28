@@ -30,9 +30,7 @@ class ChildEvaluationInfoResource extends JsonResource
         $detail = $this->resource['detail'];
         $system = $this->resource['systems'];
         return [
-            'detail' => [
-                'child_evaluation' => new ChildEvaluationSearchResource($detail['child_evaluation']),
-            ],
+            'child_evaluation' => new ChildEvaluationSearchResource($detail['child_evaluation']),
             'system' => [
                 'classes' => ClassesResource::collection($system['class']),
                 'subjects' => SubjectResource::collection($system['subjects']),
