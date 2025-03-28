@@ -38,11 +38,11 @@ class ChildEvaluationInfoResource extends JsonResource
                 'subjects' => SubjectResource::collection($system['subjects']),
                 'capabilities' => CapabilityResource::collection($system['capabilities']),
                 'qualities' => CapabilityResource::collection($system['qualities']),
-                'semester' => SemesterStatus::asSelectArray(),
+                'semester' => SemesterStatus::asSelectArrayRemoveFullYear(),
                 'conduct_ratings' => ConductRating::asSelectArrayRemovePending(),
-                'capability_status' => EvaluationStatus::asSelectArray(),
+                'capability_status' => EvaluationStatus::asSelectArrayTranslate(),
                 'academic_performance' => AcademicRating::asSelectArrayRemovePending(),
-                'quality_status' => EvaluationStatus::asSelectArray()
+                'quality_status' => EvaluationStatus::asSelectArrayTranslate()
             ]
 
         ];

@@ -35,6 +35,17 @@ enum ConductRating: string
             ConductRating::Pending => 'bg-gray'
         };
     }
+
+    public function getTranslatedName(): string
+    {
+        return match ($this) {
+            self::Good => 'Tốt',
+            self::Fair => 'Khá',
+            self::Average => 'Trung bình',
+            self::Poor => 'Yếu',
+            default => 'N/A',
+        };
+    }
     public static function asSelectArrayRemovePending(): array
     {
         return collect(self::cases())
@@ -42,7 +53,7 @@ enum ConductRating: string
                 return $case === self::Pending;
             })
             ->mapWithKeys(function ($case) {
-                return [$case->value => $case->name];
+                return [$case->value => $case->getTranslatedName()];
             })->toArray();
     }
 }

@@ -41,6 +41,18 @@ enum AcademicRating: string
             AcademicRating::Pending => 'bg-gray'
         };
     }
+    public function getTranslatedName(): string
+    {
+        return match ($this) {
+            self::Excellent => 'Xuất sắc',
+            self::Good => 'Giỏi',
+            self::Fair => 'Khá',
+            self::Average => 'Trung bình',
+            self::Poor => 'Yếu',
+            self::Fail => 'Kém',
+            default => 'Đang chờ xử lý',
+        };
+    }
     public static function asSelectArrayRemovePending(): array
     {
         return collect(self::cases())
@@ -48,7 +60,7 @@ enum AcademicRating: string
                 return $case === self::Pending;
             })
             ->mapWithKeys(function ($case) {
-                return [$case->value => $case->name];
+                return [$case->value => $case->getTranslatedName()];
             })->toArray();
     }
 }

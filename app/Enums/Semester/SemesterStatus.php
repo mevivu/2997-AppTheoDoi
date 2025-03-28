@@ -13,6 +13,26 @@ enum SemesterStatus: string
     case Semester2 = 'semester_2';
     case FullYear = 'full_year';
 
+    public function getTranslatedName(): string
+    {
+        return match ($this) {
+            self::Semester1 => 'Kì 1',
+            self::Semester2 => 'Kì 2',
+            default => 'N/A',
+        };
+    }
+
+    public static function asSelectArrayRemoveFullYear(): array
+    {
+        return collect(self::cases())
+            ->reject(function ($case) {
+                return $case === self::FullYear;
+            })
+            ->mapWithKeys(function ($case) {
+                return [$case->value => $case->getTranslatedName()];
+            })->toArray();
+    }
+
     public function badge(): string
     {
         return match ($this) {
