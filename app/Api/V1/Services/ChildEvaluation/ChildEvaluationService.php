@@ -82,27 +82,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     /**
      * @throws Exception
      */
-    public function store(Request $request): object
-    {
-        $data = $request->validated();
-        $semester = $data['semester'];
-        $classGradeId = $data['class_grade_id'];
-        $subjects = $data['subjects'] ?? [];
-        $qualities = $data['qualities'] ?? [];
-        $capabilities = $data['capabilities'] ?? [];
-        $classGrade = $this->classGradeRepository->findOrFail($classGradeId);
-        $averageScore = $this->calculateAverageScore($subjects);
-        $data['average_score'] = $averageScore;
-        $childEvaluation = $this->repository->create($data);
-        $childEvaluationId = $childEvaluation->id;
-        $this->createSubjectGrade($subjects, $childEvaluationId);
-        $this->createChildQuality($qualities, $childEvaluationId);
-        $this->createChildCapability($capabilities, $childEvaluationId);
-        $this->updateScoreClassGrade($semester, $classGrade, $averageScore);
 
-        return $childEvaluation;
-
-    }
 
     private function updateScoreClassGrade($semester, ClassGrade $classGrade, $averageScore): void
     {
@@ -134,9 +114,13 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $averageScore = $this->calculateAverageScore($subjects);
         $data['average_score'] = $averageScore;
         $childEvaluation = $this->repository->update($childEvaluationId, $data);
+        $classGrade = $childEvaluation->classGrade;
         $this->createSubjectGrade($subjects, $childEvaluationId);
         $this->createChildQuality($qualities, $childEvaluationId);
         $this->createChildCapability($capabilities, $childEvaluationId);
+        $semester = $childEvaluation->semester;
+        $this->updateScoreClassGrade($semester, $classGrade, $averageScore);
+
         return $childEvaluation;
 
     }

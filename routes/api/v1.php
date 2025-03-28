@@ -80,7 +80,6 @@ Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
     ->group(function () {
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
-        Route::post('/', 'store');
         Route::post('/update', 'update');
         Route::post('/sync', 'syncChildren');
         Route::delete('/{id}', 'delete');

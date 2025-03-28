@@ -77,64 +77,6 @@ class ChildEvaluationController extends Controller
     }
 
     /**
-     * Tạo mới Đánh giá năng lực theo lớp và kì
-     *
-     * @authenticated
-     * @bodyParam class_grade_id int required ID của lớp. Example: 1
-     * @bodyParam semester string required Kỳ học. Example: semester_1
-     * @bodyParam status string required Trạng thái của đánh giá. Example: draft
-     * @bodyParam conduct string required Hạnh kiểm của học sinh. Example: good
-     * @bodyParam academic_performance string required Học lực của học sinh. Example: excellent
-     * @bodyParam subjects array required Mảng các môn học và điểm số.
-     * @bodyParam qualities array required Mảng các phẩm chất.
-     * @bodyParam capabilities array required Mảng các năng lực.
-     *
-     * @response 201 {
-     *     "status": 201,
-     *     "message": "Child evaluation successfully created.",
-     *     "data": {
-     *         "id": 12,
-     *         "class_grade_id": 1,
-     *         "semester": "semester_1",
-     *         "status": "draft",
-     *         "conduct": "good",
-     *         "academic_performance": "excellent",
-     *         "average_score": 8.333333333333334,
-     *         "created_at": "2024-12-26T07:38:17.000000Z",
-     *         "updated_at": "2024-12-26T07:38:17.000000Z"
-     *     }
-     * }
-     *
-     * @response 400 {
-     *     "status": 400,
-     *     "message": "Invalid input data."
-     * }
-     *
-     * @response 500 {
-     *     "status": 500,
-     *     "message": "Server error."
-     * }
-     *
-     * @param ChildEvaluationRequest $request
-     * @return JsonResponse
-     */
-
-    public function store(ChildEvaluationRequest $request): JsonResponse
-    {
-        DB::beginTransaction();
-        try {
-            $response = $this->service->store($request);
-            DB::commit();
-            return $this->jsonResponseSuccess($response);
-        } catch (Exception $exception) {
-            DB::rollBack();
-            $this->logError('Child Store failed:', $exception);
-            return $this->jsonResponseError('Get user notifications failed', 500);
-        }
-
-    }
-
-    /**
      * Cập nhật Đánh giá năng lực cho một trẻ cụ thể.
      *
      * Phương thức này nhận dữ liệu từ body của request để cập nhật thông tin đánh giá năng lực.
