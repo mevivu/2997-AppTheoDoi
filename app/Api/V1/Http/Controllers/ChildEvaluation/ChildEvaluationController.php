@@ -5,8 +5,6 @@ namespace App\Api\V1\Http\Controllers\ChildEvaluation;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationInfoRequest;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationRequest;
-use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationSearchRequest;
-use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationDetailResource;
 use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationInfoResource;
 use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationResourceCollection;
 use App\Api\V1\Repositories\ChildEvaluation\ChildEvaluationRepositoryInterface;
@@ -46,8 +44,9 @@ class ChildEvaluationController extends Controller
      * Lấy danh sách đánh giá năng lực theo ID của bảng điểm lớp.
      *
      * @authenticated
-     * @queryParam id int required ID của lớp học. Example: 1
+     * @queryParam class_id int required ID của lớp học. Example: 1
      * @queryParam semester string required Kỳ học. Example: semester_1
+     * @queryParam child_id int required ID của trẻ cần lấy đánh giá. Example: 1
      *
      * @response 200 {
      *     "status": "success",

@@ -60,9 +60,9 @@ class ChildEvaluationRequest extends BaseRequest
             'child_evaluation_id' => ['required', 'exists:App\Models\ChildEvaluation,id'],
 //            'class_grade_id' => ['required', 'exists:App\Models\ClassGrade,id'],
 //            'semester' => ['required', new Enum(SemesterStatus::class)],
-//            'status' => ['required', new Enum(ActiveStatus::class)],
-//            'conduct' => ['required', new Enum(ConductRating::class)],
-//            'academic_performance' => ['required', new Enum(AcademicRating::class)],
+            'status' => ['required', new Enum(ActiveStatus::class)],
+            'conduct' => ['required', new Enum(ConductRating::class)],
+            'academic_performance' => ['required', new Enum(AcademicRating::class)],
 
             'subjects' => ['required', 'array'],
             'subjects.*.id' => ['required', 'exists:subjects,id'],
