@@ -69,14 +69,17 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $data = $request->validated();
         $limit = $data['limit'] ?? 10;
         $page = $data['page'] ?? 1;
-        $query = $this->classGradeRepository->getByQueryBuilder(
-            [
-                'child_id' => $data['child_id']
-            ],
-            ['evaluations']
-        );
+
+        $query = $this->classGradeRepository->getQueryBuilder();
+        $query->where('child_id', $data['child_id'])
+            ->with('evaluations')
+            ->join('classes', 'class_grades.class_id', '=', 'classes.id')
+            ->orderBy('classes.id', 'asc')
+            ->select('class_grades.*');
+
         return $query->paginate($limit, ['*'], 'page', $page);
     }
+
 
 
     /**
