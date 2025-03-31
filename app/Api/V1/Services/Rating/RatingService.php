@@ -56,10 +56,13 @@ class RatingService implements RatingServiceInterface
         $page = $data['page'] ?? 1;
         $type = $data['type'];
 
-        $query = $this->repository->getByQueryBuilder([
-            'child_id' => request()->get('child_id'),
-            'type' => $type,
-        ]);
+        $query = $this->repository->getQueryBuilder();
+        $query->where('child_id', $data['child_id']);
+        $query->where('type', $type);
+
+        if ($type === QuestionType::IQ->value) {
+            $query->orderBy('age','asc');
+        }
         return $query->paginate($limit, ['*'], 'page', $page);
     }
 

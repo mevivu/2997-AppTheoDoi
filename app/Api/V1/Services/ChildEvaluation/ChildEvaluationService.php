@@ -86,7 +86,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
 
     private function updateScoreClassGrade($semester, ClassGrade $classGrade, $averageScore): void
     {
-        if ($semester == SemesterStatus::Semester1->value) {
+        if ($semester == SemesterStatus::Semester1) {
             $classGrade->update([
                 'semester1_grade' => $averageScore
             ]);
