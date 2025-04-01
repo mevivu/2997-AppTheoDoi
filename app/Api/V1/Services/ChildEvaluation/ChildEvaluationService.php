@@ -19,6 +19,7 @@ use App\Enums\Semester\SemesterStatus;
 use App\Models\ClassGrade;
 use Exception;
 use Illuminate\Http\Request;
+use function PHPUnit\Framework\isEmpty;
 
 
 class ChildEvaluationService implements ChildEvaluationServiceInterface
@@ -81,7 +82,6 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     }
 
 
-
     /**
      * @throws Exception
      */
@@ -114,13 +114,21 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $subjects = $data['subjects'] ?? [];
         $qualities = $data['qualities'] ?? [];
         $capabilities = $data['capabilities'] ?? [];
-        $averageScore = $this->calculateAverageScore($subjects);
-        $data['average_score'] = $averageScore;
+        if (isEmpty($subjects)) {
+            $averageScore =  $this->calculateAverageScore($subjects);
+            $data['average_score'] = $averageScore;
+        }
         $childEvaluation = $this->repository->update($childEvaluationId, $data);
         $classGrade = $childEvaluation->classGrade;
-        $this->createSubjectGrade($subjects, $childEvaluationId);
-        $this->createChildQuality($qualities, $childEvaluationId);
-        $this->createChildCapability($capabilities, $childEvaluationId);
+        if (isEmpty($subjects)) {
+            $this->createSubjectGrade($subjects, $childEvaluationId);
+        }
+        if (isEmpty($qualities)) {
+            $this->createChildQuality($qualities, $childEvaluationId);
+        }
+        if (isEmpty($capabilities)) {
+            $this->createChildCapability($capabilities, $childEvaluationId);
+        }
         $semester = $childEvaluation->semester;
         $this->updateScoreClassGrade($semester, $classGrade, $averageScore);
 

@@ -25,28 +25,37 @@ class ChildEvaluationRequest extends BaseRequest
 
     protected function methodPut(): array
     {
-        return [
-
+        $rules = [
             'child_evaluation_id' => ['required', 'exists:App\Models\ChildEvaluation,id'],
             'status' => ['nullable', new Enum(ActiveStatus::class)],
             'conduct' => ['required', new Enum(ConductRating::class)],
             'academic_performance' => ['required', new Enum(AcademicRating::class)],
-
-            'subjects' => ['required', 'array'],
-            'subjects.*.id' => ['required', 'exists:subjects,id'],
-            'subjects.*.grade' => ['required', 'numeric', 'between:0,10'],
-
-            'qualities' => ['required', 'array'],
-            'qualities.*.id' => ['required', 'exists:qualities,id'],
-            'qualities.*.quality_status' => ['required', new Enum(EvaluationStatus::class)],
-
-            'capabilities' => ['required', 'array'],
-            'capabilities.*.id' => ['required', 'exists:capabilities,id'],
-            'capabilities.*.capability_status' => ['required', new Enum(EvaluationStatus::class)],
-
-
         ];
+
+        if (request()->input('status') == ActiveStatus::Active->value) {
+            $additionalRules = [
+                'subjects' => ['required', 'array'],
+                'subjects.*.id' => ['required', 'exists:subjects,id'],
+                'subjects.*.grade' => ['required', 'numeric', 'between:0,10'],
+
+                'qualities' => ['required', 'array'],
+                'qualities.*.id' => ['required', 'exists:qualities,id'],
+                'qualities.*.quality_status' => ['required', new Enum(EvaluationStatus::class)],
+
+                'capabilities' => ['required', 'array'],
+                'capabilities.*.id' => ['required', 'exists:capabilities,id'],
+                'capabilities.*.capability_status' => ['required', new Enum(EvaluationStatus::class)],
+            ];
+            $rules = array_merge($rules, $additionalRules);
+        } else {
+            $rules['subjects'] = ['nullable', 'array'];
+            $rules['qualities'] = ['nullable', 'array'];
+            $rules['capabilities'] = ['nullable', 'array'];
+        }
+
+        return $rules;
     }
+
     public function messages(): array
     {
         return [
