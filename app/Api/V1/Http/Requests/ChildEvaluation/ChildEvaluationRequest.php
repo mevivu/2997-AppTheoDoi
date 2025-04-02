@@ -26,13 +26,13 @@ class ChildEvaluationRequest extends BaseRequest
     {
         $rules = [
             'child_evaluation_id' => ['required', 'exists:App\Models\ChildEvaluation,id'],
-            'status' => ['required', new Enum(ActiveStatus::class)],
+            'status' => ['nullable', new Enum(ActiveStatus::class)],
+            'conduct' => ['nullable', new Enum(ConductRating::class)],
+            'academic_performance' => ['required', new Enum(AcademicRating::class)],
         ];
 
         if (request()->input('status') == ActiveStatus::Active->value) {
             $additionalRules = [
-                'conduct' => ['required', new Enum(ConductRating::class)],
-                'academic_performance' => ['required', new Enum(AcademicRating::class)],
                 'subjects' => ['required', 'array'],
                 'subjects.*.id' => ['required', 'exists:subjects,id'],
                 'subjects.*.grade' => ['required', 'numeric', 'between:0,10'],
@@ -47,8 +47,6 @@ class ChildEvaluationRequest extends BaseRequest
             ];
             $rules = array_merge($rules, $additionalRules);
         } else {
-            $rules['conduct'] = ['nullable', new Enum(ConductRating::class)];
-            $rules['academic_performance'] = ['nullable', new Enum(AcademicRating::class)];
             $rules['subjects'] = ['nullable', 'array'];
             $rules['qualities'] = ['nullable', 'array'];
             $rules['capabilities'] = ['nullable', 'array'];
