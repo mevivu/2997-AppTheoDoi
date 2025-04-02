@@ -114,6 +114,14 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $subjects = $data['subjects'] ?? [];
         $qualities = $data['qualities'] ?? [];
         $capabilities = $data['capabilities'] ?? [];
+        $conduct = $data['conduct'] ?? null;
+        $academicPerformance = $data['academic_performance'] ?? null;
+        if($conduct == null){
+            unset($data['conduct']);
+        }
+        if($academicPerformance == null){
+            unset($data['academic_performance']);
+        }
         if (isEmpty($subjects)) {
             $averageScore =  $this->calculateAverageScore($subjects);
             $data['average_score'] = $averageScore;
