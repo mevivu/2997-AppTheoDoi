@@ -7,5 +7,5 @@ use App\Admin\Repositories\EloquentRepositoryInterface;
 
 interface ClassGradeRepositoryInterface extends EloquentRepositoryInterface
 {
-
+    public function hasGradesGreaterThanZero($childId);
 }

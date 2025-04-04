@@ -4,6 +4,7 @@ namespace App\Api\V1\Services\Assessment;
 
 use App\Api\V1\Repositories\Assessment\AssessmentRepositoryInterface;
 
+use App\Api\V1\Repositories\ClassGrade\ClassGradeRepositoryInterface;
 use App\Api\V1\Repositories\Rating\RatingRepositoryInterface;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
@@ -30,16 +31,20 @@ class AssessmentService implements AssessmentServiceInterface
     protected RatingPQRepositoryInterface $ratingPQRepository;
     protected RatingRepositoryInterface $ratingRepository;
 
+    protected ClassGradeRepositoryInterface $classGradeRepository;
+
 
     public function __construct(
         AssessmentRepositoryInterface $repository,
         RatingPQRepositoryInterface   $ratingPQRepository,
         RatingRepositoryInterface     $ratingRepository,
+        ClassGradeRepositoryInterface $classGradeRepository
     )
     {
         $this->repository = $repository;
         $this->ratingPQRepository = $ratingPQRepository;
         $this->ratingRepository = $ratingRepository;
+        $this->classGradeRepository = $classGradeRepository;
     }
 
 
@@ -69,7 +74,14 @@ class AssessmentService implements AssessmentServiceInterface
                 'type' => AssessmentType::AQ
             ]
         )->first();
+        $assessmentGPA = $this->repository->getBy(
+            [
+                'child_id' => $childId,
+                'type' => AssessmentType::GPA
+            ]
+        )->first();
         $this->updateAssessmentPQ($assessmentPQ, $childId);
+        $this->updateAssessmentGPA($assessmentGPA, $childId);
         $this->updateAssessmentType($assessmentIq, $childId, QuestionType::IQ);
         $this->updateAssessmentType($assessmentEQ, $childId, QuestionType::EQ);
         $this->updateAssessmentType($assessmentAQ, $childId, QuestionType::AQ);
@@ -83,6 +95,17 @@ class AssessmentService implements AssessmentServiceInterface
         $ratingPQExists = $this->ratingPQRepository->exists(['child_id' => $childId]);
         if ($ratingPQExists) {
             $assessmentPQ->update(['checked' => OpenStatus::ON]);
+        }
+    }
+    public function updateAssessmentGPA($assessmentGPA,$childId): void
+    {
+        $exists = $this->classGradeRepository->hasGradesGreaterThanZero($childId);
+        if ($exists) {
+            $assessmentGPA->update(['checked' => OpenStatus::ON]);
+        }
+        else{
+            $assessmentGPA->update(['checked' => OpenStatus::OFF]);
+
         }
     }
 
