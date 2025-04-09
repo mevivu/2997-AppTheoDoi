@@ -38,6 +38,7 @@
                 @endforeach
             </x-select>
         </div>
+        <x-input type="hidden" name="type" value="admin"/>
     </div>
 
     <div class="card mb-3 custom-shadow">

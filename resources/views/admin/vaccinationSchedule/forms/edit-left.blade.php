@@ -25,7 +25,7 @@
                               >{{ $instance->description }}</textarea>
                 </div>
             </div>
-
+            @if($instance->type === \App\Enums\Permission\PermissionType::ADMIN->value)
             <!--reminder_time-->
             <div class="col-6">
                 <div class="mb-3">
@@ -39,6 +39,7 @@
                              :placeholder="__('performed_on')" />
                 </div>
             </div>
+            @endif
             <!-- children -->
 
             <!-- vaccination Type -->

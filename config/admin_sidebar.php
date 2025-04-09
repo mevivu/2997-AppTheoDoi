@@ -570,13 +570,13 @@ return [
             'deleteTypeVaccination'
         ],
         'sub' => [
-            [
-                'title' => 'add',
-                'routeName' => 'admin.vaccination.create',
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createVaccinationSchedule'],
-            ],
+//            [
+//                'title' => 'add',
+//                'routeName' => 'admin.vaccination.create',
+//                'icon' => '<i class="ti ti-plus"></i>',
+//                'roles' => [],
+//                'permissions' => ['createVaccinationSchedule'],
+//            ],
             [
                 'title' => 'Quản trị viên',
                 'routeName' => 'admin.vaccination.admin',
