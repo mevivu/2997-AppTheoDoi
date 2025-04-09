@@ -92,7 +92,7 @@ class VaccinationScheduleController extends Controller
             'status' => ActiveStatus::asSelectArray(),
             'type' => PermissionType::asSelectArray(),
             'vaccinationStatus' => VaccinationStatus::asSelectArray(),
-            'breadcrumbs' => $this->crums->add('DS tiêm chủng')->add('Thêm'),
+            'breadcrumbs' => $this->crums->add(__('vaccination_schedule'), route($this->route['admin']))->add('Thêm'),
         ]);
     }
 
@@ -119,7 +119,7 @@ class VaccinationScheduleController extends Controller
                 'type' => PermissionType::asSelectArray(),
                 'status' => ActiveStatus::asSelectArray(),
                 'vaccinationStatus' => VaccinationStatus::asSelectArray(),
-                'breadcrumbs' => $this->crums->add('vaccination_schedule')->add('Cập nhật'),
+                'breadcrumbs' => $this->crums->add(__('vaccination_schedule'), route($this->route['admin']))->add('Cập nhật'),
 
             ],
         );
