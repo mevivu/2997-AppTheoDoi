@@ -7,13 +7,13 @@
     <div class="page-body">
         <div class="container-xl">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list')</h2>
-                    <x-link :href="route('admin.vaccination.create',['back' => 'user'])" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+{{--                <div class="card-header justify-content-between">--}}
+{{--                    <h2 class="mb-0">@lang('list')</h2>--}}
+{{--                    <x-link :href="route('admin.vaccination.create',['back' => 'user'])" class="btn btn-primary">--}}
+{{--                        <i class="ti ti-plus"></i>--}}
+{{--                        <span class="ms-1">@lang('add')</span>--}}
+{{--                    </x-link>--}}
+{{--                </div>--}}
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.vaccination.multiple')" type="post"
                             :validate="true">

@@ -27,18 +27,20 @@
 
 
             <!--reminder_time-->
-            <div class="col-6">
-                <div class="mb-3">
-                    <i class="ti ti-clock"></i>
-                    <label class="control-label">@lang('performed_on')</label>
-                    <x-input input
-                             type="datetime-local"
-                             name="performed_on"
-                             :value="old('performed_on')"
-                             :required="true"
-                             :placeholder="__('performed_on')"/>
+            @if (request('back') !== 'admin')
+                <div class="col-6">
+                    <div class="mb-3">
+                        <i class="ti ti-clock"></i>
+                        <label class="control-label">@lang('performed_on')</label>
+                        <x-input input
+                                 type="datetime-local"
+                                 name="performed_on"
+                                 :value="old('performed_on')"
+                                 :required="true"
+                                 :placeholder="__('performed_on')"/>
+                    </div>
                 </div>
-            </div>
+            @endif
             <!--vaccination Type-->
             <div class="col-md-12 col-sm-12">
                 <label class="control-label">

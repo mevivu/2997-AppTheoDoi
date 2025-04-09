@@ -21,7 +21,7 @@ class VaccinationScheduleRequest extends BaseRequest
         return [
             'name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
-            'performed_on' => ['required', 'date'],
+            'performed_on' => ['nullable', 'date'],
             'type' => ['required', new Enum(PermissionType::class)],
             'image' => ['nullable', 'string'],
             'vaccination_type_id' => ['required', 'exists:App\Models\VaccinationType,id'],
@@ -35,7 +35,7 @@ class VaccinationScheduleRequest extends BaseRequest
             'id' => ['required', 'exists:App\Models\VaccinationSchedule,id'],
             'name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
-            'performed_on' => ['required', 'date'],
+            'performed_on' => ['nullable', 'date'],
             'image' => ['nullable', 'string'],
             'type' => ['required', new Enum(PermissionType::class)],
             'status' => ['required', new Enum(ActiveStatus::class)],

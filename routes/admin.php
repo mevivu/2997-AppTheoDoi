@@ -244,6 +244,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->group(function () {
             Route::group(['middleware' => ['permission:createVaccinationSchedule', 'auth:admin']], function () {
                 Route::get('/add', 'create')->name('create');
+                Route::get('/add-admin', 'create-admin')->name('create-admin');
                 Route::post('/add', 'store')->name('store');
             });
             Route::group(['middleware' => ['permission:viewVaccinationSchedule', 'auth:admin']], function () {
