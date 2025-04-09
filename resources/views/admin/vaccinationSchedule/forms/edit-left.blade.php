@@ -22,23 +22,23 @@
                               class="form-control"
                               rows="4"
                               placeholder="{{ __('description') }}"
-                              >{{ $instance->description }}</textarea>
+                    >{{ $instance->description }}</textarea>
                 </div>
             </div>
-            @if($instance->type === \App\Enums\Permission\PermissionType::ADMIN->value)
-            <!--reminder_time-->
-            <div class="col-6">
-                <div class="mb-3">
-                    <i class="ti ti-clock"></i>
-                    <label class="control-label">@lang('performed_on')</label>
-                    <x-input input
-                             type="datetime-local"
-                             name="performed_on"
-                             :value="$instance->performed_on"
-                             :required="true"
-                             :placeholder="__('performed_on')" />
+            @if($instance->type != \App\Enums\Permission\PermissionType::ADMIN)
+                <!--reminder_time-->
+                <div class="col-12">
+                    <div class="mb-3">
+                        <i class="ti ti-clock"></i>
+                        <label class="control-label">@lang('performed_on')</label>
+                        <x-input input
+                                 type="datetime-local"
+                                 name="performed_on"
+                                 :value="$instance->performed_on"
+                                 :required="true"
+                                 :placeholder="__('performed_on')"/>
+                    </div>
                 </div>
-            </div>
             @endif
             <!-- children -->
 

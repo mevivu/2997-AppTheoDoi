@@ -39,7 +39,7 @@ class VaccinationScheduleRequest extends BaseRequest
             'image' => ['nullable', 'string'],
             'type' => ['required', new Enum(PermissionType::class)],
             'status' => ['required', new Enum(ActiveStatus::class)],
-            'vaccination_type_id' => ['required', 'exists:App\Models\VaccinationType,id'],
+            'vaccination_type_id' => ['nullable', 'exists:App\Models\VaccinationType,id'],
             'vaccination_status' => ['required', new Enum(VaccinationStatus::class)],
         ];
     }
