@@ -4,10 +4,11 @@ namespace App\Admin\DataTables\Notification;
 
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\DataTables\Notification\Common\CommonTable;
+use App\Admin\Traits\AuthService;
 
 class NotificationAdminDataTable extends BaseDataTable
 {
-    use CommonTable;
+    use CommonTable, AuthService;
 
     protected $nameTable = 'notificationAdminTable';
 
@@ -18,7 +19,8 @@ class NotificationAdminDataTable extends BaseDataTable
         return $this->repository->getByQueryBuilder(
             [
                 ['admin_id', '!=', null],
-                'package_id' => null
+                'package_id' => null,
+                ['admin_id', '=', $this->getCurrentAdminId()]
             ]
         );
     }

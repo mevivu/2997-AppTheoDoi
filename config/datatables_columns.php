@@ -1201,6 +1201,12 @@ return [
             'orderable' => false,
         ],
 
+        'user_id' => [
+            'title' => 'Khách hàng',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+
         'admin_id' => [
             'title' => 'Admin nhận',
             'addClass' => 'text-center align-middle',
