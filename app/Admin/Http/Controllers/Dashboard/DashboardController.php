@@ -39,7 +39,7 @@ class DashboardController extends Controller
 {
     //
 
-    public function getView()
+    public function getView(): array
     {
         return [
             'index' => 'admin.dashboard.index'
@@ -62,7 +62,7 @@ class DashboardController extends Controller
         $rowCountQuestion = Question::where('question_type', QuestionType::IQ)->count() + Question::where('question_type', QuestionType::AQ)->count() +Question::where('question_type', QuestionType::EQ)->count();
         $rowCountQuiz = Quiz::count();
         $rowCountUser = User::where('status', UserStatus::Active)->count();
-        $rowCountVaccinationSchedule = VaccinationSchedule::count();
+        $rowCountVaccinationSchedule = VaccinationSchedule::where('status', '!=', ActiveStatus::Deleted)->count();
         $rowCountChildren = Child::where('status', ActiveStatus::Active)->count();
         $rowCountEducation = Quality::where('status', ActiveStatus::Active)->count() + SchoolClass::where('status', ActiveStatus::Active)->count() + Capability::where('status', ActiveStatus::Active)->count() + Subject::where('status', ActiveStatus::Active)->count();
         $rowCountClinic = Clinic::where('status', ActiveStatus::Active)->count();
