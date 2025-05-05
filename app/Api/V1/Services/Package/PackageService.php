@@ -38,13 +38,14 @@ class PackageService implements PackageServiceInterface
 
 
     public function __construct(
-        PackageRepositoryInterface $repository,
-        UserPackageRepositoryInterface $userPackageRepository,
-        NotificationServiceInterface $notificationService,
-        AdminRepositoryInterface $adminRepository,
+        PackageRepositoryInterface      $repository,
+        UserPackageRepositoryInterface  $userPackageRepository,
+        NotificationServiceInterface    $notificationService,
+        AdminRepositoryInterface        $adminRepository,
         NotificationRepositoryInterface $notificationRepository,
-        FileService $fileService
-    ) {
+        FileService                     $fileService
+    )
+    {
         $this->repository = $repository;
         $this->userPackageRepository = $userPackageRepository;
         $this->notificationService = $notificationService;
@@ -87,7 +88,7 @@ class PackageService implements PackageServiceInterface
                 'package_id' => $packageId,
                 'message' => $body,
                 'type' => MessageType::PAYMENT,
-                'payment_confirmation_image' => $image
+                'payment_confirmation_image' => $data['payment_confirmation_image']
             ]);
 
         }
