@@ -105,7 +105,7 @@ class UserDataTable extends BaseDataTable
 
                     $this->view['package_type'],
                     [
-                        'package_type' => $item->userPackages->first()->current_type->value
+                        'package_type' => $item->userPackages->first()->package->type
                     ]
                 )->render();
             },
@@ -131,7 +131,7 @@ class UserDataTable extends BaseDataTable
         $this->customFilterColumns = [
 
             'package_type' => function ($query, $keyword) {
-                $query->whereHas('userPackages', function ($subQuery) use ($keyword) {
+                $query->whereHas('userPackages.', function ($subQuery) use ($keyword) {
                     $subQuery->where('current_type', 'like', '%' . $keyword . '%');
                 });
             },
