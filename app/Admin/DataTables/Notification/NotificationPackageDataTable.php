@@ -4,6 +4,7 @@ namespace App\Admin\DataTables\Notification;
 
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
+use App\Admin\Traits\AuthService;
 use App\AES\AESHelper;
 use App\Enums\ApprovalStatus;
 use App\Enums\Notification\NotificationStatus;
@@ -11,6 +12,7 @@ use App\Enums\Package\PackageType;
 
 class NotificationPackageDataTable extends BaseDataTable
 {
+    use AuthService;
     protected $nameTable = 'notificationTable';
 
 
@@ -58,6 +60,7 @@ class NotificationPackageDataTable extends BaseDataTable
             [
                 ['admin_id', '!=', null],
                 ['package_id', '!=', null],
+                ['admin_id', '=', $this->getCurrentAdminId()]
             ]
         );
     }
