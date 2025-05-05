@@ -19,6 +19,8 @@ class QuizIQRequest extends BaseRequest
      */
     protected function methodPost(): array
     {
+        $data = $this->all();
+        $selectedQuestions = json_decode($data['selected_questions'] ?? '[]', true);
         return [
             'title' => ['required', 'string'],
             'age' => ['nullable', 'numeric', new UniqueQuiz(request()->type)],
@@ -27,18 +29,19 @@ class QuizIQRequest extends BaseRequest
             'question_ids' => [
                 'required',
                 'array',
-                function ($attribute, $value, $fail) {
-                   $count = count($value);
-                    if (request()->type === QuestionType::IQ->value && count($value) < 15) {
-                        $fail('Bài kiểm tra phải có đủ 15 câu hỏi.');
-                    }
-                    if ((request()->type === QuestionType::EQ->value || request()->type === QuestionType::AQ->value) && count($value) < 1) {
+            ],
+            'question_ids.*' => ['exists:questions,id'],
+            'selected_questions' => [
+                'required',
+                function ($attribute, $value, $fail) use ($selectedQuestions) {
+                    if ((request()->type === QuestionType::IQ->value ) && count($selectedQuestions) < 1) {
                         $fail('Bài kiểm tra phải chọn ít nhất 1 câu hỏi.');
+                    }
+                    if (request()->type === QuestionType::IQ->value && count($selectedQuestions) !== 15) {
+                        $fail('Bài kiểm tra IQ phải có đúng 15 câu hỏi.');
                     }
                 },
             ],
-            'question_ids.*' => ['exists:questions,id'],
-            'selected_questions' => ['required'],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
         ];
     }
@@ -46,6 +49,8 @@ class QuizIQRequest extends BaseRequest
     protected function methodPut(): array
     {
         $quizId = $this->route('id');
+        $data = $this->all();
+        $selectedQuestions = json_decode($data['selected_questions'] ?? '[]', true);
         return [
             'id' => ['required', 'exists:App\Models\Quiz,id'],
             'title' => ['required', 'string'],
@@ -55,17 +60,20 @@ class QuizIQRequest extends BaseRequest
             'question_ids' => [
                 'required',
                 'array',
-                function ($attribute, $value, $fail) {
-                    if (request()->type === QuestionType::IQ->value && count($value) < 15) {
-                        $fail('Bài kiểm tra phải có đủ 15 câu hỏi.');
-                    }
-                    if ((request()->type === QuestionType::EQ->value || request()->type === QuestionType::AQ->value) && count($value) < 1) {
+            ],
+            'question_ids.*' => ['exists:questions,id'],
+            'selected_questions' => [
+                'required',
+                function ($attribute, $value, $fail) use ($selectedQuestions) {
+                    if ((request()->type === QuestionType::IQ->value ) && count($selectedQuestions) < 1) {
                         $fail('Bài kiểm tra phải chọn ít nhất 1 câu hỏi.');
+                    }
+                    if (request()->type === QuestionType::IQ->value && count($selectedQuestions) !== 15) {
+                        $fail('Bài kiểm tra IQ phải có đúng 15 câu hỏi.');
                     }
                 },
             ],
-            'question_ids.*' => ['exists:questions,id'],
-            'selected_questions' => ['required'],
+
             'status' => ['required', new Enum(ActiveStatus::class)],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
         ];
