@@ -1,6 +1,7 @@
 <script>
     $(document).ready(function() {
         select2LoadData($('#user_id').data('url'), '#user_id');
+
         let selectedValue = null;
 
         $('.notification-type').change(function() {

@@ -39,7 +39,7 @@ class ClinicRepository extends AdminRepository implements ClinicRepositoryInterf
             $query->where('ward_id',$filters['ward_id']);
         }
         if(!empty($filters['opening_time'])){
-            $query->where('opening_time', '>=', $filters['opening_time']);
+            $query->where('opening_time', '<=', $filters['opening_time'])->where('closing_time','>=', $filters['opening_time']);
         }
         return $query->paginate($limit, ['*'], 'page', $page);
     }
