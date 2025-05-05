@@ -17,6 +17,7 @@ use App\Models\Assessment;
 use App\Models\Rating;
 use App\Models\RatingPQ;
 use Illuminate\Http\Request;
+use Throwable;
 
 
 class AssessmentService implements AssessmentServiceInterface
@@ -95,31 +96,33 @@ class AssessmentService implements AssessmentServiceInterface
         }
 
         $age = $latest->child?->age ?? null;
+        if (is_null($age)) return null;
 
-        if (is_null($age)) {
-            return null;
-        }
+        try {
+            $currentHeight     = floatval($latest->height_result);
+            $heightAdulthood   = floatval($latest->height_change);
+            $bmiPercent        = floatval($latest->bmi);
+            $strengthPercent   = floatval($latest->strength);
+            $endurancePercent  = floatval($latest->endurance);
 
-        $currentHeight     = $latest->height_result;
-        $heightAdulthood   = $latest->height_change;
-        $bmiPercent        = $latest->bmi;
-        $strengthPercent   = $latest->strength;
-        $endurancePercent  = $latest->endurance;
-
-        if (is_null($currentHeight) || is_null($heightAdulthood) || is_null($strengthPercent) || is_null($endurancePercent)) {
-            return null;
-        }
-
-        if ($age > 5) {
-            if (is_null($bmiPercent)) {
+            if (
+                is_null($currentHeight) || is_null($heightAdulthood) ||
+                is_null($strengthPercent) || is_null($endurancePercent)
+            ) {
                 return null;
             }
 
-            $totalScore = $bmiPercent + $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
-            return round($totalScore / 5, 1);
-        } else {
-            $totalScore = $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
-            return round($totalScore / 4, 1);
+            if ($age > 5) {
+                if (is_null($bmiPercent)) return null;
+                $totalScore = $bmiPercent + $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
+                return round($totalScore / 5, 1);
+            } else {
+                $totalScore = $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
+                return round($totalScore / 4, 1);
+            }
+        } catch (Throwable $e) {
+            // log lỗi nếu cần
+            return null;
         }
     }
 
