@@ -43,10 +43,10 @@ class UserVaccinationScheduleDataTable extends BaseDataTable
     public function setColumnSearch(): void
     {
         $this->columnAllSearch = [1, 2, 3, 4, 5, 6];
-        $this->columnSearchDate = [3];
+        $this->columnSearchDate = [4];
         $this->columnSearchSelect = [
             [
-                'column' => 4,
+                'column' => 5,
                 'data' => ActiveStatus::asSelectArray()
             ],
 
