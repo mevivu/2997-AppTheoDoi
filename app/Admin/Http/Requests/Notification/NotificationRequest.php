@@ -6,6 +6,7 @@ use App\Admin\Http\Requests\BaseRequest;
 use App\Enums\ApprovalStatus;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
+use App\Models\Notification;
 use Illuminate\Validation\Rules\Enum;
 
 class NotificationRequest extends BaseRequest
@@ -53,8 +54,15 @@ class NotificationRequest extends BaseRequest
             if ($this->has('approval_status') && $this->input('approval_status') == ApprovalStatus::PENDING->value) {
                     $validator->errors()->add('approval_status', __('Trạng thái phê duyệt không thể là Chưa duyệt.'));
             }
+            $notificationId = $this->input('id');
+            $notification = \App\Models\Notification::find($notificationId);
+
+            if ($notification && $notification->approval_status != ApprovalStatus::PENDING) {
+                $validator->errors()->add('approval_status', 'Thông báo đã được duyệt hoặc từ chối, không thể cập nhật.');
+            }
         });
     }
+
 
     public function messages()
     {

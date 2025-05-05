@@ -104,7 +104,6 @@ class NotificationPackageDataTable extends BaseDataTable
     public function setCustomFilterColumns(): void
     {
         $this->customFilterColumns = [
-
             'package_id' => function ($query, $keyword) {
                 $query->whereHas('package', function ($subQuery) use ($keyword) {
                     $subQuery->where('name', 'like', '%' . $keyword . '%');
