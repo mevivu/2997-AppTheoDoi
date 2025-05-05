@@ -1,13 +1,19 @@
 @extends('admin.layouts.guest.master')
 
 @section('content')
+    @php
+        $settingRepository = app()->make(App\Admin\Repositories\Setting\SettingRepository::class);
+        $settings = $settingRepository->getAll();
+    @endphp
     <div class="page page-center background-container">
         <div class="container-tight py-4">
             <x-form :action="route('admin.login.post')" class="glass-card login-container" type="post" :validate="true">
                 <div class="card-body p-4 shadow-sm">
                     <h2 class="card-title mb-4 text-center text-3xl font-bold text-white">{{ __('WELCOME TO ADMIN') }}</h2>
                     <div class="logo-container mb-4 text-center">
-                        <img class="img-fluid mx-auto" src="{{ asset(config('custom.images.logo')) }}" alt="">
+                        <img class="img-fluid mx-auto"
+                             src="{{ asset($settings->where('setting_key', 'site_logo')->first()->plain_value) }}"
+                             alt="">
                     </div>
                     <p class="mb-4 text-center text-white">{{ __('Để đăng nhập được nhập đầy đủ thông tin bên dưới') }}
                     </p>

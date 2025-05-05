@@ -5,9 +5,15 @@
                 aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+        @php
+            $settingRepository = app()->make(App\Admin\Repositories\Setting\SettingRepository::class);
+            $settings = $settingRepository->getAll();
+        @endphp
         <h1 class="navbar-brand navbar-brand-autodark">
             <x-link :href="route('admin.dashboard')">
-                <img src="{{ asset(config('custom.images.logo')) }}" width="110" height="32" alt="Tabler"
+                <img src="{{ asset($settings->where('setting_key', 'site_logo')->first()->plain_value) }}"
+                     width="110" height="32"
+                     alt="Tabler"
                      class="navbar-brand-image">
             </x-link>
         </h1>
@@ -23,7 +29,9 @@
                 @foreach ($menu as $item)
                     @if(auth('admin')->user()->checkPermissions($item['permissions']) || in_array("mevivuDev",$item['permissions']))
                         <li @class(['nav-item', 'dropdown' => count($item['sub']) > 0])>
-                            <x-admin-item-link-sidebar-left class="nav-link" :href="$routeName($item['routeName'], $item['param'] ?? [])" :dropdown="count($item['sub']) > 0 ? true : false">
+                            <x-admin-item-link-sidebar-left class="nav-link"
+                                                            :href="$routeName($item['routeName'], $item['param'] ?? [])"
+                                                            :dropdown="count($item['sub']) > 0 ? true : false">
                                 <span class="nav-link-icon d-md-none d-lg-inline-block">
                                     {!! __($item['icon']) !!}
                                 </span>
@@ -76,10 +84,10 @@
 <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
 
 <script>
-    $(document).ready(function() {
-        $('#searchMenuInput').on('keyup', function() {
+    $(document).ready(function () {
+        $('#searchMenuInput').on('keyup', function () {
             const value = $(this).val().toLowerCase();
-            $("#sidebar-menu ul.navbar-nav > li").filter(function() {
+            $("#sidebar-menu ul.navbar-nav > li").filter(function () {
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
