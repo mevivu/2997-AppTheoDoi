@@ -34,6 +34,7 @@ class NotificationPackageDataTable extends BaseDataTable
             'package' => 'admin.notifications.datatable.package',
             'edit_link_customer' => 'admin.notifications.datatable.edit-link-customer',
             'checkbox' => 'admin.common.checkbox',
+            'user_id' => 'admin.notifications.datatable.user',
         ];
     }
 
@@ -43,7 +44,7 @@ class NotificationPackageDataTable extends BaseDataTable
         $this->columnAllSearch = [1, 2, 3, 4, 5, 6];
         $this->columnSearchSelect = [
             [
-                'column' => 5,
+                'column' => 6,
                 'data' => ApprovalStatus::asSelectArray()
             ],
 
@@ -82,6 +83,7 @@ class NotificationPackageDataTable extends BaseDataTable
                     ]
                 )->render();
             },
+            'user_id' => $this->view['user_id'],
         ];
     }
 
@@ -106,6 +108,12 @@ class NotificationPackageDataTable extends BaseDataTable
             'package_id' => function ($query, $keyword) {
                 $query->whereHas('package', function ($subQuery) use ($keyword) {
                     $subQuery->where('name', 'like', '%' . $keyword . '%');
+                });
+            },
+
+            'user_id' => function ($query, $keyword) {
+                $query->whereHas('user', function ($subQuery) use ($keyword) {
+                    $subQuery->where('fullname', 'like', '%' . $keyword . '%');
                 });
             },
         ];
