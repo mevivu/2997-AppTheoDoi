@@ -36,7 +36,7 @@ class NotificationPackageDataTable extends BaseDataTable
             'package' => 'admin.notifications.datatable.package',
             'edit_link_customer' => 'admin.notifications.datatable.edit-link-customer',
             'checkbox' => 'admin.common.checkbox',
-            'user_id' => 'admin.notifications.datatable.user',
+            'user_id_attribute' => 'admin.notifications.datatable.user',
         ];
     }
 
@@ -86,7 +86,7 @@ class NotificationPackageDataTable extends BaseDataTable
                     ]
                 )->render();
             },
-            'user_id' => $this->view['user_id'],
+            'user_id_attribute' => $this->view['user_id_attribute'],
         ];
     }
 
@@ -101,7 +101,7 @@ class NotificationPackageDataTable extends BaseDataTable
     protected function setCustomRawColumns(): void
     {
         $this->customRawColumns = ['action', 'approval_status', 'checkbox',
-            'user_id', 'admin_id', 'title', 'package_id'];
+            'user_id_attribute', 'admin_id', 'title', 'package_id'];
     }
 
     public function setCustomFilterColumns(): void
@@ -113,7 +113,7 @@ class NotificationPackageDataTable extends BaseDataTable
                 });
             },
 
-            'user_id' => function ($query, $keyword) {
+            'user_id_attribute' => function ($query, $keyword) {
                 $query->whereHas('user', function ($subQuery) use ($keyword) {
                     $subQuery->where('fullname', 'like', '%' . $keyword . '%');
                 });

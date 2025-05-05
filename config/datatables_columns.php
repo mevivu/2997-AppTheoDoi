@@ -1201,7 +1201,7 @@ return [
             'orderable' => false,
         ],
 
-        'user_id' => [
+        'user_id_attribute' => [
             'title' => 'Khách hàng',
             'addClass' => 'text-center align-middle',
             'orderable' => false,
