@@ -24,11 +24,11 @@ class ValidChildAge implements Rule
             return false;
         }
 
-        $user = $child->user;
-        if ($user->father_height == null || $user->mother_height == null) {
-            $this->errorMessage = 'Chưa có chiều cao của Bố hoặc mẹ.';
-            return false;
-        }
+//        $user = $child->user;
+//        if ($user->father_height == null || $user->mother_height == null) {
+//            $this->errorMessage = 'Chưa có chiều cao của Bố hoặc mẹ.';
+//            return false;
+//        }
 
 
         if ($child->is_born == BornStatus::Unborn) {

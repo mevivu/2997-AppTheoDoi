@@ -217,10 +217,10 @@ class RatingPQService implements RatingPQServiceInterface
         }
         $predictedHeight = $yearsToAdulthood + $heightIncreaseInOneYear;
         $predictedHeightAchieved = $predictedHeight + $nearestHeight;
-        $heightFather = $child->user->father_height;
-        $heightMother = $child->user->mother_height;
+        $heightFather = $child->user->father_height ?? 0;
+        $heightMother = $child->user->mother_height ?? 0;
         $predictedHeightMale = ($heightFather + $heightMother + 13) / 2 + 5;
-        $predictedHeightFemale = ($heightMother + $heightMother - 13) / 2 + 3;
+        $predictedHeightFemale = ($heightFather + $heightMother - 13) / 2 + 3;
         if ($gender == Gender::Male) {
             $predictedHeightChild = ($predictedHeightMale * 0.3) + ($predictedHeightAchieved * 0.7);
         } else {
