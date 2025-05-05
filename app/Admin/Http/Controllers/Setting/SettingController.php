@@ -54,7 +54,8 @@ class SettingController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $data = $request->except('_token', '_method');
-        if($data['aes_secret_key']){
+        $aesSecretKey = $data['aes_secret_key'] ?? null;
+        if($aesSecretKey){
             $aesSelectKeyOld = $this->repository->getBy(['setting_key' => 'aes_secret_key'])->first()->plain_value;
             if ($aesSelectKeyOld !== $data['aes_secret_key']) {
                 $users = $this->userRepository->getAll();
