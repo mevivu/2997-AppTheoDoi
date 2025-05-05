@@ -9,10 +9,12 @@ use App\AES\AESHelper;
 use App\Enums\ApprovalStatus;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Package\PackageType;
+use App\Models\User;
 
 class NotificationPackageDataTable extends BaseDataTable
 {
     use AuthService;
+
     protected $nameTable = 'notificationTable';
 
 
@@ -114,8 +116,10 @@ class NotificationPackageDataTable extends BaseDataTable
             },
 
             'user_id_attribute' => function ($query, $keyword) {
-                $query->whereHas('user', function ($subQuery) use ($keyword) {
-                    $subQuery->where('fullname', 'like', '%' . $keyword . '%');
+                $query->whereIn('user_id_attribute', function ($subQuery) use ($keyword) {
+                    $subQuery->select('id')
+                        ->from('users')
+                        ->where('fullname', 'like', '%' . $keyword . '%');
                 });
             },
         ];
