@@ -13,6 +13,9 @@ use App\Enums\Assessment\AssessmentType;
 use App\Enums\OpenStatus;
 use App\Enums\Question\QuestionType;
 use App\Enums\VerifiedStatus;
+use App\Models\Assessment;
+use App\Models\Rating;
+use App\Models\RatingPQ;
 use Illuminate\Http\Request;
 
 
@@ -30,7 +33,6 @@ class AssessmentService implements AssessmentServiceInterface
     protected AssessmentRepositoryInterface $repository;
     protected RatingPQRepositoryInterface $ratingPQRepository;
     protected RatingRepositoryInterface $ratingRepository;
-
     protected ClassGradeRepositoryInterface $classGradeRepository;
 
 
@@ -52,42 +54,100 @@ class AssessmentService implements AssessmentServiceInterface
     {
         $data = $request->validated();
         $childId = $data['child_id'];
-        $assessmentPQ = $this->repository->getBy([
-            'child_id' => $childId,
-            'type' => AssessmentType::PQ
-        ])->first();
-        $assessmentIq = $this->repository->getBy(
-            [
-                'child_id' => $childId,
-                'type' => AssessmentType::IQ,
-            ]
-        )->first();
-        $assessmentEQ = $this->repository->getBy(
-            [
-                'child_id' => $childId,
-                'type' => AssessmentType::EQ
-            ]
-        )->first();
-        $assessmentAQ = $this->repository->getBy(
-            [
-                'child_id' => $childId,
-                'type' => AssessmentType::AQ
-            ]
-        )->first();
-        $assessmentGPA = $this->repository->getBy(
-            [
-                'child_id' => $childId,
-                'type' => AssessmentType::GPA
-            ]
-        )->first();
+        $assessmentPQ = $this->getAssessmentByType($childId, AssessmentType::PQ);
+        $assessmentIq = $this->getAssessmentByType($childId, AssessmentType::IQ);
+        $assessmentEQ = $this->getAssessmentByType($childId, AssessmentType::EQ);
+        $assessmentAQ = $this->getAssessmentByType($childId, AssessmentType::AQ);
+        $assessmentGPA = $this->getAssessmentByType($childId, AssessmentType::GPA);
+
         $this->updateAssessmentPQ($assessmentPQ, $childId);
         $this->updateAssessmentGPA($assessmentGPA, $childId);
         $this->updateAssessmentType($assessmentIq, $childId, QuestionType::IQ);
         $this->updateAssessmentType($assessmentEQ, $childId, QuestionType::EQ);
         $this->updateAssessmentType($assessmentAQ, $childId, QuestionType::AQ);
-        return $this->repository->getBy([
+        $latestIq = $this->getLatestRatingByType($childId, QuestionType::IQ);
+        $latestEq = $this->getLatestRatingByType($childId, QuestionType::EQ);
+        $latestAq = $this->getLatestRatingByType($childId, QuestionType::AQ);
+        $latestGpa = $this->getLatestGpaScore($childId);
+        $assessment = $this->repository->getBy([
             'child_id' => $childId,
         ]);
+        return [
+            'assessments' => $assessment,
+            'information' => [
+                'iq' => $latestIq?->score,
+                'eq' => $latestEq?->score,
+                'aq' => $latestAq?->score,
+                'gpa' => $latestGpa,
+                'pq' => $this->getLatestPQScore($childId),
+            ]
+        ];
+    }
+
+    public function getLatestPQScore(int $childId): ?float
+    {
+        $latest = RatingPQ::where('child_id', $childId)
+            ->orderByDesc('assessment_date')
+            ->first();
+
+        if (!$latest) {
+            return null;
+        }
+
+        $age = $latest->child?->age ?? null;
+
+        if (is_null($age)) {
+            return null;
+        }
+
+        $currentHeight     = $latest->height_result;
+        $heightAdulthood   = $latest->height_change;
+        $bmiPercent        = $latest->bmi;
+        $strengthPercent   = $latest->strength;
+        $endurancePercent  = $latest->endurance;
+
+        if (is_null($currentHeight) || is_null($heightAdulthood) || is_null($strengthPercent) || is_null($endurancePercent)) {
+            return null;
+        }
+
+        if ($age > 5) {
+            if (is_null($bmiPercent)) {
+                return null;
+            }
+
+            $totalScore = $bmiPercent + $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
+            return round($totalScore / 5, 1);
+        } else {
+            $totalScore = $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
+            return round($totalScore / 4, 1);
+        }
+    }
+
+
+
+    public function getLatestRatingByType(int $childId, QuestionType $type): ?Rating
+    {
+        return Rating::where('child_id', $childId)
+            ->where('type', $type)
+            ->orderByDesc('created_at')
+            ->first();
+    }
+
+    public function getLatestGpaScore(int $childId): ?float
+    {
+        $latestGrade = $this->classGradeRepository->getBy(['child_id' => $childId])
+            ->sortByDesc('updated_at')
+            ->first();
+
+        return $latestGrade?->full_year_grade;
+    }
+
+    public function getAssessmentByType(int $childId, AssessmentType $type): ?Assessment
+    {
+        return $this->repository->getBy([
+            'child_id' => $childId,
+            'type' => $type
+        ])->first();
     }
 
     public function updateAssessmentPQ($assessmentPQ, $childId): void
@@ -97,13 +157,13 @@ class AssessmentService implements AssessmentServiceInterface
             $assessmentPQ->update(['checked' => OpenStatus::ON]);
         }
     }
-    public function updateAssessmentGPA($assessmentGPA,$childId): void
+
+    public function updateAssessmentGPA($assessmentGPA, $childId): void
     {
         $exists = $this->classGradeRepository->hasGradesGreaterThanZero($childId);
         if ($exists) {
             $assessmentGPA->update(['checked' => OpenStatus::ON]);
-        }
-        else{
+        } else {
             $assessmentGPA->update(['checked' => OpenStatus::OFF]);
 
         }
