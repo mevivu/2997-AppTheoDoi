@@ -42,9 +42,11 @@ class ProductDataTable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getByQueryBuilder([
-
-        ]);
+        return $this->repository->getByQueryBuilder(
+            [
+                ['status', '!=', ActiveStatus::Deleted],
+            ]
+        );
     }
 
     public function setColumnSearch(): void
