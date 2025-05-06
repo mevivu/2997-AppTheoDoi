@@ -54,10 +54,14 @@ class PregnancyService implements PregnancyServiceInterface
     public function store(Request $request): object
     {
         $data = $request->validated();
-        $image = $data['image'];
+        $image = $data['image'] ?? null;
         if ($image) {
             $data['image'] = $this->fileService->uploadAvatar('images/pregnancy', $image);
         }
+        $data['week'] = $data['week'] ?? null;
+        $data['weight'] = $data['weight'] ?? null;
+        $data['length'] = $data['length'] ?? null;
+        $data['head_circumference'] = $data['head_circumference'] ?? null;
         return $this->repository->create($data);
     }
 

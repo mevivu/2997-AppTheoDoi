@@ -27,11 +27,11 @@ class PregnancyRequest extends BaseRequest
     {
         return [
             'child_id' => ['required', 'integer', new ValidBornChild()],
-            'week' => 'sometimes|integer|min:1',
-            'weight' => 'sometimes|numeric|min:0',
-            'length' => 'sometimes|integer|min:0',
-            'head_circumference' => 'sometimes|integer|min:0',
-            'image' => 'required|image|max:5000',
+            'week' => 'nullable|integer|min:1',
+            'weight' => 'nullable|numeric|min:0',
+            'length' => 'nullable|integer|min:0',
+            'head_circumference' => 'nullable|integer|min:0',
+            'image' => 'nullable|image|max:5000',
         ];
     }
 
