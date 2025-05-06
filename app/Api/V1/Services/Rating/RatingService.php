@@ -6,12 +6,14 @@ namespace App\Api\V1\Services\Rating;
 use App\Admin\Services\File\FileService;
 use App\Api\V1\Repositories\Answer\AnswerRepositoryInterface;
 use App\Api\V1\Repositories\Child\ChildRepositoryInterface;
+use App\Api\V1\Repositories\Quiz\QuizRepositoryInterface;
 use App\Api\V1\Repositories\Rating\RatingRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\Group\GroupType;
 use App\Enums\Question\QuestionType;
 use App\Enums\VerifiedStatus;
+use App\Models\Quiz;
 use Exception;
 use Illuminate\Http\Request;
 use Intervention\Image\ImageManager;
@@ -32,6 +34,7 @@ class RatingService implements RatingServiceInterface
     protected RatingRepositoryInterface $repository;
     protected AnswerRepositoryInterface $answerRepository;
     protected ChildRepositoryInterface $childRepository;
+    protected QuizRepositoryInterface $quizRepository;
 
     protected FileService $fileService;
 
@@ -39,13 +42,15 @@ class RatingService implements RatingServiceInterface
         RatingRepositoryInterface $repository,
         AnswerRepositoryInterface $answerRepository,
         ChildRepositoryInterface  $childRepository,
-        FileService               $fileService
+        FileService               $fileService,
+        QuizRepositoryInterface   $quizRepository
     )
     {
         $this->repository = $repository;
         $this->answerRepository = $answerRepository;
         $this->childRepository = $childRepository;
         $this->fileService = $fileService;
+        $this->quizRepository = $quizRepository;
     }
 
 
@@ -74,12 +79,14 @@ class RatingService implements RatingServiceInterface
         $data = $request->validated();
         $answers = $data['answers'] ?? [];
         $childId = $data['child_id'];
+        $quizId = $data['quiz_id'];
+        $quiz = $this->quizRepository->findOrFail($quizId);
+        $totalCount = $quiz->questions()->count();
         $ratingId = $data['rating_id'];
         $child = $this->childRepository->findOrFail($childId);
         $childName = $child->fullname;
         $type = QuestionType::IQ->value;
         $correctCount = 0;
-        $totalCount = count($answers);
         foreach ($answers as $answer) {
             $correct = $this->answerRepository->getByQueryBuilder(
                 [
@@ -246,6 +253,7 @@ class RatingService implements RatingServiceInterface
     {
         $descriptions = [
             QuestionType::IQ->value => [
+                0 => 'Kém',
                 5 => 'Kém',
                 7 => 'Trung bình',
                 8 => 'Khá cao',
@@ -253,6 +261,7 @@ class RatingService implements RatingServiceInterface
                 10 => 'Xuất sắc'
             ],
             QuestionType::EQ->value => [
+                0 => 'Tiêu cực',
                 3 => 'Tiêu cực',
                 5 => ' Tiêu cực ẩn',
                 7 => 'Trung tính',
@@ -260,6 +269,7 @@ class RatingService implements RatingServiceInterface
                 9.1 => 'Rất tích cực'
             ],
             QuestionType::AQ->value => [
+                0 => 'Quiter',
                 3 => 'Quiter',
                 5 => 'Quiter',
                 7 => 'Camper',
@@ -282,6 +292,7 @@ class RatingService implements RatingServiceInterface
     {
         $descriptions = [
             QuestionType::AQ->value => [
+                0 => 'Tiêu cực, dễ bỏ cuộc.',
                 3 => 'Tiêu cực, dễ bỏ cuộc.',
                 5 => 'Miễn cưỡng hoặc không sẵn lòng đối mặt với khó khăn.',
                 7 => 'Tích cực nhưng có thể cần hỗ trợ.',
@@ -289,6 +300,7 @@ class RatingService implements RatingServiceInterface
                 9.1 => 'Rất tích cực, kiên trì, vượt khó tốt'
             ],
             QuestionType::IQ->value => [
+                0 => 'Kém',
                 5 => 'Kém',
                 7 => 'Trung bình',
                 8 => 'Khá cao',
@@ -296,6 +308,7 @@ class RatingService implements RatingServiceInterface
                 9.1 => 'Xuất sắc'
             ],
             QuestionType::EQ->value => [
+                0 => 'Tiêu cực, khó kiểm soát cảm xúc.',
                 3 => 'Tiêu cực, khó kiểm soát cảm xúc.',
                 5 => 'Tiêu cực, nhưng không thể hiện ra ngoài',
                 7 => 'Trung tính, có cố gắng kiểm soát nhưng chưa hoàn toàn tự tin.',

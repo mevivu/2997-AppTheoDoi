@@ -31,6 +31,7 @@ class RatingRequest extends BaseRequest
         return [
             'child_id' => 'required|integer|exists:children,id',
             'rating_id' => 'required|integer|exists:ratings,id',
+            'quiz_id' => 'required|integer|exists:quizzes,id',
             'tag' => 'required|string',
             'answers' => 'required|array',
             'answers.*.question_id' => 'required|integer|exists:questions,id',
@@ -65,6 +66,9 @@ class RatingRequest extends BaseRequest
             'answers.*.answer_id.required' => 'Vui lòng cung cấp ID của câu trả lời.',
             'answers.*.answer_id.integer' => 'ID câu trả lời phải là một số nguyên.',
             'answers.*.answer_id.exists' => 'ID câu trả lời không tồn tại.',
+            'quiz_id.required' => 'Vui lòng cung cấp ID của bài kiểm tra.',
+            'quiz_id.integer' => 'ID bài kiểm tra phải là một số nguyên.',
+            'quiz_id.exists' => 'ID bài kiểm tra không tồn tại.',
         ];
     }
 
