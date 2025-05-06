@@ -2,7 +2,6 @@
 
 namespace App\Api\V1\Http\Resources\RatingPQ;
 
-use App\Api\V1\Http\Resources\Child\ChildResource;
 use App\Api\V1\Support\CheckPackage;
 use App\Enums\User\Gender;
 use Exception;
