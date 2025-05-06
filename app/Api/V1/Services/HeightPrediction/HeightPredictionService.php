@@ -94,8 +94,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
     public function calculateMatureHeight($child, $currentHeight): float
     {
-        $heightFather = $child->user->father_height;
-        $heightMother = $child->user->mother_height;
+        $heightFather = $child->user->father_height ?? 0;
+        $heightMother = $child->user->mother_height ?? 0;
 
         $predictedHeightMale = ($heightFather + $heightMother + 13) / 2 + 5;
         $predictedHeightFemale = ($heightMother + $heightMother - 13) / 2 + 3;
