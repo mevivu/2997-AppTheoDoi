@@ -20,7 +20,7 @@ class PregnancyUpdateRequest extends BaseRequest
             'weight' => 'sometimes|numeric|min:0',
             'length' => 'sometimes|integer|min:0',
             'head_circumference' => 'sometimes|integer|min:0',
-            'image' => 'required|image|max:5000',
+            'image' => 'nullable|image|max:5000',
         ];
     }
 

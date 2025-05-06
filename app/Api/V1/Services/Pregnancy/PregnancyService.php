@@ -71,7 +71,7 @@ class PregnancyService implements PregnancyServiceInterface
     public function update(Request $request): object
     {
         $data = $request->validated();
-        $image = $data['image'];
+        $image = $data['image'] ?? null;
         $pregnancy = $this->repository->findOrFail($data['id']);
         if ($image) {
             $data['image'] = $this->fileService->uploadAvatar('images/pregnancy', $image, $pregnancy->image);

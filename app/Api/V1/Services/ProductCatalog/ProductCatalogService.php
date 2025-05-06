@@ -3,6 +3,7 @@
 namespace App\Api\V1\Services\ProductCatalog;
 
 use App\Api\V1\Repositories\ProductCatalog\ProductCatalogRepositoryInterface;
+use App\Enums\ActiveStatus;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProductCatalogService implements ProductCatalogServiceInterface
@@ -19,14 +20,11 @@ class ProductCatalogService implements ProductCatalogServiceInterface
         $page = $data['page'] ?? 1;
         $limit = $data['limit'] ?? 10;
 
-        $filters = [];
-
-
-        if (!empty($data['status'])) {
-            $filters['status'] = $data['status'];
-        }
-
-        $query = $this->repository->getByQueryBuilder($filters);
+        $query = $this->repository->getByQueryBuilder(
+            [
+                'status' => ActiveStatus::Active
+            ]
+        );
 
         return $query->paginate($limit, ['*'], 'page', $page);
     }
