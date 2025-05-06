@@ -14,6 +14,7 @@ use App\Enums\Notification\MessageType;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
 use App\Enums\Notification\NotificationOption;
+use App\Enums\Package\PackageUserStatus;
 use App\Traits\UseLog;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -222,38 +223,69 @@ class NotificationService implements NotificationServiceInterface
         $package = $notification->package;
         $user = $this->userRepository->findOrFail($notification->user_id_attribute);
         $startDate = now();
-//        $endDate = $startDate->copy()->add($package->type->duration());
-        $endDate = $startDate->copy()->addDays($package->days);
+        $additionalDays = 0;
+
+        // Lấy gói hiện tại nếu còn hiệu lực
+        $currentUserPackage = $this->userPackageRepository
+            ->getByQueryBuilder([
+                'user_id' => $user->id,
+                'status' => PackageUserStatus::Active
+            ])
+            ->where('end_date', '>', $startDate)
+            ->latest('end_date')
+            ->first();
+
+        // Nếu còn hạn thì tính số ngày dư
+        if ($currentUserPackage) {
+            $additionalDays = $startDate->diffInDays($currentUserPackage->end_date);
+        }
+
+        // Gộp ngày còn lại và số ngày của gói mới
+        $endDate = $startDate->copy()->addDays($package->days + $additionalDays);
+
+        // Cập nhật hoặc tạo mới user_package
         $userPackage = $this->userPackageRepository
-            ->findByField('user_id', $notification->user_id_attribute);
-        $userPackage?->update(
-            [
-                'package_id' => $notification->package_id,
+            ->findByField('user_id', $user->id)
+            ->first();
+
+        if ($userPackage) {
+            $userPackage->update([
+                'package_id' => $package->id,
                 'start_date' => $startDate,
                 'end_date' => $endDate,
+                'status' => PackageUserStatus::Active,
                 'current_type' => $package->type
-            ]
-        );
-        $notifications = $this->repository->getByQueryBuilder(
-            [
-                'package_id' => $notification->package_id,
-                'user_id_attribute' => $notification->user_id_attribute
-            ]
-        )
-            ->where('created_at', $notification->created_at)->get();
-        foreach ($notifications as $notification) {
-            $this->repository->update($notification->id, ['approval_status' => ApprovalStatus::ACTIVE]);
-        }
-        // Create notification
-        if ($user) {
-            $this->firebaseService->notifyUserPackageApproved($user);
+            ]);
+        } else {
+            $this->userPackageRepository->create([
+                'user_id' => $user->id,
+                'package_id' => $package->id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'status' => PackageUserStatus::Active,
+                'current_type' => $package->type
+            ]);
         }
 
-        // create transaction
+        // Cập nhật trạng thái thông báo
+        $notifications = $this->repository->getByQueryBuilder([
+            'package_id' => $package->id,
+            'user_id_attribute' => $user->id
+        ])
+            ->where('created_at', $notification->created_at)
+            ->get();
 
-        $this->transactionService->store($user, $notification->package);
+        foreach ($notifications as $notificationItem) {
+            $this->repository->update($notificationItem->id, ['approval_status' => ApprovalStatus::ACTIVE]);
+        }
 
+        // Gửi thông báo firebase
+        $this->firebaseService->notifyUserPackageApproved($user);
+
+        // Tạo giao dịch thanh toán
+        $this->transactionService->store($user, $package);
     }
+
 
 
     /**
