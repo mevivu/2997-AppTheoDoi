@@ -25,6 +25,7 @@ class ChildResource extends JsonResource
             'is_born' => $this->is_born,
             'gender' => $this->gender,
             'birthday' =>  $this->birthday ? format_date($this->birthday) : null,
+            'due_date' => $this->due_date ? format_date($this->due_date) : null,
             'avatar' => formatImageUrl($this->avatar),
             'user' => [
                 'fullname' => $this->user->fullname

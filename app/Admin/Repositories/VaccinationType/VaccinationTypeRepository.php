@@ -3,6 +3,7 @@
 namespace App\Admin\Repositories\VaccinationType;
 
 use App\Admin\Repositories\EloquentRepository;
+use App\Enums\ActiveStatus;
 use App\Models\VaccinationType;
 
 class VaccinationTypeRepository extends EloquentRepository implements VaccinationTypeRepositoryInterface
@@ -16,6 +17,8 @@ class VaccinationTypeRepository extends EloquentRepository implements Vaccinatio
     {
         $this->instance = $this->model->select($select);
         $this->getQueryBuilderFindByKey($keySearch);
+        $this->instance = $this->instance->where('status', ActiveStatus::Active);
+
 
         foreach ($meta as $key => $value) {
             $this->instance = $this->instance->where($key, $value);
