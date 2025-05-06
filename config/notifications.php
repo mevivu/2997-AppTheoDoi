@@ -13,8 +13,9 @@ return [
 
     'admin_approval_required' => [
         'title' => 'Yêu cầu phê duyệt gói dịch vụ mới',
-        'message' => 'Gói dịch vụ được mua bởi {fullname} cần được phê duyệt. Vui lòng xem xét và phê duyệt gói dịch vụ để hoàn tất quá trình mua hàng.'
+        'message' => 'Gói dịch vụ được mua bởi {fullname} ({email}) cần được phê duyệt. Vui lòng xem xét và phê duyệt gói dịch vụ để hoàn tất quá trình mua hàng.'
     ],
+
 
     'package_approved_and_paid' => [
         'title' => 'Xác nhận và Thanh toán Thành Công',

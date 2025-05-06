@@ -62,6 +62,7 @@ class NotificationPackageDataTable extends BaseDataTable
             [
                 ['admin_id', '!=', null],
                 ['package_id', '!=', null],
+                ['user_id', '=', null],
                 ['admin_id', '=', $this->getCurrentAdminId()]
             ]
         );

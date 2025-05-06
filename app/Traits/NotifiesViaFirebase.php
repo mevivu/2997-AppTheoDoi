@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Admin\Repositories\Admin\AdminRepositoryInterface;
 use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
+use App\AES\AESHelper;
 use App\Enums\Notification\MessageType;
 use App\Mail\AdminNotificationMail;
 use App\Models\User;
@@ -163,7 +164,14 @@ trait  NotifiesViaFirebase
         $notificationRepository = app(NotificationRepositoryInterface::class);
         $title = config('notifications.admin_approval_required.title');
         $message = config('notifications.admin_approval_required.message');
-        $body = str_replace('{fullname}', $user->fullname, $message);
+        $email = AESHelper::decrypt($user->email);
+        $email = $email ?: 'không có';
+
+        $body = str_replace(
+            ['{fullname}', '{email}'],
+            [$user->fullname, $email],
+            $message
+        );
         $admins = $adminRepository->getAll();
         $deviceTokens = $admins->pluck('device_token')->filter()->all();
         if (!empty($deviceTokens)) {

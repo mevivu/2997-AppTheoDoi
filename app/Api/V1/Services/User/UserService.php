@@ -57,7 +57,11 @@ class UserService implements UserServiceInterface
             $data['code'] = $this->createCodeUser();
             $data['email'] = AESHelper::encrypt($data['email']);
             $data['username'] = $data['email'];
-            $data['phone'] = AESHelper::encrypt($data['phone']);
+            if (!empty($data['phone'])) {
+                $data['phone'] = AESHelper::encrypt($data['phone']);
+            } else {
+                $data['phone'] = null;
+            }
             $data['status'] = UserStatus::Active;
             $user = $this->repository->create($data);
 

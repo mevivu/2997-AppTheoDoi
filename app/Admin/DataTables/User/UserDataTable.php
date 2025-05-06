@@ -7,9 +7,9 @@ use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Traits\Roles;
 use App\AES\AESHelper;
 use App\Enums\Package\PackageType;
-use App\Enums\User\UserActive;
 use App\Enums\User\UserStatus;
 use Illuminate\Database\Eloquent\Builder;
+use Throwable;
 
 class UserDataTable extends BaseDataTable
 {
@@ -89,7 +89,7 @@ class UserDataTable extends BaseDataTable
                 return view(
                     $this->view['phone'],
                     [
-                        'phone' => AESHelper::decrypt($item->phone)
+                        'phone' => $item->phone ? AESHelper::decrypt($item->phone) : null
                     ]
                 )->render();
             },
@@ -101,17 +101,19 @@ class UserDataTable extends BaseDataTable
         $this->customAddColumns = [
             'action' => $this->view['action'],
             'package_type' => function ($item) {
-                return view(
+                $type = optional($item->userPackages->first()?->package)->type;
 
+                return view(
                     $this->view['package_type'],
                     [
-                        'package_type' => $item->userPackages->first()->package->type
+                        'package_type' => $type ?? null
                     ]
                 )->render();
             },
             'checkbox' => $this->view['checkbox'],
         ];
     }
+
 
     protected function setCustomRawColumns(): void
     {
@@ -131,9 +133,26 @@ class UserDataTable extends BaseDataTable
         $this->customFilterColumns = [
 
             'package_type' => function ($query, $keyword) {
-                $query->whereHas('userPackages.', function ($subQuery) use ($keyword) {
+                $query->whereHas('userPackages', function ($subQuery) use ($keyword) {
                     $subQuery->where('current_type', 'like', '%' . $keyword . '%');
                 });
+
+            },
+            'email' => function ($query, $keyword) {
+                try {
+                    $encrypted = AESHelper::encrypt($keyword);
+                    $query->where('email', $encrypted);
+                } catch (Throwable $e) {
+                    $query->whereRaw('0 = 1');
+                }
+            },
+            'phone' => function ($query, $keyword) {
+                try {
+                    $encrypted = AESHelper::encrypt($keyword);
+                    $query->where('phone', $encrypted);
+                } catch (Throwable $e) {
+                    $query->whereRaw('0 = 1');
+                }
             },
         ];
     }

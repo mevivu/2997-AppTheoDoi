@@ -1,3 +1,2 @@
-<span @class(['badge', \App\Enums\Package\PackageType::from($package_type)->badge()])>
-    {{ \App\Enums\Package\PackageType::getDescription($package_type) }}
-</span>
+<span @class(['badge', App\Enums\Package\PackageType::from($package_type->value)->badge()])>
+        {{ \App\Enums\Package\PackageType::getDescription($package_type->value) }}</span>

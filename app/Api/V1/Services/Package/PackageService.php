@@ -10,11 +10,9 @@ use App\Api\V1\Repositories\UserPackage\UserPackageRepositoryInterface;
 use App\Api\V1\Services\Notification\NotificationServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
-use App\Enums\Notification\MessageType;
 use App\Enums\Package\PackageStatus;
 use App\Traits\NotifiesViaFirebase;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 
 
@@ -75,25 +73,10 @@ class PackageService implements PackageServiceInterface
         if ($image) {
             $data['payment_confirmation_image'] = $this->fileService
                 ->uploadAvatar('images/package', $image);
-        }
-        $admins = $this->adminRepository->getAll();
-        $title = config('notifications.admin_approval_required.title');
-        $message = config('notifications.admin_approval_required.message');
-        $body = str_replace('{fullname}', $user->fullname, $message);
-        foreach ($admins as $admin) {
-            $this->notificationRepository->create([
-                'admin_id' => $admin->id,
-                'user_id_attribute' => $user->id,
-                'title' => $title,
-                'package_id' => $packageId,
-                'message' => $body,
-                'type' => MessageType::PAYMENT,
-                'payment_confirmation_image' => $data['payment_confirmation_image']
-            ]);
+        };
 
-        }
         $this->notificationService->sendCustomerPaymentNotification($user);
-//        $this->notificationService->sendNotificationsPaymentToAdmins($user, $data['payment_confirmation_image'], $packageId);
+        $this->notificationService->sendNotificationsPaymentToAdmins($user, $data['payment_confirmation_image'], $packageId);
         return true;
 
     }

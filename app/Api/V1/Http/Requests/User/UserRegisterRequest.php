@@ -30,7 +30,7 @@ class UserRegisterRequest extends BaseRequest
             'fullname' => ['required'],
             'password' => ['required', 'string', 'confirmed', 'min:6', 'max:20'],
             'phone' => [
-                'required',
+                'nullable',
                 'regex:/((09|03|07|08|05)+([0-9]{8})\b)/',
                 function ($attribute, $value, $fail) {
                     $phone = AESHelper::encrypt($value);
@@ -42,7 +42,7 @@ class UserRegisterRequest extends BaseRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'email.required' => 'Email không được để trống.',
