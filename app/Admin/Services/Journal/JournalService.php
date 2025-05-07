@@ -36,7 +36,8 @@ class JournalService implements JournalServiceInterface
     public function store(Request $request): object|false
     {
         $data = $request->validated();
-        $data['image'] = $data['image'] ? json_encode(explode(",", $data['image'][0])) : null;
+        if (isset($data['image']))
+            $data['image'] = $data['image'] ? json_encode(explode(",", $data['image'][0])) : null;
 
         return $this->repository->create($data);
     }
@@ -49,7 +50,8 @@ class JournalService implements JournalServiceInterface
     {
 
         $data = $request->validated();
-        $data['image'] = $data['image'] ? json_encode(explode(",", $data['image'][0])) : null;
+        if (isset($data['image']))
+            $data['image'] = $data['image'] ? json_encode(explode(",", $data['image'][0])) : null;
 
         return $this->repository->update($data['id'], $data);
     }
