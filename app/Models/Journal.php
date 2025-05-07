@@ -13,6 +13,9 @@ class Journal extends Model
 
     protected $table = 'journals';
 
+    public $timestamps = true;
+
+
     protected $fillable = [
         /** Tiêu đề nhật ký */
         'title',
@@ -24,6 +27,7 @@ class Journal extends Model
         'child_id',
         /** Loại */
         'type',
+        'created_at',
 
     ];
 

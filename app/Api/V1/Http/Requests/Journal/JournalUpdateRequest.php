@@ -18,6 +18,8 @@ class JournalUpdateRequest extends BaseRequest
             'content' => 'nullable|string',
             'image' => 'nullable|array|min:1',
             'image.*' => 'file|image|max:5000',
+            'created_at' => 'nullable|date_format:Y-m-d H:i:s',
+
         ];
     }
 
