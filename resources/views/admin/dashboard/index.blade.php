@@ -234,25 +234,25 @@
                                     </div>
                                 </div>
                                 {{--Expected--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-award"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.expected.index')" title="Thông tin dự kiến"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountExpected }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+{{--                                <div class="col-sm-6 col-lg-3 mb-3">--}}
+{{--                                    <div class="card card-sm">--}}
+{{--                                        <div class="card-body">--}}
+{{--                                            <div class="row align-items-center">--}}
+{{--                                                <div class="col-auto">--}}
+{{--                                                    <span class="iconModuleMevivu ti ti-award"></span>--}}
+{{--                                                </div>--}}
+{{--                                                <div class="col">--}}
+{{--                                                    <x-link :href="route('admin.expected.index')" title="Thông tin dự kiến"--}}
+{{--                                                            class="font-weight-medium">--}}
+{{--                                                    </x-link>--}}
+{{--                                                    <div class="text-secondary">--}}
+{{--                                                        Số lượng: {{ $rowCountExpected }}--}}
+{{--                                                    </div>--}}
+{{--                                                </div>--}}
+{{--                                            </div>--}}
+{{--                                        </div>--}}
+{{--                                    </div>--}}
+{{--                                </div>--}}
                                 {{--Product--}}
                                 <div class="col-sm-6 col-lg-3 mb-3">
                                     <div class="card card-sm">
