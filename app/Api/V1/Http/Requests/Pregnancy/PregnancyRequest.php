@@ -26,7 +26,7 @@ class PregnancyRequest extends BaseRequest
     protected function methodPost(): array
     {
         return [
-            'child_id' => ['required', 'integer', new ValidBornChild()],
+            'child_id' => ['required', 'numeric', 'exists:children,id'],
             'week' => 'nullable|integer|min:1',
             'weight' => 'nullable|numeric|min:0',
             'length' => 'nullable|integer|min:0',
