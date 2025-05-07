@@ -14,9 +14,9 @@ class JournalUpdateRequest extends BaseRequest
     {
         return [
             'id' => 'required|integer|exists:journals,id',
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'image' => 'required|array|min:1',
+            'title' => 'nullable|string|max:255',
+            'content' => 'nullable|string',
+            'image' => 'nullable|array|min:1',
             'image.*' => 'file|image|max:5000',
         ];
     }

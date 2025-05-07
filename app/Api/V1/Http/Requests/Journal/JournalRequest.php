@@ -29,11 +29,11 @@ class JournalRequest extends BaseRequest
     protected function methodPost(): array
     {
         return [
-            'child_id' => ['required', 'integer', new ValidChild()],
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
+            'child_id' => ['required', 'exists:children,id'],
+            'title' => 'nullable|string|max:255',
+            'content' => 'nullable|string',
             'type' => ['required', new Enum(JournalType::class)],
-            'image' => 'required|array|min:1',
+            'image' => 'nullable|array|min:1',
             'image.*' => 'file|image|max:5000',
         ];
     }

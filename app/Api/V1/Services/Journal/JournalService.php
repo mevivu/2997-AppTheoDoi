@@ -30,8 +30,9 @@ class JournalService implements JournalServiceInterface
 
     public function __construct(
         JournalRepositoryInterface $repository,
-        FileService $fileService
-    ) {
+        FileService                $fileService
+    )
+    {
         $this->repository = $repository;
         $this->fileService = $fileService;
     }
@@ -64,7 +65,10 @@ class JournalService implements JournalServiceInterface
     public function store(Request $request): object
     {
         $data = $request->validated();
-        $data['image'] = $this->uploadPhotos($request->file('image') ?? []);
+        $image = $data['image'] ?? null;
+        if ($image) {
+            $data['image'] = $this->uploadPhotos($request->file('image') ?? []);
+        }
         return $this->repository->create($data);
     }
 
@@ -75,7 +79,10 @@ class JournalService implements JournalServiceInterface
     {
         $data = $request->validated();
         $journal = $this->repository->findOrFail($data['id']);
-        $data['image'] = $this->uploadPhotos($request->file('image') ?? [], $journal);
+        $image = $data['image'] ?? null;
+        if ($image) {
+            $data['image'] = $this->uploadPhotos($request->file('image') ?? [], $journal);
+        }
 
         $journal->update($data);
 
