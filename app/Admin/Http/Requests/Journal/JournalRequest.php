@@ -21,6 +21,21 @@ class JournalRequest extends BaseRequest
         ];
     }
 
+    protected function methodPut(): array
+    {
+        return [
+            'id' => ['required', 'exists:App\Models\Journal,id'],
+            'child_id' => ['nullable', 'exists:App\Models\Child,id'],
+            'title' => ['nullable', 'string'],
+            'content' => ['nullable', 'string'],
+            'type' => ['nullable', new Enum(JournalType::class)],
+            'image' => ['nullable', 'array', 'min:1'],
+            'image.*' => ['nullable', 'string', 'distinct', 'not_in:""'],
+        ];
+    }
+
+
+
     public function messages(): array
     {
         return [

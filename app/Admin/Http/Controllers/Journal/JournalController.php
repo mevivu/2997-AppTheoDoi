@@ -52,6 +52,8 @@ class JournalController extends Controller
             'create' => 'admin.journal.create',
             'edit' => 'admin.journal.edit',
             'delete' => 'admin.journal.delete',
+            'moment' => 'admin.journal.moment',
+            'prescription' => 'admin.journal.prescription',
         ];
     }
 
@@ -63,7 +65,7 @@ class JournalController extends Controller
             [
                 'response' => $response,
                 'type' => JournalType::asSelectArray(),
-                'breadcrumbs' => $this->crums->add('DS nhật ký')->add('Cập nhật'),
+                'breadcrumbs' => $this->crums->add('DS nhật ký', route($this->route['prescription']))->add('Cập nhật'),
             ]
         );
     }
@@ -93,7 +95,7 @@ class JournalController extends Controller
     {
         return view($this->view['create'], [
             'type' => JournalType::asSelectArray(),
-            'breadcrumbs' => $this->crums->add('DS nhật ký')->add('Thêm'),
+            'breadcrumbs' => $this->crums->add('DS nhật ký', route($this->route['prescription']))->add('Thêm'),
         ]);
     }
 
