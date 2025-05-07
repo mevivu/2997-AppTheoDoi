@@ -3,6 +3,7 @@
 namespace App\Admin\Repositories\Product;
 
 use App\Admin\Repositories\EloquentRepository;
+use App\Enums\ActiveStatus;
 use App\Enums\Product\ProductStatus;
 use App\Enums\Brand\BrandStatus;
 use App\Models\Product;
@@ -50,7 +51,7 @@ class ProductRepository extends EloquentRepository implements ProductRepositoryI
     }
     public function getAllProductCatalogs()
     {
-        return ProductCatalog::all();
+        return ProductCatalog::where('status', ActiveStatus::Active)->get();
     }
     public static function asSelectArray(): array
     {
