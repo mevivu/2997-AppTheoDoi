@@ -19,7 +19,7 @@ class RatingPQMonthRequest extends BaseRequest
 //            'limit' => 'required|integer|min:1',
 //            'page' => 'required|integer|min:1',
             'child_id' => ['required', 'numeric', new ValidChild()],
-            'month' => 'required|integer|min:1|max:12',
+//            'month' => 'required|integer|min:1|max:12',
             'year' => 'required|integer|min:1900|max:' . date('Y'),
 
         ];

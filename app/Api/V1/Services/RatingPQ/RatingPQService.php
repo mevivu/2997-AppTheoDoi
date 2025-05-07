@@ -55,12 +55,12 @@ class RatingPQService implements RatingPQServiceInterface
         $validated = $request->validated();
 
         $childId = $validated['child_id'];
-        $month = (int)$validated['month'];
+//        $month = (int)$validated['month'];
         $year = (int)$validated['year'];
 
         $records = $this->repository->getQueryBuilder()
             ->where('child_id', $childId)
-            ->whereMonth('assessment_date', '=', $month)
+//            ->whereMonth('assessment_date', '=', $month)
             ->whereYear('assessment_date', '=', $year)
             ->orderBy('assessment_date', 'desc')
             ->get();
