@@ -7,12 +7,12 @@
         </div>
         <div class="card-body p-2 d-flex justify-content-between">
 
-                <div class="d-flex align-items-center h-100 gap-2">
-                    <x-button.submit :title="__('save')" name="submitter" value="save" />
-                </div>
+            <div class="d-flex align-items-center h-100 gap-2">
+                <x-button.submit :title="__('save')" name="submitter" value="save"/>
+            </div>
 
             <x-button.modal-delete data-route="{{ route('admin.notification.delete', $notification->id) }}"
-                :title="__('delete')" />
+                                   :title="__('delete')"/>
         </div>
     </div>
 
@@ -24,7 +24,7 @@
         <div class="card-body p-2">
             <x-select class="select2-bs5-ajax" name="status" :value="old('status')" :required="true">
                 @foreach ($status as $key => $value)
-                    <x-select-option :option="$notification->status->value" :value="$key" :title="__($value)" />
+                    <x-select-option :option="$notification->status->value" :value="$key" :title="__($value)"/>
                 @endforeach
             </x-select>
         </div>
@@ -38,9 +38,11 @@
             <div class="card-body p-2">
                 <x-select class="select2-bs5-ajax" name="approval_status"
                           :value="old('status')"
-                          :required="true">
+                          :required="true"
+                          :disabled="$notification->approval_status != \App\Enums\ApprovalStatus::PENDING">
                     @foreach ($approval_status as $key => $value)
-                        <x-select-option :option="$notification->approval_status->value" :value="$key" :title="__($value)" />
+                        <x-select-option :option="$notification->approval_status->value" :value="$key"
+                                         :title="__($value)"/>
                     @endforeach
                 </x-select>
             </div>
@@ -56,12 +58,12 @@
                     @lang('avatar')
                 </div>
                 <div class="card-body p-2">
-                    <x-input-image-ckfinder name="payment_confirmation_image" showImage="avatar" class="img-fluid" :value="$notification->payment_confirmation_image" />
+                    <x-input-image-ckfinder name="payment_confirmation_image" showImage="avatar" class="img-fluid"
+                                            :value="$notification->payment_confirmation_image"/>
                 </div>
             </div>
         </div>
     @endif
-
 
 
 </div>

@@ -57,7 +57,7 @@ class NotificationRequest extends BaseRequest
             $notificationId = $this->input('id');
             $notification = \App\Models\Notification::find($notificationId);
 
-            if ($notification && $notification->approval_status != ApprovalStatus::PENDING) {
+            if ($this->has('approval_status') && $notification && $notification->approval_status != ApprovalStatus::PENDING) {
                 $validator->errors()->add('approval_status', 'Thông báo đã được duyệt hoặc từ chối, không thể cập nhật.');
             }
         });

@@ -195,7 +195,7 @@ class NotificationService implements NotificationServiceInterface
     {
         $data['status'] = NotificationStatus::READ;
         if ($notification->type == MessageType::PAYMENT) {
-            switch ($data['approval_status']) {
+            switch ($data['approval_status'] ?? null) {
                 case ApprovalStatus::ACTIVE->value:
                     $this->handlePaymentApproval($notification, $data);
                     break;
