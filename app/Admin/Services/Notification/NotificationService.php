@@ -226,14 +226,8 @@ class NotificationService implements NotificationServiceInterface
         $additionalDays = 0;
 
         // Lấy gói hiện tại nếu còn hiệu lực
-        $currentUserPackage = $this->userPackageRepository
-            ->getByQueryBuilder([
-                'user_id' => $user->id,
-                'status' => PackageUserStatus::Active
-            ])
-            ->where('end_date', '>', $startDate)
-            ->latest('end_date')
-            ->first();
+        $currentUserPackage = $user->userPackages->first();
+
 
         // Nếu còn hạn thì tính số ngày dư
         if ($currentUserPackage) {
@@ -244,28 +238,15 @@ class NotificationService implements NotificationServiceInterface
         $endDate = $startDate->copy()->addDays($package->days + $additionalDays);
 
         // Cập nhật hoặc tạo mới user_package
-        $userPackage = $this->userPackageRepository
-            ->findByField('user_id', $user->id)
-            ->first();
+        $userPackage = $currentUserPackage;
 
-        if ($userPackage) {
-            $userPackage->update([
-                'package_id' => $package->id,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'status' => PackageUserStatus::Active,
-                'current_type' => $package->type
-            ]);
-        } else {
-            $this->userPackageRepository->create([
-                'user_id' => $user->id,
-                'package_id' => $package->id,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'status' => PackageUserStatus::Active,
-                'current_type' => $package->type
-            ]);
-        }
+        $userPackage->update([
+            'package_id' => $package->id,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'status' => PackageUserStatus::Active,
+            'current_type' => $package->type
+        ]);
 
         // Cập nhật trạng thái thông báo
         $notifications = $this->repository->getByQueryBuilder([
@@ -285,7 +266,6 @@ class NotificationService implements NotificationServiceInterface
         // Tạo giao dịch thanh toán
         $this->transactionService->store($user, $package);
     }
-
 
 
     /**
