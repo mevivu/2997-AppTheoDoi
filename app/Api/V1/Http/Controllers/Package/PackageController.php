@@ -5,7 +5,6 @@ namespace App\Api\V1\Http\Controllers\Package;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Http\Requests\Package\PackageRequest;
 use App\Api\V1\Http\Resources\Package\PackageResource;
-use App\Api\V1\Http\Resources\Package\UserPackageResource;
 use App\Api\V1\Repositories\Package\PackageRepositoryInterface;
 use App\Api\V1\Services\Package\PackageServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
@@ -30,7 +29,7 @@ class PackageController extends Controller
     ) {
         $this->repository = $repository;
         $this->service = $service;
-        $this->middleware('auth:api', ['only' => ['purchasePackage']]);
+        $this->middleware('auth:api', ['only' => ['purchasePackage','getCurrentUserPackage']]);
 
     }
 
@@ -123,6 +122,23 @@ class PackageController extends Controller
         try {
             $this->service->purchasePackage($request);
             return $this->jsonResponseSuccessNoData();
+        } catch (Exception $exception) {
+            $this->logError('Purchase package failed:', $exception);
+            return $this->jsonResponseError('Purchase package failed', 500);
+        }
+    }
+
+    public function getCurrentUserPackage(): JsonResponse
+    {
+
+        try {
+            $user = $this->getCurrentUser();
+            $package = $user->userPackages->first();
+            $response = [
+                'type' => $package->current_type,
+                'end_date' => format_datetime($package->end_date),
+            ];
+            return $this->jsonResponseSuccess($response);
         } catch (Exception $exception) {
             $this->logError('Purchase package failed:', $exception);
             return $this->jsonResponseError('Purchase package failed', 500);
