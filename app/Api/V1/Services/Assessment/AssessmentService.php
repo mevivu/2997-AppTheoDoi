@@ -139,6 +139,7 @@ class AssessmentService implements AssessmentServiceInterface
     public function getLatestGpaScore(int $childId): ?float
     {
         $latestGrade = $this->classGradeRepository->getBy(['child_id' => $childId])
+            ->where('full_year_grade', '>', 0)
             ->sortByDesc('created_at')
             ->first();
 
