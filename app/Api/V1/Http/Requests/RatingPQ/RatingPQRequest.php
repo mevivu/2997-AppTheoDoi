@@ -29,7 +29,7 @@ class RatingPQRequest extends BaseRequest
         return [
             'assessment_date' => 'required|date_format:Y-m-d',
             'height' => 'required|integer|min:1',
-            'weight' => 'required|integer|min:1',
+            'weight' => 'required|min:1',
             'strength' => 'required|integer|min:0',
             'endurance' => 'required|integer|min:0',
             'child_id' => ['required', 'integer', new ValidChildAge()],
@@ -42,7 +42,7 @@ class RatingPQRequest extends BaseRequest
             'id' => 'required|integer|exists:ratings_pqs,id',
             'assessment_date' => 'required|date_format:Y-m-d',
             'height' => 'required|integer|min:1',
-            'weight' => 'required|integer|min:1',
+            'weight' => 'required|min:1',
             'strength' => 'required|integer|min:0',
             'endurance' => 'required|integer|min:0',
             'child_id' => ['required', 'integer', new ValidChildAge()],

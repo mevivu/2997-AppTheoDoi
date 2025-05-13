@@ -16,7 +16,9 @@ trait CheckPackage
         $package = $user->userPackages->first();
         $isContentVisible = true;
         if ($package->current_type == PackageType::Normal) {
-            $isContentVisible = $time >= Carbon::now()->subYear();
+            $day = Carbon::now()->subDay();
+//            $time =Carbon::now()->subYear();
+            $isContentVisible = $time >= $day;
         }
         return $isContentVisible;
 
