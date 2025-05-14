@@ -317,7 +317,7 @@ return [
             'visible' => false
         ],
 
-        'created_at' => [
+        'updated_at' => [
             'title' => 'Ngày tạo',
             'addClass' => 'text-center align-middle',
             'orderable' => false

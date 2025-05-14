@@ -100,13 +100,15 @@ class RatingService implements RatingServiceInterface
                 $correctCount++;
             }
         }
-        $result = $totalCount > 0 ? "{$correctCount}/{$totalCount}" : "0/0";
+        $scoreValue = $correctCount * 10;
+        $totalValue = $totalCount * 10;
+        $result = $totalCount > 0 ? "{$scoreValue}/{$totalValue}" : "0/0";
         $data['score'] = $correctCount;
         $data['result'] = $result;
         $data['type'] = $type;
         $data['description'] = $this->getDescriptionByTypeAndScore($type, $correctCount);
         $data['label'] = $this->getLabelByTypeAndScore($type, $correctCount);
-        $description = "Đã xuất sắc nhận được chứng chỉ trực tuyến bằng\n cách hoàn thành bài kiểm tra IQ năng cao.Điểm IQ\n đã được xác định bởi Bài kiểm tra IQ năng cao của\n CHAMCON360.";
+        $description = "Đã xuất sắc nhận được kết quả đánh giá trực tuyến\nbằng cách hoàn thành Bài kiểm tra IQ nâng cao của\nCHAMCON360.";
         $path = $this->createCertificate($childName, $result, $description, now());
         $data['badge_image'] = $path;
         $data['status'] = VerifiedStatus::Active;
@@ -120,18 +122,30 @@ class RatingService implements RatingServiceInterface
         $img = $manager->read(public_path('assets/images/certificate_template.png'));
         $width = $img->width();
         $height = $img->height();
+
+
         $fontLight = public_path('assets/fonts/Roboto-Light.ttf');
         $fontBold = public_path('assets/fonts/Roboto-Bold.ttf');
 
 
-        $x = $width / 2;
-        $yName = $height * 0.39;
-        $yScore = $height * 0.46;
-        $yDesc = $height * 0.62;
-        $yDate = $height * 0.82;
+        $xCenter = $width / 2;
+        $xScore = $width * 0.80;
+        $yScore = $height * 0.31;
+        $yName = $height * 0.42;
+        $yDesc = $height * 0.59;
+        $yDate = $height * 0.74;
         $xDate = $width / 3;
 
-        $img->text($name, $x, $yName, function ($font) use ($fontBold) {
+        $img->text($score, $xScore, $yScore, function ($font) use ($fontBold) {
+            $font->file($fontBold);
+            $font->size(24);
+            $font->color('#FF0000');
+            $font->align('center');
+            $font->valign('middle');
+        });
+
+
+        $img->text($name, $xCenter, $yName, function ($font) use ($fontBold) {
             $font->file($fontBold);
             $font->size(24);
             $font->color('#000');
@@ -139,15 +153,7 @@ class RatingService implements RatingServiceInterface
             $font->valign('middle');
         });
 
-        $img->text("Điểm: " . $score, $x, $yScore, function ($font) use ($fontBold) {
-            $font->file($fontBold);
-            $font->size(20);
-            $font->color('#32CD32');
-            $font->align('center');
-            $font->valign('middle');
-        });
-
-        $img->text($description, $x, $yDesc, function ($font) use ($fontLight) {
+        $img->text($description, $xCenter, $yDesc, function ($font) use ($fontLight) {
             $font->file($fontLight);
             $font->size(18);
             $font->color('#000');
@@ -164,6 +170,17 @@ class RatingService implements RatingServiceInterface
             $font->valign('middle');
         });
 
+        $footerText = "Đây là phiếu ghi nhận kết quả mang tính tham khảo, không phải chứng chỉ hay văn bằng có giá trị pháp lý.";
+        $yFooter = $height * 0.87;
+
+        $img->text($footerText, $xCenter, $yFooter, function ($font) use ($fontLight) {
+            $font->file($fontLight);
+            $font->size(10);
+            $font->color('#333333');
+            $font->align('center');
+            $font->valign('bottom');
+        });
+
         $newFilename = uniqid() . '-certificate.jpg';
         $newImagePath = public_path('uploads/images/certificates/' . $newFilename);
         $path = '/public/uploads/images/certificates/' . $newFilename;
@@ -171,6 +188,7 @@ class RatingService implements RatingServiceInterface
 
         return $path;
     }
+
 
 
     /**

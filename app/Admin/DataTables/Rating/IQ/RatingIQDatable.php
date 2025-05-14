@@ -37,7 +37,7 @@ class RatingIQDatable extends BaseDataTable
     {
 
         $this->columnAllSearch = [1, 2, 3, 5, 6];
-        $this->columnSearchDate = [5];
+        $this->columnSearchDate = [6];
         $this->columnSearchSelect = [
 
 
@@ -68,7 +68,7 @@ class RatingIQDatable extends BaseDataTable
     {
         $this->customEditColumns = [
             'checkbox' => $this->view['checkbox'],
-            'created_at' => '{{ format_datetime($created_at) }}',
+            'updated_at' => '{{ format_datetime($updated_at) }}',
             'child_id' => function ($rating) {
                 return view($this->view['name'], [
                     'child' => $rating->child,
