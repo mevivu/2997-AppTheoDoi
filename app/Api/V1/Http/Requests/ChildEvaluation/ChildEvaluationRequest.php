@@ -7,6 +7,7 @@ use App\Enums\ActiveStatus;
 use App\Enums\ChildEvaluation\AcademicRating;
 use App\Enums\ChildEvaluation\ConductRating;
 use App\Enums\ChildEvaluation\EvaluationStatus;
+use App\Enums\SubjectGrade\AchievementLevel;
 use Illuminate\Validation\Rules\Enum;
 
 class ChildEvaluationRequest extends BaseRequest
@@ -36,6 +37,8 @@ class ChildEvaluationRequest extends BaseRequest
                 'subjects' => ['required', 'array'],
                 'subjects.*.id' => ['required', 'exists:subjects,id'],
                 'subjects.*.grade' => ['required', 'numeric', 'between:0,10'],
+                'subjects.*.remark' => ['nullable', 'string', 'max:1000'],
+                'subjects.*.achievement_level' => ['nullable', new Enum(AchievementLevel::class)],
 
                 'qualities' => ['required', 'array'],
                 'qualities.*.id' => ['required', 'exists:qualities,id'],

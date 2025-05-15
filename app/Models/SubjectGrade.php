@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\SubjectGrade\AchievementLevel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,11 +22,15 @@ class SubjectGrade extends Model
         'subject_id',
         /** Điểm số*/
         'grade',
+        /** Nhận xét */
+        'remark',
+        /** Mức đạt được */
+        'achievement_level'
 
     ];
 
     protected $casts = [
-
+        'achievement_level' => AchievementLevel::class
     ];
 
     public function subject(): BelongsTo

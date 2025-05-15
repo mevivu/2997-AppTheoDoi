@@ -23,6 +23,8 @@ class SubjectGradeResource extends JsonResource
             'id' => $this->id,
             'subject_id' => $this->subject_id,
             'grade' => $this->grade,
+            'remark' => $this->remark,
+            'achievement_level' => $this->achievement_level,
             'name' => $this->subject->name
 
         ];

@@ -156,7 +156,9 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
                     'subject_id' => $subjectData['id'],
                 ],
                 [
-                    'grade' => $subjectData['grade']
+                    'grade' => $subjectData['grade'],
+                    'remark' => $subjectData['remark'] ?? null,
+                    'achievement_level' => $subjectData['achievement_level'] ?? null,
                 ]
             );
         }

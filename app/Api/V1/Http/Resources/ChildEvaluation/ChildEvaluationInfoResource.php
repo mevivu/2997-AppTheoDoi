@@ -10,6 +10,7 @@ use App\Enums\ChildEvaluation\AcademicRating;
 use App\Enums\ChildEvaluation\ConductRating;
 use App\Enums\ChildEvaluation\EvaluationStatus;
 use App\Enums\Semester\SemesterStatus;
+use App\Enums\SubjectGrade\AchievementLevel;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
@@ -36,6 +37,7 @@ class ChildEvaluationInfoResource extends JsonResource
                 'subjects' => SubjectResource::collection($system['subjects']),
                 'capabilities' => CapabilityResource::collection($system['capabilities']),
                 'qualities' => CapabilityResource::collection($system['qualities']),
+                'achievement_level' => AchievementLevel::asSelectArrayTranslate(),
                 'semester' => SemesterStatus::asSelectArrayRemoveFullYear(),
                 'conduct_ratings' => ConductRating::asSelectArrayRemovePending(),
                 'capability_status' => EvaluationStatus::asSelectArrayTranslate(),

@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Semester\SemesterStatus;
+use App\Enums\SubjectGrade\AchievementLevel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,7 +21,8 @@ return new class extends Migration
             $table->unsignedBigInteger('subject_id');
             $table->decimal('grade', 5, 2);
             $table->enum('semester', SemesterStatus::getValues())->default(SemesterStatus::Semester1->value);
-
+            $table->text('remark')->nullable();
+            $table->enum('achievement_level', AchievementLevel::getValues())->nullable();
             $table->timestamps();
 
             $table->foreign('class_grade_id')->references('id')->on('class_grades')->onDelete('cascade');
