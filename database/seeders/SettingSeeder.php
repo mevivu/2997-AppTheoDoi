@@ -120,6 +120,56 @@ class SettingSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
+                'setting_key' => 'website',
+                'setting_name' => 'Website',
+                'plain_value' => 'https://mevivu.com',
+                'type_input' => SettingTypeInput::Text,
+                'group' => SettingGroup::General,
+                'desc' => 'Địa chỉ website chính thức',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'setting_key' => 'facebook',
+                'setting_name' => 'Facebook',
+                'plain_value' => 'https://facebook.com/mevivu',
+                'type_input' => SettingTypeInput::Text,
+                'group' => SettingGroup::General,
+                'desc' => 'Link trang Facebook chính thức',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'setting_key' => 'zalo',
+                'setting_name' => 'Zalo',
+                'plain_value' => 'https://zalo.me/mevivu',
+                'type_input' => SettingTypeInput::Text,
+                'group' => SettingGroup::General,
+                'desc' => 'Link Zalo chính thức',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'setting_key' => 'tiktok',
+                'setting_name' => 'TikTok',
+                'plain_value' => 'https://www.tiktok.com/@mevivu',
+                'type_input' => SettingTypeInput::Text,
+                'group' => SettingGroup::General,
+                'desc' => 'Link TikTok chính thức',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
+                'setting_key' => 'youtube',
+                'setting_name' => 'YouTube',
+                'plain_value' => 'https://www.youtube.com/mevivu',
+                'type_input' => SettingTypeInput::Text,
+                'group' => SettingGroup::General,
+                'desc' => 'Kênh YouTube chính thức',
+                'created_at' => now(),
+                'updated_at' => now()
+            ],
+            [
                 'setting_key' => 'introduce',
                 'setting_name' => 'Giới thiệu',
                 'plain_value' => 'Chào các bạn, chúng tôi là Mevivu',
