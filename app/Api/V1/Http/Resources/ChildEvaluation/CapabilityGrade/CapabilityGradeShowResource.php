@@ -22,7 +22,8 @@ class CapabilityGradeShowResource extends JsonResource
         return [
             'id' => $this->id,
             'capability_id' => $this->capability_id,
-            'capability_status' => $this->capability_status
+            'capability_status' => $this->capability_status,
+            'remark' => $this->remark,
         ];
     }
 

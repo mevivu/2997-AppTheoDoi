@@ -23,7 +23,9 @@ class ChildCapability extends Model
         /** ID năng lực*/
         'capability_id',
         /** Trạng thái */
-        'capability_status'
+        'capability_status',
+        /** Ghi chú */
+        'remark'
     ];
 
     protected $casts = [

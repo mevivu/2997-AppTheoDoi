@@ -22,7 +22,8 @@ class QualityGradeShowResource extends JsonResource
         return [
             'id' => $this->id,
             'quality_id' => $this->quality_id,
-            'quality_status' => $this->quality_status
+            'quality_status' => $this->quality_status,
+            'remark' => $this->remark,
         ];
     }
 

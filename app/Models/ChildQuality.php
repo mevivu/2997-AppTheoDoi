@@ -23,7 +23,8 @@ class ChildQuality extends Model
         /** ID phẩm chất*/
         'quality_id',
         /** Trạng thái */
-        'quality_status'
+        'quality_status',
+        'remark'
     ];
 
     protected $casts = [

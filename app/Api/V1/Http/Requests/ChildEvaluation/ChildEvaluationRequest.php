@@ -37,16 +37,18 @@ class ChildEvaluationRequest extends BaseRequest
                 'subjects' => ['required', 'array'],
                 'subjects.*.id' => ['required', 'exists:subjects,id'],
                 'subjects.*.grade' => ['required', 'numeric', 'between:0,10'],
-                'subjects.*.remark' => ['nullable', 'string', 'max:1000'],
+                'subjects.*.remark' => ['nullable', 'string',],
                 'subjects.*.achievement_level' => ['nullable', new Enum(AchievementLevel::class)],
 
                 'qualities' => ['required', 'array'],
                 'qualities.*.id' => ['required', 'exists:qualities,id'],
                 'qualities.*.quality_status' => ['required', new Enum(EvaluationStatus::class)],
+                'qualities.*.remark' => ['nullable', 'string'],
 
                 'capabilities' => ['required', 'array'],
                 'capabilities.*.id' => ['required', 'exists:capabilities,id'],
                 'capabilities.*.capability_status' => ['required', new Enum(EvaluationStatus::class)],
+                'capabilities.*.remark' => ['nullable', 'string', 'max:1000'],
             ];
             $rules = array_merge($rules, $additionalRules);
         } else {
@@ -93,6 +95,9 @@ class ChildEvaluationRequest extends BaseRequest
             'capabilities.*.id.required' => 'ID năng lực là trường bắt buộc.',
             'capabilities.*.id.exists' => 'ID năng lực không tồn tại.',
             'capabilities.*.capability_status.required' => 'Trạng thái năng lực là trường bắt buộc.',
+            'qualities.*.remark.string' => 'Ghi chú phẩm chất phải là chuỗi văn bản.',
+
+            'capabilities.*.remark.string' => 'Ghi chú năng lực phải là chuỗi văn bản.',
         ];
     }
 

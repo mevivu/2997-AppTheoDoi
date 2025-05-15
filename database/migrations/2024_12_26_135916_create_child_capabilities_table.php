@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('child_evaluation_id');
             $table->unsignedBigInteger('capability_id');
             $table->enum('capability_status', EvaluationStatus::getValues())->default(EvaluationStatus::NotAchieved->value);
-
+            $table->text('remark')->nullable();
             $table->foreign('child_evaluation_id')->references('id')->on('child_evaluations')->onDelete('cascade');
             $table->foreign('capability_id')->references('id')->on('capabilities')->onDelete('cascade');
 
