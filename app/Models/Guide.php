@@ -37,6 +37,6 @@ class Guide extends Model
 
     public function steps(): HasMany
     {
-        return $this->hasMany(Step::class, 'guide_id');
+        return $this->hasMany(Step::class, 'guide_id')->orderBy('order');
     }
 }
