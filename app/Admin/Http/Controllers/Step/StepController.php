@@ -122,8 +122,8 @@ class StepController extends Controller
     protected function getActionMultiple(): array
     {
         return [
-            'active' => ActiveStatus::Active->description(),
-            'draft' => ActiveStatus::Draft->description(),
+            'delete' => 'deleted',
+
         ];
     }
 

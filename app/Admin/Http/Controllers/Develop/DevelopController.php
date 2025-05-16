@@ -144,11 +144,10 @@ class DevelopController extends Controller
 
     public function getStepsByDevelopGuideId(StepDataTable $dataTable)
     {
-        $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
             $this->view['step.index'],
             [
-                'actionMultiple' => $actionMultiple,
+                'actionMultiple' => ['deleted' => 'delete'],
                 'breadcrumbs' => $this->crums->add(__('Thứ tự hướng dẫn')),
             ]
         );

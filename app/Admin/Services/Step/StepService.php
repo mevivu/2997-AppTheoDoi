@@ -24,9 +24,8 @@ class StepService implements StepServiceInterface
     protected StepRepositoryInterface $repository;
 
 
-
     public function __construct(
-        StepRepositoryInterface   $repository,
+        StepRepositoryInterface $repository,
 
     )
     {
@@ -67,19 +66,9 @@ class StepService implements StepServiceInterface
         $this->data = $request->all();
 
         switch ($this->data['action']) {
-            case ActiveStatus::Active->value:
-                foreach ($this->data['id'] as $value) {
-                    $this->repository->updateAttribute($value, 'status', ActiveStatus::Active);
-                }
-                return true;
-            case ActiveStatus::Draft->value:
-                foreach ($this->data['id'] as $value) {
-                    $this->repository->updateAttribute($value, 'status', ActiveStatus::Draft);
-                }
-                return true;
             case ActiveStatus::Deleted->value:
                 foreach ($this->data['id'] as $value) {
-                    $this->repository->updateAttribute($value, 'status', ActiveStatus::Deleted);
+                    $this->repository->delete($value);
                 }
                 return true;
 
