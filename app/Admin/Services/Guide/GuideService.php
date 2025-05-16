@@ -100,30 +100,7 @@ class GuideService implements GuideServiceInterface
 
     public function updateSteps(object $guide, array $steps): void
     {
-        $existingSteps = $guide->steps()->get()->keyBy('id');
-        $processedIds = [];
-
-        foreach ($steps as $step) {
-            if (!empty($step['id']) && $existingSteps->has($step['id'])) {
-                // Update existing step
-                $existingSteps[$step['id']]->update([
-                    'title'       => $step['title'],
-                    'description' => $step['description'] ?? null,
-                    'order'       => $step['order'],
-                ]);
-                $processedIds[] = $step['id'];
-            } else {
-                // Create new step
-                $newStep = $guide->steps()->create([
-                    'title'       => $step['title'],
-                    'description' => $step['description'] ?? null,
-                    'order'       => $step['order'],
-                ]);
-                $processedIds[] = $newStep->id;
-            }
-        }
-
-        // Delete steps that are no longer present
-        $guide->steps()->whereNotIn('id', $processedIds)->delete();
+        $guide->steps()->delete();
+        $this->storeSteps($guide, $steps);
     }
 }
