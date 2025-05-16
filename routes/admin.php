@@ -51,6 +51,29 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::group(["middleware" => ['permission:viewDevelopGuide', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/edit/{id}', 'edit')->name('edit');
+                Route::get('/{developGuideId}/steps', 'getStepsByDevelopGuideId')->name('steps');
+            });
+            Route::group(['middleware' => ['permission:updateDevelopGuide', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:deleteDevelopGuide', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
+    //Step
+    Route::controller(\App\Admin\Http\Controllers\Step\StepController::class)
+        ->prefix('/steps')
+        ->as('step.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createDevelopGuide', 'auth:admin']], function () {
+                Route::get('/{developGuideId}/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(["middleware" => ['permission:viewDevelopGuide', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
             });
             Route::group(['middleware' => ['permission:updateDevelopGuide', 'auth:admin']], function () {
                 Route::put('/edit', 'update')->name('update');
@@ -73,6 +96,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::group(["middleware" => ['permission:viewGuide', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/edit/{id}', 'edit')->name('edit');
+
             });
             Route::group(['middleware' => ['permission:updateGuide', 'auth:admin']], function () {
                 Route::put('/edit', 'update')->name('update');

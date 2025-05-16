@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Admin\Http\Controllers\Guide;
+namespace App\Admin\Http\Controllers\Step;
 
-use App\Admin\DataTables\Guide\GuideDataTable;
+use App\Admin\DataTables\Step\StepDataTable;
 use App\Admin\Http\Controllers\Controller;
-use App\Admin\Http\Requests\Guide\GuideRequest;
-use App\Admin\Repositories\Guide\GuideRepositoryInterface;
-use App\Admin\Services\Guide\GuideServiceInterface;
+use App\Admin\Http\Requests\Step\StepRequest;
+use App\Admin\Repositories\Step\StepRepositoryInterface;
+use App\Admin\Services\Step\StepServiceInterface;
 use App\Enums\ActiveStatus;
-use App\Enums\Guide\GuideType;
 use App\Traits\ResponseController;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -17,13 +16,13 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-class GuideController extends Controller
+class StepController extends Controller
 {
     use ResponseController;
 
     public function __construct(
-        GuideRepositoryInterface $repository,
-        GuideServiceInterface    $service
+        StepRepositoryInterface $repository,
+        StepServiceInterface    $service
     )
     {
 
@@ -38,23 +37,23 @@ class GuideController extends Controller
     public function getView(): array
     {
         return [
-            'index' => 'admin.guide.index',
-            'create' => 'admin.guide.create',
-            'edit' => 'admin.guide.edit',
+            'index' => 'admin.step.index',
+            'create' => 'admin.step.create',
+            'edit' => 'admin.step.edit',
         ];
     }
 
     public function getRoute(): array
     {
         return [
-            'index' => 'admin.guide.index',
-            'create' => 'admin.guide.create',
-            'edit' => 'admin.guide.edit',
-            'delete' => 'admin.guide.delete',
+            'index' => 'admin.step.index',
+            'create' => 'admin.step.create',
+            'edit' => 'admin.step.edit',
+            'delete' => 'admin.step.delete',
         ];
     }
 
-    public function index(GuideDataTable $dataTable)
+    public function index(StepDataTable $dataTable)
     {
         $actionMultiple = $this->getActionMultiple();
         return $dataTable->render(
@@ -62,28 +61,27 @@ class GuideController extends Controller
             [
                 'status' => ActiveStatus::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
-                'breadcrumbs' => $this->crums->add(__('Guide')),
+                'breadcrumbs' => $this->crums->add(__('Step')),
             ]
 
         );
     }
 
 
-    public function create(): Factory|View|Application
+    public function create($guideId): Factory|View|Application
     {
+        $step = $this->repository->getMaxOrder($guideId) + 1;
         return view($this->view['create'], [
-            'status' => ActiveStatus::asSelectArray(),
-            'breadcrumbs' => $this->crums->add(__('Guide'),
-                route($this->route['index']))->add(__('add')),
+            'breadcrumbs' => $this->crums->add(__('Danh sách các bước'),
+                route('admin.develop.steps', $guideId))->add(__('add')),
+            'step' => $step,
         ]);
     }
 
-    public function store(GuideRequest $request): RedirectResponse
+    public function store(StepRequest $request): RedirectResponse
     {
         return $this->handleResponse($request, function ($request) {
-            $guide = $this->service->store($request);
-            $this->service->storeSteps($guide, $request->input('steps', []));
-            return $guide;
+            return $this->service->store($request);
         }, $this->route['index'], $this->route['edit']);
     }
 
@@ -97,20 +95,15 @@ class GuideController extends Controller
             $this->view['edit'],
             [
                 'instance' => $instance,
-                'steps' => $instance->steps,
-                'type' => GuideType::asSelectArray(),
-                'status' => ActiveStatus::asSelectArray(),
-                'breadcrumbs' => $this->crums->add(__('Guide'), route($this->route['index']))->add(__('edit')),
+                'breadcrumbs' => $this->crums->add(__('Danh sách các bước'), route('admin.develop.steps', $instance->guide_id))->add(__('edit')),
             ],
         );
     }
 
-    public function update(GuideRequest $request): RedirectResponse
+    public function update(StepRequest $request): RedirectResponse
     {
         return $this->handleUpdateResponse($request, function ($request) {
-            $guide = $this->service->update($request);
-            $this->service->updateSteps($guide, $request->input('steps', []));
-            return $guide;
+            return $this->service->update($request);
         });
     }
 

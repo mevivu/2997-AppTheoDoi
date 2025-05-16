@@ -3,6 +3,7 @@
 namespace App\Admin\Http\Controllers\Develop;
 
 use App\Admin\DataTables\Develop\DevelopDataTable;
+use App\Admin\DataTables\Step\StepDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Guide\GuideRequest;
 use App\Admin\Repositories\Guide\GuideRepositoryInterface;
@@ -39,6 +40,7 @@ class DevelopController extends Controller
             'index' => 'admin.develop.index',
             'create' => 'admin.develop.create',
             'edit' => 'admin.develop.edit',
+            'step.index' => 'admin.step.index',
         ];
     }
 
@@ -49,6 +51,7 @@ class DevelopController extends Controller
             'create' => 'admin.develop.create',
             'edit' => 'admin.develop.edit',
             'delete' => 'admin.develop.delete',
+            'step.index' => 'admin.step.index',
         );
     }
 
@@ -137,5 +140,17 @@ class DevelopController extends Controller
             return back()->with('success', __('notifySuccess'));
         }
         return back()->with('error', __('notifyFail'));
+    }
+
+    public function getStepsByDevelopGuideId(StepDataTable $dataTable)
+    {
+        $actionMultiple = $this->getActionMultiple();
+        return $dataTable->render(
+            $this->view['step.index'],
+            [
+                'actionMultiple' => $actionMultiple,
+                'breadcrumbs' => $this->crums->add(__('Thứ tự hướng dẫn')),
+            ]
+        );
     }
 }

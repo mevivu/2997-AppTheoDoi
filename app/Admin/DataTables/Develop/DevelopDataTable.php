@@ -29,6 +29,7 @@ class DevelopDataTable extends BaseDataTable
             'status' => 'admin.develop.datatable.status',
             'type' => 'admin.develop.datatable.type',
             'checkbox' => 'admin.common.checkbox',
+            'steps' => 'admin.develop.datatable.steps',
         ];
     }
 
@@ -81,12 +82,13 @@ class DevelopDataTable extends BaseDataTable
     {
         $this->customAddColumns = [
             'checkbox' => $this->view['checkbox'],
+            'steps' => $this->view['steps']
         ];
     }
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['action', 'title', 'created_at', 'status', 'type', 'checkbox'];
+        $this->customRawColumns = ['action', 'title', 'created_at', 'status', 'type', 'checkbox', 'steps'];
     }
 
     public function setCustomFilterColumns(): void

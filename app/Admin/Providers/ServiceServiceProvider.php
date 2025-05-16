@@ -42,6 +42,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\Guide\GuideServiceInterface' => 'App\Admin\Services\Guide\GuideService',
         'App\Admin\Services\RatingPQ\RatingPQServiceInterface' => 'App\Admin\Services\RatingPQ\RatingPQService',
         'App\Admin\Services\Rating\RatingServiceInterface' => 'App\Admin\Services\Rating\RatingService',
+        'App\Admin\Services\Step\StepServiceInterface' => 'App\Admin\Services\Step\StepService',
 
 
     ];

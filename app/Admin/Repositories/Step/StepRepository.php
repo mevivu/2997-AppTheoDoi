@@ -15,5 +15,12 @@ class StepRepository extends EloquentRepository implements StepRepositoryInterfa
         return Step::class;
     }
 
-
+    public function getMaxOrder($guideId)
+    {
+        return $this->model->select('guide_id')
+            ->selectRaw('MAX(`order`) as max_order')
+            ->where('guide_id', $guideId)
+            ->groupBy('guide_id')
+            ->first()->max_order ?? 0;
+    }
 }

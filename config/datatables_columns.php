@@ -1778,38 +1778,76 @@ return [
     ],
     'develop' => [
         'checkbox' => [
-            'title'      => 'choose',
-            'orderable'  => false,
+            'title' => 'choose',
+            'orderable' => false,
             'exportable' => false,
-            'printable'  => false,
-            'addClass'   => 'align-middle text-center',
-            'footer'     => '<input type="checkbox" class="form-check-input check-all" />',
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
         ],
         'title' => [
-            'title'     => 'Title',
-            'width'     => '200px',
-            'addClass'  => 'text-center align-middle',
+            'title' => 'Title',
+            'width' => '200px',
+            'addClass' => 'text-center align-middle',
             'orderable' => true,
         ],
+        'steps' => [
+            'title' => 'Danh sách các bước',
+            'width' => '200px',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true
+        ],
         'status' => [
-            'title'     => 'Trạng thái',
-            'addClass'  => 'text-center align-middle',
+            'title' => 'Trạng thái',
+            'addClass' => 'text-center align-middle',
             'orderable' => true,
         ],
         'created_at' => [
-            'title'     => 'Ngày tạo',
-            'addClass'  => 'text-center align-middle',
+            'title' => 'Ngày tạo',
+            'addClass' => 'text-center align-middle',
             'orderable' => true,
         ],
         'action' => [
-            'title'     => 'Thao tác',
-            'orderable'  => false,
+            'title' => 'Thao tác',
+            'orderable' => false,
             'exportable' => false,
-            'printable'  => false,
-            'addClass'   => 'text-center align-middle',
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
         ],
     ],
 
-
+    'step' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'title' => [
+            'title' => 'Title',
+            'width' => '200px',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'order' => [
+            'title' => 'Thứ tự',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'created_at' => [
+            'title' => 'Ngày tạo',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ]
 
 ];
