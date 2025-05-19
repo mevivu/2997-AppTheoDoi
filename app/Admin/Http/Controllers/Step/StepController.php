@@ -5,6 +5,7 @@ namespace App\Admin\Http\Controllers\Step;
 use App\Admin\DataTables\Step\StepDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Step\StepRequest;
+use App\Admin\Repositories\Guide\GuideRepositoryInterface;
 use App\Admin\Repositories\Step\StepRepositoryInterface;
 use App\Admin\Services\Step\StepServiceInterface;
 use App\Enums\ActiveStatus;
@@ -20,11 +21,12 @@ class StepController extends Controller
 {
     use ResponseController;
 
+    protected GuideRepositoryInterface $guideRepository;
     public function __construct(
         StepRepositoryInterface $repository,
-        StepServiceInterface    $service
-    )
-    {
+        StepServiceInterface    $service,
+        GuideRepositoryInterface $guideRepository
+    ) {
 
         parent::__construct();
 
@@ -32,6 +34,7 @@ class StepController extends Controller
 
         $this->service = $service;
 
+        $this->guideRepository = $guideRepository;
     }
 
     public function getView(): array
@@ -71,9 +74,13 @@ class StepController extends Controller
     public function create($guideId): Factory|View|Application
     {
         $step = $this->repository->getMaxOrder($guideId) + 1;
+        $guide = $this->guideRepository->findOrFail($guideId);
         return view($this->view['create'], [
-            'breadcrumbs' => $this->crums->add(__('Danh sách các bước'),
-                route('admin.develop.steps', $guideId))->add(__('add')),
+            'breadcrumbs' => $this->crums->add($guide->title, route('admin.guide.edit', $guideId))->add(
+                __('Danh sách các bước'),
+                route('admin.develop.steps', $guideId)
+            )->add(__('add')),
+            'guide' => $guide,
             'step' => $step,
         ]);
     }
@@ -91,11 +98,13 @@ class StepController extends Controller
     public function edit($id): Factory|View|Application
     {
         $instance = $this->repository->findOrFail($id);
+        $guide = $this->guideRepository->findOrFail($instance->guide_id);
         return view(
             $this->view['edit'],
             [
                 'instance' => $instance,
-                'breadcrumbs' => $this->crums->add(__('Danh sách các bước'), route('admin.develop.steps', $instance->guide_id))->add(__('edit')),
+                'guide' => $guide,
+                'breadcrumbs' => $this->crums->add($guide->title, route('admin.guide.edit', $guide->id))->add(__('Danh sách các bước'), route('admin.develop.steps', $instance->guide_id))->add(__('edit')),
             ],
         );
     }
@@ -135,6 +144,4 @@ class StepController extends Controller
         }
         return back()->with('error', __('notifyFail'));
     }
-
-
 }

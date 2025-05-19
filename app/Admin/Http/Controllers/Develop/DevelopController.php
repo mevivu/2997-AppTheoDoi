@@ -25,8 +25,7 @@ class DevelopController extends Controller
     public function __construct(
         GuideRepositoryInterface $repository,
         GuideServiceInterface    $service
-    )
-    {
+    ) {
         parent::__construct();
 
         $this->repository = $repository;
@@ -72,8 +71,10 @@ class DevelopController extends Controller
     {
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
-            'breadcrumbs' => $this->crums->add(__('Develop Guide'),
-                route($this->route['index']))->add(__('add')),
+            'breadcrumbs' => $this->crums->add(
+                __('Develop Guide'),
+                route($this->route['index'])
+            )->add(__('add')),
         ]);
     }
 
@@ -144,11 +145,13 @@ class DevelopController extends Controller
 
     public function getStepsByDevelopGuideId(StepDataTable $dataTable)
     {
+        $guideId = request()->route('developGuideId');
+        $guide = $this->repository->findOrFail($guideId);
         return $dataTable->render(
             $this->view['step.index'],
             [
                 'actionMultiple' => ['deleted' => 'delete'],
-                'breadcrumbs' => $this->crums->add(__('Thứ tự hướng dẫn')),
+                'breadcrumbs' => $this->crums->add($guide->title, route($this->route['edit'], $guide->id))->add(__('Danh sách các bước')),
             ]
         );
     }

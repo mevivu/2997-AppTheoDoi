@@ -25,13 +25,12 @@
 @endsection
 
 @push('libs-js')
-<script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
-<script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
-<script src="{{ asset('/public/libs/select2/dist/js/select2.min.js') }}"></script>
-<script src="{{ asset('/public/libs/select2/dist/js/i18n/vi.js') }}"></script>
-<script src="{{ asset('/public/libs/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js') }}"></script>
+    <script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
+    <script src="{{ asset('/public/libs/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('/public/libs/select2/dist/js/i18n/vi.js') }}"></script>
+    <script src="{{ asset('/public/libs/jquery-throttle-debounce/jquery.ba-throttle-debounce.min.js') }}"></script>
 @endpush
 
 @push('custom-js')
-
 @endpush

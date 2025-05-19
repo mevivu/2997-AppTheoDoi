@@ -4,13 +4,17 @@
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
 @endpush
+@php
+    $developGuide = \App\Models\Guide::find(request()->route('developGuideId'));
+@endphp
 
 @section('content')
     <div class="page-body">
         <div class="container-xl">
             <div class="card custom-shadow">
                 <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list')</h2>
+                    <h2 class="mb-0">@lang('list') thứ tự hướng dẫn của: <x-link
+                            :href="route('admin.guide.edit', $developGuide->id)">{{ $developGuide->title }}</x-link></h2>
                     <x-link :href="route('admin.step.create', request()->route('developGuideId'))" class="btn btn-primary">
                         <i class="ti ti-plus"></i>
                         <span class="ms-1">@lang('add')</span>
