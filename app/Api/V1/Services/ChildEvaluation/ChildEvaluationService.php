@@ -177,7 +177,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
                 ],
                 [
                     'capability_status' => $capabilityData['capability_status'],
-                    'remark' => $quality['remark'] ?? null,
+                    'remark' => $capabilityData['remark'] ?? null,
                 ]
             );
         }
