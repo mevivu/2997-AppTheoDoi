@@ -103,7 +103,9 @@ class Child extends Model
             }
 
             //create vaccination schedule admin
-            $vaccinationSchedules = VaccinationSchedule::where('type', PermissionType::ADMIN)->get();
+            $vaccinationSchedules = VaccinationSchedule::where('type', PermissionType::ADMIN)
+                ->where('status', ActiveStatus::Active)
+                ->get();
             foreach ($vaccinationSchedules as $schedule) {
                 VaccinationSchedule::create([
                     'child_id' => $child->id,
