@@ -164,6 +164,9 @@ class RatingPQController extends Controller
     {
         try {
             $response = $this->service->getOverallStats($request);
+            if ($response == null) {
+                return $this->jsonResponseError('No data found', 404);
+            }
             return $this->jsonResponseSuccess(new RatingPQLastedResource($response));
         } catch (Exception $exception) {
             $this->logError('Get overall stats failed:', $exception);
