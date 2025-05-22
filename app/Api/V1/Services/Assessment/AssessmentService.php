@@ -115,10 +115,10 @@ class AssessmentService implements AssessmentServiceInterface
             if ($age > 5) {
                 if (is_null($bmiPercent)) return null;
                 $totalScore = $bmiPercent + $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
-                return round($totalScore / 5, 1);
+                return min(round($totalScore / 5, 1), 10);
             } else {
                 $totalScore = $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
-                return round($totalScore / 4, 1);
+                return min(round($totalScore / 4, 1), 10);
             }
         } catch (Throwable $e) {
             // log lỗi nếu cần
