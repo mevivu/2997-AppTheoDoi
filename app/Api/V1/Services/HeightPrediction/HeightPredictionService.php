@@ -66,7 +66,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         // Tính sự thay đổi chiều cao
         $heightChange = $this->calculateSpeedHeightChange($currentHeight, $childId, $latestDate);
-        $heightChangeLasted = $latestRecord ? $latestRecord->height_change : 0;
+        $heightChangeLasted = $latestRecord ? $latestRecord->height : 0;
 
         // Tính tháng từ ngày sinh đến latestDate
         $month = floor($birthDay->diffInDays($latestDate) / 30.5);
@@ -76,9 +76,10 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $heightWho = $who->height;
 
         $adviceMessage = $this->getAdviceMessage($currentHeight, $heightWho);
-        $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight);
+        $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestDate);
 
-        $heightWhoCurrent = abs($heightChangeLasted - $who->height );
+        $heightWhoCurrent = round(abs($heightChangeLasted - $who->height), 2);
+
 
         return [
             'advice_message' => $adviceMessage,
@@ -92,19 +93,51 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         ];
     }
 
-    public function calculateMatureHeight($child, $currentHeight): float
+    public function calculateMatureHeight($child, $currentHeight, $latestDate): float
     {
+
         $heightFather = $child->user->father_height ?? 0;
         $heightMother = $child->user->mother_height ?? 0;
+        $currentAge = $child->age;
+        $Adulthood = $child->gender == Gender::Male ? 16 : 15;
+        $predictAdulthood = $Adulthood - $currentAge;
+
+        $oneYearBefore = $latestDate->subYear();
+
+        $oldestRecord = $this->repository->getQueryBuilder()
+            ->where('child_id', $child->id)
+            ->whereBetween('assessment_date', [$oneYearBefore, $latestDate])
+            ->oldest('assessment_date')
+            ->first();
+        $heightOneYearAgo = $oldestRecord ? $oldestRecord->height : 0;
+        $increasedHeight = $currentHeight - $heightOneYearAgo;
+        $increasedHeight = max(0, min(7, $increasedHeight));
+        $adultHeightPrediction = $predictAdulthood * $increasedHeight;
+
 
         $predictedHeightMale = ($heightFather + $heightMother + 13) / 2 + 5;
-        $predictedHeightFemale = ($heightMother + $heightMother - 13) / 2 + 3;
-
-        if ($child->gender == Gender::Male) {
-            return $predictedHeightMale * 0.3 + $currentHeight * 0.7;
+        $predictedHeightFemale = ($heightFather + $heightMother - 13) / 2 + 3;
+        if ($child->age > 5) {
+            $CurrentHeightAttainmentForecast = $currentHeight + $adultHeightPrediction;
         } else {
-            return $predictedHeightFemale * 0.3 + $currentHeight * 0.7;
+            $ageCheckMonth = $child->gender == Gender::Male ? 24 : 18;
+            $ratingPq = $this->repository->getQueryBuilder()
+                ->where('child_id', $child->id)
+                ->where('age_month',  $ageCheckMonth)
+                ->first();
+            if ($ratingPq) {
+                $CurrentHeightAttainmentForecast = $ratingPq->height * 2;
+            } else {
+                if ($child->gender == Gender::Male) {
+                    $CurrentHeightAttainmentForecast = $predictedHeightMale;
+                } else {
+                    $CurrentHeightAttainmentForecast = $predictedHeightFemale;
+                }
+
+            }
         }
+
+        return $CurrentHeightAttainmentForecast;
     }
 
 

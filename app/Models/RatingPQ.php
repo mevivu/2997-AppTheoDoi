@@ -38,6 +38,8 @@ class RatingPQ extends Model
         'score',
         /** Child ID */
         'child_id',
+        /** Tuổi tháng */
+        'age_month'
     ];
     protected $casts = [
 

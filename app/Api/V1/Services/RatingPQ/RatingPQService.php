@@ -112,6 +112,8 @@ class RatingPQService implements RatingPQServiceInterface
         $currentEndurance = $data['endurance'];
         $currentStrength = $data['strength'];
         $child = $this->childRepository->findOrFail($data['child_id']);
+        $assessmentDate = Carbon::parse($data['assessment_date']);
+        $birthday = Carbon::parse($child->birthday);
         // bmi hien tai
         $bmi = $this->calculateBMI($height, $weight);
         $age = $child->age;
@@ -120,6 +122,8 @@ class RatingPQService implements RatingPQServiceInterface
         $who = $this->getWho($month, $gender);
         $whoHeight = $who->height;
         $bmiCategory = $this->getBmiCategory($bmi, $age, $gender);
+        $ageInMonths = $birthday->diffInDays($assessmentDate) / 30.5;
+        $data['age_month'] = (int) floor($ageInMonths);
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
         $data['height_change'] = $height - $whoHeight;
@@ -141,6 +145,8 @@ class RatingPQService implements RatingPQServiceInterface
         $currentEndurance = $data['endurance'];
         $currentStrength = $data['strength'];
         $child = $this->childRepository->findOrFail($data['child_id']);
+        $assessmentDate = Carbon::parse($data['assessment_date']);
+        $birthday = Carbon::parse($child->birthday);
         $bmi = $this->calculateBMI($height, $weight);
         $age = $child->age;
         $gender = $child->gender;
@@ -148,6 +154,8 @@ class RatingPQService implements RatingPQServiceInterface
         $who = $this->getWho($month, $gender);
         $whoHeight = $who->height;
         $bmiCategory = $this->getBmiCategory($bmi, $age, $gender);
+        $ageInMonths = $birthday->diffInDays($assessmentDate) / 30.5;
+        $data['age_month'] = (int) floor($ageInMonths);
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
         $data['height_change'] = $height - $whoHeight;
