@@ -161,26 +161,67 @@
         }
 
         function renderNotifications(notifications) {
-            $('#message-box .badge').text(notifications?.length);
+            // Cập nhật badge số lượng thông báo
+            const $badge = $('#message-box .badge');
+            $badge.text(notifications?.length || 0);
+
+            // Thêm class để hiệu ứng khi có thông báo mới
+            if (notifications?.length > 0) {
+                $badge.addClass('badge-pulse');
+            }
 
             const $messageBox = $('#message-box .dropdown-menu');
             $messageBox.empty();
 
-            notifications?.forEach(function(notification) {
-                const timeDiff = timeSince(notification.created_at);
-                const notificationElement = `
-            <a href="${urlHome}/admin/thong-bao/edit/${notification.id}" class="dropdown-item d-flex justify-content-between message-item-{ notification.id }">
-                ${notification.title}
-                <div class="text-muted small mt-1">${timeDiff}</div>
-            </a>
-            `;
-                $messageBox.append(notificationElement);
-            });
+            // Thêm header cho dropdown
+            $messageBox.append(`
+                <div class="notification-header">
+                    <h6 class="mb-0 text-primary">Thông báo của bạn</h6>
+                    <small class="text-muted">${notifications?.length || 0} thông báo mới</small>
+                </div>
+            `);
 
-            $messageBox.append('<div class="dropdown-divider"></div>');
-            $messageBox.append(
-                '<a href="{{ route('admin.notification.index') }}" class="dropdown-item text-center">Xem tất cả</a>'
-                );
+            // Render từng notification
+            if (notifications?.length > 0) {
+                notifications.forEach(function(notification) {
+                    const timeDiff = timeSince(notification.created_at);
+                    const notificationElement = `
+                        <a href="${urlHome}/admin/thong-bao/edit/${notification.id}"
+                           class="dropdown-item notification-item message-item-${notification.id}">
+                            <div class="notification-content">
+                                <div class="d-flex align-items-start">
+                                    <div class="notification-icon">
+                                        <i class="ti ti-bell text-primary"></i>
+                                    </div>
+                                    <div class="notification-text">
+                                        <div class="notification-title">${notification.title}</div>
+                                        <div class="notification-time">${timeDiff}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                    $messageBox.append(notificationElement);
+                });
+            } else {
+                // Hiển thị thông báo khi không có notification
+                $messageBox.append(`
+                    <div class="notification-empty">
+                        <div class="text-center py-4">
+                            <i class="ti ti-bell-off text-muted"></i>
+                            <p class="mt-2 mb-0">Không có thông báo mới</p>
+                        </div>
+                    </div>
+                `);
+            }
+
+            // Thêm footer
+            $messageBox.append('<div class="dropdown-divider mb-0"></div>');
+            $messageBox.append(`
+                <a href="{{ route('admin.notification.index') }}" class="dropdown-item text-center view-all">
+                    Xem tất cả thông báo
+                </a>
+            `);
         }
 
         function reloadData() {
@@ -225,3 +266,93 @@
         registerServiceWorker();
     });
 </script>
+
+
+<style>
+    /* Badge styles */
+    .badge-pulse {
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Notification dropdown styles */
+    .notification-header {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .notification-item {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.2s ease;
+    }
+
+    .notification-item:hover {
+        background: rgba(30, 60, 114, 0.05);
+    }
+
+    .notification-content {
+        width: 100%;
+    }
+
+    .notification-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 16px;
+        background: rgba(30, 60, 114, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.75rem;
+    }
+
+    .notification-text {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .notification-title {
+        color: #2d3748;
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .notification-time {
+        color: #718096;
+        font-size: 0.75rem;
+    }
+
+    .notification-empty {
+        color: #718096;
+        font-size: 0.875rem;
+    }
+
+    .notification-empty i {
+        font-size: 1.5rem;
+        opacity: 0.5;
+    }
+
+    .view-all {
+        color: #1e3c72;
+        font-weight: 500;
+        padding: 0.75rem;
+    }
+
+    .view-all:hover {
+        background: rgba(30, 60, 114, 0.05);
+    }
+</style>
