@@ -502,6 +502,59 @@ span.select2-selection.select2-selection--single {
     }
 }
 /* End Loading */
+/* Back to top button */
+.back-to-top {
+    position: fixed;
+    bottom: -60px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    background: #254165;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    box-shadow: 0 3px 15px rgba(30, 60, 114, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 99;
+    opacity: 0;
+}
+
+.back-to-top.show {
+    bottom: 30px;
+    opacity: 1;
+}
+
+.back-to-top:hover {
+    transform: translateY(-5px);
+    background: #2a5298;
+    box-shadow: 0 5px 20px rgba(30, 60, 114, 0.4);
+}
+
+.back-to-top i {
+    font-size: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.back-to-top:hover i {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .back-to-top {
+        right: 20px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .back-to-top.show {
+        bottom: 20px;
+    }
+}
+
+/* End Back to top button */
 
 
 

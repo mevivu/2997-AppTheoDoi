@@ -39,4 +39,29 @@
     }
 
 </script>
+
+<script>
+    // Back to top functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const backToTop = document.querySelector('.back-to-top');
+
+        // Show/hide button based on scroll position
+        window.addEventListener('scroll', function() {
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+
+        // Smooth scroll to top when clicked
+        backToTop.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>
 @stack('custom-js')

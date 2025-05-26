@@ -19,6 +19,12 @@
         @include('admin.layouts.modal.modal-delete')
     </div>
 </div>
+
+<!-- Back to top button -->
+<div class="back-to-top">
+    <i class="ti ti-arrow-up"></i>
+</div>
+
 @include('admin.layouts.scripts')
 @include('admin.notifications.scripts.firebase-script')
 
