@@ -10,6 +10,7 @@
                         <div class="mb-3">
                             <label class="control-label d-block text-start">@lang('Tiêu đề tháng')</label>
                             <x-input :required="true"
+                                        name="title" type="text" :required="true"
                                      :placeholder="__('Tiêu đề bước')" class="w-100" value="{{$instance->title}}"/>
                         </div>
 
