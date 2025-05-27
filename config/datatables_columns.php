@@ -410,6 +410,11 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
+        'level_group' => [
+            'title' => 'type',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
 
         'status' => [
             'title' => 'status',

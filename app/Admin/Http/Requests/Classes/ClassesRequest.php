@@ -4,6 +4,7 @@ namespace App\Admin\Http\Requests\Classes;
 
 use App\Admin\Http\Requests\BaseRequest;
 use App\Enums\ActiveStatus;
+use App\Enums\Class\LevelGroup;
 use Illuminate\Validation\Rules\Enum;
 
 class ClassesRequest extends BaseRequest
@@ -20,6 +21,7 @@ class ClassesRequest extends BaseRequest
             'subject_id' => ['required', 'array'],
             'subject_id.*' => 'required|exists:subjects,id',
             'status' => ['required', new Enum(ActiveStatus::class)],
+            'level_group' => ['required', new Enum(LevelGroup::class)],
         ];
     }
     protected function methodPut(): array
@@ -30,6 +32,7 @@ class ClassesRequest extends BaseRequest
             'status' => ['required', new Enum(ActiveStatus::class)],
             'subject_id' => ['required', 'array'],
             'Subject_id.*' => 'required|exists:subjects,id',
+            'level_group' => ['required', new Enum(LevelGroup::class)],
         ];
     }
 }

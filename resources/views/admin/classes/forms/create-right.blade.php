@@ -13,6 +13,18 @@
             </div>
         </div>
     </div>
+    <div class="card mb-3 custom-shadow">
+        <div class="card-header">
+            {{ __('type') }}
+        </div>
+        <div class="card-body p-2">
+            <x-select name="level_group" :required="true">
+                @foreach ($level_group as $key => $value)
+                    <x-select-option :value="$key" :title="$value"/>
+                @endforeach
+            </x-select>
+        </div>
+    </div>
 
     <div class="card mb-3 custom-shadow">
         <div class="card-header">

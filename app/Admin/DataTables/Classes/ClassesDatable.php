@@ -6,6 +6,7 @@ use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Classes\ClassesRepositoryInterface;
 
 use App\Enums\ActiveStatus;
+use App\Enums\Class\LevelGroup;
 use Illuminate\Database\Eloquent\Builder;
 
 class ClassesDatable extends BaseDataTable
@@ -30,6 +31,7 @@ class ClassesDatable extends BaseDataTable
             'action' => 'admin.classes.datatable.action',
             'name' => 'admin.classes.datatable.name',
             'status' => 'admin.classes.datatable.status',
+            'level_group' => 'admin.classes.datatable.level_group',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
@@ -45,11 +47,16 @@ class ClassesDatable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 2];
+        $this->columnAllSearch = [1, 2, 3];
 
         $this->columnSearchSelect = [
             [
                 'column' => 2,
+                'data' => LevelGroup::asSelectArray()
+            ],
+
+            [
+                'column' => 3,
                 'data' => ActiveStatus::asSelectArray()
             ],
 
@@ -67,6 +74,7 @@ class ClassesDatable extends BaseDataTable
     {
         $this->customEditColumns = [
             'status' => $this->view['status'],
+            'level_group' => $this->view['level_group'],
             'name' => $this->view['name'],
             'checkbox' => $this->view['checkbox'],
 
@@ -83,7 +91,8 @@ class ClassesDatable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['action', 'name', 'status', 'checkbox'];
+        $this->customRawColumns = ['action', 'name', 'status', 'checkbox',
+            'level_group'];
     }
 
     public function setCustomFilterColumns(): void

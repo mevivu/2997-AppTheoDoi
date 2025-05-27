@@ -31,6 +31,7 @@ class ChildEvaluationSearchResource extends JsonResource
             'id' => $this->id,
             'class_grade' => [
                 'class_grade_id' => $this->class_grade_id,
+                'full_year_grade' => $this->classGrade->full_year_grade,
             ],
             'average_score' => $this->average_score,
             'semester' => $this->semester,

@@ -3,6 +3,7 @@
 use App\Enums\ApprovalStatus;
 use App\Enums\Brand\BrandStatus;
 use App\Enums\Child\BornStatus;
+use App\Enums\Class\LevelGroup;
 use App\Enums\DefaultStatus;
 use App\Enums\Group\GroupType;
 use App\Enums\Permission\PermissionType;
@@ -47,6 +48,10 @@ return [
     ],
     Random::class => [
         Random::YES->value => 'Có',
+    ],
+    LevelGroup::class => [
+        LevelGroup::Junior->value => 'Nhỏ hơn 6',
+        LevelGroup::Senior->value => 'Lớn hơn hoặc bằng 6',
     ],
     AgeGroup::class => [
         AgeGroup::Under_10->value => 'Dưới 10 tuổi',

@@ -8,6 +8,7 @@ use App\Admin\Http\Requests\Classes\ClassesRequest;
 use App\Admin\Repositories\Classes\ClassesRepositoryInterface;
 use App\Admin\Services\Classes\ClassesServiceInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Class\LevelGroup;
 use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Traits\ResponseController;
@@ -58,6 +59,7 @@ class ClassesController extends Controller
     {
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
+            'level_group' => LevelGroup::asSelectArray(),
             'breadcrumbs' => $this->crums->add('DS Lớp')->add('Thêm'),
         ]);
     }
@@ -94,6 +96,7 @@ class ClassesController extends Controller
             [
                 'Subject' => $Subject,
                 'response' => $response,
+                'level_group' => LevelGroup::asSelectArray(),
                 'status' => ActiveStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add('Danh sách Lớp ', route($this->route['index']))->add('Cập nhật'),
             ]
