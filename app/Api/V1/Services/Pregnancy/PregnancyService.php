@@ -42,9 +42,11 @@ class PregnancyService implements PregnancyServiceInterface
         $data = $request->validated();
         $limit = $data['limit'] ?? 10;
         $page = $data['page'] ?? 1;
-        $query = $this->repository->getByQueryBuilder([
-            'child_id' => $data['child_id'],
-        ]);
+        $query = $this->repository->getQueryBuilder();
+        $query->where('child_id', $data['child_id'] ?? null);
+        $query->orderBy('week', 'asc');
+
+
         return $query->paginate($limit, ['*'], 'page', $page);
     }
 
