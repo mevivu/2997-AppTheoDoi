@@ -15,6 +15,18 @@
                 </div>
             </div>
 
+            <!-- position -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('Thứ tự')</label>
+                    <x-input name="position"
+                             type="number"
+                             :value="old('position', 0)"
+                             :required="true"
+                             :placeholder="__('Nhập thứ tự hiển thị')"/>
+                </div>
+            </div>
+
 
             <!-- description -->
             <div class="col-12">

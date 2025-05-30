@@ -19,6 +19,7 @@ class VaccinationType extends BaseRequest
         return [
             'name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
+            'position' => ['required', 'integer', 'min:0'],
             'status' => ['required', new Enum(ActiveStatus::class)]
         ];
     }
@@ -29,6 +30,7 @@ class VaccinationType extends BaseRequest
             'id' => ['required', 'integer', 'exists:App\Models\VaccinationType,id'],
             'name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
+            'position' => ['required', 'integer', 'min:0'],
             'status' => ['required', new Enum(ActiveStatus::class)]
         ];
     }

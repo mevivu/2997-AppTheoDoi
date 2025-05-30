@@ -21,6 +21,8 @@ class VaccinationType extends Model
         'description',
         /* Trạng thái  */
         'status',
+        /* Vị trí */
+        'position',
 
     ];
     protected $casts = [

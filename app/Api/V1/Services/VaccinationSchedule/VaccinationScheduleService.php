@@ -42,18 +42,38 @@ class VaccinationScheduleService implements VaccinationScheduleServiceInterface
         $page = $data['page'] ?? 1;
         $date = $data['performed_on'] ?? null;
         $childId = $data['child_id'];
-        $query = $this->repository->getByQueryBuilder(
-            [
-                'child_id' => $childId,
-                'type' => PermissionType::USER,
-            ]
-        );
+
+        // Build query với điều kiện lọc
+        $query = $this->repository->getByQueryBuilder([
+            'child_id' => $childId,
+            'type' => PermissionType::USER,
+        ]);
 
         if (!empty($date)) {
             $query->whereDate('performed_on', '=', date('Y-m-d', strtotime($date)));
         }
-        return $query->paginate($limit, ['*'], 'page', $page);
+
+        // Eager load quan hệ vaccinationType
+        $query->with('vaccinationType');
+
+        // Paginate trước
+        $paginator = $query->paginate($limit, ['*'], 'page', $page);
+
+        // Sắp xếp theo position của vaccinationType sau khi paginate
+        $sorted = $paginator->getCollection()
+            ->sortBy(function ($item) {
+                return optional($item->vaccinationType)->position ?? 9999;
+            })
+            ->values();
+
+        // Gán lại collection đã sort vào paginator
+        $paginator->setCollection($sorted);
+
+        return $paginator;
     }
+
+
+
 
     /**
      * @throws Exception

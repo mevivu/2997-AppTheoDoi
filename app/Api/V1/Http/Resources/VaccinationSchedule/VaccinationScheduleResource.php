@@ -26,6 +26,7 @@ class VaccinationScheduleResource extends JsonResource
             'image' => formatImageUrl($this->image),
             'vaccination_types' => [
                 'name' => $this->vaccinationType->name ?? null,
+                'position' => $this->vaccinationType->position ?? null,
             ],
 
         ];

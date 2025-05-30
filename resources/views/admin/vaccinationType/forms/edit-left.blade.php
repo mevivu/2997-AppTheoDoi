@@ -16,6 +16,18 @@
                              :placeholder="__('name')"/>
                 </div>
             </div>
+            <!-- position -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('Thứ tự')</label>
+                    <x-input type="number"
+                             name="position"
+                             :value="$instance->position"
+                             :required="true"
+                             :placeholder="__('Nhập thứ tự')"/>
+                </div>
+            </div>
+
 
             <!-- description -->
             <div class="col-12">

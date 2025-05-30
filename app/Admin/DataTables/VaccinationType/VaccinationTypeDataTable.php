@@ -34,19 +34,18 @@ class VaccinationTypeDataTable extends BaseDataTable
 
     public function query(): Builder
     {
-        return $this->repository->getByQueryBuilder(
-            [
-                ['status', '!=', ActiveStatus::Deleted],
-            ]
-        );
+        return $this->repository
+            ->getQueryBuilder()
+            ->where('status', '!=', ActiveStatus::Deleted->value)
+            ->orderBy('position');
     }
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 2];
+        $this->columnAllSearch = [1, 2,3];
         $this->columnSearchSelect = [
             [
-                'column' => 2,
+                'column' => 3,
                 'data' => ActiveStatus::asSelectArray()
             ],
 

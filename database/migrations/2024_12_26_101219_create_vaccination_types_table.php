@@ -18,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
+            $table->integer('position')->default(0);
             $table->enum('status', ActiveStatus::getValues())->default(ActiveStatus::Active->value);
             $table->timestamps();
         });

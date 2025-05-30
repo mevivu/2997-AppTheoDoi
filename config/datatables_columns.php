@@ -898,6 +898,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
+        'position' => [
+            'title' => 'position',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
 
         'status' => [
             'title' => 'status',
