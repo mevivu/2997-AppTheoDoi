@@ -15,6 +15,7 @@ use App\Api\V1\Support\AuthSupport;
 use App\Enums\ActiveStatus;
 use App\Enums\ChildEvaluation\AcademicRating;
 use App\Enums\ChildEvaluation\ConductRating;
+use App\Enums\Class\LevelGroup;
 use App\Enums\Semester\SemesterStatus;
 use App\Models\ClassGrade;
 use Exception;
@@ -89,20 +90,32 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
 
     private function updateScoreClassGrade($semester, ClassGrade $classGrade, $averageScore): void
     {
-        if ($semester == SemesterStatus::Semester1) {
-            $classGrade->update([
-                'semester1_grade' => $averageScore
-            ]);
-        } else {
-            $semester1Grade = $classGrade->semester1_grade;
-            $fullYearGrade = ($semester1Grade + $averageScore * 2) / 3;
-            $classGrade->update([
-                'semester2_grade' => $averageScore,
-                'full_year_grade' => $fullYearGrade
-            ]);
-        }
+        $class = $classGrade->class;
+        $levelGroup = $class?->level_group;
 
+        if ($semester == SemesterStatus::Semester1) {
+            $classGrade->semester1_grade = $averageScore;
+
+            // Nếu là Senior và đã có điểm HK2 thì tính điểm cả năm
+            if ($levelGroup === LevelGroup::Senior && !is_null($classGrade->semester2_grade)) {
+                $classGrade->full_year_grade = round(($averageScore + 2 * $classGrade->semester2_grade) / 3, 2);
+            }
+
+            $classGrade->save();
+        } else {
+            $classGrade->semester2_grade = $averageScore;
+
+            if ($levelGroup === LevelGroup::Junior) {
+                $classGrade->full_year_grade = $averageScore;
+            } else {
+                $s1 = $classGrade->semester1_grade ?? 0;
+                $classGrade->full_year_grade = round(($s1 + 2 * $averageScore) / 3, 2);
+            }
+
+            $classGrade->save();
+        }
     }
+
 
     /**
      * @throws Exception
