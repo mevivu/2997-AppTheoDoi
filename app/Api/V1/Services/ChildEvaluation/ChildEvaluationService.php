@@ -17,6 +17,7 @@ use App\Enums\ChildEvaluation\AcademicRating;
 use App\Enums\ChildEvaluation\ConductRating;
 use App\Enums\Class\LevelGroup;
 use App\Enums\Semester\SemesterStatus;
+use App\Models\ChildEvaluation;
 use App\Models\ClassGrade;
 use Exception;
 use Illuminate\Http\Request;
@@ -114,6 +115,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
 
             $classGrade->save();
         }
+
     }
 
 
@@ -140,7 +142,6 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             $data['average_score'] = $averageScore;
         }
         $childEvaluation = $this->repository->update($childEvaluationId, $data);
-        $classGrade = $childEvaluation->classGrade;
         if (isEmpty($subjects)) {
             $this->createSubjectGrade($subjects, $childEvaluationId);
         }
@@ -150,6 +151,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         if (isEmpty($capabilities)) {
             $this->createChildCapability($capabilities, $childEvaluationId);
         }
+        $classGrade = $childEvaluation->classGrade;
         $semester = $childEvaluation->semester;
         $this->updateScoreClassGrade($semester, $classGrade, $averageScore);
 
