@@ -66,7 +66,7 @@ class AssessmentService implements AssessmentServiceInterface
         $this->updateAssessmentType($assessmentIq, $childId, QuestionType::IQ);
         $this->updateAssessmentType($assessmentEQ, $childId, QuestionType::EQ);
         $this->updateAssessmentType($assessmentAQ, $childId, QuestionType::AQ);
-        $latestIq = $this->getLatestRatingByType($childId, QuestionType::IQ);
+        $latestIq = $this->getLatestRatingByTypeIQ($childId, QuestionType::IQ);
         $latestEq = $this->getLatestRatingByType($childId, QuestionType::EQ);
         $latestAq = $this->getLatestRatingByType($childId, QuestionType::AQ);
         $latestGpa = $this->getLatestGpaScore($childId);
@@ -127,6 +127,14 @@ class AssessmentService implements AssessmentServiceInterface
     }
 
 
+    public function getLatestRatingByTypeIQ(int $childId, QuestionType $type): ?Rating
+    {
+        return Rating::where('child_id', $childId)
+            ->where('type', $type)
+            ->whereNotNull('score')
+            ->orderByDesc('created_at')
+            ->first();
+    }
 
     public function getLatestRatingByType(int $childId, QuestionType $type): ?Rating
     {
