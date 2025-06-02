@@ -103,7 +103,7 @@ class RatingService implements RatingServiceInterface
         $scoreValue = $correctCount * 10;
         $totalValue = $totalCount * 10;
         $result = $totalCount > 0 ? "{$scoreValue}/{$totalValue}" : "0/0";
-        $data['score'] = $correctCount;
+        $data['score'] = min(10, floor($correctCount / 1.5));
         $data['result'] = $result;
         $data['type'] = $type;
         $data['description'] = $this->getDescriptionByTypeAndScore($type, $correctCount);
