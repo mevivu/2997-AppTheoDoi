@@ -91,9 +91,12 @@ class RatingPQService implements RatingPQServiceInterface
         $limit = $data['limit'] ?? null;
         $page = $data['page'] ?? 1;
 
-        $query = $this->repository->getByQueryBuilder([
-            'child_id' => $data['child_id'],
-        ]);
+        $query = $this->repository->getQueryBuilder();
+        if (!empty($data['child_id'])) {
+            $query->where('child_id', $data['child_id']);
+        }
+        $query->orderBy('assessment_date', 'desc');
+
         $totalCount = $query->count();
         $newLimit = $limit != null ? $limit : $totalCount;
 
