@@ -267,11 +267,18 @@ class RatingPQService implements RatingPQServiceInterface
      */
     private function calculatePerformance($currentValue, $pastValue, $daysBetween): float|int
     {
-        if ($daysBetween <= 0) {
+        if ($daysBetween <= 0 || $pastValue <= 0) {
             return 1;
         }
+
         $performanceRatio = $daysBetween / 365.3;
-        $result = ($currentValue / ($pastValue * 1.25 * $performanceRatio)) / 0.1;
+        $denominator = $pastValue * 1.25 * $performanceRatio;
+
+        if ($denominator == 0) {
+            return 1;
+        }
+
+        $result = ($currentValue / $denominator) / 0.1;
         return min($result, 10);
     }
 
