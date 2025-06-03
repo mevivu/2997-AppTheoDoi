@@ -36,7 +36,7 @@ class ChildEvaluationRequest extends BaseRequest
             $additionalRules = [
                 'subjects' => ['required', 'array'],
                 'subjects.*.id' => ['required', 'exists:subjects,id'],
-                'subjects.*.grade' => ['required', 'numeric', 'between:0,10'],
+                'subjects.*.grade' => ['nullable', 'numeric', 'between:0,10'],
                 'subjects.*.remark' => ['nullable', 'string',],
                 'subjects.*.achievement_level' => ['nullable', new Enum(AchievementLevel::class)],
 

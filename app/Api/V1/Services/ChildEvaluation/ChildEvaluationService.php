@@ -220,11 +220,18 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     private function calculateAverageScore(array $subjects): float
     {
         $totalScore = 0;
+        $count = 0;
+
         foreach ($subjects as $subject) {
-            $totalScore += $subject['grade'];
+            if (isset($subject['grade'])) {
+                $totalScore += $subject['grade'];
+                $count++;
+            }
         }
-        return count($subjects) > 0 ? $totalScore / count($subjects) : 0;
+
+        return $count > 0 ? $totalScore / $count : 0;
     }
+
 
 
     /**
