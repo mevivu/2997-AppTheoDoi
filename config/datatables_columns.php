@@ -563,6 +563,11 @@ return [
             'addClass' => 'align-middle text-center',
             'footer' => '<input type="checkbox" class="form-check-input check-all" />',
         ],
+        'code' => [
+            'title' => 'code',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
         'question' => [
             'title' => 'Câu hỏi',
             'orderable' => false,
@@ -599,6 +604,11 @@ return [
             'printable' => false,
             'addClass' => 'align-middle text-center',
             'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'code' => [
+            'title' => 'code',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
         ],
         'question' => [
             'title' => 'Câu hỏi',
@@ -641,6 +651,11 @@ return [
             'printable' => false,
             'addClass' => 'align-middle text-center',
             'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'code' => [
+            'title' => 'code',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
         ],
         'question' => [
             'title' => 'Câu hỏi',

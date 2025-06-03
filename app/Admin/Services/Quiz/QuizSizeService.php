@@ -108,14 +108,25 @@ class QuizSizeService implements QuizServiceInterface
         return $quiz;
     }
 
+
+
+    /**
+     * @throws Exception
+     */
     public function updateIQ(Request $request): object|bool
     {
 
         $data = $request->validated();
-        $questionIds = json_decode($data['selected_questions'] ?? '[]', true);
-
+        $questionItems = json_decode($data['selected_questions'] ?? '[]', true);
         $quiz = $this->repository->update($data['id'], $data);
-        $quiz->questions()->sync($questionIds);
+
+        $syncData = [];
+        foreach ($questionItems as $index => $questionId) {
+            $syncData[(int) $questionId] = [
+                'sequence' => $index
+            ];
+        }
+        $quiz->questions()->sync($syncData);
         return $quiz;
     }
 

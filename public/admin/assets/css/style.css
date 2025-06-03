@@ -556,6 +556,57 @@ span.select2-selection.select2-selection--single {
 
 /* End Back to top button */
 
+.selected-row {
+    background-color: #d4edda !important;
+}
+
+.custom-shadow {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 8px !important;
+}
+
+.mathquill-box {
+    min-height: 40px;
+    border: 1px solid #ccc;
+    padding: 6px;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: text;
+}
+
+/* Style the list items */
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move; /* Change cursor to indicate draggable */
+    transition: transform 0.3s ease; /* Smooth transition during drag */
+}
+
+/* Style for the item being dragged */
+.list-group-item.sortable-chosen {
+    background-color: #f1f1f1; /* Light background when dragging */
+    border: 2px solid #007bff; /* Border to highlight the item */
+    transform: scale(1.05); /* Slightly enlarge the dragged item */
+}
+
+/* Style for the items on hover */
+.list-group-item:hover {
+    background-color: #e2e6ea; /* Light hover effect */
+}
+
+.question-text {
+    flex-grow: 1;
+}
+
+.remove-question {
+    margin-left: 10px;
+}
+.bg-selected {
+    background-color: #e7f1ff !important; /* Màu nền xanh nhạt */
+}
+
+
 
 
 

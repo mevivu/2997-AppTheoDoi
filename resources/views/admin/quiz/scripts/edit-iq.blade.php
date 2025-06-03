@@ -1,37 +1,19 @@
-<style>
-    .list-group-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .question-text {
-        flex-grow: 1;
-    }
-    .remove-question {
-        margin-left: 10px;
-    }
-</style>
+
 <script>
     $(document).ready(function () {
         const questionsUrl = "{{ route('admin.question.type') }}";
         const questionsUrlIDS = "{{ route('admin.question.by-ids') }}";
         let selectedQuestionIds = @json($selected_questions->pluck('id'));
-        console.log(selectedQuestionIds)
-        // Pre-selected questions from server
-        let debounceTimer; // Timer for debouncing updates to selected questions
+        let debounceTimer;
         let firstLoad = true;
+        let load = firstLoad;
 
-        function loadSelectedFirstQuestions() {
+        function init() {
             if (firstLoad) {
                 $('#selected_questions_input').val(JSON.stringify(selectedQuestionIds));
                 firstLoad = false;
             }
 
-        }
-
-        function init() {
-            loadSelectedFirstQuestions();
-            // Handle type change and search button click events
             $('#type-select').on('change', function () {
                 fetchQuestions($(this).val());
             });
@@ -41,148 +23,216 @@
                 fetchQuestions($('#type-select').val());
             });
 
-            $('#search-button').on('click', function (event) {
-                event.preventDefault();
+            $('#search-button').on('click', function (e) {
+                e.preventDefault();
                 const type = $('#type-select').val();
                 const keyword = $('#search-keyword').val();
                 fetchQuestions(type, keyword);
             });
 
-            // Handle question selection
             $('#questions-container').on('change', 'input[name="question_ids[]"]', function () {
-                const questionId = $(this).val();
+                const id = Number($(this).val());
                 const isChecked = $(this).is(':checked');
-                updateSelections(questionId, isChecked); // Update immediately
+                updateSelections(id, isChecked);
             });
 
             $('#selected-questions').on('click', '.remove-question', function () {
-                const idToRemove = parseInt($(this).data('id'), 10);
+                const idToRemove = Number($(this).data('id'));
                 selectedQuestionIds = selectedQuestionIds.filter(id => id !== idToRemove);
                 $(`#question-${idToRemove}`).prop('checked', false);
-                $('#selected_questions_input').val(JSON.stringify(selectedQuestionIds));
+                syncInput();
                 updateSelectedQuestions();
             });
 
-            loadInitialQuestions();
-            updateSelectedQuestions();// Load initial set of questions
+            loadInitial();
+            updateSelectedQuestions();
         }
 
-        // Fetch initial questions when page loads
-        function loadInitialQuestions() {
-            const selectedType = $('#type-select').val();
-            if (selectedType) {
-                fetchQuestions(selectedType);
-            }
+        function loadInitial() {
+            const type = $('#type-select').val();
+            if (type) fetchQuestions(type);
         }
 
-        // Fetch questions based on type and search keyword
-        async function fetchQuestions(type, keyword = '') {
-            const questionContainer = $('#questions-container');
-            questionContainer.empty();
+        function fetchQuestions(type, keyword = '') {
+            const container = $('#questions-container');
+            container.empty();
             $('#loading').show();
 
-            try {
-                const response = await $.ajax({
-                    url: questionsUrl,
-                    type: 'GET',
-                    data: {type, keyword}
-                });
-                $('#loading').hide();
-                if (response.data && response.data.length > 0) {
-                    renderQuestions(response.data, questionContainer);
-                } else {
-                    questionContainer.html('<div>Không có câu hỏi nào.</div>');
+            $.ajax({
+                url: questionsUrl,
+                type: 'GET',
+                data: { type, keyword },
+                success: function (response) {
+                    $('#loading').hide();
+                    if (response.data?.length) {
+                        renderQuestions(response.data, container);
+                        const panelBody = $('#question-panel-body');
+                        if (panelBody.is(':hidden')) {
+                            panelBody.slideDown(200);
+                            $('#toggle-question-panel').text('Ẩn');
+                        }
+                    } else {
+                        container.html('<div>Không có câu hỏi nào.</div>');
+                    }
+                    $('#checked-count').text(selectedQuestionIds.length);
+                },
+                error: function () {
+                    $('#loading').hide();
+                    container.html('<div>Lỗi khi tải câu hỏi.</div>');
                 }
-                $('#checked-count').text(selectedQuestionIds.length);
-            } catch (error) {
-                $('#loading').hide();
-                questionContainer.html('<div>Lỗi khi tải câu hỏi.</div>');
-            }
-        }
-
-        // Render questions in the container
-        function renderQuestions(questions, container) {
-            questions.forEach(function (question) {
-                const isChecked = selectedQuestionIds.includes(Number(question.id)) ? "checked" : "";
-                const questionHtml = `
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="question_ids[]" value="${question.id}" id="question-${question.id}" ${isChecked}>
-                    <label class="form-check-label" for="question-${question.id}">
-                        ${question.question}
-                    </label>
-                </div>
-            `;
-                container.append(questionHtml);
             });
         }
 
-        // Update selected questions based on checkbox input
-        function updateSelections(questionId, isChecked) {
-            if (isChecked) {
-                // Add question if not already selected
-                if (!selectedQuestionIds.includes(Number(questionId))) {
-                    selectedQuestionIds.push(Number(questionId)); // Ensure the ID is number type
-                }
-            } else {
-                // Remove question if it was previously selected
-                selectedQuestionIds = selectedQuestionIds.filter(id => id !== Number(questionId)); // Ensure the ID is number type
-            }
-            $('#selected_questions_input').val(JSON.stringify(selectedQuestionIds));
+        function renderQuestions(questions, container) {
+            container.empty();
 
-            // Use debounce to update selected questions
+            questions.forEach(q => {
+                const isChecked = selectedQuestionIds.includes(q.id);
+                const checkedAttr = isChecked ? 'checked' : '';
+                const selectedClass = isChecked ? 'bg-selected' : '';
+                const html = `
+            <div class="card mb-2 border shadow-sm ${selectedClass}" id="card-${q.id}" data-id="${q.id}">
+                <div class="card-body d-flex align-items-start py-2 px-3">
+                    <div class="form-check mb-0">
+                        <input class="form-check-input" type="checkbox" name="question_ids[]" value="${q.id}" id="question-${q.id}" ${checkedAttr}>
+                        <label class="form-check-label ms-2" for="question-${q.id}">
+                            ${q.question}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        `;
+                container.append(html);
+            });
+
+            // ✅ Sự kiện đổi màu khi checkbox thay đổi
+            container.find('input[type="checkbox"]').off('change').on('change', function () {
+                const card = $(this).closest('.card');
+                card.toggleClass('bg-selected', this.checked);
+            });
+
+            // ✅ Click vào toàn bộ card (trừ checkbox & label) cũng check được
+            container.find('.card').off('click').on('click', function (e) {
+                if (!$(e.target).is('input[type="checkbox"], label')) {
+                    const checkbox = $(this).find('input[type="checkbox"]');
+                    checkbox.prop('checked', !checkbox.prop('checked')).trigger('change');
+                }
+            });
+
+            if (window.MathJax) MathJax.typesetPromise();
+        }
+
+
+
+        function updateSelections(id, isChecked) {
+            if (isChecked && !selectedQuestionIds.includes(id)) {
+                selectedQuestionIds.push(id);
+            } else if (!isChecked) {
+                selectedQuestionIds = selectedQuestionIds.filter(qid => qid !== id);
+            }
+            syncInput();
             debounceUpdateSelectedQuestions();
         }
 
-        // Debounce the selected questions update to avoid frequent requests
         function debounceUpdateSelectedQuestions() {
-            clearTimeout(debounceTimer); // Clear the previous timer
-            debounceTimer = setTimeout(updateSelectedQuestions, 700); // Delay the API call
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(updateSelectedQuestions, 1000);
         }
 
-        // Update selected questions on the right side after selection change
-        async function updateSelectedQuestions() {
-            const selectedQuestionsContainer = $('#selected-questions');
-            const loadingIndicator = $('#loading-indicator');
-            selectedQuestionsContainer.empty();
-            loadingIndicator.show();
+        function syncInput() {
+            $('#selected_questions_input').val(JSON.stringify(selectedQuestionIds));
+        }
 
-            if (selectedQuestionIds.length > 0) {
-                try {
-                    const response = await $.ajax({
-                        url: questionsUrlIDS,
-                        type: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': token
-                        },
-                        data: {ids: selectedQuestionIds}
+        function updateSelectedQuestions() {
+            const container = $('#selected-questions');
+            const loader = $('#loading-indicator');
+            container.empty();
+            loader.show();
+
+            if (!selectedQuestionIds.length) {
+                $('#checked-count').text(0);
+                loader.hide();
+                return;
+            }
+            const quizId = $('input[name="id"]').val();
+            $.ajax({
+                url: questionsUrlIDS,
+                type: 'POST',
+                headers: { 'X-CSRF-TOKEN': token },
+                data: {
+                    ids: selectedQuestionIds,
+                    quiz_id: quizId,
+                    load: load
+                },
+                success: function (response) {
+                    load = false;
+                    const list = $('<ul class="list-group"></ul>');
+                    response.data.forEach(q => {
+                        const detailUrl = `${urlHome}/admin/question/edit/iq/${q.id}`;
+                        const item = $(`
+                        <li class="list-group-item d-flex justify-content-between align-items-start" data-id="${q.id}">
+                            <div class="question-text">
+                                <div class="fw-semibold text-dark mb-1">
+                                    <i class="ti ti-hash text-muted me-1"></i>
+                                    <a href="${detailUrl}" target="_blank" class="text-decoration-none link-primary">
+                                        ${q.code}
+                                    </a>
+                                </div>
+                                <div class="text-secondary small">${q.question}</div>
+                            </div>
+                          <button type="button"
+                                class="btn btn-outline-danger btn-icon btn-rounded remove-question"
+                                data-id="${q.id}" title="Xoá câu hỏi"
+                                style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                            <i class="ti ti-trash fs-5"></i>
+                        </button>
+
+                        </li>
+                    `);
+                        list.append(item);
                     });
 
-                    const list = $('<ul class="list-group"></ul>');
-                    response.data.forEach(function (question) {
-                        if ($('#selected-questions li').find(`button[data-id="${question.id}"]`).length === 0) {
-                            const listItem = $(`<li class="list-group-item">
-                        ${question.question}
-                        <button type="button" class="btn btn-sm btn-danger remove-question" data-id="${question.id}">Xoá</button>
-                    </li>`);
-                            list.append(listItem);
+
+
+                    container.append(list);
+                    loader.hide();
+                    $('#checked-count').text(selectedQuestionIds.length);
+                    if (window.MathJax) MathJax.typesetPromise();
+
+                    // Sortable Init
+                    new Sortable(list[0], {
+                        animation: 150,
+                        onEnd: function () {
+                            selectedQuestionIds = list.find('.list-group-item').map(function () {
+                                return Number($(this).data('id'));
+                            }).get();
+                            syncInput();
                         }
                     });
-                    selectedQuestionsContainer.append(list);
-                    $('#checked-count').text(selectedQuestionIds.length); // Update the count of selected questions
-                    loadingIndicator.hide();
-                } catch (error) {
-                    console.error("Failed to fetch selected questions:", error.responseText);
-                    loadingIndicator.hide();
+                },
+                error: function (err) {
+                    console.error("Lỗi khi tải câu hỏi:", err);
+                    loader.hide();
                 }
-            } else {
-                $('#checked-count').text(0);
-                loadingIndicator.hide();
-            }
+            });
         }
 
-
         init();
+
+        $(document).ready(function () {
+            $('#toggle-question-panel').on('click', function () {
+                $('#question-panel-body').slideToggle(200);
+
+                const isHidden = $(this).text().trim() === 'Ẩn';
+                $(this).text(isHidden ? 'Hiển thị' : 'Ẩn');
+            });
+        });
+
+        $('#toggle-selected-panel').on('click', function () {
+            const panel = $('#selected-panel-body');
+            const isHidden = panel.is(':hidden');
+            panel.slideToggle(200);
+            $(this).text(isHidden ? 'Ẩn' : 'Hiển thị');
+        });
     });
-
-
 </script>

@@ -40,6 +40,8 @@ class Quiz extends Model
 
     public function questions(): BelongsToMany
     {
-        return $this->belongsToMany(Question::class, 'quiz_questions');
+        return $this->belongsToMany(Question::class, 'quiz_questions')
+            ->withPivot('sequence')
+            ->orderBy('quiz_questions.sequence');
     }
 }

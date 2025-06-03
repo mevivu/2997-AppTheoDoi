@@ -16,7 +16,8 @@ class AqQuestionDataTable extends BaseDataTable
 
     public function __construct(
         QuestionRepositoryInterface $repository
-    ) {
+    )
+    {
         $this->repository = $repository;
 
         parent::__construct();
@@ -31,27 +32,28 @@ class AqQuestionDataTable extends BaseDataTable
             'checkbox' => 'admin.common.checkbox',
             'question' => 'admin.question.datatable.question',
             'question_group_id' => 'admin.question.datatable.question_group',
-            'age_group' => 'admin.question.datatable.age_group'
+            'age_group' => 'admin.question.datatable.age_group',
+            'code' => 'admin.question.datatable.code',
         ];
     }
 
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4, 5];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6];
 
         $this->columnSearchSelect = [
             [
-                'column' => 3,
+                'column' => 4,
                 'data' => AgeGroup::asSelectArray()
             ],
             [
-                'column' => 4,
+                'column' => 5,
                 'data' => ActiveStatus::asSelectArray()
             ]
         ];
 
-        $this->columnSearchDate = [5];
+        $this->columnSearchDate = [6];
     }
 
     public function query()
@@ -83,6 +85,7 @@ class AqQuestionDataTable extends BaseDataTable
         $this->customEditColumns = [
             'status' => $this->view['status'],
             'checkbox' => $this->view['checkbox'],
+            'code' => $this->view['code'],
             'question' => $this->view['question'],
             'question_group_id' => function ($query) {
                 return view($this->view['question_group_id'], ['question_group' => $query->group]);
@@ -114,6 +117,6 @@ class AqQuestionDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['question_group_id', 'question', 'action', 'status', 'checkbox', 'age_group'];
+        $this->customRawColumns = ['question_group_id','code', 'question', 'action', 'status', 'checkbox', 'age_group'];
     }
 }

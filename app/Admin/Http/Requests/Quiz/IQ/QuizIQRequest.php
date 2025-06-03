@@ -19,29 +19,11 @@ class QuizIQRequest extends BaseRequest
      */
     protected function methodPost(): array
     {
-        $data = $this->all();
-        $selectedQuestions = json_decode($data['selected_questions'] ?? '[]', true);
         return [
             'title' => ['required', 'string'],
             'age' => ['nullable', 'numeric', new UniqueQuiz(request()->type)],
             'type' => ['required', new Enum(QuestionType::class)],
             'description' => ['nullable', 'string'],
-            'question_ids' => [
-                'required',
-                'array',
-            ],
-            'question_ids.*' => ['exists:questions,id'],
-            'selected_questions' => [
-                'required',
-                function ($attribute, $value, $fail) use ($selectedQuestions) {
-                    if ((request()->type === QuestionType::IQ->value ) && count($selectedQuestions) < 1) {
-                        $fail('Bài kiểm tra phải chọn ít nhất 1 câu hỏi.');
-                    }
-                    if (request()->type === QuestionType::IQ->value && count($selectedQuestions) !== 15) {
-                        $fail('Bài kiểm tra IQ phải có đúng 15 câu hỏi.');
-                    }
-                },
-            ],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
         ];
     }
@@ -57,11 +39,7 @@ class QuizIQRequest extends BaseRequest
             'type' => ['required', new Enum(QuestionType::class)],
             'description' => ['nullable', 'string'],
             'age' => ['nullable', 'numeric', new UniqueQuiz(request()->type, $quizId)],
-            'question_ids' => [
-                'required',
-                'array',
-            ],
-            'question_ids.*' => ['exists:questions,id'],
+            'selected_questions.*' => ['exists:questions,id'],
             'selected_questions' => [
                 'required',
                 function ($attribute, $value, $fail) use ($selectedQuestions) {

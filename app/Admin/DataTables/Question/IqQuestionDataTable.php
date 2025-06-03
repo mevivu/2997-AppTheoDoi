@@ -30,22 +30,23 @@ class IqQuestionDataTable extends BaseDataTable
             'checkbox' => 'admin.common.checkbox',
             'question' => 'admin.question.datatable.question',
             'answer' => 'admin.question.datatable.answer',
+            'code' => 'admin.question.datatable.code',
         ];
     }
 
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4];
+        $this->columnAllSearch = [1, 2, 3, 4,5];
 
         $this->columnSearchSelect = [
             [
-                'column' => 3,
+                'column' => 4,
                 'data' => ActiveStatus::asSelectArray()
             ],
         ];
 
-        $this->columnSearchDate = [4];
+        $this->columnSearchDate = [5];
 
     }
 
@@ -68,12 +69,14 @@ class IqQuestionDataTable extends BaseDataTable
     {
         $this->customEditColumns = [
             'status' => $this->view['status'],
+            'code' => $this->view['code'],
             'checkbox' => $this->view['checkbox'],
             'question' => $this->view['question'],
             'answer' => $this->view['answer'],
             'created_at' => function ($query) {
                 return format_datetime($query->created_at);
             }
+
         ];
     }
 
@@ -86,6 +89,6 @@ class IqQuestionDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['question', 'action', 'status', 'checkbox'];
+        $this->customRawColumns = ['question', 'action', 'status', 'checkbox','code'];
     }
 }

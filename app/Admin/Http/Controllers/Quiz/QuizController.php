@@ -150,57 +150,8 @@ class QuizController extends Controller
         ]);
     }
 
-    public function createEq(): Factory|View|Application|RedirectResponse
-    {
-        $types = [QuestionType::EQ->value];
-        if ($this->service->checkTypeExists($types)) {
-            return redirect()->route($this->route['eq'])
-                ->with('error', __('Bài kiểm tra EQ đã tồn tại!.'));
-        }
-        $breadcrumbs = $this->crums->add(__('Bài kiểm tra EQ'), route($this->route['eq']));
-        return view($this->view['create-eq-aq'], [
-            'status' => ActiveStatus::asSelectArray(),
-            'type' => QuestionType::asSelectArray(),
-            'age_group' => AgeGroup::asSelectArray(),
-            'breadcrumbs' => $breadcrumbs->add(__('add')),
-            'title' => __('Bài kiểm tra EQ'),
-            'route' => $this->route['eq'],
-            'selectedType' => QuestionType::EQ->value,
-        ]);
-    }
 
-    public function createAq(): Factory|View|Application|RedirectResponse
-    {
-        $types = [QuestionType::AQ->value];
-        if ($this->service->checkTypeExists($types)) {
-            return redirect()->route($this->route['aq'])
-                ->with('error', __('Bài kiểm tra AQ đã tồn tại!.'));
-        }
-        $breadcrumbs = $this->crums->add(__('Bài kiểm tra AQ'), route($this->route['aq']));
-        return view($this->view['create-eq-aq'], [
-            'status' => ActiveStatus::asSelectArray(),
-            'type' => QuestionType::asSelectArray(),
-            'age_group' => AgeGroup::asSelectArray(),
-            'breadcrumbs' => $breadcrumbs->add(__('add')),
-            'title' => __('Bài kiểm tra AQ'),
-            'route' => $this->route['aq'],
-            'selectedType' => QuestionType::AQ->value,
-        ]);
-    }
 
-    public function createPq(): Factory|View|Application
-    {
-        $breadcrumbs = $this->crums->add(__('Bài kiểm tra PQ'), route($this->route['pq']));
-        return view($this->view['create-eq-aq'], [
-            'status' => ActiveStatus::asSelectArray(),
-            'type' => QuestionType::asSelectArray(),
-            'age_group' => AgeGroup::asSelectArray(),
-            'breadcrumbs' => $breadcrumbs->add(__('add')),
-            'title' => __('Bài kiểm tra PQ'),
-            'route' => $this->route['pq'],
-            'selectedType' => QuestionType::PQ->value,
-        ]);
-    }
 
     public function storeIQ(QuizIQRequest $request): RedirectResponse
     {
@@ -208,33 +159,6 @@ class QuizController extends Controller
         if ($response->type == QuestionType::IQ) {
             return redirect()->route($this->route['iq'])
                 ->with('success', __('notifySuccess'));
-        } else {
-            return redirect()->back()
-                ->with('error', __('notifyFail'));
-        }
-    }
-
-    public function store(QuizRequest $request): RedirectResponse
-    {
-        $response = $this->service->store($request);
-        if ($response) {
-            switch ($response->type->value) {
-                case QuestionType::IQ->value:
-                    return redirect()->route($this->route['iq'])
-                        ->with('success', __('notifySuccess'));
-                case QuestionType::EQ->value:
-                    return redirect()->route($this->route['eq'])
-                        ->with('success', __('notifySuccess'));
-                case QuestionType::AQ->value:
-                    return redirect()->route($this->route['aq'])
-                        ->with('success', __('notifySuccess'));
-                case QuestionType::PQ->value:
-                    return redirect()->route($this->route['pq'])
-                        ->with('success', __('notifySuccess'));
-                default:
-                    return redirect()->route($this->route['iq'])
-                        ->with('success', __('notifySuccess'));
-            }
         } else {
             return redirect()->back()
                 ->with('error', __('notifyFail'));

@@ -48,23 +48,7 @@
             <div class="container mt-4">
                 <div class="card">
                     <div class="card-body">
-                        @if ($instance->type == QuestionType::EQ || $instance->type == QuestionType::AQ)
-                            <label for="search-keyword" class="form-label">Chọn độ tuổi</label>
-
-                            <x-select id="filter_age" class="mb-2" >
-                                <x-select-option value="" title="Chọn độ tuổi" :selected="is_null($instance->age_group)"/>
-
-                                @foreach ($age_group as $key => $value)
-                                    <x-select-option
-                                        :value="$key"
-                                        :title="$value"
-                                        :selected="old('age_group') == $key"/>
-                                @endforeach
-                            </x-select>
-                        @endif
                         <!-- Search Section -->
-
-
                         <div class="row">
                             <div class="col-12">
                                 <div class="mb-3">
@@ -90,12 +74,18 @@
 
                         <!-- Questions Display -->
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h4 class="mb-0">Danh sách câu hỏi</h4>
+                            <div class="col-md-12">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ti ti-list-check me-2 fs-4"></i>
+                                            <h5 class="mb-0">Danh sách câu hỏi</h5>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-light text-primary" id="toggle-question-panel">
+                                            Ẩn
+                                        </button>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body" id="question-panel-body">
                                         <div id="loading" class="text-center" style="display: none;">
                                             <div class="loading-circles">
                                                 <div class="circle"></div>
@@ -108,13 +98,21 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-header">
-                                        <h4 class="mb-0">Câu hỏi đã chọn</h4>
+
+                            <div class="col-md-12 mt-2">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-header bg-success text-white d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <i class="ti ti-checks me-2 fs-4"></i>
+                                            <h5 class="mb-0">Câu hỏi đã chọn</h5>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-light text-success" id="toggle-selected-panel">
+                                            Ẩn
+                                        </button>
                                     </div>
-                                    <div class="card-body">
-                                        <div id="loading-indicator" style="display: none;" class="text-center">
+
+                                    <div class="card-body" id="selected-panel-body">
+                                        <div id="loading-indicator" class="text-center" style="display: none;">
                                             <div class="loading-circles">
                                                 <div class="circle"></div>
                                                 <div class="circle"></div>
@@ -126,6 +124,7 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>

@@ -303,11 +303,11 @@ class QuestionController extends Controller
             }
             if (!empty($keyword)) {
                 $query->where(function ($q) use ($keyword) {
-                    $q->where('question', 'like', '%' . $keyword . '%');
-
+                    $q->where('question', 'like', '%' . $keyword . '%')
+                        ->orWhere('code', 'like', '%' . $keyword . '%');
                 });
             }
-            $questions = $query->orderBy('created_at', 'desc')->take(20)->get();
+            $questions = $query->orderBy('created_at', 'desc')->take(10)->get();
             $questions->load('group');
 
             return response()->json(['data' => $questions], 200);
@@ -320,33 +320,35 @@ class QuestionController extends Controller
     {
         try {
             $ids = $request->input('ids', []);
-
             if (empty($ids)) {
                 return response()->json(['data' => [], 'message' => 'No IDs provided'], 400);
             }
-            $quizId = $request['quiz_id'];
-            $load = filter_var($request->get('load'), FILTER_VALIDATE_BOOLEAN);
 
-            if ($load && $quizId) {
+            $quizId = $request->input('quiz_id');
+            $load = filter_var($request->input('load'), FILTER_VALIDATE_BOOLEAN);
+            $questions = collect();
+
+            if ($quizId) {
+                // Lấy từ quan hệ quiz -> questions (bao gồm sequence)
                 $quiz = $this->quizRepository->findOrFail($quizId);
-                $questions = $quiz->questions;
-                if (!empty($ids)) {
-                    $additionalVideos = $this->repository->getByQueryBuilder([
-                        ['id', 'IN', $ids],
-                        'question_type' => $quiz->type,
-                        'status' => ActiveStatus::Active
+                $questions = $quiz->questions()
+                    ->whereIn('questions.id', $ids)
+                    ->orderByPivot('sequence', 'asc')
+                    ->get();
+
+                // Lấy thêm các câu hỏi chưa gắn quiz
+                $loadedIds = $questions->pluck('id')->toArray();
+                $remainingIds = array_diff($ids, $loadedIds);
+
+                if (!empty($remainingIds)) {
+                    $additionalQuestions = $this->repository->getByQueryBuilder([
+                        ['id', 'IN', $remainingIds],
+                        'status' => ActiveStatus::Active // tùy enum của bạn
                     ])->get();
 
-                    $questionsData = $questions->merge($additionalVideos);
-                    $questionsData->load('group');
+                    $questions = $questions->merge($additionalQuestions);
                 }
-            } else {
-                $questions = $this->repository->getByQueryBuilder([
-                    ['id', 'IN', $ids],
-                    'status' => ActiveStatus::Active
-                ])->get();
             }
-
 
             return response()->json(['data' => $questions], 200);
         } catch (Exception $e) {

@@ -24,19 +24,11 @@
     <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
     <script src="{{ asset('/public/libs/select2/dist/js/select2.min.js') }}"></script>
     <script src="{{ asset('/public/libs/select2/dist/js/i18n/vi.js') }}"></script>
+    <script src="{{ asset('public/libs/sortable/Sortable.min.js') }}"></script>
 @endpush
 
 @push('custom-js')
     @include('admin.quiz.scripts.edit-iq')
-    <script>
-        $(document).ready(function() {
-            function updateCheckedCount() {
-                const count = $('input[name="question_ids[]"]:checked').length;
-                $('#checked-count').text(count);
-            }
 
-            updateCheckedCount();
-        });
-    </script>
 
 @endpush
