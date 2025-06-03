@@ -36,14 +36,13 @@ class QuizIQDataTable extends BaseDataTable
 
     public function query(): Builder
     {
-
-        return $this->repository->getByQueryBuilder(
-            [
-                ['status', '!=', ActiveStatus::Deleted],
-                ['type', '=', QuestionType::IQ]
-            ]
-        );
+        return $this->repository->getQueryBuilder()
+            ->where('status', '!=', ActiveStatus::Deleted)
+            ->where('type', '=', QuestionType::IQ)
+            ->orderBy('age', 'asc');
     }
+
+
 
     public function setColumnSearch(): void
     {
