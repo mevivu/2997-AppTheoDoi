@@ -32,6 +32,8 @@ class Question extends Model
         'question_type',
         /* Trạng thái */
         'status',
+        /** Code */
+        'code'
     ];
 
     protected $casts = [

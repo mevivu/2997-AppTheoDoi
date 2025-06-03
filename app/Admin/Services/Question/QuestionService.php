@@ -39,6 +39,7 @@ class QuestionService implements QuestionServiceInterface
 
         try {
             $questionData = $data['question'];
+            $questionData['code'] = uniqid_real(7);
             $questionImage = $data['question']['question_image'] ?? null;
             if ($questionImage) {
                 $questionData['question_image'] =
@@ -81,7 +82,6 @@ class QuestionService implements QuestionServiceInterface
 
         try {
             $questionData = $data['question'];
-            $questionData['code'] = uniqid_real(7);
             $questionImage = $data['question']['question_image'] ?? null;
             $isCorrect = $data['answers']['is_correct'];
             $question = $this->repository->findOrFail($questionData['id']);
