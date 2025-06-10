@@ -63,7 +63,7 @@ class SupportController extends Controller
             $this->view['help-center'],
             [
                 'actionMultiple' => $actionMultiple,
-                'breadcrumbs' => $this->crums->add(__('Trung tâm trợ giúp')),
+                'breadcrumbs' => $this->crums->add(__('Câu hỏi thường gặp')),
             ]
 
         );
@@ -116,7 +116,7 @@ class SupportController extends Controller
                 'type' => SupportType::asSelectArray(),
                 'status' => ActiveStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(
-                    __($instance->type->value == SupportType::HelpCenter->value ? 'Trung tâm trợ giúp' : 'Hướng dẫn sử dụng'),
+                    __($instance->type->value == SupportType::HelpCenter->value ? 'Câu hỏi thường gặp' : 'Hướng dẫn sử dụng'),
                     route($instance->type->value == SupportType::HelpCenter->value ? $this->route['help-center'] : $this->route['guide'])
                 )->add(__('edit')),
             ],

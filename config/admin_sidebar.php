@@ -755,7 +755,7 @@ return [
                 'permissions' => ['viewSupport'],
             ],
             [
-                'title' => 'Trung tâm trợ giúp',
+                'title' => 'Câu hỏi thường gặp',
                 'routeName' => 'admin.support.help-center',
                 'icon' => '<i class="ti ti-help-square-rounded"></i>',
                 'roles' => [],
