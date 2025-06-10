@@ -20,9 +20,10 @@
                     <label class="control-label">
                         <span class="ti ti-phone"></span>
                         {{ __('hotline') }}:</label>
-                    <x-input-phone name="hotline"
-                                   :value="$instance->hotline"
-                                   :required="true"/>
+                    <x-input name="hotline"
+                             type="number"
+                             :value="$instance->hotline"
+                             :required="true"/>
                 </div>
             </div>
 
@@ -50,7 +51,7 @@
                              name="opening_time"
                              :value="$instance->opening_time"
                              :required="true"
-                             :placeholder="__('opening_time')" />
+                             :placeholder="__('opening_time')"/>
                 </div>
             </div>
 
@@ -64,7 +65,7 @@
                              name="closing_time"
                              :required="true"
                              :value="$instance->closing_time"
-                             :placeholder="__('closing_time')" />
+                             :placeholder="__('closing_time')"/>
                 </div>
             </div>
 
@@ -85,7 +86,7 @@
                           data-url="{{ route('admin.search.select.province') }}" :required="true">
                     <x-select-option :option="$instance->province_id"
                                      :value="$instance->province_id"
-                                     :title="$instance->province->name" />
+                                     :title="$instance->province->name"/>
                 </x-select>
             </div>
             <div class="mb-3 col-12">
@@ -94,7 +95,7 @@
                           data-url="{{ route('admin.search.select.district') }}" :required="true">
                     <x-select-option :option="$instance->district_id"
                                      :value="$instance->district_id"
-                                     :title="$instance->district->name" />
+                                     :title="$instance->district->name"/>
                 </x-select>
             </div>
             <div class="mb-3 col-12">
@@ -103,7 +104,7 @@
                           data-url="{{ route('admin.search.select.ward') }}" :required="true">
                     <x-select-option :option="$instance->ward_id"
                                      :value="$instance->ward_id"
-                                     :title="$instance->ward->name" />
+                                     :title="$instance->ward->name"/>
                 </x-select>
             </div>
 
