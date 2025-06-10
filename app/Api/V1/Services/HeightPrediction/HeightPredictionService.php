@@ -65,7 +65,11 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $latestDate = $latestRecord ? $latestRecord->assessment_date : Carbon::now();
 
         // Tính sự thay đổi chiều cao
-        $heightChange = $this->calculateSpeedHeightChange($currentHeight, $childId, $latestDate);
+        $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $childId, $latestDate);
+        $heightChange = $resultSpeedHeightChange['height_change'];
+        $oldestRecord = $resultSpeedHeightChange['oldest_record'];
+        $oldestRecordExists = (bool)$oldestRecord;
+
         $heightChangeLasted = $latestRecord ? $latestRecord->height : 0;
 
         // Tính tháng từ ngày sinh đến latestDate
@@ -73,9 +77,9 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         // Lấy thông tin WHO cho độ tuổi và giới tính
         $who = $this->getWho($month, $gender);
-        $heightWho = $who->height;
+        $heightChangeWho = $who->height_change;
 
-        $adviceMessage = $this->getAdviceMessage($currentHeight, $heightWho);
+        $adviceMessage = $this->getAdviceMessage($heightChange, $heightChangeWho);
         $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestDate);
 
         $heightWhoCurrent = round(abs($heightChangeLasted - $who->height), 2);
@@ -83,6 +87,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         return [
             'advice_message' => $adviceMessage,
+            'oldest_record_exists' => $oldestRecordExists,
             'speed_change' => $heightChange,
             'predicting_adult_height' => $predictingAdultHeight,
             'height_comparison' => [
@@ -123,7 +128,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             $ageCheckMonth = $child->gender == Gender::Male ? 24 : 18;
             $ratingPq = $this->repository->getQueryBuilder()
                 ->where('child_id', $child->id)
-                ->where('age_month',  $ageCheckMonth)
+                ->where('age_month', $ageCheckMonth)
                 ->first();
             if ($ratingPq) {
                 $CurrentHeightAttainmentForecast = $ratingPq->height * 2;
@@ -137,27 +142,36 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             }
         }
 
-        return $CurrentHeightAttainmentForecast;
+        $responseHeightParent = $child->gender == Gender::Male ? $predictedHeightMale * 0.3 : $predictedHeightFemale * 0.3;
+
+        return round(($CurrentHeightAttainmentForecast * 0.7) + $responseHeightParent, 0);
     }
 
 
-    public function calculateSpeedHeightChange($currentHeight, $childId, $latestDate): int
+    public function calculateSpeedHeightChange($currentHeight, $childId, $latestDate): array
     {
         $oneYearBefore = $latestDate->subYear();
 
+        // Lấy record cũ nhất trong khoảng thời gian 1 năm
         $oldestRecord = $this->repository->getQueryBuilder()
             ->where('child_id', $childId)
             ->whereBetween('assessment_date', [$oneYearBefore, $latestDate])
             ->oldest('assessment_date')
             ->first();
 
-        return abs($currentHeight - ($oldestRecord ? $oldestRecord->height : 0));
+        $heightChange = max(0, min(7, $currentHeight - ($oldestRecord ? $oldestRecord->height : 0)));
+
+        return [
+            'height_change' => $heightChange,
+            'oldest_record' => $oldestRecord
+        ];
     }
 
 
-    public function getAdviceMessage($currentHeight, $heightWho): string
+    public function getAdviceMessage($heightChange, $heightChangeWho): string
     {
-        if ($currentHeight >= $heightWho) {
+        $result = $heightChangeWho * 0.75 * 12;
+        if ($heightChange < $result) {
             return "Bố mẹ cần thay đổi chế độ dinh dưỡng và vận động cho con hoặc tốt nhất là đi khám bác sĩ dinh dưỡng.";
         } else {
             return "Bố mẹ nên duy trì hoặc làm tốt hơn chế độ dinh dưỡng và vận động cho con như hiện tại.";
