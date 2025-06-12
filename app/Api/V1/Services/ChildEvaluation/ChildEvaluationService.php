@@ -152,11 +152,14 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         if (isEmpty($capabilities)) {
             $this->createChildCapability($capabilities, $childEvaluationId);
         }
-        $classGrade = $childEvaluation->classGrade;
-        $classGrade->update([
-            'full_year_grade' => $fullYearGrade,
-        ]);
-        $semester = $childEvaluation->semester;
+
+        if($fullYearGrade != null){
+            $classGrade = $childEvaluation->classGrade;
+            $classGrade->update([
+                'full_year_grade' => $fullYearGrade,
+            ]);
+        }
+//        $semester = $childEvaluation->semester;
 //        $this->updateScoreClassGrade($semester, $classGrade, $averageScore);
 
         return $childEvaluation;
