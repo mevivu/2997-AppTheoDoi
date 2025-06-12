@@ -12,7 +12,7 @@
                     <h2 class="card-title mb-4 text-center text-3xl font-bold text-white">{{ __('WELCOME TO ADMIN') }}</h2>
                     <div class="logo-container mb-4 text-center">
                         <img class="img-fluid mx-auto"
-                             style="width: 300px"
+                             style="width: 200px;height: 200px;object-fit: cover"
                              src="{{ asset($settings->where('setting_key', 'site_logo')->first()->plain_value) }}"
                              alt="">
                     </div>

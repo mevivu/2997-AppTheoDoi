@@ -29,6 +29,7 @@ class ChildEvaluationRequest extends BaseRequest
             'child_evaluation_id' => ['required', 'exists:App\Models\ChildEvaluation,id'],
             'status' => ['nullable', new Enum(ActiveStatus::class)],
             'conduct' => ['nullable', new Enum(ConductRating::class)],
+            'full_year_grade' => ['nullable'],
             'academic_performance' => ['nullable', new Enum(AcademicRating::class)],
         ];
 
