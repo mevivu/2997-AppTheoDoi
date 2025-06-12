@@ -39,6 +39,7 @@ class ChildEvaluationRequest extends BaseRequest
                 'subjects.*.id' => ['required', 'exists:subjects,id'],
                 'subjects.*.grade' => ['nullable', 'numeric', 'between:0,10'],
                 'subjects.*.remark' => ['nullable', 'string',],
+                'subjects.*.full_year_grade' => ['nullable', 'numeric', 'between:0,10'],
                 'subjects.*.achievement_level' => ['nullable', new Enum(AchievementLevel::class)],
 
                 'qualities' => ['required', 'array'],
@@ -86,6 +87,8 @@ class ChildEvaluationRequest extends BaseRequest
             'subjects.*.grade.required' => 'Điểm số là trường bắt buộc.',
             'subjects.*.grade.numeric' => 'Điểm số phải là một số.',
             'subjects.*.grade.between' => 'Điểm số phải từ 0 đến 10.',
+            'subjects.*.full_year_grade.numeric' => 'Điểm cả năm phải là một số.',
+            'subjects.*.full_year_grade.between' => 'Điểm cả năm phải từ 0 đến 10.',
 
             'qualities.required' => 'Các phẩm chất là trường bắt buộc.',
             'qualities.*.id.required' => 'ID phẩm chất là trường bắt buộc.',
@@ -99,6 +102,7 @@ class ChildEvaluationRequest extends BaseRequest
             'qualities.*.remark.string' => 'Ghi chú phẩm chất phải là chuỗi văn bản.',
 
             'capabilities.*.remark.string' => 'Ghi chú năng lực phải là chuỗi văn bản.',
+
         ];
     }
 

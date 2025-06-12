@@ -25,7 +25,9 @@ class SubjectGrade extends Model
         /** Nhận xét */
         'remark',
         /** Mức đạt được */
-        'achievement_level'
+        'achievement_level',
+        /** Điểm trung bình cả năm */
+        'full_year_grade',
 
     ];
 

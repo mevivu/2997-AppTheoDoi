@@ -130,7 +130,6 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $qualities = $data['qualities'] ?? [];
         $capabilities = $data['capabilities'] ?? [];
         $conduct = $data['conduct'] ?? null;
-        $fullYearGrade = $data['full_year_grade'] ?? null;
         $academicPerformance = $data['academic_performance'] ?? null;
         if($conduct == null){
             unset($data['conduct']);
@@ -153,14 +152,9 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             $this->createChildCapability($capabilities, $childEvaluationId);
         }
 
-        if($fullYearGrade != null){
-            $classGrade = $childEvaluation->classGrade;
-            $classGrade->update([
-                'full_year_grade' => $fullYearGrade,
-            ]);
-        }
-//        $semester = $childEvaluation->semester;
-//        $this->updateScoreClassGrade($semester, $classGrade, $averageScore);
+        $classGrade = $childEvaluation->classGrade;
+        $semester = $childEvaluation->semester;
+        $this->updateScoreClassGrade($semester, $classGrade, $averageScore);
 
         return $childEvaluation;
 
@@ -179,6 +173,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
                 ],
                 [
                     'grade' => $subjectData['grade'],
+                    'full_year_grade' => $subjectData['full_year_grade'] ?? null,
                     'remark' => $subjectData['remark'] ?? null,
                     'achievement_level' => $subjectData['achievement_level'] ?? null,
                 ]

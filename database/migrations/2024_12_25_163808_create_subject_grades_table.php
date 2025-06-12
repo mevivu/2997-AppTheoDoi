@@ -23,6 +23,8 @@ return new class extends Migration
             $table->enum('semester', SemesterStatus::getValues())->default(SemesterStatus::Semester1->value);
             $table->text('remark')->nullable();
             $table->enum('achievement_level', AchievementLevel::getValues())->nullable();
+            $table->decimal('full_year_grade', 5, 2)->nullable();
+
             $table->timestamps();
 
             $table->foreign('class_grade_id')->references('id')->on('class_grades')->onDelete('cascade');
