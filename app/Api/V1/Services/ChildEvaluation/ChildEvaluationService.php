@@ -164,21 +164,24 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     /**
      * Tính điểm cả năm từ các full_year_grade của các môn học
      */
+    /**
+     * Tính điểm cả năm từ các full_year_grade của các môn học
+     */
     private function calculateFullYearGradeFromSubjects($subjects): float
     {
-        $validFullYearGrades = array_filter($subjects, function ($subject) {
-            return isset($subject['full_year_grade']);
-        });
-
         $totalScore = 0;
-        $count = count($validFullYearGrades);
+        $count = 0;
 
-        foreach ($validFullYearGrades as $subject) {
-            $totalScore += $subject['full_year_grade'];
+        foreach ($subjects as $subject) {
+            if (isset($subject['full_year_grade'])) {
+                $totalScore += $subject['full_year_grade'];
+                $count++;
+            }
         }
 
         return $count > 0 ? round($totalScore / $count, 2) : 0;
     }
+
 
 
     /**
