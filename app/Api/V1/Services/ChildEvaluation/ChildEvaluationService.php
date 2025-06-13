@@ -154,7 +154,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             $this->createChildCapability($capabilities, $childEvaluationId);
         }
 
-        if($childEvaluation->semeter == SemesterStatus::FullYear){
+        if($childEvaluation->semester == SemesterStatus::FullYear){
             $fullYearGrade = $this->calculateFullYearGradeFromSubjects($subjects);
             $classGrade->update(['full_year_grade' => $fullYearGrade]);
         }
