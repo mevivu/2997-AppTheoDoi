@@ -131,14 +131,14 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $capabilities = $data['capabilities'] ?? [];
         $conduct = $data['conduct'] ?? null;
         $academicPerformance = $data['academic_performance'] ?? null;
-        if($conduct == null){
+        if ($conduct == null) {
             unset($data['conduct']);
         }
-        if($academicPerformance == null){
+        if ($academicPerformance == null) {
             unset($data['academic_performance']);
         }
         if (isEmpty($subjects)) {
-            $averageScore =  $this->calculateAverageScore($subjects);
+            $averageScore = $this->calculateAverageScore($subjects);
             $data['average_score'] = $averageScore;
         }
         $childEvaluation = $this->repository->update($childEvaluationId, $data);
@@ -154,11 +154,32 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             $this->createChildCapability($capabilities, $childEvaluationId);
         }
 
-        $this->updateScoreClassGrade($semester, $classGrade, $averageScore);
+        $fullYearGrade = $this->calculateFullYearGradeFromSubjects($subjects);
+        $classGrade->update(['full_year_grade' => $fullYearGrade]);
 
         return $childEvaluation;
 
     }
+
+    /**
+     * Tính điểm cả năm từ các full_year_grade của các môn học
+     */
+    private function calculateFullYearGradeFromSubjects($subjects): float
+    {
+        $validFullYearGrades = array_filter($subjects, function ($subject) {
+            return isset($subject['full_year_grade']);
+        });
+
+        $totalScore = 0;
+        $count = count($validFullYearGrades);
+
+        foreach ($validFullYearGrades as $subject) {
+            $totalScore += $subject['full_year_grade'];
+        }
+
+        return $count > 0 ? round($totalScore / $count, 2) : 0;
+    }
+
 
     /**
      * @throws Exception
@@ -233,7 +254,6 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
 
         return $count > 0 ? $totalScore / $count : 0;
     }
-
 
 
     /**
