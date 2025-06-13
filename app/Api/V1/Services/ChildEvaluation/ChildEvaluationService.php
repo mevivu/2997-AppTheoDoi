@@ -142,6 +142,8 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             $data['average_score'] = $averageScore;
         }
         $childEvaluation = $this->repository->update($childEvaluationId, $data);
+        $classGrade = $childEvaluation->classGrade;
+        $semester = $childEvaluation->semester;
         if (isEmpty($subjects)) {
             $this->createSubjectGrade($subjects, $childEvaluationId);
         }
@@ -152,8 +154,6 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             $this->createChildCapability($capabilities, $childEvaluationId);
         }
 
-        $classGrade = $childEvaluation->classGrade;
-        $semester = $childEvaluation->semester;
         $this->updateScoreClassGrade($semester, $classGrade, $averageScore);
 
         return $childEvaluation;
