@@ -25,9 +25,9 @@ enum SemesterStatus: string
     public static function asSelectArrayRemoveFullYear(): array
     {
         return collect(self::cases())
-            ->reject(function ($case) {
-                return $case === self::FullYear;
-            })
+//            ->reject(function ($case) {
+//                return $case === self::FullYear;
+//            })
             ->mapWithKeys(function ($case) {
                 return [$case->value => $case->getTranslatedName()];
             })->toArray();

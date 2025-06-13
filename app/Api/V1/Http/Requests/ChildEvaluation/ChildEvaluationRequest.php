@@ -42,14 +42,14 @@ class ChildEvaluationRequest extends BaseRequest
                 'subjects.*.full_year_grade' => ['nullable', 'numeric', 'between:0,10'],
                 'subjects.*.achievement_level' => ['nullable', new Enum(AchievementLevel::class)],
 
-                'qualities' => ['required', 'array'],
-                'qualities.*.id' => ['required', 'exists:qualities,id'],
-                'qualities.*.quality_status' => ['required', new Enum(EvaluationStatus::class)],
+                'qualities' => ['nullable', 'array'],
+                'qualities.*.id' => ['nullable', 'exists:qualities,id'],
+                'qualities.*.quality_status' => ['nullable', new Enum(EvaluationStatus::class)],
                 'qualities.*.remark' => ['nullable', 'string'],
 
-                'capabilities' => ['required', 'array'],
-                'capabilities.*.id' => ['required', 'exists:capabilities,id'],
-                'capabilities.*.capability_status' => ['required', new Enum(EvaluationStatus::class)],
+                'capabilities' => ['nullable', 'array'],
+                'capabilities.*.id' => ['nullable', 'exists:capabilities,id'],
+                'capabilities.*.capability_status' => ['nullable', new Enum(EvaluationStatus::class)],
                 'capabilities.*.remark' => ['nullable', 'string', 'max:1000'],
             ];
             $rules = array_merge($rules, $additionalRules);

@@ -154,8 +154,10 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             $this->createChildCapability($capabilities, $childEvaluationId);
         }
 
-        $fullYearGrade = $this->calculateFullYearGradeFromSubjects($classGrade);
-        $classGrade->update(['full_year_grade' => $fullYearGrade]);
+        if($childEvaluation->semeter == SemesterStatus::FullYear){
+            $fullYearGrade = $this->calculateFullYearGradeFromSubjects($subjects);
+            $classGrade->update(['full_year_grade' => $fullYearGrade]);
+        }
 
         return $childEvaluation;
 
@@ -164,44 +166,21 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     /**
      * Tính điểm cả năm từ các full_year_grade của các môn học
      */
-    private function calculateFullYearGradeFromSubjects($classGrade): float
+
+    private function calculateFullYearGradeFromSubjects($subjects): float
     {
-        $childEvaluations = $classGrade->evaluations;
+        $totalScore = 0;
+        $count = 0;
 
-        $childEvaluationSemester1 = $childEvaluations->where('semester', SemesterStatus::Semester1)->first();
-        $childEvaluationSemester2 = $childEvaluations->where('semester', SemesterStatus::Semester2)->first();
-
-        $totalScoreSemester1 = 0;
-        $countSemester1 = 0;
-        if ($childEvaluationSemester1) {
-            $validSubjectsSemester1 = $childEvaluationSemester1->subjectGrades->filter(function ($subjectGrade) {
-                return !is_null($subjectGrade->full_year_grade);
-            });
-
-            $totalScoreSemester1 = $validSubjectsSemester1->sum('full_year_grade');
-            $countSemester1 = $validSubjectsSemester1->count();
+        foreach ($subjects as $subject) {
+            if (isset($subject['full_year_grade']) && !is_null($subject['full_year_grade'])) {
+                $totalScore += $subject['full_year_grade'];
+                $count++;
+            }
         }
 
-        $totalScoreSemester2 = 0;
-        $countSemester2 = 0;
-        if ($childEvaluationSemester2) {
-            $validSubjectsSemester2 = $childEvaluationSemester2->subjectGrades->filter(function ($subjectGrade) {
-                return !is_null($subjectGrade->full_year_grade);
-            });
-
-            $totalScoreSemester2 = $validSubjectsSemester2->sum('full_year_grade');
-            $countSemester2 = $validSubjectsSemester2->count();
-        }
-
-        $totalScore = $totalScoreSemester1 + $totalScoreSemester2;
-
-        $totalCount = $countSemester1 + $countSemester2;
-
-        return $totalCount > 0 ? round($totalScore / $totalCount, 2) : 0;
+        return $count > 0 ? round($totalScore / $count, 2) : 0;
     }
-
-
-
 
 
     /**
