@@ -6,7 +6,7 @@
 <meta name="currency" content="{{ config('custom.currency') }}">
 <meta name="position_currency" content="{{ config('custom.format.position_currency') }}">
 <title>@yield('title', 'Admin')</title>
-<link rel="shortcut icon" type="image/x-icon" href="{{ asset(config('custom.images.favicon')) }}" />
+<link rel="shortcut icon" type="image/x-icon" href="{{ asset($settings->where('setting_key', 'site_logo')->first()->plain_value) }}" />
 <!-- CSS files -->
 <link href="{{ asset('/public/libs/tabler/dist/css/tabler.min.css') }}" rel="stylesheet"/>
 <link href="{{ asset('/public/libs/tabler/dist/css/tabler-vendors.min.css') }}" rel="stylesheet"/>
