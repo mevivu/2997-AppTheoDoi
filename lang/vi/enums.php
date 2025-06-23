@@ -111,7 +111,7 @@ return [
         ChildStatus::Deleted->value => 'Đã xóa',
     ],
     JournalType::class => [
-        JournalType::Prescription->value => "Đơn thuốc",
+        JournalType::Prescription->value => "Hồ sơ y tế",
         JournalType::Moment->value => "khoảnh khắc"
     ],
     PackageType::class => [

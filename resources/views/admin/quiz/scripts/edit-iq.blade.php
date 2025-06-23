@@ -27,7 +27,8 @@
                 e.preventDefault();
                 const type = $('#type-select').val();
                 const keyword = $('#search-keyword').val();
-                fetchQuestions(type, keyword);
+                const age = $('#search-age').val();
+                fetchQuestions(type, keyword,age);
             });
 
             $('#questions-container').on('change', 'input[name="question_ids[]"]', function () {
@@ -53,7 +54,7 @@
             if (type) fetchQuestions(type);
         }
 
-        function fetchQuestions(type, keyword = '') {
+        function fetchQuestions(type, keyword = '', age = '') {
             const container = $('#questions-container');
             container.empty();
             $('#loading').show();
@@ -61,7 +62,7 @@
             $.ajax({
                 url: questionsUrl,
                 type: 'GET',
-                data: { type, keyword },
+                data: { type, keyword, age },
                 success: function (response) {
                     $('#loading').hide();
                     if (response.data?.length) {
@@ -96,7 +97,7 @@
                     <div class="form-check mb-0">
                         <input class="form-check-input" type="checkbox" name="question_ids[]" value="${q.id}" id="question-${q.id}" ${checkedAttr}>
                         <label class="form-check-label ms-2" for="question-${q.id}">
-                            ${q.question}
+                          <strong>${q.code}</strong> - ${q.question}
                         </label>
                     </div>
                 </div>

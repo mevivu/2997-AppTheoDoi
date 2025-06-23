@@ -54,8 +54,19 @@
                                 <div class="mb-3">
                                     <label for="search-keyword" class="form-label">Từ khoá</label>
                                     <div class="input-group">
-                                        <input type="text" id="search-keyword" class="form-control"
-                                               placeholder="Nhập từ khoá để tìm kiếm" aria-label="Search keyword" aria-describedby="button-addon">
+                                        <input type="text" id="search-keyword"
+                                               class="form-control"
+                                               placeholder="Nhập từ khoá để tìm kiếm"
+                                               aria-label="Search keyword"
+                                               aria-describedby="button-addon">
+                                        <input type="number"
+                                               id="search-age"
+                                               class="form-control"
+                                               placeholder="Tuổi"
+                                               aria-label="Search age"
+                                               min="1"
+                                               max="100"
+                                               style="flex: 0 0 100px; max-width: 100px;">
                                         <button class="btn btn-primary" type="button" id="search-button">Tìm kiếm</button>
                                         <button class="btn btn-secondary" type="button" id="clear-button">Reload</button>
                                     </div>

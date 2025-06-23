@@ -136,7 +136,7 @@ return [
                 'permissions' => ['createJournal'],
             ],
             [
-                'title' => 'Nhật ký đơn thuốc',
+                'title' => 'Hồ sơ y tế',
                 'routeName' => 'admin.journal.prescription',
                 'icon' => '<i class="ti ti-pill"></i>',
                 'roles' => [],

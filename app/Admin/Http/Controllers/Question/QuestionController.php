@@ -293,13 +293,14 @@ class QuestionController extends Controller
         try {
             $type = $request['type'];
             $keyword = $request->get('keyword', '');
-            $filterAge = $request->get('age_group', '');
+            $filterAge = $request->get('age', '');
+
             $query = $this->repository->getByQueryBuilder([
                 'question_type' => $type,
                 'status' => ActiveStatus::Active
             ]);
             if (!empty($filterAge)) {
-                $query->where('age_group', $filterAge);
+                $query->where('age', $filterAge);
             }
             if (!empty($keyword)) {
                 $query->where(function ($q) use ($keyword) {
@@ -307,7 +308,7 @@ class QuestionController extends Controller
                         ->orWhere('code', 'like', '%' . $keyword . '%');
                 });
             }
-            $questions = $query->orderBy('created_at', 'desc')->take(10)->get();
+            $questions = $query->orderBy('created_at', 'desc')->take(20)->get();
             $questions->load('group');
 
             return response()->json(['data' => $questions], 200);

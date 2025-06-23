@@ -11,6 +11,7 @@ use App\Admin\Services\Journal\JournalServiceInterface;
 use App\Enums\Journal\JournalType;
 use App\Traits\ResponseController;
 
+use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -57,6 +58,9 @@ class JournalController extends Controller
         ];
     }
 
+    /**
+     * @throws Exception
+     */
     public function edit($id): Factory|View|Application
     {
         $response = $this->repository->findOrFail($id);
@@ -86,7 +90,7 @@ class JournalController extends Controller
             $this->view['prescription'],
             [
                 'type' => JournalType::asSelectArray(),
-                'breadcrumbs' => $this->crums->add('Danh sách nhật ký đơn thuốc'),
+                'breadcrumbs' => $this->crums->add('Hồ sơ y tế'),
             ]
         );
     }
@@ -95,10 +99,14 @@ class JournalController extends Controller
     {
         return view($this->view['create'], [
             'type' => JournalType::asSelectArray(),
-            'breadcrumbs' => $this->crums->add('DS nhật ký', route($this->route['prescription']))->add('Thêm'),
+            'breadcrumbs' => $this->crums->add('DS nhật ký',
+                route($this->route['prescription']))->add('Thêm'),
         ]);
     }
 
+    /**
+     * @throws Exception
+     */
     public function delete($id): RedirectResponse
     {
 
@@ -107,13 +115,13 @@ class JournalController extends Controller
 
     }
 
-    public function update(JournalRequest $request)
+    public function update(JournalRequest $request): RedirectResponse
     {
         $this->service->update($request);
         return back()->with('success', __('notifySuccess'));
     }
 
-    public function store(JournalRequest $request)
+    public function store(JournalRequest $request): RedirectResponse
     {
         $response = $this->service->store($request);
         if ($response) {
