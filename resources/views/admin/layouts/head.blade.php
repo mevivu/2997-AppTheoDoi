@@ -6,6 +6,10 @@
 <meta name="currency" content="{{ config('custom.currency') }}">
 <meta name="position_currency" content="{{ config('custom.format.position_currency') }}">
 <title>@yield('title', 'Admin')</title>
+@php
+    $settingRepository = app()->make(App\Admin\Repositories\Setting\SettingRepository::class);
+    $settings = $settingRepository->getAll();
+@endphp
 <link rel="shortcut icon" type="image/x-icon" href="{{ asset($settings->where('setting_key', 'site_logo')->first()->plain_value) }}" />
 <!-- CSS files -->
 <link href="{{ asset('/public/libs/tabler/dist/css/tabler.min.css') }}" rel="stylesheet"/>
