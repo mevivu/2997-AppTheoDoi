@@ -9,7 +9,6 @@ use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
 use App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Enums\ActiveStatus;
-use App\Enums\Package\PackageStatus;
 use App\Enums\User\Gender;
 use Exception;
 use Illuminate\Http\Request;

@@ -30,6 +30,11 @@ class ValidChildPredictHeight implements Rule
             return false;
         }
 
+        if ($child->birthday == null) {
+            $this->errorMessage = 'Đứa trẻ này chưa có ngày sinh.';
+            return false;
+        }
+
 
         return true;
     }
