@@ -35,6 +35,12 @@ class ValidChildPredictHeight implements Rule
             return false;
         }
 
+        $hasRatingPQ = $child->ratingPQs()->exists();
+        if (!$hasRatingPQ) {
+            $this->errorMessage = 'Đứa trẻ này chưa có điểm đánh giá PQ.';
+            return false;
+        }
+
 
         return true;
     }

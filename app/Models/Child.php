@@ -72,6 +72,11 @@ class Child extends Model
         return $this->hasMany(VaccinationSchedule::class);
     }
 
+    public function ratingPQs(): HasMany
+    {
+        return $this->hasMany(RatingPQ::class, 'child_id');
+    }
+
     protected static function boot(): void
     {
         parent::boot();
