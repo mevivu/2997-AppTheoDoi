@@ -3,6 +3,7 @@
 namespace App\Api\V1\Services\Brand;
 
 use App\Api\V1\Repositories\Brand\BrandRepositoryInterface;
+use App\Enums\ActiveStatus;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class BrandService implements BrandServiceInterface
@@ -21,9 +22,7 @@ class BrandService implements BrandServiceInterface
 
         $filters = [];
 
-        if (!empty($data['status'])) {
-            $filters['status'] = $data['status'];
-        }
+        $filters['status'] = ActiveStatus::Active;
 
         $query = $this->repository->getByQueryBuilder($filters);
 

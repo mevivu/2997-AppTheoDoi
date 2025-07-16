@@ -3,8 +3,7 @@
 namespace App\Api\V1\Repositories\Clinic;
 
 use App\Admin\Repositories\Clinic\ClinicRepository as AdminRepository;
-
-
+use App\Enums\ActiveStatus;
 
 
 class ClinicRepository extends AdminRepository implements ClinicRepositoryInterface
@@ -23,6 +22,7 @@ class ClinicRepository extends AdminRepository implements ClinicRepositoryInterf
     {
         // TODO: Implement searchClinics() method.
         $query=$this->model->query();
+        $query->where('status', ActiveStatus::Active);
         if(!empty($filters['name'])){
             $query->where('name','like','%'.$filters['name'].'%');
         }
