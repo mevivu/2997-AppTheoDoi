@@ -10,7 +10,6 @@ use App\Api\V1\Http\Requests\RatingPQ\RatingPQMonthRequest;
 use App\Api\V1\Http\Requests\RatingPQ\RatingPQRequest;
 use App\Api\V1\Http\Resources\RatingPQ\RatingPQCollection;
 use App\Api\V1\Http\Resources\RatingPQ\RatingPQLastedResource;
-use App\Api\V1\Http\Resources\RatingPQ\RatingPQMonthResource;
 use App\Api\V1\Http\Resources\RatingPQ\RatingPQResource;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
 use App\Api\V1\Services\RatingPQ\RatingPQServiceInterface;
@@ -18,6 +17,7 @@ use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
 use App\Api\V1\Validate\Validator;
+use App\Traits\MessageSystem;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -82,8 +82,8 @@ class RatingPQController extends Controller
             $response = $this->service->getMonthlyEnduranceData($request);
             return $this->jsonResponseSuccess($response);
         } catch (Exception $exception) {
-            $this->logError('Get journals failed:', $exception);
-            return $this->jsonResponseError('Get journals failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -127,8 +127,8 @@ class RatingPQController extends Controller
             $response = $this->service->index($request);
             return $this->jsonResponseSuccess(new RatingPQCollection($response));
         } catch (Exception $exception) {
-            $this->logError('Get journals failed:', $exception);
-            return $this->jsonResponseError('Get journals failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -169,8 +169,8 @@ class RatingPQController extends Controller
             }
             return $this->jsonResponseSuccess(new RatingPQLastedResource($response));
         } catch (Exception $exception) {
-            $this->logError('Get overall stats failed:', $exception);
-            return $this->jsonResponseError('Get overall stats failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -226,8 +226,8 @@ class RatingPQController extends Controller
             return $this->jsonResponseSuccess(new RatingPQResource($response));
         } catch (Exception $exception) {
             DB::rollBack();
-            $this->logError('Create Rating PQ failed:', $exception);
-            return $this->jsonResponseError('Create Rating PQ failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -283,8 +283,8 @@ class RatingPQController extends Controller
             return $this->jsonResponseSuccess(new RatingPQResource($response));
         } catch (Exception $exception) {
             DB::rollBack();
-            $this->logError('Update RatingPQ failed:', $exception);
-            return $this->jsonResponseError('Update RatingPQ failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -332,8 +332,8 @@ class RatingPQController extends Controller
         } catch (NotFoundException|BadRequestException $e) {
             return $this->jsonResponseError($e->getMessage());
         } catch (Exception $exception) {
-            $this->logError('Deleted failed:', $exception);
-            return $this->jsonResponseError('Deleted failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -370,8 +370,8 @@ class RatingPQController extends Controller
         } catch (NotFoundException|BadRequestException $e) {
             return $this->jsonResponseError($e->getMessage());
         } catch (Exception $exception) {
-            $this->logError('Deleted failed:', $exception);
-            return $this->jsonResponseError('Deleted failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 

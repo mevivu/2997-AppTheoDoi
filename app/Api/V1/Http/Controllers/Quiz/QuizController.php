@@ -12,6 +12,7 @@ use App\Api\V1\Http\Resources\Quiz\QuizIQResource;
 use App\Api\V1\Http\Requests\Quiz\QuizIQRequest;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Support\AuthServiceApi;
+use App\Traits\MessageSystem;
 use Illuminate\Http\JsonResponse;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
@@ -84,8 +85,8 @@ class QuizController extends Controller
             $response = $this->service->getListIQ($request);
             return $this->jsonResponseSuccess(new QuizIQResource($response));
         } catch (Exception $exception) {
-            $this->logError('Lỗi hệ thống khi lấy danh sách bài kiểm tra:', $exception);
-            return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách bài kiểm tra IQ', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -135,8 +136,8 @@ class QuizController extends Controller
             $response = $this->service->getListAQAndEQ($request);
             return $this->jsonResponseSuccess(new QuizEQAndAQResource($response));
         } catch (Exception $exception) {
-            $this->logError('Lỗi hệ thống khi lấy danh sách bài kiểm tra AQ,EQ:', $exception);
-            return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách bài kiểm tra AQ,EQ', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -181,8 +182,8 @@ class QuizController extends Controller
             $response = $this->service->getRandomEQAQ($request);
             return $this->jsonResponseSuccess(QuestionResource::collection($response));
         } catch (Exception $exception) {
-            $this->logError('Lỗi hệ thống khi lấy danh sách câu hỏi EQ:', $exception);
-            return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách câu hỏi EQ', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 }

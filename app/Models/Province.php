@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Province extends Model
 {
@@ -16,13 +15,9 @@ class Province extends Model
 
     protected $casts = [];
 
-    public function districts(): HasMany
-    {
-        return $this->hasMany(District::class, 'province_code', 'code');
-    }
 
-    public function wards(): HasManyThrough
+    public function wards(): HasMany
     {
-        return $this->hasManyThrough(Ward::class, District::class, 'province_code', 'district_code', 'code', 'code');
+        return $this->hasMany(Ward::class);
     }
 }

@@ -15,6 +15,7 @@ use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
 use App\Api\V1\Validate\Validator;
+use App\Traits\MessageSystem;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -78,8 +79,8 @@ class RatingController extends Controller
             $response = $this->service->index($request);
             return $this->jsonResponseSuccess(new RatingCollection($response));
         } catch (Exception $exception) {
-            $this->logError('Get journals failed:', $exception);
-            return $this->jsonResponseError('Get journals failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -126,8 +127,8 @@ class RatingController extends Controller
             return $this->jsonResponseSuccess(new RatingResource($response));
         } catch (Exception $exception) {
             DB::rollBack();
-            $this->logError('Create pregnancy failed:', $exception);
-            return $this->jsonResponseError('Create pregnancy failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -174,8 +175,8 @@ class RatingController extends Controller
             return $this->jsonResponseSuccess($response);
         } catch (Exception $exception) {
             DB::rollBack();
-            $this->logError('Create eq,aq failed:', $exception);
-            return $this->jsonResponseError('Create eq,aq failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -224,8 +225,8 @@ class RatingController extends Controller
         } catch (NotFoundException|BadRequestException $e) {
             return $this->jsonResponseError($e->getMessage());
         } catch (Exception $exception) {
-            $this->logError('Deleted failed:', $exception);
-            return $this->jsonResponseError('Deleted failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -264,8 +265,8 @@ class RatingController extends Controller
         } catch (NotFoundException|BadRequestException $e) {
             return $this->jsonResponseError($e->getMessage());
         } catch (Exception $exception) {
-            $this->logError('Deleted failed:', $exception);
-            return $this->jsonResponseError('Deleted failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 

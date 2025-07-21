@@ -16,8 +16,8 @@ class Ward extends Model
 
 	protected $casts = [];
 
-    public function district(): BelongsTo
+    public function province(): BelongsTo
     {
-        return $this->belongsTo(District::class, 'district_code', 'code');
+        return $this->belongsTo(Province::class, 'province_id', 'id');
     }
 }

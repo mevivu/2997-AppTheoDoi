@@ -10,6 +10,7 @@ use App\Api\V1\Repositories\User\UserRepositoryInterface;
 use App\Api\V1\Services\User\UserServiceInterface;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
+use App\Traits\MessageSystem;
 use Illuminate\Http\JsonResponse;
 use Throwable;
 use App\Api\V1\Support\AuthServiceApi;
@@ -81,7 +82,7 @@ class UserController extends Controller
 
             return $this->jsonResponseSuccess($response);
         } catch (Throwable $e) {
-            $this->logError('User creation failed:', $e);
+            $this->logError(MessageSystem::SERVER_ERROR, $e);
             return $this->jsonResponseError($e->getMessage(), 500);
         }
     }
@@ -151,7 +152,7 @@ class UserController extends Controller
 
             return $this->jsonResponseSuccess(new AuthResource($response));
         } catch (Throwable $e) {
-            $this->logError('User creation failed:', $e);
+            $this->logError(MessageSystem::SERVER_ERROR, $e);
             return $this->jsonResponseError($e->getMessage(), 500);
         }
     }

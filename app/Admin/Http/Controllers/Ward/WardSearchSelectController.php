@@ -17,7 +17,7 @@ class WardSearchSelectController extends BaseSearchSelectController
     protected function data(){
         $this->instance = $this->repository->searchAllLimit(
             $this->request->input('term', ''),
-            $this->request->input('district_id', ''),
+            $this->request->input('province_id', ''),
         );
     }
 
