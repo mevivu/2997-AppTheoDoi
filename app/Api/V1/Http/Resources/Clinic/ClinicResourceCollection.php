@@ -17,10 +17,9 @@ class ClinicResourceCollection extends ResourceCollection
                     'hotline' => $item->hotline,
                     'opening_time' => $item->opening_time,
                     'closing_time' => $item->closing_time,
-                    'clinic_type' => $item->clinicType->name,
-                    'province' => $item->province->name,
-                    'district' => $item->district->name,
-                    'ward' => $item->ward->name,
+                    'province' => optional($item->province)->name,
+                    'ward' => optional($item->ward)->name,
+                    'clinic_type' => optional($item->clinicType)->name,
                     'avatar' => $item->avatar ? formatImageUrl($item->avatar) : null
                 ];
             }),

@@ -3,7 +3,6 @@
 namespace App\Admin\Repositories\Ward;
 
 use App\Admin\Repositories\EloquentRepository;
-use App\Models\District;
 use App\Models\Ward;
 
 class WardRepository extends EloquentRepository implements WardRepositoryInterface

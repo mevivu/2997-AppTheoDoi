@@ -80,31 +80,19 @@
                 </div>
             </div>
 
-            <div class="mb-3 col-12">
-                <label for=""><i class="ti ti-building"></i> {{ __('Tỉnh/Thành phố') }}</label>
+            <div class="col-md-6 mb-3">
+                <label for=""><i class="ti ti-building"></i> {{ __('Tỉnh/Thành phố:') }} <span
+                        class="text-danger">*</span></label>
                 <x-select name="province_id" id="province_id" class="select2-bs5-ajax"
                           data-url="{{ route('admin.search.select.province') }}" :required="true">
-                    <x-select-option :option="$instance->province_id"
-                                     :value="$instance->province_id"
-                                     :title="$instance->province->name"/>
+                    <x-select-option :option="$instance->province_id" :value="$instance->province_id" :title="$instance->province->name" />
                 </x-select>
             </div>
-            <div class="mb-3 col-12">
-                <label for=""><i class="ti ti-building"></i> {{ __('Quận/Huyện') }}</label>
-                <x-select name="district_id" id="district_id" class="select2-bs5-ajax"
-                          data-url="{{ route('admin.search.select.district') }}" :required="true">
-                    <x-select-option :option="$instance->district_id"
-                                     :value="$instance->district_id"
-                                     :title="$instance->district->name"/>
-                </x-select>
-            </div>
-            <div class="mb-3 col-12">
-                <label for=""><i class="ti ti-building"></i> {{ __('Phường/Xã') }}</label>
-                <x-select name="ward_id" id="ward_id" class="select2-bs5-ajax"
-                          data-url="{{ route('admin.search.select.ward') }}" :required="true">
-                    <x-select-option :option="$instance->ward_id"
-                                     :value="$instance->ward_id"
-                                     :title="$instance->ward->name"/>
+            <div class="col-md-6 mb-3">
+                <label for=""><i class="ti ti-building"></i> {{ __('Phường/Xã:') }} <span
+                        class="text-danger">*</span></label>
+                <x-select name="ward_id" id="ward_id" class="select2-bs5-ajax" data-url="" :required="true">
+                    <x-select-option :option="$instance->province_id" :value="$instance->province_id" :title="$instance->province->name" />
                 </x-select>
             </div>
 
