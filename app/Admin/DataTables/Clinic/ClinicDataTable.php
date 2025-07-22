@@ -17,7 +17,8 @@ class ClinicDataTable extends BaseDataTable
 
     public function __construct(
         ClinicRepositoryInterface $repository,
-    ) {
+    )
+    {
 
         parent::__construct();
         $this->repository = $repository;
@@ -45,8 +46,8 @@ class ClinicDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 2, 3,4];
-        $this->columnSearchDate = [4];
+        $this->columnAllSearch = [1, 2, 3, 6];
+        $this->columnSearchDate = [6];
         $this->columnSearchSelect = [
             [
                 'column' => 2,
@@ -70,7 +71,7 @@ class ClinicDataTable extends BaseDataTable
             'status' => $this->view['status'],
             'checkbox' => $this->view['checkbox'],
             'clinic_type_id' => function ($clinic) {
-                return $clinic->clinicType->name?? 'N/A';
+                return $clinic->clinicType->name ?? 'N/A';
             },
 
         ];
@@ -87,6 +88,7 @@ class ClinicDataTable extends BaseDataTable
     {
         $this->customRawColumns = ['action', 'name', 'status', 'checkbox'];
     }
+
     public function setCustomFilterColumns(): void
     {
         $this->customFilterColumns = [

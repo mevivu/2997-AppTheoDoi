@@ -1110,6 +1110,17 @@ return [
             'width' => '150px',
             'addClass' => 'text-center align-middle'
         ],
+        'opening_time' => [
+            'title' => 'opening_time',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
+
+        'closing_time' => [
+            'title' => 'closing_time',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
         'created_at' => [
             'title' => 'createdAt',
             'orderable' => false,
