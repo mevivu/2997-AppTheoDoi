@@ -3,7 +3,9 @@
 namespace App\Admin\Http\Controllers\Clinic;
 
 use App\Admin\DataTables\Clinic\ClinicDataTable;
+use App\Admin\Exel\Clinic\ClinicImport;
 use App\Admin\Http\Controllers\Controller;
+use App\Admin\Http\Requests\Clinic\ClinicImportRequest;
 use App\Admin\Http\Requests\Clinic\ClinicRequest;
 use App\Admin\Repositories\Clinic\ClinicRepositoryInterface;
 use App\Admin\Services\Clinic\ClinicServiceInterface;
@@ -16,6 +18,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ClinicController extends Controller
 {
@@ -119,7 +123,8 @@ class ClinicController extends Controller
     {
         return $this->handleDeleteResponse($id, function ($id) {
             $response = $this->repository->findOrFail($id);
-            return $response->update(['status' => ActiveStatus::Deleted->value]);
+            $response->delete();
+            return true;
         });
     }
 
@@ -139,6 +144,54 @@ class ClinicController extends Controller
             return back()->with('success', __('notifySuccess'));
         }
         return back()->with('error', __('notifyFail'));
+    }
+
+    public function export(): BinaryFileResponse
+    {
+        $filePath = public_path('assets/excel/clinic.xlsx');
+
+        if (!file_exists($filePath)) {
+            return abort(404);
+        }
+
+        return response()->download($filePath);
+    }
+
+    public function import(ClinicImportRequest $request): RedirectResponse
+    {
+        try {
+            Excel::import(new ClinicImport(), $request->file('excelFile'));
+
+            ClinicImport::afterImport();
+
+            return back()->with('success', __('Import thành công!'));
+        } catch (Exception $e) {
+            $this->logError($e->getMessage(), $e);
+
+            $message = $e->getMessage();
+
+            $errorData = json_decode($message, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && isset($errorData['type']) && $errorData['type'] === 'validation_errors') {
+                return back()->with([
+                    'import_errors' => $errorData['errors'],
+                    'import_error_count' => $errorData['count']
+                ]);
+            } else {
+                return back()->with('error', $message);
+            }
+        }
+    }
+
+    public function exportTemplate(): BinaryFileResponse
+    {
+        $filePath = public_path('assets/exel/TemplateImportClinic.xlsx');
+
+        if (!file_exists($filePath)) {
+            return abort(404);
+        }
+
+        return response()->download($filePath);
     }
 
 }

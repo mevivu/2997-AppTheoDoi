@@ -92,7 +92,7 @@
                 <label for=""><i class="ti ti-building"></i> {{ __('Phường/Xã:') }} <span
                         class="text-danger">*</span></label>
                 <x-select name="ward_id" id="ward_id" class="select2-bs5-ajax" data-url="" :required="true">
-                    <x-select-option :option="$instance->province_id" :value="$instance->province_id" :title="$instance->province->name" />
+                    <x-select-option :option="$instance->ward_id" :value="$instance->ward_id" :title="$instance->ward->name" />
                 </x-select>
             </div>
 

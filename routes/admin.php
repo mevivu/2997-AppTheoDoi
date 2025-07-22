@@ -39,6 +39,17 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
+
+    Route::controller(\App\Admin\Http\Controllers\Address\AddressController::class)
+        ->prefix('/address')
+        ->as('address.')
+        ->group(function () {
+            Route::group(['middleware' => ['auth:admin']], function () {
+                Route::get('/export-province', 'exportProvince')->name('exportProvince');
+                Route::get('/export-ward', 'exportWard')->name('exportWard');
+            });
+        });
+
     // Develop Guide
     Route::controller(\App\Admin\Http\Controllers\Develop\DevelopController::class)
         ->prefix('/develop')
@@ -494,7 +505,9 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
             Route::group(['middleware' => ['permission:viewClinic', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
+                Route::get('/export-template', 'exportTemplate')->name('exportTemplate');
                 Route::get('/edit/{id}', 'edit')->name('edit');
+                Route::post('/import', 'import')->name('import');
             });
 
             Route::group(['middleware' => ['permission:updateClinic', 'auth:admin']], function () {

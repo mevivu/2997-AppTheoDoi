@@ -77,6 +77,9 @@ class ClinicSizeService implements ClinicServiceInterface
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function actionMultipleRecords(Request $request): bool
     {
         $this->data = $request->all();
@@ -94,7 +97,8 @@ class ClinicSizeService implements ClinicServiceInterface
                 return true;
             case ActiveStatus::Deleted->value:
                 foreach ($this->data['id'] as $value) {
-                    $this->repository->updateAttribute($value, 'status', ActiveStatus::Deleted);
+                   $response = $this->repository->findOrFail($value);
+                    $response->delete();
                 }
                 return true;
 
