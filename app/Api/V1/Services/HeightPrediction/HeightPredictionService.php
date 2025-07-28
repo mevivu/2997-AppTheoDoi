@@ -54,14 +54,18 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $gender = $child->gender;
 
         // Lấy bản ghi mới nhất của trẻ
-        $latestRecord = $this->repository->getQueryBuilder()->where('child_id', $childId)
-            ->latest('assessment_date')
+        $latestRecord = $this->repository->getQueryBuilder()
+            ->where('child_id', $childId)
+            ->orderBy('assessment_date', 'desc')
+            ->orderBy('id', 'desc')
             ->first();
 
         $currentHeight = $latestRecord ? $latestRecord->height : 0;
 
         // Lấy ngày đánh giá mới nhất hoặc ngày hiện tại nếu không có bản ghi
         $latestDate = $latestRecord ? $latestRecord->assessment_date : Carbon::now();
+        // Tính tháng từ ngày sinh đến latestDate
+        $month = floor($birthDay->diffInDays($latestDate) / 30.5);
 
         // Tính sự thay đổi chiều cao
         $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $childId, $latestDate);
@@ -71,8 +75,6 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         $heightChangeLasted = $latestRecord ? $latestRecord->height : 0;
 
-        // Tính tháng từ ngày sinh đến latestDate
-        $month = floor($birthDay->diffInDays($latestDate) / 30.5);
 
         // Lấy thông tin WHO cho độ tuổi và giới tính
         $who = $this->getWho($month, $gender);
@@ -81,7 +83,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $adviceMessage = $this->getAdviceMessage($heightChange, $heightChangeWho);
         $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestDate);
 
-        $heightWhoCurrent = round(abs($heightChangeLasted - $who->height), 2);
+        $heightWhoCurrent = round($heightChangeLasted - $who->height, 2);
 
 
         return [

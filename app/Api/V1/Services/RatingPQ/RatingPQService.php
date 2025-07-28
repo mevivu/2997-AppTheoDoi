@@ -188,7 +188,11 @@ class RatingPQService implements RatingPQServiceInterface
         $child = $this->childRepository->findOrFail($childId);
         $age = $child->age;
         $gender = $child->gender;
+        $birthDay = $child->birthday;
         $bmi = $this->getBmi($age, $gender);
+        $latestDate = $ratingLasted ? $ratingLasted->assessment_date : Carbon::now();
+        $month = floor($birthDay->diffInDays($latestDate) / 30.5);
+        $who = $this->getWho($month, $gender);
 
         $currentBmi = $ratingLasted->bmi;
         $currenHeight = $ratingLasted->height;
@@ -199,6 +203,8 @@ class RatingPQService implements RatingPQServiceInterface
         $currentEndurancePercent = $this->getEndurance($childId, $currentEndurance);
         $currentStrengthPercent = $this->getStrength($childId, $currentStrength);
         $heightAdulthoodPercent = $this->getHeightAdulthood($child, $currenHeight, $gender);
+        $heightWhoCurrent = round($currenHeight - $who->height, 2);
+
 
         return [
             'height' => $currenHeight,
@@ -208,7 +214,10 @@ class RatingPQService implements RatingPQServiceInterface
             'bmi' => $currentBmi,
             'bmi_result' => $ratingLasted->bmi_result,
             'height_result' => $ratingLasted->height_result,
-            'height_change' => $ratingLasted->height_change,
+            'height_comparison' => [
+                'height_who_current' => $heightWhoCurrent,
+                'is_taller_than_who' => $currenHeight > $who->height,
+            ],
             'current_height_percent' => round($currentHeightPercent, 1),
             'bmi_percent' => round($bmiPercent, 1),
             'endurance_percent' => round($currentEndurancePercent, 1),
