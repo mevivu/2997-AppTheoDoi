@@ -3,7 +3,6 @@
 namespace App\Api\V1\Http\Requests\RatingPQ;
 
 use App\Api\V1\Http\Requests\BaseRequest;
-use App\Api\V1\Rules\ValidChild;
 use App\Api\V1\Rules\ValidChildAge;
 
 
@@ -30,8 +29,8 @@ class RatingPQRequest extends BaseRequest
             'assessment_date' => 'required|date_format:Y-m-d',
             'height' => 'required|integer|min:1',
             'weight' => 'required|min:1',
-            'strength' => 'required|integer|min:0',
-            'endurance' => 'required|integer|min:0',
+            'strength' => 'nullable|integer|min:0',
+            'endurance' => 'nullable|integer|min:0',
             'child_id' => ['required', 'integer', new ValidChildAge()],
         ];
     }
@@ -43,8 +42,8 @@ class RatingPQRequest extends BaseRequest
             'assessment_date' => 'required|date_format:Y-m-d',
             'height' => 'required|integer|min:1',
             'weight' => 'required|min:1',
-            'strength' => 'required|integer|min:0',
-            'endurance' => 'required|integer|min:0',
+            'strength' => 'nullable|integer|min:0',
+            'endurance' => 'nullable|integer|min:0',
             'child_id' => ['required', 'integer', new ValidChildAge()],
         ];
     }

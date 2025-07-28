@@ -167,7 +167,7 @@ class RatingPQController extends Controller
             if ($response == null) {
                 return $this->jsonResponseError('No data found', 404);
             }
-            return $this->jsonResponseSuccess(new RatingPQLastedResource($response));
+            return $this->jsonResponseSuccess($response);
         } catch (Exception $exception) {
             $this->logError(MessageSystem::SERVER_ERROR, $exception);
             return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);

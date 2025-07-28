@@ -83,7 +83,6 @@ class RatingPQService implements RatingPQServiceInterface
     }
 
 
-
     public function index(Request $request)
     {
         $data = $request->validated();
@@ -104,6 +103,7 @@ class RatingPQService implements RatingPQServiceInterface
     }
 
 
+
     /**
      * @throws Exception
      */
@@ -112,8 +112,8 @@ class RatingPQService implements RatingPQServiceInterface
         $data = $request->validated();
         $height = $data['height'];
         $weight = $data['weight'];
-        $currentEndurance = $data['endurance'];
-        $currentStrength = $data['strength'];
+        $currentEndurance = $data['endurance'] ?? null;
+        $currentStrength = $data['strength'] ?? null;
         $child = $this->childRepository->findOrFail($data['child_id']);
         $assessmentDate = Carbon::parse($data['assessment_date']);
         $birthday = Carbon::parse($child->birthday);
@@ -126,7 +126,7 @@ class RatingPQService implements RatingPQServiceInterface
         $whoHeight = $who->height;
         $bmiCategory = $this->getBmiCategory($bmi, $age, $gender);
         $ageInMonths = $birthday->diffInDays($assessmentDate) / 30.5;
-        $data['age_month'] = (int) floor($ageInMonths);
+        $data['age_month'] = (int)floor($ageInMonths);
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
         $data['height_change'] = $height - $whoHeight;
@@ -158,7 +158,7 @@ class RatingPQService implements RatingPQServiceInterface
         $whoHeight = $who->height;
         $bmiCategory = $this->getBmiCategory($bmi, $age, $gender);
         $ageInMonths = $birthday->diffInDays($assessmentDate) / 30.5;
-        $data['age_month'] = (int) floor($ageInMonths);
+        $data['age_month'] = (int)floor($ageInMonths);
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
         $data['height_change'] = $height - $whoHeight;
@@ -171,25 +171,99 @@ class RatingPQService implements RatingPQServiceInterface
     /**
      * @throws Exception
      */
+    public function getOverallStats(Request $request): ?array
+    {
+        $data = $request->validated();
+        $childId = $data['child_id'];
+        $ratingLasted = $this->repository->getQueryBuilder()
+            ->where('child_id', $childId)
+            ->orderBy('assessment_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->first();
+
+
+        if (!$ratingLasted) {
+            return null;
+        }
+        $child = $this->childRepository->findOrFail($childId);
+        $age = $child->age;
+        $gender = $child->gender;
+        $bmi = $this->getBmi($age, $gender);
+
+        $currentBmi = $ratingLasted->bmi;
+        $currenHeight = $ratingLasted->height;
+        $currentEndurance = $ratingLasted->endurance;
+        $currentStrength = $ratingLasted->strength;
+        $currentHeightPercent = $this->getCurrentHeight($child, $gender);
+        $bmiPercent = $this->getBmiPercent($bmi, $currentBmi);
+        $currentEndurancePercent = $this->getEndurance($childId, $currentEndurance);
+        $currentStrengthPercent = $this->getStrength($childId, $currentStrength);
+        $heightAdulthoodPercent = $this->getHeightAdulthood($child, $currenHeight, $gender);
+
+        return [
+            'height' => $currenHeight,
+            'weight' => $ratingLasted->weight,
+            'strength' => $currentStrength,
+            'endurance' => $currentEndurance,
+            'bmi' => $currentBmi,
+            'bmi_result' => $ratingLasted->bmi_result,
+            'height_result' => $ratingLasted->height_result,
+            'height_change' => $ratingLasted->height_change,
+            'current_height_percent' => round($currentHeightPercent, 1),
+            'bmi_percent' => round($bmiPercent, 1),
+            'endurance_percent' => round($currentEndurancePercent, 1),
+            'strength_percent' => round($currentStrengthPercent, 1),
+            'height_adulthood' => round($heightAdulthoodPercent, 1),
+
+        ];
+    }
+
+
+    /**
+     * @throws Exception
+     */
     public function calculateScore($currentBmi, $age, $gender, $childId, $currentEndurance, $currentStrength, $currenHeight): float
     {
         $bmi = $this->getBmi($age, $gender);
         $child = $this->childRepository->findOrFail($childId);
         $bmiPercent = $this->getBmiPercent($bmi, $currentBmi);
-        $endurancePercent = $this->getEndurance($childId, $currentEndurance);
-        $strengthPercent = $this->getStrength($childId, $currentStrength);
+
+        $endurancePercent = $currentEndurance ? $this->getEndurance($childId, $currentEndurance) : null;
+        $strengthPercent = $currentStrength ? $this->getStrength($childId, $currentStrength) : null;
+
         $currentHeight = $this->getCurrentHeight($child, $gender);
         $heightAdulthood = $this->getHeightAdulthood($child, $currenHeight, $gender);
 
+        $scores = [];
+
         if ($age > 5) {
-            $totalScore = $bmiPercent + $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
-            return round($totalScore / 5, 1);
-        } else {
-            $totalScore = $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
-            return round($totalScore / 4);
+            $scores[] = $bmiPercent;
         }
 
+        if (!is_null($endurancePercent)) {
+            $scores[] = $endurancePercent;
+        }
+
+        if (!is_null($strengthPercent)) {
+            $scores[] = $strengthPercent;
+        }
+
+        if (!is_null($currentHeight)) {
+            $scores[] = $currentHeight;
+        }
+
+        if (!is_null($heightAdulthood)) {
+            $scores[] = $heightAdulthood;
+        }
+
+        if (count($scores) === 0) {
+            return 0;
+        }
+
+        $totalScore = array_sum($scores);
+        return round($totalScore / count($scores), 1);
     }
+
 
     public function getCurrentHeight($child, $gender)
     {
@@ -320,7 +394,6 @@ class RatingPQService implements RatingPQServiceInterface
     }
 
 
-
     public function getHeightResult($currentHeight, $who): string
     {
         if (!$who) {
@@ -445,13 +518,4 @@ class RatingPQService implements RatingPQServiceInterface
     }
 
 
-    public function getOverallStats(Request $request)
-    {
-        $data = $request->validated();
-        $childId = $data['child_id'];
-        return $this->repository->getQueryBuilder()
-            ->where('child_id', $childId)
-            ->orderBy('assessment_date', 'desc')
-            ->first();
-    }
 }
