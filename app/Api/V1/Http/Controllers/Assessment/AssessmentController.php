@@ -9,6 +9,7 @@ use App\Api\V1\Services\Assessment\AssessmentServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
+use App\Traits\MessageSystem;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -74,8 +75,8 @@ class AssessmentController extends Controller
             $response = $this->service->index($request);
             return $this->jsonResponseSuccess($response);
         } catch (Exception $exception) {
-            $this->logError('Get assessments failed:', $exception);
-            return $this->jsonResponseError('Get  assessments failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
 
     }

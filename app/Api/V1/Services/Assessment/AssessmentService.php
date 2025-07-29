@@ -99,11 +99,11 @@ class AssessmentService implements AssessmentServiceInterface
         if (is_null($age)) return null;
 
         try {
-            $currentHeight     = floatval($latest->height_result);
-            $heightAdulthood   = floatval($latest->height_change);
-            $bmiPercent        = floatval($latest->bmi);
-            $strengthPercent   = floatval($latest->strength);
-            $endurancePercent  = floatval($latest->endurance);
+            $currentHeight = floatval($latest->height_result);
+            $heightAdulthood = floatval($latest->height_change);
+            $bmiPercent = floatval($latest->bmi);
+            $strengthPercent = floatval($latest->strength);
+            $endurancePercent = floatval($latest->endurance);
 
             if (
                 is_null($currentHeight) || is_null($heightAdulthood) ||
@@ -132,7 +132,8 @@ class AssessmentService implements AssessmentServiceInterface
         return Rating::where('child_id', $childId)
             ->where('type', $type)
             ->whereNotNull('score')
-            ->orderByDesc('created_at')
+            ->orderByDesc('age')   // Tuổi cao nhất
+            ->orderByDesc('created_at') // Nếu có nhiều bản ghi cùng tuổi, lấy bản mới nhất
             ->first();
     }
 

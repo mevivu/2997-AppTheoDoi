@@ -13,6 +13,7 @@ use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\ActiveStatus;
 use App\Enums\User\Gender;
+use App\Models\RatingPQ;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -101,7 +102,6 @@ class RatingPQService implements RatingPQServiceInterface
 
         return $query->paginate($newLimit, ['*'], 'page', $page);
     }
-
 
 
     /**
@@ -198,7 +198,7 @@ class RatingPQService implements RatingPQServiceInterface
         $currenHeight = $ratingLasted->height;
         $currentEndurance = $ratingLasted->endurance;
         $currentStrength = $ratingLasted->strength;
-        $currentHeightPercent = $this->getCurrentHeight($child, $gender);
+        $currentHeightPercent = $this->getCurrentHeightPercent($child, $gender);
         $bmiPercent = $this->getBmiPercent($bmi, $currentBmi);
         $currentEndurancePercent = $this->getEndurance($childId, $currentEndurance);
         $currentStrengthPercent = $this->getStrength($childId, $currentStrength);
@@ -286,6 +286,17 @@ class RatingPQService implements RatingPQServiceInterface
         return min($result, 10);
     }
 
+    public function getCurrentHeightPercent($child, $gender)
+    {
+        $month = $child->month;
+        $nearestRatingPQ =$this->getLatestPQ($child->id);
+        $nearestHeight = ($nearestRatingPQ && isset($nearestRatingPQ->height)) ? $nearestRatingPQ->height : 0;
+        $who = $this->getWho($month, $gender);
+        $heightWho = $who->height;
+        $result = ($nearestHeight / $heightWho) / 0.1;
+        return min($result, 10);
+    }
+
     /**
      * param float| int currenHeight người dùng nhập
      */
@@ -343,6 +354,19 @@ class RatingPQService implements RatingPQServiceInterface
         return $ratingPQ;
     }
 
+    private function getLatestPQ($childId)
+    {
+        $latest = RatingPQ::where('child_id', $childId)
+            ->orderByDesc('assessment_date')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if (!$latest) {
+            return null;
+        }
+        return $latest;
+    }
+
     /**
      * Tính toán hiệu suất dựa trên giá trị hiện tại, giá trị trong quá khứ, và số ngày giữa hai thời điểm.
      *
@@ -375,6 +399,7 @@ class RatingPQService implements RatingPQServiceInterface
         $ratingPQ = $this->findRatingPQ($childId, $currentDate, $oneYearAgo);
 
         if (!$ratingPQ) return 0;
+        if ($ratingPQ->endurance == null) return 0;
 
         $daysBetween = $ratingPQ->assessment_date->diffInDays($currentDate);
         return $this->calculatePerformance($currentEndurance, $ratingPQ->endurance, $daysBetween);
@@ -387,6 +412,7 @@ class RatingPQService implements RatingPQServiceInterface
         $ratingPQ = $this->findRatingPQ($childId, $currentDate, $oneYearAgo);
 
         if (!$ratingPQ) return 0;
+        if ($ratingPQ->strength == null) return 0;
 
         $daysBetween = $ratingPQ->assessment_date->diffInDays($currentDate);
         return $this->calculatePerformance($currentStrength, $ratingPQ->strength, $daysBetween);
