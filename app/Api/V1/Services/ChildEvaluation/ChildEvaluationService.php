@@ -167,7 +167,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
      * Tính điểm cả năm từ các full_year_grade của các môn học
      */
 
-    private function calculateFullYearGradeFromSubjects($subjects): float
+    private function calculateFullYearGradeFromSubjects($subjects): ?float
     {
         $totalScore = 0;
         $count = 0;
@@ -179,7 +179,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             }
         }
 
-        return $count > 0 ? round($totalScore / $count, 2) : 0;
+        return $count > 0 ? round($totalScore / $count, 2) : null;
     }
 
 
