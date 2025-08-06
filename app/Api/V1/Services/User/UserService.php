@@ -39,9 +39,10 @@ class UserService implements UserServiceInterface
 
     public function __construct(
         UserRepositoryInterface $repository,
-        OtpRepositoryInterface $otpRepository,
-        FileService $fileService,
-    ) {
+        OtpRepositoryInterface  $otpRepository,
+        FileService             $fileService,
+    )
+    {
         $this->repository = $repository;
         $this->fileService = $fileService;
         $this->otpRepository = $otpRepository;
@@ -88,6 +89,7 @@ class UserService implements UserServiceInterface
 
             if (!empty($data['email'])) {
                 $data['email'] = AESHelper::encrypt($data['email']);
+                $data['username'] = $data['email'];
             }
 
             if (!empty($data['phone'])) {
@@ -121,8 +123,7 @@ class UserService implements UserServiceInterface
 
             $response = $this->repository->update($user->id, $data);
 
-            DB::commit();
-            ;
+            DB::commit();;
             return $response;
         } catch (Exception $e) {
             DB::rollback();
