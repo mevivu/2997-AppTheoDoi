@@ -81,8 +81,38 @@ class UserService implements UserServiceInterface
         try {
             $data = $request->validated();
             $user = $this->getCurrentUser();
-
+            $fullname = $data['fullname'] ?? null;
+            $fatherName = $data['father_name'] ?? null;
+            $fatherHeight = $data['father_height'] ?? null;
+            $motherName = $data['mother_name'] ?? null;
+            $motherHeight = $data['mother_height'] ?? null;
+            $motherBirthday = $data['mother_birthday'] ?? null;
             $avatar = $data['avatar'] ?? null;
+
+            if ($fullname) {
+                $data['fullname'] = $fullname;
+            }
+
+            if ($fatherName) {
+                $data['father_name'] = $fatherName;
+            }
+
+            if ($fatherHeight) {
+                $data['father_height'] = $fatherHeight;
+            }
+
+            if ($motherName) {
+                $data['mother_name'] = $motherName;
+            }
+
+            if ($motherHeight) {
+                $data['mother_height'] = $motherHeight;
+            }
+
+            if ($motherBirthday) {
+                $data['mother_birthday'] = $motherBirthday;
+            }
+
             if ($avatar) {
                 $data['avatar'] = $this->fileService->uploadAvatar('images/users', $avatar, $user->avatar);
             }

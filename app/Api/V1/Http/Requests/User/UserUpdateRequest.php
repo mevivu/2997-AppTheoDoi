@@ -27,7 +27,7 @@ class UserUpdateRequest extends BaseRequest
     {
         return [
 
-            'fullname' => ['required'],
+            'fullname' => ['nullable'],
             'phone' => [
                 'nullable',
                 'regex:/((09|03|07|08|05)+([0-9]{8})\b)/',
