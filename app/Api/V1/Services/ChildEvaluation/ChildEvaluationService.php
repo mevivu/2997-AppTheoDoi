@@ -154,7 +154,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             $this->createChildCapability($capabilities, $childEvaluationId);
         }
 
-        if($childEvaluation->semester == SemesterStatus::FullYear){
+        if ($childEvaluation->semester == SemesterStatus::FullYear) {
             $fullYearGrade = $this->calculateFullYearGradeFromSubjects($subjects);
             $classGrade->update(['full_year_grade' => $fullYearGrade]);
         }
@@ -242,7 +242,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         }
     }
 
-    private function calculateAverageScore(array $subjects): float
+    private function calculateAverageScore(array $subjects): float|int|null
     {
         $totalScore = 0;
         $count = 0;
@@ -254,7 +254,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             }
         }
 
-        return $count > 0 ? $totalScore / $count : 0;
+        return $count > 0 ? $totalScore / $count : null;
     }
 
 
@@ -328,7 +328,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
                 'semester' => $semester,
                 'status' => ActiveStatus::Draft,
                 'conduct' => ConductRating::Pending,
-                'average_score' => 0,
+                'average_score' => null,
                 'academic_performance' => AcademicRating::Pending
             ]);
 
