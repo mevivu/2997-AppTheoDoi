@@ -12,10 +12,11 @@ class ClassGradeRepository extends AdminArea implements ClassGradeRepositoryInte
     {
         return ClassGrade::where('child_id', $childId)
             ->where(function ($query) {
-                $query->where('semester1_grade', '>', 0)
-                    ->orWhere('semester2_grade', '>', 0)
-                    ->orWhere('full_year_grade', '>', 0);
+                $query->whereNotNull('semester1_grade')
+                    ->orWhereNotNull('semester2_grade')
+                    ->orWhereNotNull('full_year_grade');
             })
             ->exists();
     }
+
 }

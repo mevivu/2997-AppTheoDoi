@@ -147,13 +147,15 @@ class AssessmentService implements AssessmentServiceInterface
 
     public function getLatestGpaScore(int $childId): ?float
     {
-        $latestGrade = $this->classGradeRepository->getBy(['child_id' => $childId])
-            ->where('full_year_grade', '>', 0)
-            ->sortByDesc('created_at')
+        $latestGrade = $this->classGradeRepository->getQueryBuilder()
+            ->where('child_id', $childId)
+            ->whereNotNull('full_year_grade')
+            ->orderByDesc('created_at')
             ->first();
 
         return $latestGrade?->full_year_grade;
     }
+
 
     public function getAssessmentByType(int $childId, AssessmentType $type): ?Assessment
     {
