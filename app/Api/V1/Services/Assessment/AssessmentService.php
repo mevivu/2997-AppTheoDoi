@@ -150,7 +150,7 @@ class AssessmentService implements AssessmentServiceInterface
         $latestGrade = $this->classGradeRepository->getQueryBuilder()
             ->where('child_id', $childId)
             ->whereNotNull('full_year_grade')
-            ->orderByDesc('created_at')
+            ->orderByDesc('class_id')
             ->first();
 
         return $latestGrade?->full_year_grade;
