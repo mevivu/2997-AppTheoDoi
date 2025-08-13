@@ -175,14 +175,22 @@ class AssessmentService implements AssessmentServiceInterface
 
     public function updateAssessmentGPA($assessmentGPA, $childId): void
     {
-        $exists = $this->classGradeRepository->hasGradesGreaterThanZero($childId);
-        if ($exists) {
+        $query = $this->classGradeRepository->getQueryBuilder();
+        $query->where('child_id', $childId)
+            ->with('evaluations')
+            ->join('classes', 'class_grades.class_id', '=', 'classes.id')
+            ->orderBy('classes.id', 'asc')
+            ->select('class_grades.*');
+
+        $details = $query->first();
+
+        if ($details && $details->evaluations->isNotEmpty()) {
             $assessmentGPA->update(['checked' => OpenStatus::ON]);
         } else {
             $assessmentGPA->update(['checked' => OpenStatus::OFF]);
-
         }
     }
+
 
     public function updateAssessmentType($assessment, $childId, $type): void
     {
