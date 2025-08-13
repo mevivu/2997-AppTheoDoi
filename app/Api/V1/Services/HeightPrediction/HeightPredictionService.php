@@ -13,6 +13,7 @@ use App\Enums\User\Gender;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 
 class HeightPredictionService implements HeightPredictionServiceInterface
@@ -59,6 +60,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             ->orderBy('assessment_date', 'desc')
             ->orderBy('id', 'desc')
             ->first();
+        $latestRecordDateCopy = $latestRecord ? $latestRecord->assessment_date->copy() : Carbon::now();
 
         $currentHeight = $latestRecord ? $latestRecord->height : 0;
 
@@ -81,7 +83,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $heightChangeWho = $who->height_change;
 
         $adviceMessage = $this->getAdviceMessage($heightChange, $heightChangeWho);
-        $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestDate);
+        $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestRecordDateCopy);
 
         $heightWhoCurrent = round($heightChangeLasted - $who->height, 2);
 
@@ -104,17 +106,22 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         $heightFather = $child->user->father_height ?? 0;
         $heightMother = $child->user->mother_height ?? 0;
-        $currentAge = $child->age;
+        $birthday = $child->birthday;
         $Adulthood = $child->gender == Gender::Male ? 16 : 15;
-        $predictAdulthood = $Adulthood - $currentAge;
 
-        $oneYearBefore = $latestDate->subYear();
+        $oneYearBefore = $latestDate->copy()->subYear();
+
 
         $oldestRecord = $this->repository->getQueryBuilder()
             ->where('child_id', $child->id)
             ->whereBetween('assessment_date', [$oneYearBefore, $latestDate])
             ->oldest('assessment_date')
             ->first();
+
+        $currentAge = $latestDate->diffInDays($birthday) / 365.3;
+
+        $predictAdulthood = $Adulthood - $currentAge;
+
         $heightOneYearAgo = $oldestRecord ? $oldestRecord->height : 0;
         $increasedHeight = $currentHeight - $heightOneYearAgo;
         $increasedHeight = max(0, min(7, $increasedHeight));
@@ -160,8 +167,9 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             ->oldest('assessment_date')
             ->first();
 
-        $heightChange = max(0, min(7, $currentHeight - ($oldestRecord ? $oldestRecord->height : 0)));
+//        $heightChange = max(0, min(7, $currentHeight - ($oldestRecord ? $oldestRecord->height : 0)));
 
+        $heightChange = $currentHeight - ($oldestRecord ? $oldestRecord->height : 0);
         return [
             'height_change' => $heightChange,
             'oldest_record' => $oldestRecord

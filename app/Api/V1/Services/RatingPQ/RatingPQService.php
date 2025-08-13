@@ -17,6 +17,7 @@ use App\Models\RatingPQ;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 
 class RatingPQService implements RatingPQServiceInterface
@@ -181,6 +182,8 @@ class RatingPQService implements RatingPQServiceInterface
             ->orderBy('id', 'desc')
             ->first();
 
+        $latestRecordDateCopy = $ratingLasted ? $ratingLasted->assessment_date->copy() : Carbon::now();
+
 
         if (!$ratingLasted) {
             return null;
@@ -200,8 +203,8 @@ class RatingPQService implements RatingPQServiceInterface
         $currentStrength = $ratingLasted->strength;
         $currentHeightPercent = $this->getCurrentHeightPercent($child, $gender);
         $bmiPercent = $this->getBmiPercent($bmi, $currentBmi);
-        $currentEndurancePercent = $this->getEndurance($childId, $currentEndurance);
-        $currentStrengthPercent = $this->getStrength($childId, $currentStrength);
+        $currentEndurancePercent = $this->getEndurance($childId, $currentEndurance, $latestRecordDateCopy);
+        $currentStrengthPercent = $this->getStrength($childId, $currentStrength, $latestRecordDateCopy);
         $heightAdulthoodPercent = $this->getHeightAdulthood($child, $currenHeight, $gender);
         $heightWhoCurrent = round($currenHeight - $who->height, 2);
 
@@ -289,7 +292,7 @@ class RatingPQService implements RatingPQServiceInterface
     public function getCurrentHeightPercent($child, $gender)
     {
         $month = $child->month;
-        $nearestRatingPQ =$this->getLatestPQ($child->id);
+        $nearestRatingPQ = $this->getLatestPQ($child->id);
         $nearestHeight = ($nearestRatingPQ && isset($nearestRatingPQ->height)) ? $nearestRatingPQ->height : 0;
         $who = $this->getWho($month, $gender);
         $heightWho = $who->height;
@@ -340,11 +343,13 @@ class RatingPQService implements RatingPQServiceInterface
 
     private function findRatingPQ($childId, $currentDate, $oneYearAgo)
     {
+        Log::info("Current date: " . $currentDate->toDateTimeString());
+        Log::info("One year ago: " . $oneYearAgo->toDateTimeString());
         $ratingPQ = $this->repository->getQueryBuilder()
             ->where('child_id', $childId)
             ->whereDate('assessment_date', '<=', $currentDate)
             ->whereDate('assessment_date', '>=', $oneYearAgo)
-            ->orderBy('assessment_date', 'asc')
+            ->orderBy('assessment_date', 'desc')
             ->first();
 
         if (!$ratingPQ) {
@@ -392,31 +397,57 @@ class RatingPQService implements RatingPQServiceInterface
         return min($result, 10);
     }
 
-    public function getEndurance($childId, $currentEndurance): float|int
+    public function getEndurance($childId, $currentEndurance, $latestRecordDateCopy = null): float|int
     {
-        $currentDate = Carbon::now()->startOfDay();
-        $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
-        $ratingPQ = $this->findRatingPQ($childId, $currentDate, $oneYearAgo);
+        if ($latestRecordDateCopy == null) {
+            $currentDate = Carbon::now()->startOfDay();
+            $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
+            $ratingPQ = $this->findRatingPQ($childId, $currentDate, $oneYearAgo);
 
-        if (!$ratingPQ) return 0;
-        if ($ratingPQ->endurance == null) return 0;
+            if (!$ratingPQ) return 0;
+            if ($ratingPQ->endurance == null) return 0;
 
-        $daysBetween = $ratingPQ->assessment_date->diffInDays($currentDate);
-        return $this->calculatePerformance($currentEndurance, $ratingPQ->endurance, $daysBetween);
+            $daysBetween = $ratingPQ->assessment_date->diffInDays($currentDate);
+            return $this->calculatePerformance($currentEndurance, $ratingPQ->endurance, $daysBetween);
+        } else {
+            $oneYearAgo = $latestRecordDateCopy->copy()->subYear();
+            $ratingPQ = $this->findRatingPQ($childId, $latestRecordDateCopy, $oneYearAgo);
+
+            if (!$ratingPQ) return 0;
+            if ($ratingPQ->endurance == null) return 0;
+
+            $daysBetween = $oneYearAgo->startOfDay()->diffInDays($latestRecordDateCopy->startOfDay());
+
+            return $this->calculatePerformance($currentEndurance, $ratingPQ->endurance, $daysBetween);
+        }
+
+
     }
 
-    public function getStrength($childId, $currentStrength): float|int
+    public function getStrength($childId, $currentStrength, $latestRecordDateCopy = null): float|int
     {
-        $currentDate = Carbon::now()->startOfDay();
-        $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
-        $ratingPQ = $this->findRatingPQ($childId, $currentDate, $oneYearAgo);
+        if ($latestRecordDateCopy == null) {
+            $currentDate = Carbon::now()->startOfDay();
+            $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
+            $ratingPQ = $this->findRatingPQ($childId, $currentDate, $oneYearAgo);
 
-        if (!$ratingPQ) return 0;
-        if ($ratingPQ->strength == null) return 0;
+            if (!$ratingPQ) return 0;
+            if ($ratingPQ->strength == null) return 0;
 
-        $daysBetween = $ratingPQ->assessment_date->diffInDays($currentDate);
-        return $this->calculatePerformance($currentStrength, $ratingPQ->strength, $daysBetween);
+            $daysBetween = $ratingPQ->assessment_date->diffInDays($currentDate);
+            return $this->calculatePerformance($currentStrength, $ratingPQ->strength, $daysBetween);
+        } else {
+            $oneYearAgo = $latestRecordDateCopy->copy()->subYear();
+            $ratingPQ = $this->findRatingPQ($childId, $latestRecordDateCopy, $oneYearAgo);
+
+            if (!$ratingPQ) return 0;
+            if ($ratingPQ->strength == null) return 0;
+
+            $daysBetween = $oneYearAgo->startOfDay()->diffInDays($latestRecordDateCopy->startOfDay());
+            return $this->calculatePerformance($currentStrength, $ratingPQ->strength, $daysBetween);
+        }
     }
+
 
     public function getBmiPercent($bmi, $currentBmi): float|int
     {
