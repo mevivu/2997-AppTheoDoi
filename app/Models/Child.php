@@ -100,9 +100,9 @@ class Child extends Model
                 ClassGrade::create([
                     'child_id' => $child->id,
                     'class_id' => $item->id,
-                    'semester1_grade' => 0,
-                    'semester2_grade' => 0,
-                    'full_year_grade' => 0,
+                    'semester1_grade' => null,
+                    'semester2_grade' => null,
+                    'full_year_grade' => null,
                     'status' => ActiveStatus::Draft->value,
                 ]);
             }
