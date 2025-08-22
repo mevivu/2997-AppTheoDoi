@@ -12,7 +12,7 @@ class ClinicDataTable extends BaseDataTable
 {
     protected $nameTable = 'clinicTypeTable';
 
-    protected array $actions = ['reset', 'reload'];
+    protected array $actions = ['reset', 'reload', 'pageLength'];
 
 
     public function __construct(

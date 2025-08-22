@@ -125,13 +125,13 @@ class RatingPQService implements RatingPQServiceInterface
         $month = $child->month;
         $who = $this->getWho($month, $gender);
         $whoHeight = $who->height;
-        $bmiCategory = $this->getBmiCategory($bmi, $age, $gender);
+        $bmiCategory = $this->getBmiCategory($bmi, $age, $gender, $birthday, $assessmentDate);
         $ageInMonths = $birthday->diffInDays($assessmentDate) / 30.5;
         $data['age_month'] = (int)floor($ageInMonths);
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
         $data['height_change'] = $height - $whoHeight;
-        $data['height_result'] = $this->getHeightResult($height, $who);
+        $data['height_result'] = $this->getHeightResult($height, $birthday, $assessmentDate, $gender);
         $data['score'] = $this->calculateScore($bmi, $age, $gender,
             $child->id, $currentEndurance, $currentStrength, $height);
 
@@ -150,20 +150,20 @@ class RatingPQService implements RatingPQServiceInterface
         $currentStrength = $data['strength'];
         $child = $this->childRepository->findOrFail($data['child_id']);
         $assessmentDate = Carbon::parse($data['assessment_date']);
-        $birthday = Carbon::parse($child->birthday);
         $bmi = $this->calculateBMI($height, $weight);
         $age = $child->age;
         $gender = $child->gender;
         $month = $child->month;
+        $birthday = Carbon::parse($child->birthday);
         $who = $this->getWho($month, $gender);
         $whoHeight = $who->height;
-        $bmiCategory = $this->getBmiCategory($bmi, $age, $gender);
+        $bmiCategory = $this->getBmiCategory($bmi, $age, $gender, $birthday, $assessmentDate);
         $ageInMonths = $birthday->diffInDays($assessmentDate) / 30.5;
         $data['age_month'] = (int)floor($ageInMonths);
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
         $data['height_change'] = $height - $whoHeight;
-        $data['height_result'] = $this->getHeightResult($height, $who);
+        $data['height_result'] = $this->getHeightResult($height, $birthday, $assessmentDate, $gender);
         $data['score'] = $this->calculateScore($bmi, $age, $gender,
             $child->id, $currentEndurance, $currentStrength, $height);
         return $this->repository->update($data['id'], $data);
@@ -460,8 +460,10 @@ class RatingPQService implements RatingPQServiceInterface
     }
 
 
-    public function getHeightResult($currentHeight, $who): string
+    public function getHeightResult($currentHeight, $birthday, $assessmentDate, $gender): string
     {
+        $month = floor($birthday->diffInDays($assessmentDate) / 30.5);
+        $who = $this->getWho($month, $gender);
         if (!$who) {
             return 'Dữ liệu không xác định';
         }
@@ -474,6 +476,7 @@ class RatingPQService implements RatingPQServiceInterface
         $slightlyHigh = $heightWho + $heightChangeWho * 3;
         $high = $heightWho + $heightChangeWho * 6;
         $veryHigh = $heightWho + $heightChangeWho * 12;
+
         if ($currentHeight <= $veryLow) {
             return 'Rất thấp';
         } elseif ($currentHeight > $veryLow && $currentHeight <= $low) {
@@ -492,11 +495,13 @@ class RatingPQService implements RatingPQServiceInterface
         return 'Không xác định';
     }
 
-    public function getBmiCategory($bmi, $age, $gender): ?string
+    public function getBmiCategory($bmi, $age, $gender, $birthday, $assessmentDate): ?string
     {
         $bmiCategory = null;
+        $ageThresholds = $birthday->diffInDays($assessmentDate) / 365.3;
+        $ageThresholds = round($ageThresholds);
         if ($age) {
-            $bmiThresholds = $this->getBmi($age, $gender);
+            $bmiThresholds = $this->getBmi($ageThresholds, $gender);
             if ($bmiThresholds) {
                 $bmiCategory = $this->classifyBMI($bmi, $bmiThresholds);
             }
@@ -518,38 +523,32 @@ class RatingPQService implements RatingPQServiceInterface
     {
         if (!$bmiThresholds) return 'Không thể xác định';
 
-        $conditions = [
-            'Suy dinh dưỡng' => function ($bmi) use ($bmiThresholds) {
-                return $bmi <= $bmiThresholds->z_score_minus_3;
-            },
-            'Quá gầy' => function ($bmi) use ($bmiThresholds) {
-                return $bmi <= $bmiThresholds->z_score_minus_2;
-            },
-            'Hơi gầy' => function ($bmi) use ($bmiThresholds) {
-                return $bmi <= $bmiThresholds->z_score_minus_1;
-            },
-            'Bình thường' => function ($bmi) use ($bmiThresholds) {
-                return $bmi <= $bmiThresholds->z_score_0;
-            },
-            'Hơi béo' => function ($bmi) use ($bmiThresholds) {
-                return $bmi <= $bmiThresholds->z_score_plus_1;
-            },
-            'Tương đối béo' => function ($bmi) use ($bmiThresholds) {
-                return $bmi <= $bmiThresholds->z_score_plus_2;
-            },
-            'Béo phì' => function ($bmi) {
-                return true;
-            },
-        ];
-
-        foreach ($conditions as $result => $condition) {
-            if ($condition($bmi)) {
-                return $result;
-            }
+        if ($bmi <= $bmiThresholds->z_score_minus_3) {
+            return 'Suy dinh dưỡng';
+        }
+        if ($bmi <= $bmiThresholds->z_score_minus_2) {
+            return 'Quá gầy';
+        }
+        if ($bmi <= $bmiThresholds->z_score_minus_1) {
+            return 'Hơi gầy';
+        }
+        if ($bmi <= $bmiThresholds->z_score_plus_1) {
+            return 'Bình thường';
+        }
+        if ($bmi <= $bmiThresholds->z_score_plus_2) {
+            return 'Hơi béo';
+        }
+        if ($bmi <= $bmiThresholds->z_score_plus_3) {
+            return 'Tương đối béo';
+        }
+        if ($bmi > $bmiThresholds->z_score_plus_3) {
+            return 'Béo phì';
         }
 
         return 'Không thể xác định';
     }
+
+
 
     public function getWho($month, $gender)
     {
