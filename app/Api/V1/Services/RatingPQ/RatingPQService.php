@@ -469,31 +469,39 @@ class RatingPQService implements RatingPQServiceInterface
         }
         $heightWho = $who->height;
         $heightChangeWho = $who->height_change;
+
         $veryLow = $heightWho - $heightChangeWho * 12;
         $low = $heightWho - $heightChangeWho * 6;
         $slightlyLow = $heightWho - $heightChangeWho * 3;
-        $normal = $heightWho;
         $slightlyHigh = $heightWho + $heightChangeWho * 3;
         $high = $heightWho + $heightChangeWho * 6;
         $veryHigh = $heightWho + $heightChangeWho * 12;
 
         if ($currentHeight <= $veryLow) {
             return 'Rất thấp';
-        } elseif ($currentHeight > $veryLow && $currentHeight <= $low) {
-            return 'Tương đối thấp';
-        } elseif ($currentHeight > $low && $currentHeight <= $slightlyLow) {
+        }
+        if ($currentHeight <= $low) {
+                return 'Thấp';
+        }
+        if ($currentHeight <= $slightlyLow) {
             return 'Hơi thấp';
-        } elseif ($currentHeight > $slightlyLow && $currentHeight <= $normal) {
+        }
+        if ($currentHeight <= $slightlyHigh) {
             return 'Bình thường';
-        } elseif ($currentHeight > $normal && $currentHeight <= $slightlyHigh) {
+        }
+        if ($currentHeight <= $high) {
             return 'Vượt chuẩn';
-        } elseif ($currentHeight > $slightlyHigh && $currentHeight <= $high) {
+        }
+        if ($currentHeight <= $veryHigh) {
             return 'Tương đối cao';
-        } elseif ($currentHeight > $high) {
+        }
+        if ($currentHeight > $veryHigh) {
             return 'Rất cao';
         }
         return 'Không xác định';
     }
+
+
 
     public function getBmiCategory($bmi, $age, $gender, $birthday, $assessmentDate): ?string
     {
