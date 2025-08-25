@@ -95,7 +95,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             'predicting_adult_height' => $predictingAdultHeight,
             'height_comparison' => [
                 'height_who_current' => $heightWhoCurrent,
-                'is_taller_than_who' => $heightChangeLasted > $who->height,
+                'is_taller_than_who' => $this->calculateCurrentHeightChangeWithHeightChanWho($heightChange, $heightChangeWho),
             ],
             'child' => new ChildResource($child)
         ];
@@ -158,18 +158,19 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
     public function calculateSpeedHeightChange($currentHeight, $childId, $latestDate): array
     {
-        $oneYearBefore = $latestDate->subYear();
+        $oneYearBefore = $latestDate->copy()->subYear();
+        $countDays = $latestDate->diffInDays($oneYearBefore);
 
-        // Lấy record cũ nhất trong khoảng thời gian 1 năm
         $oldestRecord = $this->repository->getQueryBuilder()
             ->where('child_id', $childId)
-            ->whereBetween('assessment_date', [$oneYearBefore, $latestDate])
+            ->where('assessment_date', '<=', $latestDate)
+            ->where('assessment_date', '>=', $oneYearBefore)
             ->oldest('assessment_date')
             ->first();
 
-//        $heightChange = max(0, min(7, $currentHeight - ($oldestRecord ? $oldestRecord->height : 0)));
+        $oldestHeight = $oldestRecord ? $oldestRecord->height : 0;
 
-        $heightChange = $currentHeight - ($oldestRecord ? $oldestRecord->height : 0);
+        $heightChange = round(($currentHeight - $oldestHeight) * (365.3 / $countDays),2);
         return [
             'height_change' => $heightChange,
             'oldest_record' => $oldestRecord
@@ -184,6 +185,17 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             return "Bố mẹ cần thay đổi chế độ dinh dưỡng và vận động cho con hoặc tốt nhất là đi khám bác sĩ dinh dưỡng.";
         } else {
             return "Bố mẹ nên duy trì hoặc làm tốt hơn chế độ dinh dưỡng và vận động cho con như hiện tại.";
+        }
+    }
+
+    public function calculateCurrentHeightChangeWithHeightChanWho($heightChange, $heightChangeWho): bool
+    {
+        $result1 = $heightChangeWho * 0.75 * 12;
+        $result2 = $heightChangeWho * 1.25 * 12;
+        if ($heightChange < $result1) {
+            return false;
+        } else {
+            return true;
         }
     }
 
