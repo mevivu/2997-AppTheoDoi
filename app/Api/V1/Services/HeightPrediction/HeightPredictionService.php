@@ -125,12 +125,17 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $heightOneYearAgo = $oldestRecord ? $oldestRecord->height : 0;
         $increasedHeight = $currentHeight - $heightOneYearAgo;
         $increasedHeight = max(0, min(7, $increasedHeight));
+
+
         $adultHeightPrediction = $predictAdulthood * $increasedHeight;
 
 
         $predictedHeightMale = ($heightFather + $heightMother + 13) / 2 + 5;
         $predictedHeightFemale = ($heightFather + $heightMother - 13) / 2 + 3;
-        if ($child->age > 5) {
+        if ($child->age >= 5) {
+            if ($increasedHeight == 0) {
+                return $child->gender == Gender::Male ? $predictedHeightMale : $predictedHeightFemale;
+            }
             $CurrentHeightAttainmentForecast = $currentHeight + $adultHeightPrediction;
         } else {
             $ageCheckMonth = $child->gender == Gender::Male ? 24 : 18;
