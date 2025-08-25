@@ -159,7 +159,6 @@ class HeightPredictionService implements HeightPredictionServiceInterface
     public function calculateSpeedHeightChange($currentHeight, $childId, $latestDate): array
     {
         $oneYearBefore = $latestDate->copy()->subYear();
-        $countDays = $latestDate->diffInDays($oneYearBefore);
 
         $oldestRecord = $this->repository->getQueryBuilder()
             ->where('child_id', $childId)
@@ -167,6 +166,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             ->where('assessment_date', '>=', $oneYearBefore)
             ->oldest('assessment_date')
             ->first();
+
+        $countDays = $latestDate->diffInDays($oldestRecord ? $oldestRecord->assessment_date : $latestDate);
 
         $oldestHeight = $oldestRecord ? $oldestRecord->height : 0;
 
