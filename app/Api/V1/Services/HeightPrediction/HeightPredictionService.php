@@ -170,7 +170,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         $oldestHeight = $oldestRecord ? $oldestRecord->height : 0;
 
-        $heightChange = round(($currentHeight - $oldestHeight) * (365.3 / $countDays),2);
+        $heightChange = round(($currentHeight - $oldestHeight) * (365.3 / $countDays),1);
         return [
             'height_change' => $heightChange,
             'oldest_record' => $oldestRecord
