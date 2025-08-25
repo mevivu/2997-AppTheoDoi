@@ -127,7 +127,7 @@ class RatingPQService implements RatingPQServiceInterface
         $whoHeight = $who->height;
         $bmiCategory = $this->getBmiCategory($bmi, $age, $gender, $birthday, $assessmentDate);
         $ageInMonths = $birthday->diffInDays($assessmentDate) / 30.5;
-        $data['age_month'] = (int)floor($ageInMonths);
+        $data['age_month'] = (int)round($ageInMonths);
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
         $data['height_change'] = $height - $whoHeight;
