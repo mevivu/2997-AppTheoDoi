@@ -168,10 +168,16 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             ->first();
 
         $countDays = $latestDate->diffInDays($oldestRecord ? $oldestRecord->assessment_date : $latestDate);
+        if ($countDays == 0) {
+            return [
+                'height_change' => 0,
+                'oldest_record' => $oldestRecord
+            ];
+        }
 
         $oldestHeight = $oldestRecord ? $oldestRecord->height : 0;
 
-        $heightChange = round(($currentHeight - $oldestHeight) * (365.3 / $countDays),1);
+        $heightChange = round(($currentHeight - $oldestHeight) * (365.3 / $countDays), 1);
         return [
             'height_change' => $heightChange,
             'oldest_record' => $oldestRecord
