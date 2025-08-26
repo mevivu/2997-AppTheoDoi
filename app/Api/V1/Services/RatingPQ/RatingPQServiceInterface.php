@@ -15,10 +15,9 @@ interface RatingPQServiceInterface
 
     public function index(Request $request);
 
-    public function getOverallStats(Request $request);
+    public function getOverallStats(Request $request, $optionChildId = null);
 
     public function getMonthlyEnduranceData(Request $request);
-
 
 
 }

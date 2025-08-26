@@ -7,6 +7,7 @@ use App\Api\V1\Repositories\Assessment\AssessmentRepositoryInterface;
 use App\Api\V1\Repositories\ClassGrade\ClassGradeRepositoryInterface;
 use App\Api\V1\Repositories\Rating\RatingRepositoryInterface;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
+use App\Api\V1\Services\RatingPQ\RatingPQServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\Assessment\AssessmentType;
@@ -36,22 +37,26 @@ class AssessmentService implements AssessmentServiceInterface
     protected RatingRepositoryInterface $ratingRepository;
     protected ClassGradeRepositoryInterface $classGradeRepository;
 
+    protected RatingPQServiceInterface $ratingPQService;
+
 
     public function __construct(
         AssessmentRepositoryInterface $repository,
         RatingPQRepositoryInterface   $ratingPQRepository,
         RatingRepositoryInterface     $ratingRepository,
-        ClassGradeRepositoryInterface $classGradeRepository
+        ClassGradeRepositoryInterface $classGradeRepository,
+        RatingPQServiceInterface      $ratingPQService
     )
     {
         $this->repository = $repository;
         $this->ratingPQRepository = $ratingPQRepository;
         $this->ratingRepository = $ratingRepository;
         $this->classGradeRepository = $classGradeRepository;
+        $this->ratingPQService = $ratingPQService;
     }
 
 
-    public function index(Request $request)
+    public function index(Request $request): array
     {
         $data = $request->validated();
         $childId = $data['child_id'];
@@ -73,6 +78,22 @@ class AssessmentService implements AssessmentServiceInterface
         $assessment = $this->repository->getBy([
             'child_id' => $childId,
         ]);
+        $overallPQ = $this->ratingPQService->getOverallStats($request,$childId);
+        $currentHeightPercent = $overallPQ['current_height_percent'] ?? null;
+        $bmiPercent = $overallPQ['bmi_percent'] ?? null;
+        $strengthPercent = $overallPQ['strength_percent'] ?? null;
+        $endurancePercent = $overallPQ['endurance_percent'] ?? null;
+        $heightAdulthoodPercent  = $overallPQ['height_adulthood'] ?? null;
+
+        $pqComponents = [
+            $currentHeightPercent,
+            $bmiPercent,
+            $strengthPercent,
+            $endurancePercent,
+            $heightAdulthoodPercent
+        ];
+        $validPqComponents = array_filter($pqComponents, fn($value) => $value !== null);
+        $pq = count($validPqComponents) > 0 ? round(array_sum($validPqComponents) / count($validPqComponents), 1) : null;
         return [
             'assessments' => $assessment,
             'information' => [
@@ -80,7 +101,7 @@ class AssessmentService implements AssessmentServiceInterface
                 'eq' => $latestEq?->score,
                 'aq' => $latestAq?->score,
                 'gpa' => $latestGpa,
-                'pq' => $this->getLatestPQScore($childId),
+                'pq' => $pq,
             ]
         ];
     }
