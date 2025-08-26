@@ -75,6 +75,47 @@ class UserRequest extends BaseRequest
             'mother_name' => ['nullable', 'string'],
             'mother_height' => ['nullable', 'integer', 'min:0'],
             'mother_birthday' => ['nullable', 'date_format:Y-m-d'],
+            'package_id' => ['nullable', 'exists:packages,id'],
+            'start_date' => ['nullable', 'date_format:Y-m-d'],
+            'end_date' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:start_date'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'fullname.required' => 'Họ và tên là bắt buộc.',
+            'fullname.string' => 'Họ và tên phải là chuỗi ký tự.',
+
+            'phone.required' => 'Số điện thoại là bắt buộc.',
+
+            'email.required' => 'Email là bắt buộc.',
+            'email.email' => 'Email phải có định dạng hợp lệ.',
+
+            'password.required' => 'Mật khẩu là bắt buộc.',
+            'password.string' => 'Mật khẩu phải là chuỗi ký tự.',
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
+
+            'gender.required' => 'Giới tính là bắt buộc.',
+
+            'birthday.date_format' => 'Ngày sinh phải có định dạng YYYY-MM-DD.',
+
+            'father_height.integer' => 'Chiều cao bố phải là số nguyên.',
+            'father_height.min' => 'Chiều cao bố phải lớn hơn hoặc bằng 0.',
+
+            'father_birthday.date_format' => 'Ngày sinh bố phải có định dạng YYYY-MM-DD.',
+
+            'mother_height.integer' => 'Chiều cao mẹ phải là số nguyên.',
+            'mother_height.min' => 'Chiều cao mẹ phải lớn hơn hoặc bằng 0.',
+
+            'mother_birthday.date_format' => 'Ngày sinh mẹ phải có định dạng YYYY-MM-DD.',
+
+            'package_id.exists' => 'Gói dịch vụ được chọn không tồn tại.',
+
+            'start_date.date_format' => 'Ngày bắt đầu phải có định dạng YYYY-MM-DD.',
+
+            'end_date.date_format' => 'Ngày kết thúc phải có định dạng YYYY-MM-DD.',
+            'end_date.after_or_equal' => 'Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.',
         ];
     }
 }

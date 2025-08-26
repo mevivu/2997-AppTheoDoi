@@ -2,10 +2,12 @@
 
 namespace App\Admin\Services\User;
 
+use App\Admin\Repositories\Package\PackageRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Traits\Roles;
 use App\AES\AESHelper;
 use App\Api\V1\Support\UseLog;
+use App\Enums\Package\PackageUserStatus;
 use App\Enums\User\UserStatus;
 use Exception;
 use Illuminate\Http\Request;
@@ -24,11 +26,16 @@ class UserService implements UserServiceInterface
 
     protected UserRepositoryInterface $repository;
 
+    protected PackageRepositoryInterface $packageRepository;
+
 
     public function __construct(
-        UserRepositoryInterface $repository,
-    ) {
+        UserRepositoryInterface    $repository,
+        PackageRepositoryInterface $packageRepository
+    )
+    {
         $this->repository = $repository;
+        $this->packageRepository = $packageRepository;
     }
 
     /**
@@ -63,6 +70,9 @@ class UserService implements UserServiceInterface
         $data = $request->validated();
         $data['longitude'] = $request['lng'];
         $data['latitude'] = $request['lat'];
+        $packageId = $data['package_id'] ?? null;
+        $startDate = $data['start_date'] ?? null;
+        $endDate = $data['end_date'] ?? null;
         if (isset($data['email'])) {
             $data['email'] = AESHelper::encrypt($data['email']);
         }
@@ -77,8 +87,21 @@ class UserService implements UserServiceInterface
         } else {
             unset($data['password']);
         }
+        $user = $this->repository->findOrFail($data['id']);
+        $user->update($data);
+        $package = $this->packageRepository->findOrFail($packageId);
+        $currentType = $package->type;
+        $currentUserPackage = $user->userPackages()->where('status', PackageUserStatus::Active)->first();
+        if ($currentUserPackage) {
+            $currentUserPackage->update([
+                'package_id' => $packageId,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'current_type' => $currentType
+            ]);
+        }
 
-        return $this->repository->update($data['id'], $data);
+        return $user;
     }
 
     /**

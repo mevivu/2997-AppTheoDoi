@@ -4,9 +4,12 @@ namespace App\Admin\Http\Controllers\User;
 
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\User\UserRequest;
+use App\Admin\Repositories\Package\PackageRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Services\User\UserServiceInterface;
 use App\Admin\DataTables\User\UserDataTable;
+use App\Enums\ActiveStatus;
+use App\Enums\Package\PackageType;
 use App\Traits\ResponseController;
 use Exception;
 use App\Enums\User\{Gender, UserStatus};
@@ -21,15 +24,19 @@ class UserController extends Controller
 {
     use ResponseController;
 
+    protected PackageRepositoryInterface $packageRepository;
+
     public function __construct(
-        UserRepositoryInterface $repository,
-        UserServiceInterface $service
-    ) {
+        UserRepositoryInterface    $repository,
+        UserServiceInterface       $service,
+        PackageRepositoryInterface $packageRepository
+    )
+    {
 
         parent::__construct();
 
         $this->repository = $repository;
-
+        $this->packageRepository = $packageRepository;
         $this->service = $service;
     }
 
@@ -92,10 +99,16 @@ class UserController extends Controller
     {
 
         $instance = $this->repository->findOrFail($id);
+        $packages = $this->packageRepository->getByQueryBuilder(
+            [
+                'status' => ActiveStatus::Active,
+            ]
+        )->get();
         return view(
             $this->view['edit'],
             [
                 'user' => $instance,
+                'packages' => $packages,
                 'gender' => Gender::asSelectArray(),
                 'status' => UserStatus::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(__('Khách hàng'), route($this->route['index']))->add(__('edit')),

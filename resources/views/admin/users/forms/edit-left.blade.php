@@ -31,6 +31,20 @@
                     </button>
                 </li>
 
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link"
+                            id="package-info-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#packageInfo"
+                            type="button"
+                            role="tab"
+                            aria-controls="packageInfo"
+                            aria-selected="false">
+                        <i class="ti ti-package"></i>
+                        {{ __('Thông Tin Gói') }}
+                    </button>
+                </li>
+
             </ul>
 
             <!-- Tab Content -->
@@ -46,6 +60,12 @@
                      role="tabpanel"
                      aria-labelledby="parent-info-tab">
                     @include('admin.users.partials.edit-info-parent')
+                </div>
+                <div class="tab-pane fade"
+                     id="packageInfo"
+                     role="tabpanel"
+                     aria-labelledby="package-info-tab">
+                    @include('admin.users.partials.package.package-info')
                 </div>
 
             </div>
