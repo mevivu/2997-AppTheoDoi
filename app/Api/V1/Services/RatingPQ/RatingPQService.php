@@ -9,6 +9,7 @@ use App\Api\V1\Http\Resources\RatingPQ\RatingPQMonthResource;
 use App\Api\V1\Repositories\Child\ChildRepositoryInterface;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
 use App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface;
+use App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\ActiveStatus;
@@ -37,12 +38,15 @@ class RatingPQService implements RatingPQServiceInterface
     protected WhoRepositoryInterface $whoRepository;
     protected FileService $fileService;
 
+    protected HeightPredictionServiceInterface $heightPredictionService;
+
     public function __construct(
-        RatingPQRepositoryInterface $repository,
-        ChildRepositoryInterface    $childRepository,
-        BmiRepositoryInterface      $bmiRepository,
-        WhoRepositoryInterface      $whoRepository,
-        FileService                 $fileService
+        RatingPQRepositoryInterface      $repository,
+        ChildRepositoryInterface         $childRepository,
+        BmiRepositoryInterface           $bmiRepository,
+        WhoRepositoryInterface           $whoRepository,
+        FileService                      $fileService,
+        HeightPredictionServiceInterface $heightPredictionService,
     )
     {
         $this->repository = $repository;
@@ -50,6 +54,7 @@ class RatingPQService implements RatingPQServiceInterface
         $this->bmiRepository = $bmiRepository;
         $this->whoRepository = $whoRepository;
         $this->fileService = $fileService;
+        $this->heightPredictionService = $heightPredictionService;
     }
 
     public function getMonthlyEnduranceData(Request $request): array
@@ -133,7 +138,7 @@ class RatingPQService implements RatingPQServiceInterface
         $data['height_change'] = $height - $whoHeight;
         $data['height_result'] = $this->getHeightResult($height, $birthday, $assessmentDate, $gender);
         $data['score'] = $this->calculateScore($bmi, $age, $gender,
-            $child->id, $currentEndurance, $currentStrength, $height);
+            $child->id, $currentEndurance, $currentStrength, $height, $assessmentDate);
 
         return $this->repository->create($data);
     }
@@ -165,7 +170,7 @@ class RatingPQService implements RatingPQServiceInterface
         $data['height_change'] = $height - $whoHeight;
         $data['height_result'] = $this->getHeightResult($height, $birthday, $assessmentDate, $gender);
         $data['score'] = $this->calculateScore($bmi, $age, $gender,
-            $child->id, $currentEndurance, $currentStrength, $height);
+            $child->id, $currentEndurance, $currentStrength, $height, $assessmentDate);
         return $this->repository->update($data['id'], $data);
     }
 
@@ -201,13 +206,24 @@ class RatingPQService implements RatingPQServiceInterface
         $currenHeight = $ratingLasted->height;
         $currentEndurance = $ratingLasted->endurance;
         $currentStrength = $ratingLasted->strength;
-        $currentHeightPercent = $this->getCurrentHeightPercent($child, $gender);
-        $bmiPercent = $this->getBmiPercent($bmi, $currentBmi);
+        $currentWeight = $ratingLasted->weight;
+        $predictingAdultHeight = $this->heightPredictionService->calculateMatureHeight($child, $currenHeight, $latestRecordDateCopy);
+        $bmiPercent = $this->getBmiPercent($bmi, $currentBmi, $child, $latestRecordDateCopy, $currentWeight);
         $currentEndurancePercent = $this->getEndurance($childId, $currentEndurance, $latestRecordDateCopy);
         $currentStrengthPercent = $this->getStrength($childId, $currentStrength, $latestRecordDateCopy);
-        $heightAdulthoodPercent = $this->getHeightAdulthood($child, $currenHeight, $gender);
+        $heightAdulthoodPercent = $this->getHeightAdulthoodChart($gender, $predictingAdultHeight);
         $heightWhoCurrent = round($currenHeight - $who->height, 2);
 
+        $components = [
+            $currenHeight,
+            $bmiPercent,
+            $currentEndurancePercent,
+            $currentStrengthPercent,
+            $heightAdulthoodPercent
+        ];
+        $validComponents = array_filter($components, fn($value) => $value !== null);
+        $currentHeightPercent = count($validComponents) > 0 ? array_sum($validComponents) / count($validComponents) : 0;
+        $currentHeightPercent = min($currentHeightPercent, 10);
 
         return [
             'height' => $currenHeight,
@@ -234,17 +250,20 @@ class RatingPQService implements RatingPQServiceInterface
     /**
      * @throws Exception
      */
-    public function calculateScore($currentBmi, $age, $gender, $childId, $currentEndurance, $currentStrength, $currenHeight): float
+    public function calculateScore($currentBmi, $age, $gender, $childId,
+                                   $currentEndurance, $currentStrength, $currenHeight, $assessmentDate): float
     {
         $bmi = $this->getBmi($age, $gender);
         $child = $this->childRepository->findOrFail($childId);
-        $bmiPercent = $this->getBmiPercent($bmi, $currentBmi);
+        $bmiPercent = $this->getBmiPercent($bmi, $currentBmi, $child, $assessmentDate);
 
-        $endurancePercent = $currentEndurance ? $this->getEndurance($childId, $currentEndurance) : null;
-        $strengthPercent = $currentStrength ? $this->getStrength($childId, $currentStrength) : null;
+        $endurancePercent = $currentEndurance ?
+            $this->getEndurance($childId, $currentEndurance, null, $assessmentDate) : null;
+        $strengthPercent = $currentStrength ?
+            $this->getStrength($childId, $currentStrength, null, $assessmentDate) : null;
 
         $currentHeight = $this->getCurrentHeight($child, $gender);
-        $heightAdulthood = $this->getHeightAdulthood($child, $currenHeight, $gender);
+        $heightAdulthood = $this->getHeightAdulthood($child, $currenHeight, $gender, $assessmentDate);
 
         $scores = [];
 
@@ -291,22 +310,14 @@ class RatingPQService implements RatingPQServiceInterface
 
     public function getCurrentHeightPercent($child, $gender)
     {
-        $month = $child->month;
         $nearestRatingPQ = $this->getLatestPQ($child->id);
-        $nearestHeight = ($nearestRatingPQ && isset($nearestRatingPQ->height)) ? $nearestRatingPQ->height : 0;
-        $who = $this->getWho($month, $gender);
-        $heightWho = $who->height;
-        $result = ($nearestHeight / $heightWho) / 0.1;
-        return min($result, 10);
+        return ($nearestRatingPQ && isset($nearestRatingPQ->height)) ? $nearestRatingPQ->height : null;
     }
 
-    /**
-     * param float| int currenHeight người dùng nhập
-     */
-    public function getHeightAdulthood($child, $currenHeight, $gender)
+    public function getHeightAdulthood($child, $currenHeight, $gender, $assessmentDate)
     {
 
-        $currentDate = Carbon::now()->startOfDay();
+        $currentDate = $assessmentDate;
         $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
         $childBirthDate = $child->birthday;
         $nearestRatingPQ = $this->findRatingPQ($child->id, $currentDate, $oneYearAgo);
@@ -341,6 +352,18 @@ class RatingPQService implements RatingPQServiceInterface
 
     }
 
+    /**
+     * param float| int currenHeight người dùng nhập
+     */
+    public function getHeightAdulthoodChart($gender, $predictingAdultHeight)
+    {
+        $who228 = $this->getWho(228, $gender);
+        $heightWho = $who228->height;
+        $result = ($predictingAdultHeight / $heightWho) / 0.1;
+        return min($result, 10);
+
+    }
+
     private function findRatingPQ($childId, $currentDate, $oneYearAgo)
     {
         Log::info("Current date: " . $currentDate->toDateTimeString());
@@ -349,7 +372,7 @@ class RatingPQService implements RatingPQServiceInterface
             ->where('child_id', $childId)
             ->whereDate('assessment_date', '<=', $currentDate)
             ->whereDate('assessment_date', '>=', $oneYearAgo)
-            ->orderBy('assessment_date', 'desc')
+            ->orderBy('assessment_date', 'asc')
             ->first();
 
         if (!$ratingPQ) {
@@ -397,10 +420,10 @@ class RatingPQService implements RatingPQServiceInterface
         return min($result, 10);
     }
 
-    public function getEndurance($childId, $currentEndurance, $latestRecordDateCopy = null): float|int
+    public function getEndurance($childId, $currentEndurance, $latestRecordDateCopy = null, $assessmentDate = null): float|int
     {
         if ($latestRecordDateCopy == null) {
-            $currentDate = Carbon::now()->startOfDay();
+            $currentDate = $assessmentDate;
             $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
             $ratingPQ = $this->findRatingPQ($childId, $currentDate, $oneYearAgo);
 
@@ -424,10 +447,10 @@ class RatingPQService implements RatingPQServiceInterface
 
     }
 
-    public function getStrength($childId, $currentStrength, $latestRecordDateCopy = null): float|int
+    public function getStrength($childId, $currentStrength, $latestRecordDateCopy = null, $assessmentDate = null): float|int
     {
         if ($latestRecordDateCopy == null) {
-            $currentDate = Carbon::now()->startOfDay();
+            $currentDate = $assessmentDate;
             $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
             $ratingPQ = $this->findRatingPQ($childId, $currentDate, $oneYearAgo);
 
@@ -442,21 +465,38 @@ class RatingPQService implements RatingPQServiceInterface
 
             if (!$ratingPQ) return 0;
             if ($ratingPQ->strength == null) return 0;
-
-            $daysBetween = $oneYearAgo->startOfDay()->diffInDays($latestRecordDateCopy->startOfDay());
-            return $this->calculatePerformance($currentStrength, $ratingPQ->strength, $daysBetween);
+            $strengthOneYearAgo = $ratingPQ->strength * 1.25;
+            $result = $currentStrength / $strengthOneYearAgo / 0.1;
+            return min($result, 10);
         }
     }
 
 
-    public function getBmiPercent($bmi, $currentBmi): float|int
+    public function getBmiPercent($bmi, $currentBmi, $child, $latestRecordDateCopy, $currentWeight = null): float|int
     {
-        $zScore0 = $bmi->z_score_0 ?? 0;
-        if ($zScore0 < $currentBmi) {
-            return round(($zScore0 / $currentBmi) / 0.1, 1);
+        $birthday = $child->birthday;
+        $ageCalculate = floor($birthday->diffInDays($latestRecordDateCopy) / 365.3);
+        $month = round($birthday->diffInDays($latestRecordDateCopy) / 30.5);
+        if ($ageCalculate >= 5) {
+            $zScore0 = $bmi->z_score_0 ?? 0;
+            if ($zScore0 < $currentBmi) {
+                return round(($zScore0 / $currentBmi) / 0.1, 1);
+            } else {
+                return round(($currentBmi / $bmi->z_score_0) / 0.1, 1);
+            }
         } else {
-            return round(($currentBmi / $bmi->z_score_0) / 0.1, 1);
+            $who = $this->whoRepository->getBy(
+                [
+                    'gender' => $child->gender,
+                    'month' => $month
+                ])->first();
+
+            if (!$who) return 0;
+
+            return min($currentWeight / $who->weight / 0.1, 10);
         }
+
+
     }
 
 
@@ -481,7 +521,7 @@ class RatingPQService implements RatingPQServiceInterface
             return 'Rất thấp';
         }
         if ($currentHeight <= $low) {
-                return 'Thấp';
+            return 'Thấp';
         }
         if ($currentHeight <= $slightlyLow) {
             return 'Hơi thấp';
@@ -500,7 +540,6 @@ class RatingPQService implements RatingPQServiceInterface
         }
         return 'Không xác định';
     }
-
 
 
     public function getBmiCategory($bmi, $age, $gender, $birthday, $assessmentDate): ?string
@@ -555,7 +594,6 @@ class RatingPQService implements RatingPQServiceInterface
 
         return 'Không thể xác định';
     }
-
 
 
     public function getWho($month, $gender)
