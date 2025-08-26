@@ -177,10 +177,10 @@ class RatingPQService implements RatingPQServiceInterface
     /**
      * @throws Exception
      */
-    public function getOverallStats(Request $request): ?array
+    public function getOverallStats(Request $request, $optionChildId = null): ?array
     {
         $data = $request->validated();
-        $childId = $data['child_id'];
+        $childId = $data['child_id'] ?? $optionChildId;
         $ratingLasted = $this->repository->getQueryBuilder()
             ->where('child_id', $childId)
             ->orderBy('assessment_date', 'desc')
@@ -199,7 +199,7 @@ class RatingPQService implements RatingPQServiceInterface
         $birthDay = $child->birthday;
         $bmi = $this->getBmi($age, $gender);
         $latestDate = $ratingLasted ? $ratingLasted->assessment_date : Carbon::now();
-        $month = floor($birthDay->diffInDays($latestDate) / 30.5);
+        $month = round($birthDay->diffInDays($latestDate) / 30.5);
         $who = $this->getWho($month, $gender);
 
         $currentBmi = $ratingLasted->bmi;
@@ -214,16 +214,9 @@ class RatingPQService implements RatingPQServiceInterface
         $heightAdulthoodPercent = $this->getHeightAdulthoodChart($gender, $predictingAdultHeight);
         $heightWhoCurrent = round($currenHeight - $who->height, 2);
 
-        $components = [
-            $currenHeight,
-            $bmiPercent,
-            $currentEndurancePercent,
-            $currentStrengthPercent,
-            $heightAdulthoodPercent
-        ];
-        $validComponents = array_filter($components, fn($value) => $value !== null);
-        $currentHeightPercent = count($validComponents) > 0 ? array_sum($validComponents) / count($validComponents) : 0;
-        $currentHeightPercent = min($currentHeightPercent, 10);
+        $heightCalculate = $currenHeight / $who->height / 0.1;
+
+        $currentHeightPercent = min($heightCalculate, 10);
 
         return [
             'height' => $currenHeight,
