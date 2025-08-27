@@ -127,21 +127,21 @@ class RatingPQService implements RatingPQServiceInterface
         $bmi = $this->calculateBMI($height, $weight);
         $age = $child->age;
         $gender = $child->gender;
-        $month = $child->month;
-        $who = $this->getWho($month, $gender);
-        $whoHeight = $who->height;
         $bmiCategory = $this->getBmiCategory($bmi, $age, $gender, $birthday, $assessmentDate);
-        $ageInMonths = $birthday->diffInDays($assessmentDate) / 30.5;
-        $data['age_month'] = (int)round($ageInMonths);
+        $monthCalculate = round($birthday->diffInDays($assessmentDate) / 30.5);
+        $ageCalculate = round($birthday->diffInDays($assessmentDate) / 365.3);
+        $who = $this->getWho($monthCalculate, $gender);
+        $whoHeight = $who->height;
+        $data['age_month'] = (int)round($monthCalculate);
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
         $data['height_change'] = $height - $whoHeight;
         $data['height_result'] = $this->getHeightResult($height, $birthday, $assessmentDate, $gender);
-        $data['score'] = $this->calculateScore($bmi, $age, $gender,
-            $child->id, $currentEndurance, $currentStrength, $height, $assessmentDate);
-
+        $data['score'] = $this->calculateScore($bmi, $ageCalculate, $gender,
+            $child->id, $currentEndurance, $currentStrength, $height, $assessmentDate, $weight, $monthCalculate);
         return $this->repository->create($data);
     }
+
 
     /**
      * @throws Exception
@@ -158,21 +158,23 @@ class RatingPQService implements RatingPQServiceInterface
         $bmi = $this->calculateBMI($height, $weight);
         $age = $child->age;
         $gender = $child->gender;
-        $month = $child->month;
         $birthday = Carbon::parse($child->birthday);
-        $who = $this->getWho($month, $gender);
-        $whoHeight = $who->height;
+
         $bmiCategory = $this->getBmiCategory($bmi, $age, $gender, $birthday, $assessmentDate);
-        $ageInMonths = $birthday->diffInDays($assessmentDate) / 30.5;
-        $data['age_month'] = (int)floor($ageInMonths);
+        $monthCalculate = round($birthday->diffInDays($assessmentDate) / 30.5);
+        $ageCalculate = round($birthday->diffInDays($assessmentDate) / 365.3);
+        $who = $this->getWho($monthCalculate, $gender);
+        $whoHeight = $who->height;
+        $data['age_month'] = (int)floor($monthCalculate);
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
         $data['height_change'] = $height - $whoHeight;
         $data['height_result'] = $this->getHeightResult($height, $birthday, $assessmentDate, $gender);
-        $data['score'] = $this->calculateScore($bmi, $age, $gender,
-            $child->id, $currentEndurance, $currentStrength, $height, $assessmentDate);
+        $data['score'] = $this->calculateScore($bmi, $ageCalculate, $gender,
+            $child->id, $currentEndurance, $currentStrength, $height, $assessmentDate, $weight, $monthCalculate);
         return $this->repository->update($data['id'], $data);
     }
+
 
     /**
      * @throws Exception
@@ -207,6 +209,7 @@ class RatingPQService implements RatingPQServiceInterface
         $currentEndurance = $ratingLasted->endurance;
         $currentStrength = $ratingLasted->strength;
         $currentWeight = $ratingLasted->weight;
+
         $predictingAdultHeight = $this->heightPredictionService->calculateMatureHeight($child, $currenHeight, $latestRecordDateCopy);
         $bmiPercent = $this->getBmiPercent($bmi, $currentBmi, $child, $latestRecordDateCopy, $currentWeight);
         $currentEndurancePercent = $this->getEndurance($childId, $currentEndurance, $latestRecordDateCopy);
@@ -239,109 +242,54 @@ class RatingPQService implements RatingPQServiceInterface
         ];
     }
 
+    public function getScorePQ($request, $childId): ?float
+    {
+        $overallPQ = $this->getOverallStats($request, $childId);
+        $currentHeightPercent = $overallPQ['current_height_percent'] ?? null;
+        $bmiPercent = $overallPQ['bmi_percent'] ?? null;
+        $strengthPercent = $overallPQ['strength_percent'] ?? null;
+        $endurancePercent = $overallPQ['endurance_percent'] ?? null;
+        $heightAdulthoodPercent = $overallPQ['height_adulthood'] ?? null;
+
+        $pqComponents = [
+            $currentHeightPercent,
+            $bmiPercent,
+            $strengthPercent,
+            $endurancePercent,
+            $heightAdulthoodPercent
+        ];
+        $validPqComponents = array_filter($pqComponents, fn($value) => $value !== null);
+        return count($validPqComponents) > 0 ? round(array_sum($validPqComponents) / count($validPqComponents), 1) : null;
+
+    }
 
     /**
      * @throws Exception
      */
-    public function calculateScore($currentBmi, $age, $gender, $childId,
-                                   $currentEndurance, $currentStrength, $currenHeight, $assessmentDate): float
+    public function calculateScore($currentBmi, $ageCalculate, $gender, $childId,
+                                   $currentEndurance, $currentStrength, $currenHeight,
+                                   $assessmentDate, $currentWeight, $monthCalculate): ?float
     {
-        $bmi = $this->getBmi($age, $gender);
+        $bmi = $this->getBmi($ageCalculate, $gender);
+        $who = $this->getWho($monthCalculate, $gender);
         $child = $this->childRepository->findOrFail($childId);
-        $bmiPercent = $this->getBmiPercent($bmi, $currentBmi, $child, $assessmentDate);
+        $predictingAdultHeight = $this->heightPredictionService->calculateMatureHeight($child, $currenHeight, $assessmentDate);
+        $bmiPercent = $this->getBmiPercent($bmi, $currentBmi, $child, $assessmentDate, $currentWeight);
+        $currentEndurancePercent = $this->getEndurance($childId, $currentEndurance, $assessmentDate);
+        $currentStrengthPercent = $this->getStrength($childId, $currentStrength, $assessmentDate);
+        $heightAdulthoodPercent = $this->getHeightAdulthoodChart($gender, $predictingAdultHeight);
+        $heightCalculate = $currenHeight / $who->height / 0.1;
+        $currentHeightPercent = min($heightCalculate, 10);
 
-        $endurancePercent = $currentEndurance ?
-            $this->getEndurance($childId, $currentEndurance, null, $assessmentDate) : null;
-        $strengthPercent = $currentStrength ?
-            $this->getStrength($childId, $currentStrength, null, $assessmentDate) : null;
-
-        $currentHeight = $this->getCurrentHeight($child, $gender);
-        $heightAdulthood = $this->getHeightAdulthood($child, $currenHeight, $gender, $assessmentDate);
-
-        $scores = [];
-
-        if ($age > 5) {
-            $scores[] = $bmiPercent;
-        }
-
-        if (!is_null($endurancePercent)) {
-            $scores[] = $endurancePercent;
-        }
-
-        if (!is_null($strengthPercent)) {
-            $scores[] = $strengthPercent;
-        }
-
-        if (!is_null($currentHeight)) {
-            $scores[] = $currentHeight;
-        }
-
-        if (!is_null($heightAdulthood)) {
-            $scores[] = $heightAdulthood;
-        }
-
-        if (count($scores) === 0) {
-            return 0;
-        }
-
-        $totalScore = array_sum($scores);
-        return round($totalScore / count($scores), 1);
-    }
-
-
-    public function getCurrentHeight($child, $gender)
-    {
-        $currentDate = Carbon::now()->startOfDay();
-        $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
-        $nearestRatingPQ = $this->findRatingPQ($child->id, $currentDate, $oneYearAgo);
-        $nearestHeight = ($nearestRatingPQ && isset($nearestRatingPQ->height)) ? $nearestRatingPQ->height : 0;
-        $who228 = $this->getWho(228, $gender);
-        $heightWho = $who228->height;
-        $result = ($nearestHeight / $heightWho) / 0.1;
-        return min($result, 10);
-    }
-
-    public function getCurrentHeightPercent($child, $gender)
-    {
-        $nearestRatingPQ = $this->getLatestPQ($child->id);
-        return ($nearestRatingPQ && isset($nearestRatingPQ->height)) ? $nearestRatingPQ->height : null;
-    }
-
-    public function getHeightAdulthood($child, $currenHeight, $gender, $assessmentDate)
-    {
-
-        $currentDate = $assessmentDate;
-        $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
-        $childBirthDate = $child->birthday;
-        $nearestRatingPQ = $this->findRatingPQ($child->id, $currentDate, $oneYearAgo);
-        $nearestHeight = $nearestRatingPQ->height ?? 0;
-        $nearestAssessmentDate = $nearestRatingPQ ? $nearestRatingPQ->assessment_date : $currentDate;
-
-        $heightIncreaseInOneYear = abs($currenHeight - $nearestHeight);
-        $diffInDaysCurrent = $currentDate->diffInDays($nearestAssessmentDate);
-        $diffInDaysBirth = $childBirthDate->diffInDays($nearestAssessmentDate);
-        $monthCompare = $diffInDaysCurrent / 30.5;
-        $currentAge = $diffInDaysBirth / 365.3;
-        if ($gender == Gender::Male) {
-            $yearsToAdulthood = 16 - $currentAge;
-        } else {
-            $yearsToAdulthood = 15 - $currentAge;
-        }
-        $predictedHeight = $yearsToAdulthood + $heightIncreaseInOneYear;
-        $predictedHeightAchieved = $predictedHeight + $nearestHeight;
-        $heightFather = $child->user->father_height ?? 0;
-        $heightMother = $child->user->mother_height ?? 0;
-        $predictedHeightMale = ($heightFather + $heightMother + 13) / 2 + 5;
-        $predictedHeightFemale = ($heightFather + $heightMother - 13) / 2 + 3;
-        if ($gender == Gender::Male) {
-            $predictedHeightChild = ($predictedHeightMale * 0.3) + ($predictedHeightAchieved * 0.7);
-        } else {
-            $predictedHeightChild = ($predictedHeightFemale * 0.3) + ($predictedHeightAchieved * 0.7);
-        }
-        $who228 = $this->getWho(228, $gender);
-        $heightWho = $who228->height;
-        $result = ($predictedHeightChild / $heightWho) / 0.1;
-        return min($result, 10);
+        $pqComponents = [
+            $currentHeightPercent,
+            $bmiPercent,
+            $currentStrengthPercent,
+            $currentEndurancePercent,
+            $heightAdulthoodPercent
+        ];
+        $validPqComponents = array_filter($pqComponents, fn($value) => $value !== null);
+        return count($validPqComponents) > 0 ? round(array_sum($validPqComponents) / count($validPqComponents), 1) : null;
 
     }
 
@@ -351,6 +299,7 @@ class RatingPQService implements RatingPQServiceInterface
     public function getHeightAdulthoodChart($gender, $predictingAdultHeight)
     {
         $who228 = $this->getWho(228, $gender);
+        if(!$who228) return 0;
         $heightWho = $who228->height;
         $result = ($predictingAdultHeight / $heightWho) / 0.1;
         return min($result, 10);
@@ -413,55 +362,41 @@ class RatingPQService implements RatingPQServiceInterface
         return min($result, 10);
     }
 
-    public function getEndurance($childId, $currentEndurance, $latestRecordDateCopy = null, $assessmentDate = null): float|int
+    public function getEndurance($childId, $currentEndurance, $latestRecordDateCopy = null): float|int|null
     {
-        if ($latestRecordDateCopy == null) {
-            $currentDate = $assessmentDate;
-            $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
-            $ratingPQ = $this->findRatingPQ($childId, $currentDate, $oneYearAgo);
+        $oneYearAgo = $latestRecordDateCopy->copy()->subYear();
+        $ratingPQ = $this->findRatingPQ($childId, $latestRecordDateCopy, $oneYearAgo);
 
-            if (!$ratingPQ) return 0;
-            if ($ratingPQ->endurance == null) return 0;
-
-            $daysBetween = $ratingPQ->assessment_date->diffInDays($currentDate);
-            return $this->calculatePerformance($currentEndurance, $ratingPQ->endurance, $daysBetween);
-        } else {
-            $oneYearAgo = $latestRecordDateCopy->copy()->subYear();
-            $ratingPQ = $this->findRatingPQ($childId, $latestRecordDateCopy, $oneYearAgo);
-
-            if (!$ratingPQ) return 0;
-            if ($ratingPQ->endurance == null) return 0;
-
-            $daysBetween = $oneYearAgo->startOfDay()->diffInDays($latestRecordDateCopy->startOfDay());
-
-            return $this->calculatePerformance($currentEndurance, $ratingPQ->endurance, $daysBetween);
+        if(!$currentEndurance) {
+            return null;
         }
+
+        if (!$ratingPQ) {
+            return null;
+        }
+        if ($ratingPQ->endurance == null) {
+            return null;
+        }
+
+        $daysBetween = $oneYearAgo->startOfDay()->diffInDays($latestRecordDateCopy->startOfDay());
+
+        return $this->calculatePerformance($currentEndurance, $ratingPQ->endurance, $daysBetween);
 
 
     }
 
-    public function getStrength($childId, $currentStrength, $latestRecordDateCopy = null, $assessmentDate = null): float|int
+    public function getStrength($childId, $currentStrength, $latestRecordDateCopy = null)
     {
-        if ($latestRecordDateCopy == null) {
-            $currentDate = $assessmentDate;
-            $oneYearAgo = $currentDate->copy()->subYear()->startOfDay();
-            $ratingPQ = $this->findRatingPQ($childId, $currentDate, $oneYearAgo);
-
-            if (!$ratingPQ) return 0;
-            if ($ratingPQ->strength == null) return 0;
-
-            $daysBetween = $ratingPQ->assessment_date->diffInDays($currentDate);
-            return $this->calculatePerformance($currentStrength, $ratingPQ->strength, $daysBetween);
-        } else {
-            $oneYearAgo = $latestRecordDateCopy->copy()->subYear();
-            $ratingPQ = $this->findRatingPQ($childId, $latestRecordDateCopy, $oneYearAgo);
-
-            if (!$ratingPQ) return 0;
-            if ($ratingPQ->strength == null) return 0;
-            $strengthOneYearAgo = $ratingPQ->strength * 1.25;
-            $result = $currentStrength / $strengthOneYearAgo / 0.1;
-            return min($result, 10);
+        $oneYearAgo = $latestRecordDateCopy->copy()->subYear();
+        $ratingPQ = $this->findRatingPQ($childId, $latestRecordDateCopy, $oneYearAgo);
+        if(!$currentStrength) {
+            return null;
         }
+        if (!$ratingPQ) return null;
+        if ($ratingPQ->strength == null) return null;
+        $strengthOneYearAgo = $ratingPQ->strength * 1.25;
+        $result = $currentStrength / $strengthOneYearAgo / 0.1;
+        return min($result, 10);
     }
 
 
