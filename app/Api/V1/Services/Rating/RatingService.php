@@ -272,11 +272,10 @@ class RatingService implements RatingServiceInterface
         $descriptions = [
             QuestionType::IQ->value => [
                 0 => 'Kém',
-                5 => 'Kém',
-                7 => 'Trung bình',
-                8 => 'Khá cao',
-                9 => 'Rất cao',
-                10 => 'Xuất sắc'
+                5 => 'Trung bình',
+                7 => 'Khá cao',
+                8 => 'Rất cao',
+                9 => 'Xuất sắc'
             ],
             QuestionType::EQ->value => [
                 0 => 'Tiêu cực',
