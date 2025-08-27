@@ -19,5 +19,7 @@ interface RatingPQServiceInterface
 
     public function getMonthlyEnduranceData(Request $request);
 
+    public function getScorePQ($request, $childId): ?float;
+
 
 }

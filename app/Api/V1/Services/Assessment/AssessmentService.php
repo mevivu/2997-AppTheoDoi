@@ -36,7 +36,6 @@ class AssessmentService implements AssessmentServiceInterface
     protected RatingPQRepositoryInterface $ratingPQRepository;
     protected RatingRepositoryInterface $ratingRepository;
     protected ClassGradeRepositoryInterface $classGradeRepository;
-
     protected RatingPQServiceInterface $ratingPQService;
 
 
@@ -78,22 +77,7 @@ class AssessmentService implements AssessmentServiceInterface
         $assessment = $this->repository->getBy([
             'child_id' => $childId,
         ]);
-        $overallPQ = $this->ratingPQService->getOverallStats($request,$childId);
-        $currentHeightPercent = $overallPQ['current_height_percent'] ?? null;
-        $bmiPercent = $overallPQ['bmi_percent'] ?? null;
-        $strengthPercent = $overallPQ['strength_percent'] ?? null;
-        $endurancePercent = $overallPQ['endurance_percent'] ?? null;
-        $heightAdulthoodPercent  = $overallPQ['height_adulthood'] ?? null;
-
-        $pqComponents = [
-            $currentHeightPercent,
-            $bmiPercent,
-            $strengthPercent,
-            $endurancePercent,
-            $heightAdulthoodPercent
-        ];
-        $validPqComponents = array_filter($pqComponents, fn($value) => $value !== null);
-        $pq = count($validPqComponents) > 0 ? round(array_sum($validPqComponents) / count($validPqComponents), 1) : null;
+        $pq = $this->ratingPQService->getScorePQ($request, $childId);
         return [
             'assessments' => $assessment,
             'information' => [
