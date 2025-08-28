@@ -67,7 +67,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         // Lấy ngày đánh giá mới nhất hoặc ngày hiện tại nếu không có bản ghi
         $latestDate = $latestRecord ? $latestRecord->assessment_date : Carbon::now();
         // Tính tháng từ ngày sinh đến latestDate
-        $month = floor($birthDay->diffInDays($latestDate) / 30.5);
+        $month = round($birthDay->diffInDays($latestDate) / 30.5);
 
         // Tính sự thay đổi chiều cao
         $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $childId, $latestDate);

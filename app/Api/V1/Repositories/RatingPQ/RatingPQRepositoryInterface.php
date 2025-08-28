@@ -7,4 +7,7 @@ use App\Admin\Repositories\EloquentRepositoryInterface;
 interface RatingPQRepositoryInterface extends EloquentRepositoryInterface
 {
     public function exists(array $conditions): bool;
+
+    public function getLatestByChildId($childId);
+
 }

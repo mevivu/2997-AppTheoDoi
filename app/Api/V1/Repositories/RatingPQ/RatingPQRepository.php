@@ -12,4 +12,13 @@ class RatingPQRepository extends AdminRepository implements RatingPQRepositoryIn
     {
         return RatingPQ::where($conditions)->exists();
     }
+
+    public function getLatestByChildId($childId)
+    {
+        return $this->getQueryBuilder()
+            ->where('child_id', $childId)
+            ->orderBy('assessment_date', 'desc')
+            ->orderBy('id', 'desc')
+            ->first();
+    }
 }

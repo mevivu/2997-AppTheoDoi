@@ -13,8 +13,6 @@ use App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\ActiveStatus;
-use App\Enums\User\Gender;
-use App\Models\RatingPQ;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -183,11 +181,7 @@ class RatingPQService implements RatingPQServiceInterface
     {
         $data = $request->validated();
         $childId = $data['child_id'] ?? $optionChildId;
-        $ratingLasted = $this->repository->getQueryBuilder()
-            ->where('child_id', $childId)
-            ->orderBy('assessment_date', 'desc')
-            ->orderBy('id', 'desc')
-            ->first();
+        $ratingLasted = $this->repository->getLatestByChildId($childId);
 
         $latestRecordDateCopy = $ratingLasted ? $ratingLasted->assessment_date->copy() : Carbon::now();
 
@@ -324,18 +318,6 @@ class RatingPQService implements RatingPQServiceInterface
         return $ratingPQ;
     }
 
-    private function getLatestPQ($childId)
-    {
-        $latest = RatingPQ::where('child_id', $childId)
-            ->orderByDesc('assessment_date')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        if (!$latest) {
-            return null;
-        }
-        return $latest;
-    }
 
     /**
      * Tính toán hiệu suất dựa trên giá trị hiện tại, giá trị trong quá khứ, và số ngày giữa hai thời điểm.
