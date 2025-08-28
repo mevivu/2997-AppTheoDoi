@@ -66,7 +66,7 @@ class RatingService implements RatingServiceInterface
         $query->where('type', $type);
 
         if ($type === QuestionType::IQ->value) {
-            $query->orderBy('age','asc');
+            $query->orderBy('age', 'asc');
         }
         return $query->paginate($limit, ['*'], 'page', $page);
     }
@@ -106,8 +106,8 @@ class RatingService implements RatingServiceInterface
         $data['score'] = min(10, floor($correctCount / 1.5));
         $data['result'] = $result;
         $data['type'] = $type;
-        $data['description'] = $this->getDescriptionByTypeAndScore($type, $correctCount);
-        $data['label'] = $this->getLabelByTypeAndScore($type, $correctCount);
+        $data['description'] = $this->getDescriptionByTypeAndScore($type, $data['score']);
+        $data['label'] = $this->getLabelByTypeAndScore($type, $data['score']);
         $description = "Đã xuất sắc nhận được kết quả đánh giá trực tuyến\nbằng cách hoàn thành Bài kiểm tra IQ nâng cao của\nCHAMCON360.";
         $path = $this->createCertificate($childName, $result, $description, now());
         $data['badge_image'] = $path;
@@ -190,7 +190,6 @@ class RatingService implements RatingServiceInterface
     }
 
 
-
     /**
      * @throws Exception
      */
@@ -263,7 +262,7 @@ class RatingService implements RatingServiceInterface
             }
         }
 
-        $data['score'] = ($totalScore / 2.5) /2;
+        $data['score'] = ($totalScore / 2.5) / 2;
         return $data;
     }
 
