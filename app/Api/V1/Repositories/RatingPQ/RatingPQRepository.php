@@ -21,4 +21,20 @@ class RatingPQRepository extends AdminRepository implements RatingPQRepositoryIn
             ->orderBy('id', 'desc')
             ->first();
     }
+
+    public function getRecordInDateRange($childId, string $startDate, string $endDate, bool $oldest = false)
+    {
+        $query = $this->getQueryBuilder()
+            ->where('child_id', $childId)
+            ->whereBetween('assessment_date', [$startDate, $endDate]);
+
+        if ($oldest) {
+            $query->oldest('assessment_date');
+        } else {
+            $query->orderBy('assessment_date', 'desc')
+                ->orderBy('id', 'desc');
+        }
+
+        return $query->first();
+    }
 }

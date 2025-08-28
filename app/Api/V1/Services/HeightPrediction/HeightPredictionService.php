@@ -13,7 +13,6 @@ use App\Enums\User\Gender;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 
 
 class HeightPredictionService implements HeightPredictionServiceInterface
@@ -55,11 +54,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $gender = $child->gender;
 
         // Lấy bản ghi mới nhất của trẻ
-        $latestRecord = $this->repository->getQueryBuilder()
-            ->where('child_id', $childId)
-            ->orderBy('assessment_date', 'desc')
-            ->orderBy('id', 'desc')
-            ->first();
+        $latestRecord = $this->repository->getLatestByChildId($childId);
         $latestRecordDateCopy = $latestRecord ? $latestRecord->assessment_date->copy() : Carbon::now();
 
         $currentHeight = $latestRecord ? $latestRecord->height : 0;
@@ -112,11 +107,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $oneYearBefore = $latestDate->copy()->subYear();
 
 
-        $oldestRecord = $this->repository->getQueryBuilder()
-            ->where('child_id', $child->id)
-            ->whereBetween('assessment_date', [$oneYearBefore, $latestDate])
-            ->oldest('assessment_date')
-            ->first();
+        $oldestRecord = $this->repository->getRecordInDateRange($child->id, $oneYearBefore, $latestDate, true);
 
         $currentAge = $latestDate->diffInDays($birthday) / 365.3;
 
@@ -165,12 +156,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
     {
         $oneYearBefore = $latestDate->copy()->subYear();
 
-        $oldestRecord = $this->repository->getQueryBuilder()
-            ->where('child_id', $childId)
-            ->where('assessment_date', '<=', $latestDate)
-            ->where('assessment_date', '>=', $oneYearBefore)
-            ->oldest('assessment_date')
-            ->first();
+        $oldestRecord = $this->repository->getRecordInDateRange($childId, $oneYearBefore, $latestDate, true);
 
         $countDays = $latestDate->diffInDays($oldestRecord ? $oldestRecord->assessment_date : $latestDate);
         if ($countDays == 0) {
