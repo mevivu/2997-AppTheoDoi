@@ -304,7 +304,7 @@ class RatingPQService implements RatingPQServiceInterface
     {
         Log::info("Current date: " . $currentDate->toDateTimeString());
         Log::info("One year ago: " . $oneYearAgo->toDateTimeString());
-        $ratingPQ = $this->repository->getRecordInDateRange($childId, $oneYearAgo, $currentDate,true);
+        $ratingPQ = $this->repository->getRecordInDateRangeWithValidStrengthEndurance($childId, $oneYearAgo, $currentDate,true);
 
         if (!$ratingPQ) {
             return $this->repository->getBy(['child_id' => $childId])->first();

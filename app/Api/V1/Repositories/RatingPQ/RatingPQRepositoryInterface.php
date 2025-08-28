@@ -12,5 +12,8 @@ interface RatingPQRepositoryInterface extends EloquentRepositoryInterface
 
     public function getRecordInDateRange($childId, string $startDate, string $endDate, bool $oldest = false);
 
+    public function getRecordInDateRangeWithValidStrengthEndurance($childId, string $startDate, string $endDate, bool $oldest = false);
+
+
 
 }

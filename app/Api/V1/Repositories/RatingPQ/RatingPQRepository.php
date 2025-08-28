@@ -37,4 +37,21 @@ class RatingPQRepository extends AdminRepository implements RatingPQRepositoryIn
 
         return $query->first();
     }
+
+    public function getRecordInDateRangeWithValidStrengthEndurance($childId, string $startDate, string $endDate, bool $oldest = false)
+    {
+        $query = $this->model
+            ->where('child_id', $childId)
+            ->whereBetween('assessment_date', [$startDate, $endDate])
+            ->where('strength', '!=', 0)
+            ->where('endurance', '!=', 0);
+
+        if ($oldest) {
+            $query->orderBy('assessment_date', 'asc');
+        } else {
+            $query->orderBy('assessment_date', 'desc');
+        }
+
+        return $query->first();
+    }
 }
