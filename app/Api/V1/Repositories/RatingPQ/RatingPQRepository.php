@@ -43,6 +43,8 @@ class RatingPQRepository extends AdminRepository implements RatingPQRepositoryIn
         $query = $this->model
             ->where('child_id', $childId)
             ->whereBetween('assessment_date', [$startDate, $endDate])
+            ->whereNotNull('strength')
+            ->whereNotNull('endurance')
             ->where('strength', '!=', 0)
             ->where('endurance', '!=', 0);
 
