@@ -123,10 +123,8 @@ class RatingService implements RatingServiceInterface
         $width = $img->width();
         $height = $img->height();
 
-
         $fontLight = public_path('assets/fonts/Roboto-Light.ttf');
         $fontBold = public_path('assets/fonts/Roboto-Bold.ttf');
-
 
         $xCenter = $width / 2;
         $xScore = $width * 0.80;
@@ -136,35 +134,48 @@ class RatingService implements RatingServiceInterface
         $yDate = $height * 0.74;
         $xDate = $width / 3;
 
-        $img->text($score, $xScore, $yScore, function ($font) use ($fontBold) {
-            $font->file($fontBold);
-            $font->size(24);
+        $baseFontSize = min($width, $height) / 30;
+        $largeFontSize = $baseFontSize * 1.5;
+        $mediumFontSize = $baseFontSize * 1.2;
+        $smallFontSize = $baseFontSize * 0.8;
+        $footerFontSize = $baseFontSize * 0.5;
+
+        $img->text($score, $xScore, $yScore, function ($font) use ($fontBold, $largeFontSize) {
+            if (file_exists($fontBold)) {
+                $font->file($fontBold);
+            }
+            $font->size($largeFontSize);
             $font->color('#FF0000');
             $font->align('center');
             $font->valign('middle');
         });
 
-
-        $img->text($name, $xCenter, $yName, function ($font) use ($fontBold) {
-            $font->file($fontBold);
-            $font->size(24);
+        $img->text($name, $xCenter, $yName, function ($font) use ($fontBold, $largeFontSize) {
+            if (file_exists($fontBold)) {
+                $font->file($fontBold);
+            }
+            $font->size($largeFontSize);
             $font->color('#000');
             $font->align('center');
             $font->valign('middle');
         });
 
-        $img->text($description, $xCenter, $yDesc, function ($font) use ($fontLight) {
-            $font->file($fontLight);
-            $font->size(18);
+        $img->text($description, $xCenter, $yDesc, function ($font) use ($fontLight, $mediumFontSize) {
+            if (file_exists($fontLight)) {
+                $font->file($fontLight);
+            }
+            $font->size($mediumFontSize);
             $font->color('#000');
             $font->align('center');
             $font->valign('middle');
-            $font->lineHeight(1.9);
+            $font->lineHeight(1.6);
         });
 
-        $img->text("Date: " . $date, $xDate, $yDate, function ($font) use ($fontLight) {
-            $font->file($fontLight);
-            $font->size(16);
+        $img->text("Date: " . $date, $xDate, $yDate, function ($font) use ($fontLight, $baseFontSize) {
+            if (file_exists($fontLight)) {
+                $font->file($fontLight);
+            }
+            $font->size($baseFontSize);
             $font->color('#000');
             $font->align('center');
             $font->valign('middle');
@@ -173,18 +184,23 @@ class RatingService implements RatingServiceInterface
         $footerText = "Đây là phiếu ghi nhận kết quả mang tính tham khảo, không phải chứng chỉ hay văn bằng có giá trị pháp lý.";
         $yFooter = $height * 0.87;
 
-        $img->text($footerText, $xCenter, $yFooter, function ($font) use ($fontLight) {
-            $font->file($fontLight);
-            $font->size(10);
+        $xFooter = $width * 0.45;
+
+        $img->text($footerText, $xFooter, $yFooter, function ($font) use ($fontLight, $footerFontSize) {
+            if (file_exists($fontLight)) {
+                $font->file($fontLight);
+            }
+            $font->size($footerFontSize);
             $font->color('#333333');
             $font->align('center');
             $font->valign('bottom');
         });
 
-        $newFilename = uniqid() . '-certificate.jpg';
+        $newFilename = uniqid() . '-certificate-' . time() . '.jpg';
         $newImagePath = public_path('uploads/images/certificates/' . $newFilename);
         $path = '/public/uploads/images/certificates/' . $newFilename;
-        $img->save($newImagePath, 90, 'jpg');
+
+        $img->save($newImagePath, 95, 'jpg');
 
         return $path;
     }
