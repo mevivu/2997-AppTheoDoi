@@ -252,7 +252,10 @@ class RatingPQService implements RatingPQServiceInterface
             $endurancePercent,
             $heightAdulthoodPercent
         ];
-        $validPqComponents = array_filter($pqComponents, fn($value) => $value !== null);
+        $validPqComponents = array_filter(
+            $pqComponents,
+            fn($value) => $value !== null && $value != 0
+        );
         return count($validPqComponents) > 0 ? round(array_sum($validPqComponents) / count($validPqComponents), 1) : null;
 
     }
