@@ -90,7 +90,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             'predicting_adult_height' => $predictingAdultHeight,
             'height_comparison' => [
                 'height_who_current' => $heightWhoCurrent,
-                'is_taller_than_who' => $this->calculateCurrentHeightChangeWithHeightChanWho($heightChange, $heightChangeWho),
+                'is_taller_than_who' => $heightChangeLasted > $who->height,
             ],
             'child' => new ChildResource($child)
         ];

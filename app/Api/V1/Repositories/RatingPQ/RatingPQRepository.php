@@ -17,6 +17,10 @@ class RatingPQRepository extends AdminRepository implements RatingPQRepositoryIn
     {
         return $this->getQueryBuilder()
             ->where('child_id', $childId)
+            ->where(function ($query) {
+                $query->where('height', '>', 0)
+                    ->orWhere('weight', '>', 0);
+            })
             ->orderBy('assessment_date', 'desc')
             ->orderBy('id', 'desc')
             ->first();
