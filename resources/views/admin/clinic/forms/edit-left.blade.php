@@ -20,7 +20,7 @@
                     <label class="control-label">
                         <span class="ti ti-phone"></span>
                         {{ __('hotline') }}:</label>
-                    <x-input name="hotline"
+                    <x-input-phone name="hotline"
                              type="number"
                              :value="$instance->hotline"
                              :required="true"/>
