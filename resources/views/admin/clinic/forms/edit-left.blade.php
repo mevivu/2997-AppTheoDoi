@@ -15,15 +15,17 @@
             </div>
 
             <!-- hotline -->
+            <!-- hotline -->
             <div class="col-md-6 col-12">
                 <div class="mb-3">
                     <label class="control-label">
                         <span class="ti ti-phone"></span>
                         {{ __('hotline') }}:</label>
                     <x-input name="hotline"
-                             type="number"
+                             type="tel"
                              :value="$instance->hotline"
-                             :required="true"/>
+                             :required="true"
+                             placeholder="0807070707"/>
                 </div>
             </div>
 
