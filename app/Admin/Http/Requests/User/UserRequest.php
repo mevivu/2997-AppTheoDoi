@@ -62,7 +62,7 @@ class UserRequest extends BaseRequest
                 new PhoneUnique($this->id),
             ],
             'password' => ['nullable', 'string', 'confirmed'],
-            'gender' => ['required', new Enum(Gender::class)],
+            'gender' => ['nullable', new Enum(Gender::class)],
             'birthday' => ['nullable', 'date_format:Y-m-d'],
             'avatar' => ['nullable'],
             'status' => ['required', new Enum(UserStatus::class)],

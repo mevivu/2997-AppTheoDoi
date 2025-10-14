@@ -69,7 +69,7 @@
                     <span class="ti ti-user-circle"></span>
                     {{ __('Giới tính') }}:
                 </label>
-                <select name="gender" class="form-control" required>
+                <select name="gender" class="form-control">
                     <option value="" {{ is_null($user->gender) ? 'selected' : '' }}>{{ __('Chọn Giới tính') }}</option>
                     @foreach ($gender as $key => $value)
                         <option value="{{ $key }}" {{ !is_null($user->gender) && $user->gender->value == $key ? 'selected' : '' }}>{{ __($value) }}</option>
@@ -83,7 +83,7 @@
         <div class="col-12">
             <div class="mb-3">
                 <x-input-pick-address :label="trans('address')" name="address" :value="AESHelper::decrypt($user->address)" :placeholder="trans('pickAddress')"
-                    :required="true" />
+                    />
                 <x-input type="hidden" name="lat" :value="old('lat')" />
                 <x-input type="hidden" name="lng" :value="old('lng')" />
             </div>
