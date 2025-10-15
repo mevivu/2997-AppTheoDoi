@@ -37,6 +37,7 @@
         border-bottom: 1px solid #f0f0f0;
         padding: 16px 0;
         margin-bottom: 20px;
+        margin-left: 12px !important;
     }
 
     /* Breadcrumb Container */
