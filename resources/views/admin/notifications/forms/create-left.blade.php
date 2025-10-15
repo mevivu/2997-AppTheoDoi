@@ -41,8 +41,9 @@
             <div class="col-12">
                 <div class="mb-3">
                     <i class="ti ti-bell-ringing"></i>
-                    <label class="control-label">@lang('title')</label>
-                    <x-input name="title" :value="old('title')" :placeholder="__('title')" />
+                    <label class="control-label">@lang('title')
+                        @lang('message'): <span class="text-danger">*</span></label>
+                    <x-input name="title" :value="old('title')" required :placeholder="__('title')" />
                 </div>
             </div>
 
@@ -50,8 +51,10 @@
             <div class="col-12">
                 <div class="mb-3">
                     <i class="ti ti-chart-bubble"></i>
-                    <label class="control-label">@lang('message')</label>
-                    <x-input name="message" :value="old('message')" :placeholder="__('message')" />
+                    <label class="control-label">
+                        @lang('message'): <span class="text-danger">*</span>
+                    </label>
+                    <textarea name="message" class="form-control" rows="4" placeholder="{{ __('message') }}" required>{{ old('message') }}</textarea>
                 </div>
             </div>
 
