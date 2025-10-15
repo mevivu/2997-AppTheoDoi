@@ -11,6 +11,7 @@ use App\Api\V1\Support\UseLog;
 use App\Traits\MessageSystem;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @group Thanh toán
@@ -70,9 +71,16 @@ class PurchaseController extends Controller
     public function verifyPurchaseGooglePlay(GooglePlayRequest $request): JsonResponse
     {
         try {
+            DB::beginTransaction();
+
             $response = $this->googlePlayService->verifyPurchaseGooglePlay($request);
-            return $response;
+
+            DB::commit();
+
+            return $this->jsonResponseSuccess($response);
         } catch (Exception $exception) {
+            DB::rollBack();
+
             $this->logError(MessageSystem::SERVER_ERROR, $exception);
             return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }

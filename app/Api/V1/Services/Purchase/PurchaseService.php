@@ -6,6 +6,8 @@ use App\Admin\Services\GooglePlay\GooglePlayServiceInterface;
 use App\Admin\Services\Transaction\TransactionServiceInterface;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Http\Requests\Purchase\GooglePlayRequest;
+use App\Api\V1\Http\Resources\Package\AuthPackageResource;
+use App\Api\V1\Http\Resources\Package\PackageResource;
 use App\Api\V1\Repositories\Package\PackageRepositoryInterface;
 use App\Api\V1\Repositories\Transaction\TransactionRepositoryInterface;
 use App\Api\V1\Services\Notification\NotificationServiceInterface;
@@ -63,9 +65,9 @@ class PurchaseService implements PurchaseServiceInterface
      * SUBSCRIPTION_STATE_ON_HOLD    Google đang giữ (ví dụ do lỗi thanh toán)
      * SUBSCRIPTION_STATE_IN_GRACE_PERIOD    Gia hạn tạm thời do lỗi thanh toán
      * SUBSCRIPTION_STATE_PAUSED    Người dùng tạm dừng thuê bao
-     * @return JsonResponse
+     * @return array
      */
-    public function verifyPurchaseGooglePlay(GooglePlayRequest $request): JsonResponse
+    public function verifyPurchaseGooglePlay(GooglePlayRequest $request): array
     {
         $data = $request->validated();
         $user = $this->getCurrentUser();
@@ -87,20 +89,18 @@ class PurchaseService implements PurchaseServiceInterface
         if ($isActive) {
             $this->handlePurchase($user, $package, $purchaseData);
         }
-        return response()->json([
-            'success' => true,
-            'message' => MessageSystem::VERIFY_SUCCESS,
-            'data' => [
-                'package' => $package,
-                'product_id' => $productId,
-                'order_id' => $purchaseData['orderId'] ?? null,
-                'expiry_time' => $purchaseData['lineItem']['expiryTime'] ?? null,
-                'auto_renewing' => $purchaseData['lineItem']['autoRenewing'] ?? null,
-                'status' => $purchaseData['subscriptionState'] ?? null,
-            ]
-        ]);
+        return [
+            'package' => new PackageResource($package),
+            'user_package' => new AuthPackageResource($user->userPackages->first()),
+            'product_id' => $productId,
+            'order_id' => $purchaseData['orderId'] ?? null,
+            'expiry_time' => $purchaseData['lineItem']['expiryTime'] ?? null,
+            'auto_renewing' => $purchaseData['lineItem']['autoRenewing'] ?? null,
+            'status' => $purchaseData['subscriptionState'] ?? null,
+        ];
     }
 
+    // Xử lý giao dịch mua thành công
     private function handlePurchase($user, $package, $purchaseData): void
     {
         $orderId = $purchaseData['orderId'] ?? null;
