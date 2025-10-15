@@ -31,6 +31,7 @@ class TransactionDatable extends BaseDataTable
             'status' => 'admin.transaction.datatable.status',
             'user' => 'admin.transaction.datatable.user',
             'package' => 'admin.transaction.datatable.package',
+            'code' => 'admin.transaction.datatable.code',
         ];
     }
 
@@ -70,6 +71,7 @@ class TransactionDatable extends BaseDataTable
             'created_at' => '{{ $created_at ? format_datetime($created_at) : "" }}',
             'amount' => '{{ $amount ? number_format($amount, 0) . " VND" : "" }}',
             'status' => $this->view['status'],
+            'code' => $this->view['code'],
             'user_id' => function ($transaction) {
                 return view($this->view['user'], [
                     'user' => $transaction->user,
