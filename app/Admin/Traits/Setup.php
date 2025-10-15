@@ -16,6 +16,10 @@ trait Setup
         return 'S'.$this->uniqidReal(5).time();
     }
 
+    public function createCodeTransaction(){
+        return 'T'.$this->uniqidReal(5).time();
+    }
+
     public function folderUploadFileForUser($path = '/'){
         $path = $path == '/' ? '/' : '/'.Str::finish($path, '/');
 

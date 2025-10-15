@@ -2,9 +2,7 @@
 <header class="modern-header">
     <div class="header-container">
         <div class="header-left">
-            <button class="header-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-menu">
-                <i class="ti ti-menu-2"></i>
-            </button>
+
         </div>
 
         <div class="header-right">

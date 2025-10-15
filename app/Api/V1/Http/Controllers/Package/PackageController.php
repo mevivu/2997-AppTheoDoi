@@ -12,6 +12,7 @@ use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
 use App\Enums\ActiveStatus;
 use App\Enums\Package\PackageType;
+use App\Traits\MessageSystem;
 use Exception;
 use Illuminate\Http\JsonResponse;
 
@@ -24,12 +25,13 @@ class PackageController extends Controller
 
     public function __construct(
         PackageRepositoryInterface $repository,
-        PackageServiceInterface $service
+        PackageServiceInterface    $service
 
-    ) {
+    )
+    {
         $this->repository = $repository;
         $this->service = $service;
-        $this->middleware('auth:api', ['only' => ['purchasePackage','getCurrentUserPackage']]);
+        $this->middleware('auth:api', ['only' => ['purchasePackage', 'getCurrentUserPackage']]);
 
     }
 
@@ -78,8 +80,8 @@ class PackageController extends Controller
             )->get();
             return $this->jsonResponseSuccess(PackageResource::collection($response));
         } catch (Exception $exception) {
-            $this->logError('Get packages failed:', $exception);
-            return $this->jsonResponseError('Get  packages failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
 
     }
@@ -123,8 +125,8 @@ class PackageController extends Controller
             $this->service->purchasePackage($request);
             return $this->jsonResponseSuccessNoData();
         } catch (Exception $exception) {
-            $this->logError('Purchase package failed:', $exception);
-            return $this->jsonResponseError('Purchase package failed', 500);
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 

@@ -41,7 +41,7 @@ class TransactionService implements TransactionServiceInterface
         $data = [
             'user_id' => $user->id,
             'package_id' => $package->id,
-            'code' => uniqid_real(7),
+            'code' => $this->createCodeTransaction(),
             'amount' => $package->price,
             'type' => TransactionType::Payment,
             'status' => TransactionStatus::Confirmed

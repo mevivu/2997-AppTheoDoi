@@ -43,6 +43,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\RatingPQ\RatingPQServiceInterface' => 'App\Admin\Services\RatingPQ\RatingPQService',
         'App\Admin\Services\Rating\RatingServiceInterface' => 'App\Admin\Services\Rating\RatingService',
         'App\Admin\Services\Step\StepServiceInterface' => 'App\Admin\Services\Step\StepService',
+        'App\Admin\Services\GooglePlay\GooglePlayServiceInterface' => 'App\Admin\Services\GooglePlay\GooglePlayService',
 
 
     ];

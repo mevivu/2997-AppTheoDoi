@@ -3,8 +3,6 @@
 namespace App\Admin\Services\Notification;
 
 use Illuminate\Http\Request;
-use App\Models\User;
-use App\Enums\Notification\MessageType;
 interface NotificationServiceInterface
 {
 

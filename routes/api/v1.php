@@ -103,6 +103,13 @@ Route::controller(\App\Api\V1\Http\Controllers\Package\PackageController::class)
         Route::post('/buy', 'purchasePackage');
     });
 
+Route::controller(App\Api\V1\Http\Controllers\Purchase\PurchaseController::class)
+    ->prefix('/purchase')
+    ->as('purchase.')
+    ->group(function () {
+        Route::post('/google-play', 'verifyPurchaseGooglePlay');
+    });
+
 // Journal
 Route::controller(\App\Api\V1\Http\Controllers\Journal\JournalController::class)
     ->prefix('/journals')

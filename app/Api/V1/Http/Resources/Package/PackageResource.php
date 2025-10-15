@@ -24,7 +24,8 @@ class PackageResource extends JsonResource
             'name' => $this->name,
             'price' => $this->price,
             'description' => json_decode($this->description),
-            'type' => $this->type
+            'type' => $this->type,
+            'code' => $this->code,
         ];
     }
 }
