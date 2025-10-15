@@ -25,6 +25,7 @@ class TransactionResource extends JsonResource
             'code' => $this->code,
             'created_at' => format_datetime($this->created_at),
             'status' => $this->status,
+            'service' => $this->service,
             'package' => [
                 'name' => $this->package->name,
             ]

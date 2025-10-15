@@ -116,6 +116,18 @@ class NotificationService implements NotificationServiceInterface
     }
 
 
+    public function sendPaymentSuccessNotification(User $user, string $packageName): void
+    {
+        $title = config('notifications.payment_success.title');
+        $message = config('notifications.payment_success.message');
+        $body = str_replace(
+            ['{fullname}', '{package_name}'],
+            [$user->fullname, $packageName],
+            $message
+        );
+        $this->sendFirebaseNotificationToUser($user, $title, $body, MessageType::PAYMENT);
+
+    }
 }
 
 

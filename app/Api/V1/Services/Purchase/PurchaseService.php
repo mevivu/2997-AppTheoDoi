@@ -3,13 +3,17 @@
 namespace App\Api\V1\Services\Purchase;
 
 use App\Admin\Services\GooglePlay\GooglePlayServiceInterface;
+use App\Admin\Services\Transaction\TransactionServiceInterface;
 use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Http\Requests\Purchase\GooglePlayRequest;
 use App\Api\V1\Repositories\Package\PackageRepositoryInterface;
+use App\Api\V1\Repositories\Transaction\TransactionRepositoryInterface;
+use App\Api\V1\Services\Notification\NotificationServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\GooglePlay\SubscriptionState;
 use App\Enums\Package\PackageUserStatus;
+use App\Enums\Transaction\TransactionEnumService;
 use App\Traits\MessageSystem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
@@ -29,15 +33,24 @@ class PurchaseService implements PurchaseServiceInterface
     protected PackageRepositoryInterface $packageRepository;
 
     protected GooglePlayServiceInterface $googlePlayService;
+    protected TransactionServiceInterface $transactionService;
+    protected TransactionRepositoryInterface $transactionRepository;
+    protected NotificationServiceInterface $notificationService;
 
 
     public function __construct(
-        PackageRepositoryInterface $packageRepository,
-        GooglePlayServiceInterface $googlePlayService
+        PackageRepositoryInterface     $packageRepository,
+        GooglePlayServiceInterface     $googlePlayService,
+        TransactionServiceInterface    $transactionService,
+        TransactionRepositoryInterface $transactionRepository,
+        NotificationServiceInterface   $notificationService
     )
     {
         $this->packageRepository = $packageRepository;
         $this->googlePlayService = $googlePlayService;
+        $this->transactionService = $transactionService;
+        $this->transactionRepository = $transactionRepository;
+        $this->notificationService = $notificationService;
     }
 
 
@@ -90,6 +103,17 @@ class PurchaseService implements PurchaseServiceInterface
 
     private function handlePurchase($user, $package, $purchaseData): void
     {
+        $orderId = $purchaseData['orderId'] ?? null;
+        if ($orderId && $this->transactionRepository->existsByOrderIdAndService($orderId, TransactionEnumService::GOOGLE_PLAY)) {
+            return;
+        }
+        $this->updateOrCreateUserPackage($user, $package);
+        $this->transactionService->store($user, $package, TransactionEnumService::GOOGLE_PLAY, $orderId);
+        $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
+    }
+
+    private function updateOrCreateUserPackage($user, $package): void
+    {
         $currentType = $package->type;
         $currentUserPackage = $user->userPackages()->where('status', PackageUserStatus::Active)->first();
         $startDate = $currentUserPackage
@@ -104,5 +128,6 @@ class PurchaseService implements PurchaseServiceInterface
             ]);
         }
     }
+
 
 }

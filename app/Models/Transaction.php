@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\DeleteStatus;
+use App\Enums\Transaction\TransactionEnumService;
 use App\Enums\Transaction\TransactionStatus;
 use App\Enums\Transaction\TransactionType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,6 +21,8 @@ class Transaction extends Model
     protected $fillable = [
         /** code */
         'code',
+        /** Google Order Id */
+        'google_order_id',
         /* ID người dùng thực hiện giao dịch */
         'user_id',
         /* ID gói dịch vụ liên quan đến giao dịch */
@@ -32,12 +35,15 @@ class Transaction extends Model
         'is_deleted',
         /* Trạng thái giao dịch (chờ xử lý, đã xác nhận, thành công) */
         'status',
+        /** Loai */
+        'service'
     ];
 
     protected $casts = [
         'type' => TransactionType::class,
         'is_deleted' => DeleteStatus::class,
         'status' => TransactionStatus::class,
+        'service' => TransactionEnumService::class,
     ];
 
     public function userPackages(): HasMany

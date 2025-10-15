@@ -21,6 +21,7 @@ interface NotificationServiceInterface
     public function sendCustomerPaymentNotification(User $user): void;
 
     public function sendNotificationsPaymentToAdmins($user, $image, $packageId);
+    public function sendPaymentSuccessNotification(User $user, string $packageName): void;
 
 
 }

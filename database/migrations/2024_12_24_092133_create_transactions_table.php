@@ -7,8 +7,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      *
@@ -26,7 +25,7 @@ return new class extends Migration
             $table->enum('type', TransactionType::getValues())->default(TransactionType::Payment->value);
             $table->enum('is_deleted', DeleteStatus::getValues())->default(DeleteStatus::Deleted->value);
             $table->enum('status', TransactionStatus::getValues())->default(TransactionStatus::Pending->value);
-
+            $table->string('google_order_id', 255)->nullable()->after('code');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('package_id')->references('id')->on('packages')->onDelete('cascade');

@@ -21,4 +21,8 @@ return [
         'title' => 'Xác nhận và Thanh toán Thành Công',
         'message' => 'Yêu cầu phê duyệt gói của bạn đã được xác nhận và thanh toán thành công. Bạn có thể bắt đầu sử dụng các dịch vụ của chúng tôi ngay bây giờ. Cảm ơn bạn đã lựa chọn chúng tôi!'
     ],
+    'payment_success' => [
+        'title' => 'Thanh Toán Thành Công - Vui Lòng Đăng Nhập Lại',
+        'message' => 'Chào {fullname}! Giao dịch mua gói "{package_name}" của bạn đã được xử lý thành công. Để kích hoạt gói dịch vụ mới, vui lòng đăng xuất và đăng nhập lại ứng dụng. Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi!'
+    ],
 ];

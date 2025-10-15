@@ -13,7 +13,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 
 /**
- * @group Gói dịch vụ
+ * @group Thanh toán
  */
 class PurchaseController extends Controller
 {
