@@ -5,9 +5,7 @@ namespace App\Admin\DataTables\Transaction;
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Transaction\TransactionRepositoryInterface;
 use App\Admin\Traits\Roles;
-use App\Enums\Child\ChildStatus;
 use App\Enums\Transaction\TransactionStatus;
-use App\Enums\User\Gender;
 use Illuminate\Database\Eloquent\Builder;
 
 class TransactionDatable extends BaseDataTable
