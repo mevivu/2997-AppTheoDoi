@@ -5,7 +5,7 @@
 @endpush
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form id="notificationForm" :action="route('admin.notification.store')" type="post" :validate="true">
                 <div class="row justify-content-center">
                     <input type="hidden" name="device_token" value="">

@@ -12,7 +12,7 @@
 @endpush
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form :action="route('admin.vaccination.store')" type="post" :validate="true">
                 <div class="row justify-content-center">
                     @include('admin.vaccinationSchedule.forms.create-left')

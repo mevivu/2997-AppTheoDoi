@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form :action="route('admin.question.storeIq')" type="post" :validate="true" id="form_iq" enctype="multipart/form-data">
                 <div class="row justify-content-center">
                     @include('admin.question.create.forms.create-iq-left')

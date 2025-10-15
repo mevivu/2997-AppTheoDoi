@@ -3,7 +3,7 @@
 @endpush
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form :action="route('admin.quality.store')" type="post" :validate="true">
                 <div class="row justify-content-center">
                     @include('admin.quality.forms.create-left')

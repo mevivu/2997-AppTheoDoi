@@ -12,7 +12,7 @@
 @endpush
 @section('content')
     <div class="page-header d-print-none">
-        <div class="container-xl">
+        <div class="container-fluid">
             <div class="row g-2 align-items-center">
                 <div class="col">
                     <nav aria-label="breadcrumb">

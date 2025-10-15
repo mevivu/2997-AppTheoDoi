@@ -3,7 +3,7 @@
 @endpush
 @section('content')
     <div class="page-header d-print-none">
-        <div class="container-xl">
+        <div class="container-fluid">
             <div class="row g-2 align-items-center">
                 <div class="col">
                     <nav aria-label="breadcrumb">
@@ -18,7 +18,7 @@
         </div>
     </div>
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form :action="route('admin.role.store')" type="post" :validate="true">
                 <div class="row justify-content-center">
                     @include('admin.role.forms.create-left')

@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form :action="route('admin.question.updateAqEq')" type="put" enctype="multipart/form-data" :validate="true" id="form_eq_aq">
                 <x-input type="hidden" name="question[id]" :value="$response->id" />
                 <div class="row justify-content-center">

@@ -3,7 +3,7 @@
 @endpush
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form :action="route('admin.question.updateIq')" enctype="multipart/form-data" type="put" :validate="true" id="form_iq">
                 <x-input type="hidden" name="question[id]" :value="$response->id" />
                 <div class="row justify-content-center">

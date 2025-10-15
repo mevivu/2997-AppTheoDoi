@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="page-header d-print-none">
-        <div class="container-xl">
+        <div class="container-fluid">
             <div class="row g-2 align-items-center">
                 <div class="col">
                     <h2 class="page-title">
@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-6">
                     <x-form :action="route('admin.profile.update')" type="put" enctype="multipart/form-data" :validate="true">

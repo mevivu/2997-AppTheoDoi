@@ -3,7 +3,7 @@
 @endpush
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form  :action="route('admin.weight-height-who.store')" type="post" :validate="true">
                 <div class="row justify-content-center">
                     @include('admin.WeightHeightWho.forms.create-left')

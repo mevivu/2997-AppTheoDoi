@@ -13,11 +13,11 @@
 @endpush
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form :action="route('admin.setting.update')" type="put" :validate="true">
                 <div class="row justify-content-center">
                     <div class="col-12 col-md-9">
-                        @include('admin.settings.forms.edit-left')  
+                        @include('admin.settings.forms.edit-left')
                     </div>
                     @include('admin.settings.forms.edit-right')
                 </div>

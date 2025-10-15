@@ -5,7 +5,7 @@
 @endpush
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form id="notificationForm" :action="route('admin.children.update')" type="put" :validate="true">
                 <div class="row justify-content-center">
                     <input type="hidden" name="id" value="{{ $children->id }}">

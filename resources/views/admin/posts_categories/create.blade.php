@@ -1,7 +1,7 @@
 @extends('admin.layouts.master')
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form :action="route('admin.post_category.store')" type="post" :validate="true">
                 <div class="row justify-content-center">
                     @include('admin.posts_categories.forms.create-left')

@@ -5,7 +5,7 @@
 @endpush
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form :action="route('admin.quiz.updateIQ')" type="put" :validate="true">
                 <x-input type="hidden" name="id" :value="$instance->id"/>
                 <x-input type="hidden" name="type" :value="$instance->type->value"/>

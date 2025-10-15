@@ -101,7 +101,7 @@
         .card-sm[data-category="user"]:hover {
             box-shadow: 0 8px 16px rgba(245, 158, 11, 0.2);
         }
-        
+
         .card-sm:hover {
             transform: translateY(-4px);
         }
@@ -170,7 +170,7 @@
     </style>
 
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col">
                     <div class="card custom-shadow">

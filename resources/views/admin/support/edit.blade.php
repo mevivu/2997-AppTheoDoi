@@ -3,7 +3,7 @@
 @endpush
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form :action="route('admin.support.update')" type="put" :validate="true">
                 <x-input type="hidden" name="id" :value="$response->id" />
                 <div class="row justify-content-center">

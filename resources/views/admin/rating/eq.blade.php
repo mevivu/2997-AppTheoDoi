@@ -7,7 +7,7 @@
 
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <div class="card custom-shadow">
                 <div class="card-header justify-content-between">
                     <h2 class="mb-0">@lang('Danh sách đánh giá EQ')</h2>

@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <x-form :action="route('admin.user.store')" type="post" :validate="true">
                 <div class="row justify-content-center">
                     @include('admin.users.forms.create-left')
