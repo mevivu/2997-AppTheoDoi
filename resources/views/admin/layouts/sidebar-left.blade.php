@@ -82,7 +82,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        width: 120px;
+        width: 110px;
         height: 100vh;
         background: #ffffff;
         z-index: 1001;
