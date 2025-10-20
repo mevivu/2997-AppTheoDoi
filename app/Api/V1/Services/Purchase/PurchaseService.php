@@ -17,8 +17,8 @@ use App\Enums\GooglePlay\SubscriptionState;
 use App\Enums\Package\PackageUserStatus;
 use App\Enums\Transaction\TransactionEnumService;
 use App\Traits\MessageSystem;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 
 class PurchaseService implements PurchaseServiceInterface
@@ -87,7 +87,7 @@ class PurchaseService implements PurchaseServiceInterface
         $isActive = $statusEnum->isActive();
 
         if ($isActive) {
-            $this->handlePurchase($user, $package, $purchaseData);
+            $this->handlePurchase($user, $package, $purchaseData, $purchaseToken);
         }
         return [
             'package' => new PackageResource($package),
@@ -101,14 +101,14 @@ class PurchaseService implements PurchaseServiceInterface
     }
 
     // Xử lý giao dịch mua thành công
-    private function handlePurchase($user, $package, $purchaseData): void
+    private function handlePurchase($user, $package, $purchaseData, $purchaseToken): void
     {
         $orderId = $purchaseData['orderId'] ?? null;
         if ($orderId && $this->transactionRepository->existsByOrderIdAndService($orderId, TransactionEnumService::GOOGLE_PLAY)) {
             return;
         }
         $this->updateOrCreateUserPackage($user, $package);
-        $this->transactionService->store($user, $package, TransactionEnumService::GOOGLE_PLAY, $orderId);
+        $this->transactionService->store($user, $package, TransactionEnumService::GOOGLE_PLAY, $orderId, $purchaseToken);
         $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
     }
 
@@ -130,4 +130,48 @@ class PurchaseService implements PurchaseServiceInterface
     }
 
 
+    public function handleWebhookNotification($data): void
+    {
+        $user = $this->getCurrentUser();
+        $notificationType = $data['subscriptionNotification']['notificationType'] ?? null;
+        $purchaseToken = $decoded['subscriptionNotification']['purchaseToken'] ?? null;
+        $productId = $data['subscriptionNotification']['subscriptionId'] ?? null;
+        Log::info("Subscription notification type: {$notificationType}", [
+            'subscription_id' => $productId,
+            'purchase_token' => $purchaseToken,
+        ]);
+        $typeNames = [
+            1 => 'SUBSCRIPTION_RECOVERED',
+            2 => 'SUBSCRIPTION_RENEWED',
+            3 => 'SUBSCRIPTION_CANCELED',
+            4 => 'SUBSCRIPTION_PURCHASED',
+            5 => 'SUBSCRIPTION_ON_HOLD',
+            6 => 'SUBSCRIPTION_IN_GRACE_PERIOD',
+            7 => 'SUBSCRIPTION_RESTARTED',
+            8 => 'SUBSCRIPTION_PRICE_CHANGE_CONFIRMED',
+            9 => 'SUBSCRIPTION_DEFERRED',
+            10 => 'SUBSCRIPTION_PAUSED',
+            11 => 'SUBSCRIPTION_PAUSE_SCHEDULE_CHANGED',
+            12 => 'SUBSCRIPTION_REVOKED',
+            13 => 'SUBSCRIPTION_EXPIRED',
+        ];
+        $typeName = $typeNames[$notificationType];
+
+        switch ($notificationType) {
+            //  SUBSCRIPTION_REVOKED - REFUND
+            case 12:
+                $this->processRefund($productId, $purchaseToken, $user);
+                break;
+
+            default:
+                Log::info("Unhandled notification type: {$notificationType}");
+        }
+
+    }
+
+    private function processRefund($productId, mixed $purchaseToken, $user)
+    {
+        $package = $this->packageRepository->findByField('code', $productId);
+        $days = $package?->days;
+    }
 }

@@ -23,6 +23,8 @@ class Transaction extends Model
         'code',
         /** Google Order Id */
         'google_order_id',
+        /** Mã token của giao dịch Google Play */
+        'purchase_token',
         /* ID người dùng thực hiện giao dịch */
         'user_id',
         /* ID gói dịch vụ liên quan đến giao dịch */

@@ -36,6 +36,9 @@
     -webkit-box-shadow: 5px 6px 5px 0px rgba(0, 0, 0, 0.11);
     -moz-box-shadow: 5px 6px 5px 0px rgba(0, 0, 0, 0.11);
 }
+.page-body{
+    margin: 6px 6px !important;
+}
 
 .givePermissionsLabel {
     font-weight: bold;

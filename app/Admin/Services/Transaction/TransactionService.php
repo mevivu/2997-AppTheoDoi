@@ -36,7 +36,7 @@ class TransactionService implements TransactionServiceInterface
     /**
      * @throws Exception
      */
-    public function store($user, $package, $service = TransactionEnumService::NORMAL, $orderId = null): void
+    public function store($user, $package, $service = TransactionEnumService::NORMAL, $orderId = null, $purchaseToken = null): void
     {
         $data = [
             'user_id' => $user->id,
@@ -46,6 +46,7 @@ class TransactionService implements TransactionServiceInterface
             'type' => TransactionType::Payment,
             'status' => TransactionStatus::Confirmed,
             'google_order_id' => $orderId,
+            'purchase_token' => $purchaseToken,
             'service' => $service,
             'is_deleted' => DeleteStatus::NotDeleted,
         ];

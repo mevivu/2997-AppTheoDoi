@@ -4,6 +4,7 @@ namespace App\Api\V1\Http\Controllers\Purchase;
 
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Http\Requests\Purchase\GooglePlayRequest;
+use App\Api\V1\Http\Requests\Purchase\WebhookGooglePlayRequest;
 use App\Api\V1\Services\Purchase\PurchaseServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
@@ -11,6 +12,7 @@ use App\Api\V1\Support\UseLog;
 use App\Traits\MessageSystem;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -20,14 +22,14 @@ class PurchaseController extends Controller
 {
     use AuthServiceApi, Response, UseLog;
 
-    protected PurchaseServiceInterface $googlePlayService;
+    protected PurchaseServiceInterface $purchaseService;
 
     public function __construct(
-        PurchaseServiceInterface $googlePlayService
+        PurchaseServiceInterface $purchaseService
 
     )
     {
-        $this->googlePlayService = $googlePlayService;
+        $this->purchaseService = $purchaseService;
         $this->middleware('auth:api');
 
     }
@@ -73,7 +75,7 @@ class PurchaseController extends Controller
         try {
             DB::beginTransaction();
 
-            $response = $this->googlePlayService->verifyPurchaseGooglePlay($request);
+            $response = $this->purchaseService->verifyPurchaseGooglePlay($request);
 
             DB::commit();
 
@@ -82,6 +84,38 @@ class PurchaseController extends Controller
             DB::rollBack();
 
             $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
+        }
+    }
+
+    /**
+     * Webhook nhận thông báo từ Google Play (Refund / Cancel / Renew)
+     *
+     * Google gửi thông báo này khi có sự kiện thay đổi trạng thái thuê bao:
+     *  - SUBSCRIPTION_CANCELED
+     *  - SUBSCRIPTION_REFUNDED
+     *  - SUBSCRIPTION_RECOVERED
+     *  - SUBSCRIPTION_EXPIRED
+     *
+     * @unauthenticated
+     *
+     * @bodyParam message.data string required Dữ liệu Base64 mà Google gửi.
+     * @bodyParam message.messageId string optional ID của thông báo.
+     * @response 200 {"status":200,"message":"Webhook received"}
+     */
+    public function googlePlayWebhook(WebhookGooglePlayRequest $request): JsonResponse
+    {
+        try {
+            $decoded = $request->getDecodedData();
+
+            if (!$decoded) {
+                return $this->jsonResponseError('Dữ liệu webhook không hợp lệ.', 400);
+            }
+            $this->purchaseService->handleWebhookNotification($decoded);
+
+            return $this->jsonResponseSuccess(['message' => 'Webhook received']);
+        } catch (Exception $e) {
+            $this->logError(MessageSystem::SERVER_ERROR, $e);
             return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
