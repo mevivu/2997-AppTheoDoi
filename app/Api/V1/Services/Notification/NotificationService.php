@@ -128,6 +128,24 @@ class NotificationService implements NotificationServiceInterface
         $this->sendFirebaseNotificationToUser($user, $title, $body, MessageType::PAYMENT);
 
     }
+
+    public function sendRefundNotification(User $user, string $packageName): void
+    {
+        $title = config('notifications.payment_refunded.title');
+        $message = config('notifications.payment_refunded.message');
+
+        $body = str_replace(
+            ['{fullname}', '{package_name}'],
+            [$user->fullname, $packageName],
+            $message
+        );
+        $data = [
+            'type' => 'logout',
+        ];
+
+        $this->sendFirebaseNotificationToUser($user, $title, $body, MessageType::PAYMENT, $data);
+    }
+
 }
 
 

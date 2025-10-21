@@ -25,17 +25,17 @@ class Transaction extends Model
         'google_order_id',
         /** Mã token của giao dịch Google Play */
         'purchase_token',
-        /* ID người dùng thực hiện giao dịch */
+        /** ID người dùng thực hiện giao dịch */
         'user_id',
-        /* ID gói dịch vụ liên quan đến giao dịch */
+        /** ID gói dịch vụ liên quan đến giao dịch */
         'package_id',
-        /* Số tiền của giao dịch */
+        /** Số tiền của giao dịch */
         'amount',
-        /* Loại giao dịch (thanh toán, hoàn tiền, ...) */
+        /** Loại giao dịch (thanh toán, hoàn tiền, ...) */
         'type',
-        /* Trạng thái xóa của giao dịch */
+        /** Trạng thái xóa của giao dịch */
         'is_deleted',
-        /* Trạng thái giao dịch (chờ xử lý, đã xác nhận, thành công) */
+        /** Trạng thái giao dịch (chờ xử lý, đã xác nhận, thành công) */
         'status',
         /** Loai */
         'service'

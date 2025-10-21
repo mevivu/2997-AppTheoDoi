@@ -89,6 +89,7 @@ return [
     TransactionStatus::class => [
         TransactionStatus::Pending->value => 'Chưa giải quyết',
         TransactionStatus::Confirmed->value => 'Đã xác nhận',
+        TransactionStatus::Refunded->value => 'Đã hoàn tiền',
     ],
     BornStatus::class => [
         BornStatus::Born->value => 'Đã sinh',

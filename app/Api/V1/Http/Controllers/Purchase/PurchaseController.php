@@ -11,9 +11,12 @@ use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
 use App\Traits\MessageSystem;
 use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * @group Thanh toán
@@ -26,12 +29,15 @@ class PurchaseController extends Controller
 
     public function __construct(
         PurchaseServiceInterface $purchaseService
-
     )
     {
         $this->purchaseService = $purchaseService;
-        $this->middleware('auth:api');
-
+        $this->middleware('auth:api', [
+            'except' => [
+                'login',
+                'googlePlayWebhook',
+            ]
+        ]);
     }
 
 
@@ -88,35 +94,48 @@ class PurchaseController extends Controller
         }
     }
 
-    /**
-     * Webhook nhận thông báo từ Google Play (Refund / Cancel / Renew)
-     *
-     * Google gửi thông báo này khi có sự kiện thay đổi trạng thái thuê bao:
-     *  - SUBSCRIPTION_CANCELED
-     *  - SUBSCRIPTION_REFUNDED
-     *  - SUBSCRIPTION_RECOVERED
-     *  - SUBSCRIPTION_EXPIRED
-     *
-     * @unauthenticated
-     *
-     * @bodyParam message.data string required Dữ liệu Base64 mà Google gửi.
-     * @bodyParam message.messageId string optional ID của thông báo.
-     * @response 200 {"status":200,"message":"Webhook received"}
-     */
     public function googlePlayWebhook(WebhookGooglePlayRequest $request): JsonResponse
     {
+        Log::info('🔔 Google Play Webhook Handler Started');
+
         try {
             $decoded = $request->getDecodedData();
 
             if (!$decoded) {
-                return $this->jsonResponseError('Dữ liệu webhook không hợp lệ.', 400);
+                Log::error('❌ Could not decode webhook data', [
+                    'raw_data' => $request->input('message.data'),
+                ]);
+
+                return $this->jsonResponseSuccess([
+                    'message' => 'Webhook received but data invalid',
+                    'ack' => true
+                ]);
             }
+
+            Log::info('✅ Webhook data decoded successfully', [
+                'data' => $decoded
+            ]);
+
             $this->purchaseService->handleWebhookNotification($decoded);
 
-            return $this->jsonResponseSuccess(['message' => 'Webhook received']);
+            Log::info('✅ Webhook processed successfully');
+
+            return $this->jsonResponseSuccess([
+                'message' => 'Webhook received',
+                'ack' => true
+            ]);
+
         } catch (Exception $e) {
-            $this->logError(MessageSystem::SERVER_ERROR, $e);
-            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
+            Log::error('❌ Webhook processing failed', [
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return $this->jsonResponseSuccess([
+                'message' => 'Webhook received but processing failed',
+                'ack' => true,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 

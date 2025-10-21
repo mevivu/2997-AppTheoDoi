@@ -14,8 +14,10 @@ use App\Api\V1\Services\Notification\NotificationServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\GooglePlay\SubscriptionState;
+use App\Enums\Package\PackageType;
 use App\Enums\Package\PackageUserStatus;
 use App\Enums\Transaction\TransactionEnumService;
+use App\Enums\Transaction\TransactionStatus;
 use App\Traits\MessageSystem;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -132,9 +134,8 @@ class PurchaseService implements PurchaseServiceInterface
 
     public function handleWebhookNotification($data): void
     {
-        $user = $this->getCurrentUser();
         $notificationType = $data['subscriptionNotification']['notificationType'] ?? null;
-        $purchaseToken = $decoded['subscriptionNotification']['purchaseToken'] ?? null;
+        $purchaseToken = $data['subscriptionNotification']['purchaseToken'] ?? null;
         $productId = $data['subscriptionNotification']['subscriptionId'] ?? null;
         Log::info("Subscription notification type: {$notificationType}", [
             'subscription_id' => $productId,
@@ -158,9 +159,8 @@ class PurchaseService implements PurchaseServiceInterface
         $typeName = $typeNames[$notificationType];
 
         switch ($notificationType) {
-            //  SUBSCRIPTION_REVOKED - REFUND
-            case 12:
-                $this->processRefund($productId, $purchaseToken, $user);
+            case 13:
+                $this->processRefund($productId, $purchaseToken);
                 break;
 
             default:
@@ -169,9 +169,56 @@ class PurchaseService implements PurchaseServiceInterface
 
     }
 
-    private function processRefund($productId, mixed $purchaseToken, $user)
+    private function processRefund($productId, $purchaseToken): void
     {
         $package = $this->packageRepository->findByField('code', $productId);
+        Log::info("Package found for refund: " . ($package ? $package->name : 'Not Found'));
         $days = $package?->days;
+        $transaction = $this->transactionRepository->findByField('purchase_token', $purchaseToken);
+        if (!$transaction) {
+            Log::warning("Refund failed: Transaction not found for token {$purchaseToken}");
+            return;
+        }
+        $user = $transaction->user ?? null;
+        if (!$user) {
+            Log::warning("Refund failed: User not found for transaction ID {$transaction->id}");
+            return;
+        }
+        $transaction->update(['status' => TransactionStatus::Refunded]);
+
+        $userPackage = $user->userPackages()
+            ->where('package_id', $package->id)
+            ->where('status', PackageUserStatus::Active)
+            ->first();
+
+        if (!$userPackage) {
+            Log::warning("Refund warning: Active user package not found for user ID {$user->id}");
+            return;
+        }
+        $now = now();
+        if ($userPackage->end_date < $now) {
+            Log::info("Refund process: Package end_date ({$userPackage->end_date}) < now ({$now}) → reset type normal");
+
+            $userPackage->update([
+                'current_type' => PackageType::Normal,
+                'end_date' => $now,
+            ]);
+        } else {
+            $newEndDate = Carbon::parse($userPackage->end_date)->subDays($days);
+            Log::info("Refund process: Adjusted end_date from {$userPackage->end_date} to {$newEndDate}");
+
+            if ($newEndDate < $now) {
+                $userPackage->update([
+                    'current_type' => PackageType::Normal,
+                    'end_date' => $now,
+                ]);
+            } else {
+                $userPackage->update([
+                    'end_date' => $newEndDate,
+                ]);
+            }
+        }
+
+
     }
 }

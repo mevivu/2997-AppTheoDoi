@@ -25,4 +25,8 @@ return [
         'title' => 'Thanh Toán Thành Công - Vui Lòng Đăng Nhập Lại',
         'message' => 'Chào {fullname}! Giao dịch mua gói "{package_name}" của bạn đã được xử lý thành công. Để kích hoạt gói dịch vụ mới, vui lòng đăng xuất và đăng nhập lại ứng dụng. Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi!'
     ],
+    'payment_refunded' => [
+        'title' => 'Hoàn Tiền Thành Công',
+        'message' => 'Xin chào {fullname}! Khoản thanh toán cho gói "{package_name}" của bạn đã được hoàn lại thành công. Số tiền sẽ sớm được ghi có về phương thức thanh toán ban đầu. Cảm ơn bạn đã đồng hành cùng chúng tôi!',
+    ],
 ];

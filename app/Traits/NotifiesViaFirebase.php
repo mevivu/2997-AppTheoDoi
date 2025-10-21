@@ -35,7 +35,7 @@ trait  NotifiesViaFirebase
      * @param int|null $notificationId $body Body text of the notification.
      */
     public function sendFirebaseNotification(array  $deviceTokens, ?string $topic,
-                                             string $title, string $body, ?int $notificationId = null): void
+                                             string $title, string $body, ?int $notificationId = null, $data = null): void
     {
         $setting = app(SettingRepositoryInterface::class);
         $image = asset($setting->findByField("setting_key", 'site_logo')->plain_value);
@@ -45,6 +45,11 @@ trait  NotifiesViaFirebase
             'body' => $body,
             'imageUrl' => $image
         ];
+
+        $data = $data ?? [];
+        if ($data['type']) {
+            $notificationData['type'] = $data['type'];
+        }
 
         if ($notificationId !== null) {
             $notificationData['notificationId'] = $notificationId;
@@ -204,7 +209,7 @@ trait  NotifiesViaFirebase
     }
 
 
-    public function sendFirebaseNotificationToUser(User $user, string $title, string $body, ?MessageType $type = null): void
+    public function sendFirebaseNotificationToUser(User $user, string $title, string $body, ?MessageType $type = null, $data = null): void
     {
         $notificationRepository = app(NotificationRepositoryInterface::class);
 
@@ -222,7 +227,7 @@ trait  NotifiesViaFirebase
         $notification = $notificationRepository->create($notificationData);
 
         if (!empty($deviceToken)) {
-            $this->sendFirebaseNotification([$deviceToken], null, $title, $body, $notification->id,);
+            $this->sendFirebaseNotification([$deviceToken], null, $title, $body, $notification->id, $data);
         }
     }
 
