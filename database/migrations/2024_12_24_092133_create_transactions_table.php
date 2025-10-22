@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\DeleteStatus;
+use App\Enums\Transaction\TransactionEnumService;
 use App\Enums\Transaction\TransactionStatus;
 use App\Enums\Transaction\TransactionType;
 use Illuminate\Database\Migrations\Migration;
@@ -25,11 +26,14 @@ return new class extends Migration {
             $table->enum('type', TransactionType::getValues())->default(TransactionType::Payment->value);
             $table->enum('is_deleted', DeleteStatus::getValues())->default(DeleteStatus::Deleted->value);
             $table->enum('status', TransactionStatus::getValues())->default(TransactionStatus::Pending->value);
-            $table->string('google_order_id', 255)->nullable()->after('code');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('package_id')->references('id')->on('packages')->onDelete('cascade');
-
+            $table->string('google_order_id')->nullable()->after('id');
+            $table->string('purchase_token')->nullable()->after('google_order_id');
+            $table->string('service')
+                ->default(TransactionEnumService::NORMAL->value)
+                ->after('purchase_token');
         });
     }
 

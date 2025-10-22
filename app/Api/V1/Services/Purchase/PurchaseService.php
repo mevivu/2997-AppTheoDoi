@@ -159,7 +159,7 @@ class PurchaseService implements PurchaseServiceInterface
         $typeName = $typeNames[$notificationType];
 
         switch ($notificationType) {
-            case 13:
+            case 12:
                 $this->processRefund($productId, $purchaseToken);
                 break;
 
@@ -218,6 +218,8 @@ class PurchaseService implements PurchaseServiceInterface
                 ]);
             }
         }
+        $this->notificationService->sendRefundNotification($transaction->user, $package->name);
+
 
 
     }

@@ -46,8 +46,7 @@ trait  NotifiesViaFirebase
             'imageUrl' => $image
         ];
 
-        $data = $data ?? [];
-        if ($data['type']) {
+        if (!empty($data['type'])) {
             $notificationData['type'] = $data['type'];
         }
 

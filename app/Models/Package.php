@@ -28,6 +28,7 @@ class Package extends Model
         'status',
         /* Loại gói dịch vụ (1 tháng, 3 tháng, 6 tháng, 1 năm) */
         'type',
+        'code'
     ];
     protected $casts = [
 
