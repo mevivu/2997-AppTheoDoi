@@ -5,6 +5,7 @@ namespace App\Admin\DataTables\Transaction;
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Transaction\TransactionRepositoryInterface;
 use App\Admin\Traits\Roles;
+use App\Enums\Transaction\TransactionEnumService;
 use App\Enums\Transaction\TransactionStatus;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -30,18 +31,23 @@ class TransactionDatable extends BaseDataTable
             'user' => 'admin.transaction.datatable.user',
             'package' => 'admin.transaction.datatable.package',
             'code' => 'admin.transaction.datatable.code',
+            'service' => 'admin.transaction.datatable.service',
         ];
     }
 
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [0,1, 3, 4,5];
-        $this->columnSearchDate = [5];
+        $this->columnAllSearch = [0, 1, 3, 4, 5, 6];
+        $this->columnSearchDate = [6];
         $this->columnSearchSelect = [
             [
                 'column' => 4,
                 'data' => TransactionStatus::asSelectArray()
+            ],
+            [
+                'column' => 5,
+                'data' => TransactionEnumService::asSelectArray()
             ],
 
         ];
@@ -69,6 +75,7 @@ class TransactionDatable extends BaseDataTable
             'created_at' => '{{ $created_at ? format_datetime($created_at) : "" }}',
             'amount' => '{{ $amount ? number_format($amount, 0) . " VND" : "" }}',
             'status' => $this->view['status'],
+            'service' => $this->view['service'],
             'code' => $this->view['code'],
             'user_id' => function ($transaction) {
                 return view($this->view['user'], [
@@ -94,7 +101,8 @@ class TransactionDatable extends BaseDataTable
             'status',
             'user_id',
             'amount',
-            'package_id'
+            'package_id',
+            'service',
         ];
     }
 

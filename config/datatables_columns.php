@@ -151,6 +151,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
+        'service' => [
+            'title' => 'service',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle'
+        ],
         'created_at' => [
             'title' => 'Ngày tạo',
             'width' => '150px',
