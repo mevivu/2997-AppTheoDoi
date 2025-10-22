@@ -5,12 +5,13 @@ namespace App\Api\V1\Http\Controllers\Post;
 use App\Api\V1\Http\Requests\Post\PostRequest;
 use App\Api\V1\Http\Resources\Post\PostResource;
 use App\Api\V1\Repositories\Post\PostRepositoryInterface;
-use App\Enums\ActiveStatus;
 use App\Enums\Post\PostStatus;
 use App\Http\Controllers\Controller;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
+use App\Traits\MessageSystem;
+use Exception;
 use Illuminate\Http\JsonResponse;
 
 /**
@@ -24,7 +25,8 @@ class PostController extends Controller
 
     public function __construct(
         PostRepositoryInterface $repository
-    ) {
+    )
+    {
         $this->repository = $repository;
     }
 
@@ -56,8 +58,8 @@ class PostController extends Controller
      *     ]
      * }
      *
-     * @param \App\Api\V1\Http\Requests\Post\PostRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param PostRequest $request
+     * @return JsonResponse
      */
     public function index(PostRequest $request): JsonResponse
     {
@@ -69,12 +71,15 @@ class PostController extends Controller
 
             $posts = $this->repository->getByQueryBuilder(
                 ['status' => PostStatus::Published->value]
-            )->paginate($limit, ['*'], 'page', $page);
+            )
+                ->orderByDesc('is_featured')
+                ->orderByDesc('created_at')
+                ->paginate($limit, ['*'], 'page', $page);
 
             return $this->jsonResponseSuccess(PostResource::collection($posts));
-        } catch (\Exception $e) {
-            $this->logError('Get posts failed:', $e);
-            return $this->jsonResponseError('Get posts failed', 500);
+        } catch (Exception $e) {
+            $this->logError(MessageSystem::SERVER_ERROR, $e);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 
@@ -114,9 +119,9 @@ class PostController extends Controller
             }
 
             return $this->jsonResponseError('Không tìm thấy bài viết', 404);
-        } catch (\Exception $e) {
-            $this->logError('Get post failed:', $e);
-            return $this->jsonResponseError('Get post failed', 500);
+        } catch (Exception $e) {
+            $this->logError(MessageSystem::SERVER_ERROR, $e);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
     }
 }
