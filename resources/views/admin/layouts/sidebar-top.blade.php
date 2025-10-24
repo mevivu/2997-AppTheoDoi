@@ -137,7 +137,7 @@
         border: 1px solid #f0f0f0;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        max-height: 400px;
+        max-height: 500px;
         overflow-y: auto;
         z-index: 1001;
     }
@@ -146,8 +146,33 @@
         padding: 8px 0;
     }
 
+    .search-result-group {
+        margin-bottom: 8px;
+    }
+
+    .search-result-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .search-module-header {
+        padding: 10px 16px 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.85);
+        background: #fafafa;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .search-module-icon {
+        font-size: 16px;
+        color: #1890ff;
+    }
+
     .search-result-item {
-        padding: 10px 16px;
+        padding: 10px 16px 10px 40px;
         cursor: pointer;
         transition: background 0.2s ease;
         display: flex;
@@ -155,15 +180,17 @@
         gap: 12px;
         text-decoration: none;
         color: inherit;
+        border-left: 3px solid transparent;
     }
 
     .search-result-item:hover {
         background: #f5f5f5;
+        border-left-color: #1890ff;
     }
 
     .search-result-icon {
-        font-size: 18px;
-        color: rgba(0, 0, 0, 0.65);
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.45);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -192,21 +219,12 @@
         font-size: 14px;
     }
 
-    .search-category {
-        padding: 8px 16px;
-        font-size: 12px;
-        font-weight: 600;
-        color: rgba(0, 0, 0, 0.45);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        background: #fafafa;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
     .search-highlight {
         background: #fff3cd;
-        padding: 2px 0;
+        padding: 2px 4px;
+        border-radius: 2px;
         font-weight: 500;
+        color: #856404;
     }
 
     .header-right {
@@ -225,6 +243,25 @@
     .header-account {
         display: flex;
         align-items: center;
+    }
+
+    /* Scrollbar cho search results */
+    .search-results::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .search-results::-webkit-scrollbar-track {
+        background: #f0f0f0;
+        border-radius: 0 8px 8px 0;
+    }
+
+    .search-results::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+    }
+
+    .search-results::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.3);
     }
 
     /* Responsive */
@@ -266,7 +303,7 @@
         const clearBtn = document.getElementById('clearSearch');
         let menuData = [];
 
-        // Lấy dữ liệu menu từ sidebar
+        // Lấy dữ liệu menu từ sidebar với cấu trúc module
         function getMenuData() {
             const menuItems = document.querySelectorAll('.menu-item');
             const data = [];
@@ -280,22 +317,29 @@
 
                 if (!iconEl || !titleEl) return;
 
-                const icon = iconEl.innerHTML;
-                const title = titleEl.textContent.trim();
-                const href = link.getAttribute('href');
+                const moduleIcon = iconEl.innerHTML;
+                const moduleTitle = titleEl.textContent.trim();
+                const moduleHref = link.getAttribute('href');
 
-                // Menu chính
-                if (href && href !== '#') {
-                    data.push({
-                        type: 'main',
-                        title: title,
-                        icon: icon,
-                        url: href,
-                        parent: null
+                // Tạo object cho module
+                const moduleData = {
+                    module: moduleTitle,
+                    moduleIcon: moduleIcon,
+                    moduleUrl: moduleHref && moduleHref !== '#' ? moduleHref : null,
+                    items: []
+                };
+
+                // Nếu module có link, thêm nó vào items
+                if (moduleData.moduleUrl) {
+                    moduleData.items.push({
+                        title: moduleTitle,
+                        icon: moduleIcon,
+                        url: moduleData.moduleUrl,
+                        isModuleLink: true
                     });
                 }
 
-                // Submenu
+                // Lấy các submenu items
                 const submenuItems = item.querySelectorAll('.submenu-link');
                 submenuItems.forEach(subItem => {
                     const subIconEl = subItem.querySelector('.submenu-icon');
@@ -307,14 +351,18 @@
                     const subTitle = subTitleEl.textContent.trim();
                     const subHref = subItem.getAttribute('href');
 
-                    data.push({
-                        type: 'sub',
+                    moduleData.items.push({
                         title: subTitle,
                         icon: subIcon,
                         url: subHref,
-                        parent: title
+                        isModuleLink: false
                     });
                 });
+
+                // Chỉ thêm module nếu có items
+                if (moduleData.items.length > 0) {
+                    data.push(moduleData);
+                }
             });
 
             return data;
@@ -327,7 +375,7 @@
             return text.replace(regex, '<span class="search-highlight">$1</span>');
         }
 
-        // Tìm kiếm
+        // Tìm kiếm theo module
         function search(query) {
             if (!query.trim()) {
                 searchResults.style.display = 'none';
@@ -335,9 +383,36 @@
             }
 
             const lowerQuery = query.toLowerCase();
-            const results = menuData.filter(item =>
-                item.title.toLowerCase().includes(lowerQuery)
-            );
+            const results = [];
+
+            // Tìm kiếm trong từng module
+            menuData.forEach(module => {
+                const moduleMatches = module.module.toLowerCase().includes(lowerQuery);
+
+                // Tìm items khớp trong module
+                const matchedItems = module.items.filter(item =>
+                    item.title.toLowerCase().includes(lowerQuery)
+                );
+
+                // Nếu tên module khớp, hiển thị tất cả items của module đó
+                if (moduleMatches) {
+                    results.push({
+                        module: module.module,
+                        moduleIcon: module.moduleIcon,
+                        items: module.items,
+                        matchType: 'module'
+                    });
+                }
+                // Nếu có items khớp, chỉ hiển thị những items đó
+                else if (matchedItems.length > 0) {
+                    results.push({
+                        module: module.module,
+                        moduleIcon: module.moduleIcon,
+                        items: matchedItems,
+                        matchType: 'items'
+                    });
+                }
+            });
 
             displayResults(results, query);
         }
@@ -352,48 +427,41 @@
                 return;
             }
 
-            // Nhóm theo main và sub
-            const mainResults = results.filter(r => r.type === 'main');
-            const subResults = results.filter(r => r.type === 'sub');
-
             let html = '';
 
-            if (mainResults.length > 0) {
-                html += '<div class="search-category">Menu chính</div>';
-                mainResults.forEach(item => {
-                    html += `
-                    <a href="${item.url}" class="search-result-item">
-                        <div class="search-result-icon">${item.icon}</div>
-                        <div class="search-result-text">
-                            <div class="search-result-title">${highlightText(item.title, query)}</div>
+            results.forEach(result => {
+                // Header của module
+                html += `
+                    <div class="search-result-group">
+                        <div class="search-module-header">
+                            <div class="search-module-icon">${result.moduleIcon}</div>
+                            <span>${highlightText(result.module, query)}</span>
                         </div>
-                    </a>
                 `;
-                });
-            }
 
-            if (subResults.length > 0) {
-                html += '<div class="search-category">Menu con</div>';
-                subResults.forEach(item => {
+                // Items trong module
+                result.items.forEach(item => {
                     html += `
-                    <a href="${item.url}" class="search-result-item">
-                        <div class="search-result-icon">${item.icon}</div>
-                        <div class="search-result-text">
-                            <div class="search-result-title">${highlightText(item.title, query)}</div>
-                            <div class="search-result-subtitle">${item.parent}</div>
-                        </div>
-                    </a>
-                `;
+                        <a href="${item.url}" class="search-result-item">
+                            <div class="search-result-icon">${item.icon}</div>
+                            <div class="search-result-text">
+                                <div class="search-result-title">${highlightText(item.title, query)}</div>
+                            </div>
+                        </a>
+                    `;
                 });
-            }
+
+                html += '</div>';
+            });
 
             container.innerHTML = html;
             searchResults.style.display = 'block';
         }
 
-        // Khởi tạo - đợi DOM load hoàn toàn
+        // Khởi tạo - Đợi DOM load hoàn toàn
         setTimeout(() => {
             menuData = getMenuData();
+            console.log('Menu data loaded:', menuData); // Debug
         }, 500);
 
         // Events
@@ -402,6 +470,14 @@
                 const value = this.value;
                 if (clearBtn) clearBtn.style.display = value ? 'flex' : 'none';
                 search(value);
+            });
+
+            // Focus vào search khi nhấn Ctrl/Cmd + K
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    searchInput.focus();
+                }
             });
         }
 
@@ -430,5 +506,48 @@
                 }
             });
         }
+
+        // Navigate qua các kết quả bằng phím mũi tên
+        let currentFocus = -1;
+        if (searchInput) {
+            searchInput.addEventListener('keydown', function(e) {
+                const items = searchResults.querySelectorAll('.search-result-item');
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    currentFocus++;
+                    if (currentFocus >= items.length) currentFocus = 0;
+                    setActive(items);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    currentFocus--;
+                    if (currentFocus < 0) currentFocus = items.length - 1;
+                    setActive(items);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (currentFocus > -1 && items[currentFocus]) {
+                        items[currentFocus].click();
+                    }
+                }
+            });
+        }
+
+        function setActive(items) {
+            if (!items || items.length === 0) return;
+
+            // Remove active class from all
+            items.forEach(item => item.style.background = '');
+
+            // Add active to current
+            if (currentFocus >= 0 && currentFocus < items.length) {
+                items[currentFocus].style.background = '#f5f5f5';
+                items[currentFocus].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+        }
+
+        // Reset currentFocus khi search results thay đổi
+        searchInput.addEventListener('input', function() {
+            currentFocus = -1;
+        });
     });
 </script>
