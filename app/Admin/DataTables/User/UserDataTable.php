@@ -64,7 +64,7 @@ class UserDataTable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getQueryBuilder()->with('roles');
+        return $this->repository->getQueryBuilder()->with('roles')->orderByDesc('created_at');
     }
 
     protected function setCustomColumns(): void

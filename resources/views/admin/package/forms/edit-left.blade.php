@@ -10,6 +10,21 @@
                 </div>
             </div>
 
+            <!-- Code -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('Mã gói')</label>
+                    <x-input type="text" name="code" :value="$instance->code" :required="true" :placeholder="__('Mã gói')" />
+                    <div class="alert alert-warning mt-2 d-flex align-items-start gap-2" role="alert">
+                        <i class="ti ti-alert-triangle fs-5 mt-1"></i>
+                        <div>
+                            <strong>@lang('Lưu ý quan trọng:')</strong>
+                            <p class="mb-0">@lang('Mã gói này phải khớp chính xác với Product ID trong Google Play Console và App Store Connect. Nếu không khớp, thanh toán sẽ thất bại.')</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- price -->
             <div class="col-12">
                 <div class="mb-3">
