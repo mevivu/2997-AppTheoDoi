@@ -4,12 +4,13 @@ namespace App\Admin\DataTables\RatingPQ;
 
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\RatingPQ\RatingPQRepositoryInterface;
-use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Builder;
 
 class RatingPQDataTable extends BaseDataTable
 {
     protected $nameTable = 'ratingPQTable';
+
+    protected array $actions = ['pageLength', 'reset', 'reload', 'excel'];
 
 
     public function __construct(

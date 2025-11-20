@@ -486,12 +486,10 @@ return [
             'title' => 'Chiều cao (cm)',
             'orderable' => true,
             'addClass' => 'text-center align-middle',
-            'visible' => false
         ],
         'weight' => [
             'title' => 'Cân nặng (kg)',
             'orderable' => true,
-            'visible' => false,
             'addClass' => 'text-center align-middle'
         ],
         'strength' => [
