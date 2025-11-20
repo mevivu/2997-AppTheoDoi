@@ -10,7 +10,7 @@ class RatingPQDataTable extends BaseDataTable
 {
     protected $nameTable = 'ratingPQTable';
 
-    protected array $actions = ['pageLength', 'reset', 'reload', 'excel'];
+    protected array $actions = [ 'reset', 'reload', 'excel'];
 
 
     public function __construct(
