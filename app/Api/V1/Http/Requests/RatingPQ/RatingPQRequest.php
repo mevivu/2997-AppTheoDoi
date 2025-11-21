@@ -4,6 +4,7 @@ namespace App\Api\V1\Http\Requests\RatingPQ;
 
 use App\Api\V1\Http\Requests\BaseRequest;
 use App\Api\V1\Rules\ValidChildAge;
+use App\Models\Child;
 
 
 class RatingPQRequest extends BaseRequest
@@ -46,6 +47,26 @@ class RatingPQRequest extends BaseRequest
             'endurance' => 'nullable|integer|min:0',
             'child_id' => ['required', 'integer', new ValidChildAge()],
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $childId = $this->child_id;
+            $assessmentDate = $this->assessment_date;
+
+            if (!$childId || !$assessmentDate) {
+                return;
+            }
+
+            $child = Child::find($childId);
+
+            if ($child && $child->birthday) {
+                if ($assessmentDate < $child->birthday->format('Y-m-d')) {
+                    $validator->errors()->add('assessment_date', 'Ngày đánh giá không được nhỏ hơn ngày sinh của trẻ.');
+                }
+            }
+        });
     }
 
     public function messages(): array
