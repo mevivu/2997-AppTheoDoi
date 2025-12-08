@@ -1,4 +1,4 @@
-<!-- Sidebar Collapsed with Hover -->
+    <!-- Sidebar Collapsed with Hover -->
 <aside id="sidebar" class="sidebar-collapsed">
     <!-- Logo -->
     <div class="sidebar-logo">
@@ -7,8 +7,8 @@
                 $settingRepository = app()->make(App\Admin\Repositories\Setting\SettingRepository::class);
                 $settings = $settingRepository->getAll();
             @endphp
-            <img src="{{ asset($settings->where('setting_key', 'site_logo')->first()->plain_value) }}"
-                 alt="Logo" class="logo-img">
+            <img src="{{ asset($settings->where('setting_key', 'site_logo')->first()->plain_value) }}" alt="Logo"
+                 class="logo-img">
         </x-link>
     </div>
 
@@ -16,10 +16,7 @@
     <div class="sidebar-mobile-search">
         <div class="mobile-search-wrapper">
             <i class="ti ti-search mobile-search-icon"></i>
-            <input type="text"
-                   id="sidebarMobileSearch"
-                   class="mobile-search-input"
-                   placeholder="Tìm kiếm menu...">
+            <input type="text" id="sidebarMobileSearch" class="mobile-search-input" placeholder="Tìm kiếm menu...">
             <button class="mobile-search-clear" id="mobileClearSearch" style="display: none;">
                 <i class="ti ti-x"></i>
             </button>
@@ -32,10 +29,7 @@
             @foreach ($menu as $index => $item)
                 @if (auth('admin')->user()->checkPermissions($item['permissions']) || in_array('mevivuDev', $item['permissions']))
                     <li class="menu-item {{ count($item['sub']) > 0 ? 'has-submenu' : '' }}">
-                        <x-admin-item-link-sidebar-left
-                            class="menu-link"
-                            :href="count($item['sub']) > 0 ? '#' : $routeName($item['routeName'], $item['param'] ?? [])"
-                            :dropdown="false">
+                        <x-admin-item-link-sidebar-left class="menu-link" :href="count($item['sub']) > 0 ? '#' : $routeName($item['routeName'], $item['param'] ?? [])" :dropdown="false">
                             <span class="menu-icon">
                                 {!! __($item['icon']) !!}
                             </span>
@@ -48,9 +42,7 @@
                                     @foreach ($item['sub'] as $subItem)
                                         @if (auth('admin')->user()->checkPermissions($subItem['permissions']) || in_array('mevivuDev', $subItem['permissions']))
                                             <li class="submenu-item">
-                                                <x-admin-item-link-sidebar-left
-                                                    class="submenu-link"
-                                                    :href="$routeName($subItem['routeName'], $subItem['param'] ?? [])">
+                                                <x-admin-item-link-sidebar-left class="submenu-link" :href="$routeName($subItem['routeName'], $subItem['param'] ?? [])">
                                                     <span class="submenu-icon">
                                                         {!! __($subItem['icon']) !!}
                                                     </span>
@@ -82,7 +74,7 @@
         position: fixed;
         top: 0;
         left: 0;
-        width: 110px;
+        width: 100px;
         height: 100vh;
         background: #ffffff;
         z-index: 1001;
@@ -131,15 +123,14 @@
         overflow-y: auto;
         overflow-x: visible;
         padding: 4px 0;
+        /* Ẩn scrollbar nhưng vẫn scroll được */
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
     }
 
+    /* Ẩn scrollbar cho Chrome, Safari, Opera */
     .sidebar-menu::-webkit-scrollbar {
-        width: 4px;
-    }
-
-    .sidebar-menu::-webkit-scrollbar-thumb {
-        background: rgba(0, 0, 0, 0.15);
-        border-radius: 4px;
+        display: none;
     }
 
     .menu-list {
@@ -287,15 +278,14 @@
         margin: 0;
         max-height: 400px;
         overflow-y: auto;
+        /* Ẩn scrollbar nhưng vẫn scroll được */
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
     }
 
+    /* Ẩn scrollbar cho Chrome, Safari, Opera */
     .submenu-list::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .submenu-list::-webkit-scrollbar-thumb {
-        background: #d9d9d9;
-        border-radius: 4px;
+        display: none;
     }
 
     .submenu-item {
@@ -585,9 +575,7 @@
             padding: 8px 0;
         }
 
-        .sidebar-menu::-webkit-scrollbar {
-            width: 6px;
-        }
+        /* Scrollbar đã được ẩn ở phần CSS chính */
     }
 </style>
 
