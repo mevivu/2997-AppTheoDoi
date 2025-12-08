@@ -1,7 +1,13 @@
 <div class="col-12 col-md-9">
     <div class="card custom-shadow">
         <div class="card-header justify-content-center">
-            <h2 class="mb-0">{{ __('Thông tin Thai kì') }}</h2>
+            @php
+                use App\Enums\Journal\JournalType;$typeText = $response->type === JournalType::Moment
+                    ? 'Nhật ký khoảnh khắc'
+                    : 'Hồ sơ y tế';
+            @endphp
+
+            <h2 class="mb-0">{{ $typeText }}</h2>
         </div>
         <div class="row card-body">
 

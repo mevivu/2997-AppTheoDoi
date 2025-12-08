@@ -179,6 +179,48 @@
                         </div>
                         <div class="card-body">
                             <div class="row g-3">
+
+                                {{--User--}}
+                                <div class="col-sm-6 col-lg-3 mb-3">
+                                    <div class="card card-sm" data-category="user">
+                                        <div class="card-body">
+                                            <div class="row align-items-center">
+                                                <div class="col-auto">
+                                                    <span class="iconModuleMevivu ti ti-users"></span>
+                                                </div>
+                                                <div class="col">
+                                                    <x-link :href="route('admin.user.index')" title="Khách hàng"
+                                                            class="font-weight-medium">
+                                                    </x-link>
+                                                    <div class="text-secondary">
+                                                        Số lượng: {{ $rowCountUser}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{--Children--}}
+                                <div class="col-sm-6 col-lg-3 mb-3">
+                                    <div class="card card-sm" data-category="user">
+                                        <div class="card-body">
+                                            <div class="row align-items-center">
+                                                <div class="col-auto">
+                                                    <span class="iconModuleMevivu ti ti-baby-carriage"></span>
+                                                </div>
+                                                <div class="col">
+                                                    <x-link :href="route('admin.children.index')" title="Trẻ em"
+                                                            class="font-weight-medium">
+                                                    </x-link>
+                                                    <div class="text-secondary">
+                                                        Số lượng: {{$rowCountChildren}}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 <!-- Transaction-->
                                 <div class="col-sm-6 col-lg-3 mb-3">
                                     <div class="card card-sm" data-category="system">
@@ -480,26 +522,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{--User--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="user">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-users"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.user.index')" title="Khách hàng"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountUser}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+
                                 {{--VaccinationSchedule--}}
                                 <div class="col-sm-6 col-lg-3 mb-3">
                                     <div class="card card-sm" data-category="health">
@@ -520,26 +543,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                {{--Children--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="user">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-baby-carriage"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.children.index')" title="Trẻ em"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{$rowCountChildren}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+
                                 {{--Education--}}
                                 <div class="col-sm-6 col-lg-3 mb-3">
                                     <div class="card card-sm" data-category="education">

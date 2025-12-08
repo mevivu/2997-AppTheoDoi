@@ -237,31 +237,6 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
-        'self_regulation' => [
-            'title' => 'Kiểm soát cảm xúc',
-            'addClass' => 'text-center align-middle',
-            'orderable' => false
-        ],
-        'social_awareness' => [
-            'title' => 'Nhận thức cảm xúc',
-            'addClass' => 'text-center align-middle',
-            'orderable' => false
-        ],
-        'relationship_management' => [
-            'title' => 'Đồng cảm',
-            'addClass' => 'text-center align-middle',
-            'orderable' => false
-        ],
-        'decision_making' => [
-            'title' => 'Động lực',
-            'addClass' => 'text-center align-middle',
-            'orderable' => false
-        ],
-        'optimism' => [
-            'title' => 'Kỹ năng xã hội',
-            'addClass' => 'text-center align-middle',
-            'orderable' => false
-        ],
         'score' => [
             'title' => 'Điểm ',
             'addClass' => 'text-center align-middle',
