@@ -8,7 +8,10 @@ use App\Admin\DataTables\Notification\Common\CommonTable;
 class NotificationUserDataTable extends BaseDataTable
 {
     use CommonTable;
+
     protected $nameTable = 'notificationUserTable';
+
+    protected array $actions = ['reset', 'reload', 'pageLength'];
 
 
     public function query()
@@ -24,7 +27,6 @@ class NotificationUserDataTable extends BaseDataTable
     {
         $this->customColumns = config('datatables_columns.notifications', []);
     }
-
 
 
 }
