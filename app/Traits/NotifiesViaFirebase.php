@@ -14,6 +14,7 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Kreait\Firebase\Exception\Messaging\NotFound;
 use Kreait\Firebase\Messaging\AndroidConfig;
 use Kreait\Firebase\Messaging\ApnsConfig;
 use Kreait\Firebase\Messaging\CloudMessage;
@@ -93,16 +94,19 @@ trait  NotifiesViaFirebase
     private function sendMessage(mixed $message): void
     {
         try {
-            $factory = (new Factory)->withServiceAccount(base_path('firebase_credentials.json'));
+            $factory = (new Factory)
+                ->withServiceAccount(base_path('firebase_credentials.json'));
+
             $messaging = $factory->createMessaging();
             $messaging->send($message);
-            Log::info('Firebase notification sent successfully.');
-        } catch (ConnectException $e) {
-            Log::error('Network connection issue: Failed to send Firebase notification', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-        } catch (RequestException $e) {
-            Log::error('HTTP request issue: Failed to send Firebase notification', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+
+            Log::info('Firebase notification sent');
+
+        } catch (NotFound $e) {
+            Log::warning('Firebase token not found');
+
         } catch (Throwable $e) {
-            Log::error('Failed to send Firebase notification', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            Log::error('Firebase send failed: ' . $e->getMessage());
         }
     }
 

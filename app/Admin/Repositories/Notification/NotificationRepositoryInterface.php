@@ -12,4 +12,6 @@ interface NotificationRepositoryInterface extends EloquentRepositoryInterface
 
     public function getQueryBuilderOrderBy($column = 'id', $sort = 'DESC');
 
+    public function insert(array $data): bool;
+
 }

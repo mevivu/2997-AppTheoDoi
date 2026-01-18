@@ -27,4 +27,9 @@ class NotificationRepository extends EloquentRepository implements NotificationR
             ->take($limit);
     }
 
+    public function insert(array $data): bool
+    {
+        return $this->model->insert($data);
+    }
+
 }

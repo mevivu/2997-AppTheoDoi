@@ -15,6 +15,7 @@ use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
 use App\Enums\Notification\NotificationOption;
 use App\Enums\Package\PackageUserStatus;
+use App\Jobs\SendFirebaseNotificationJob;
 use App\Traits\UseLog;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -66,50 +67,91 @@ class NotificationService implements NotificationServiceInterface
     {
         $this->data = $request->validated();
 
-        switch ($this->data['types']) {
-            case NotificationType::All->value:
-                $recipients = [$this->userRepository, $this->adminRepository];
+        $type   = (int) $this->data['types'];
+        $option = (int) $this->data['option'];
 
-                foreach ($recipients as $repository) {
-                    $users = $repository->getAll();
+        /**
+         * =====================================
+         * CASE 1: CUSTOMER + ALL → CHUNK 200
+         * =====================================
+         */
+        if (
+            $type === NotificationOption::All->value
+        ) {
+            $this->userRepository
+                ->getQueryBuilder()
+                ->select(['id', 'device_token'])
+                ->whereNotNull('device_token')
+                ->chunk(200, function ($users) {
+
+                    $notifications = [];
+                    $tokens = [];
+
                     foreach ($users as $user) {
-                        switch ($repository) {
-                            case $this->userRepository:
-                                $this->data['admin_id'] = null;
-                                $this->data['user_id'] = $user->id;
-                                break;
-                            case $this->adminRepository:
-                                $this->data['user_id'] = null;
-                                $this->data['admin_id'] = $user->id;
-                                break;
-                            default:
-                                $this->data['admin_id'] = $user->id;
-                                break;
-                        }
+                        $notifications[] = [
+                            'user_id' => $user->id,
+                            'title' => $this->data['title'],
+                            'message' => $this->data['message'],
+                            'status' => NotificationStatus::NOT_READ,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
 
-                        $notification = $this->repository->create($this->data);
-
-                        $device_token = $user->device_token;
-                        $this->data['device_token'] = $device_token;
-
-                        if ($notification && $device_token) {
-                            $this->firebaseService->sendFirebaseNotification([$device_token], null, $notification->title, $notification->message);
-                        }
+                        $tokens[] = $user->device_token;
                     }
-                }
-                return true;
-            case NotificationType::Customer->value:
-                $this->data['admin_id'] = null;
-                $notification = $this->handleNotificationOption('user_id');
-                break;
 
-            default:
-                $this->data['driver_id'] = null;
-                $notification = $this->handleNotificationOption('user_id');
-                break;
+                    // Bulk insert
+                    $this->repository->insert($notifications);
+
+                    // Queue Firebase (200 user / job)
+                    SendFirebaseNotificationJob::dispatch(
+                        $tokens,
+                        $this->data['title'],
+                        $this->data['message']
+                    )->onQueue('notifications');
+                });
+
+            return true;
         }
-        return isset($notification) && $notification ? false : false;
+
+        /**
+         * =====================================
+         * CASE 2: CUSTOMER + ONE → GỬI LẺ
+         * =====================================
+         */
+        if (
+            $type === NotificationType::Customer->value &&
+            $option === NotificationOption::One->value
+        ) {
+            $userIds = is_array($this->data['user_id'])
+                ? $this->data['user_id']
+                : [$this->data['user_id']];
+
+            $users = $this->userRepository->findMany($userIds);
+
+            foreach ($users as $user) {
+                $notification = $this->repository->create([
+                    'user_id' => $user->id,
+                    'title' => $this->data['title'],
+                    'message' => $this->data['message'],
+                    'status' => NotificationStatus::NOT_READ,
+                ]);
+
+                if ($notification && $user->device_token) {
+                    SendFirebaseNotificationJob::dispatch(
+                        [$user->device_token],
+                        $notification->title,
+                        $notification->message
+                    )->onQueue('notifications');
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
+
 
     /**
      * Xử lý tùy chọn gửi thông báo dựa trên kiểu người nhận và dữ liệu yêu cầu.
