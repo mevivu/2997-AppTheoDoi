@@ -12,7 +12,7 @@ class GPADataTable extends BaseDataTable
 {
     protected $nameTable = 'GPATable';
 
-    protected array $actions = ['reset', 'reload'];
+    protected array $actions = ['reset', 'reload', 'excel'];
 
 
     public function __construct(

@@ -16,6 +16,8 @@ class ChildrenDataTable extends BaseDataTable
 
     protected $nameTable = 'childrenTable';
 
+    protected array $actions = ['reset', 'reload', 'excel'];
+
     public function __construct(
         ChildrenRepositoryInterface $repository
     ) {

@@ -16,6 +16,7 @@ class UserDataTable extends BaseDataTable
     use Roles;
 
     protected $nameTable = 'userTable';
+    protected array $actions = ['reset', 'reload', 'excel'];
 
     public function __construct(
         UserRepositoryInterface $repository

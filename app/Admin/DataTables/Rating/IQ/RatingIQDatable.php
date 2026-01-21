@@ -14,6 +14,8 @@ class RatingIQDatable extends BaseDataTable
 
     protected $nameTable = 'ratingIQTable';
 
+    protected array $actions = ['reset', 'reload', 'excel'];
+
     public function __construct(
         RatingRepositoryInterface $repository
     )
