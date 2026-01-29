@@ -8,6 +8,7 @@ use App\Admin\Traits\Roles;
 use App\AES\AESHelper;
 use App\Enums\Package\PackageType;
 use App\Enums\User\UserStatus;
+use BenSampo\Enum\Enum;
 use Illuminate\Database\Eloquent\Builder;
 use Throwable;
 
@@ -65,7 +66,9 @@ class UserDataTable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getQueryBuilder()->with('roles')->orderByDesc('created_at');
+        return $this->repository->getQueryBuilder()
+            ->with(['roles', 'userPackages.package'])
+            ->orderByDesc('created_at');
     }
 
     protected function setCustomColumns(): void
@@ -156,5 +159,46 @@ class UserDataTable extends BaseDataTable
                 }
             },
         ];
+    }
+    protected function getExportValue($key, $row)
+    {
+        if ($key === 'package_type') {
+            $package = $row->userPackages->first()?->package;
+
+            // Handle Native Enum (PHP 8.1+)
+            if ($package && $package->type instanceof \BackedEnum && method_exists($package->type, 'description')) {
+                return $package->type->description();
+            }
+
+            // Handle BenSampo Enum
+            if ($package && $package->type instanceof Enum) {
+                return $package->type->description;
+            }
+
+            return '';
+        }
+
+        if ($key === 'status') {
+            // Check if object is already Enum
+            if ($row->status instanceof \BackedEnum && method_exists($row->status, 'description')) {
+                return $row->status->description();
+            }
+            // Fallback for raw integer value
+            if (is_numeric($row->status)) {
+                return UserStatus::tryFrom($row->status)?->description() ?? $row->status;
+            }
+        }
+
+        if (in_array($key, ['email', 'phone'])) {
+            $value = $row->{$key} ?? '';
+            if (!empty($value)) {
+                $decrypted = AESHelper::decrypt($value);
+                if ($decrypted) {
+                    return $decrypted;
+                }
+            }
+        }
+
+        return parent::getExportValue($key, $row);
     }
 }

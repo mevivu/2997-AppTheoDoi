@@ -5,7 +5,6 @@ namespace App\Admin\DataTables\GPA;
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\GPA\GPARepositoryInterface;
 use App\Enums\ActiveStatus;
-use App\Enums\ClassGrade\ClassGradeStatus;
 use Illuminate\Database\Eloquent\Builder;
 
 class GPADataTable extends BaseDataTable
@@ -100,5 +99,27 @@ class GPADataTable extends BaseDataTable
                 });
             },
         ];
+    }
+
+    protected function getExportValue($key, $row)
+    {
+        try {
+            switch ($key) {
+                case 'children.fullname':
+                    return $row->children?->fullname ?? '';
+                case 'class.name':
+                    return $row->class?->name ?? '';
+                case 'status':
+                     // Handle Native Enum description if available
+                     if ($row->status instanceof \BackedEnum && method_exists($row->status, 'description')) {
+                        return $row->status->description();
+                    }
+                    return $row->status ?? '';
+            }
+        } catch (\Throwable $e) {
+            return '';
+        }
+
+        return parent::getExportValue($key, $row);
     }
 }

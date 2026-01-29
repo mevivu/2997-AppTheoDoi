@@ -38,8 +38,8 @@ class RatingAQDatable extends BaseDataTable
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4];
-        $this->columnSearchDate = [4];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        $this->columnSearchDate = [9];
         $this->columnSearchSelect = [
 
 

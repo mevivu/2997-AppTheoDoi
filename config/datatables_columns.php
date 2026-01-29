@@ -167,6 +167,7 @@ return [
         'checkbox' => [
             'title' => 'choose',
             'orderable' => false,
+            'exportable' => false,
             'addClass' => 'align-middle text-center',
             'footer' => '<input type="checkbox" class="form-check-input check-all" />',
         ],
@@ -229,6 +230,7 @@ return [
         'checkbox' => [
             'title' => 'choose',
             'orderable' => false,
+            'exportable' => false,
             'addClass' => 'align-middle text-center',
             'footer' => '<input type="checkbox" class="form-check-input check-all" />',
         ],
@@ -241,6 +243,31 @@ return [
             'title' => 'Điểm ',
             'addClass' => 'text-center align-middle',
             'orderable' => false
+        ],
+        'positivity' => [
+            'title' => 'Tính tích cực',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true
+        ],
+        'self_reflection' => [
+            'title' => 'Khả năng tự phản hồi',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true
+        ],
+        'flexibility' => [
+            'title' => 'Tính linh hoạt',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true
+        ],
+        'perseverance' => [
+            'title' => 'Tính kiên trì',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true
+        ],
+        'endurance' => [
+            'title' => 'Khả năng chịu đựng',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true
         ],
         'description' => [
             'title' => 'Mô tả ',
@@ -266,6 +293,7 @@ return [
         'checkbox' => [
             'title' => 'choose',
             'orderable' => false,
+            'exportable' => false,
             'addClass' => 'align-middle text-center',
             'footer' => '<input type="checkbox" class="form-check-input check-all" />',
         ],
@@ -314,6 +342,7 @@ return [
         'checkbox' => [
             'title' => 'choose',
             'orderable' => false,
+            'exportable' => false,
             'addClass' => 'align-middle text-center',
             'footer' => '<input type="checkbox" class="form-check-input check-all" />',
         ],
@@ -1448,12 +1477,12 @@ return [
             'orderable' => false
         ],
         'status' => [
-            'title' => 'status',
+            'title' => 'Trạng thái',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
         'package_type' => [
-            'title' => 'type',
+            'title' => 'Loại',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],

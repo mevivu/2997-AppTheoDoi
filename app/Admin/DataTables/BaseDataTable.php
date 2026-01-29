@@ -2,6 +2,7 @@
 
 namespace App\Admin\DataTables;
 
+use BenSampo\Enum\Enum;
 use Yajra\DataTables\Services\DataTable;
 use Yajra\DataTables\Html\Column;
 
@@ -255,5 +256,106 @@ abstract class BaseDataTable extends DataTable
     protected function filename(): string
     {
         return $this->nameTable .'-' . date('YmdHis');
+    }
+
+    /**
+     * Overwrite custom export to CSV (Streaming)
+     *
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    /**
+     * Export results to Excel file using FastExcel (Streamed)
+     *
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse|string
+     */
+    /**
+     * Export results to Excel file using FastExcel (Streamed)
+     *
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse|string
+     */
+    public function excel()
+    {
+        $headers = $this->getExportColumns();
+        $filename = $this->filename() . '.csv';
+
+        $callback = function () use ($headers) {
+            $file = fopen('php://output', 'w');
+
+            // Add BOM for UTF-8 compatibility
+            fputs($file, "\xEF\xBB\xBF");
+
+            // Write headers
+            fputcsv($file, $headers);
+
+            // Write data rows
+            foreach ($this->query()->cursor() as $record) {
+                $row = $this->mapExportRow($record);
+                fputcsv($file, $row);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, [
+            "Content-Type" => "text/csv; charset=utf-8",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ]);
+    }
+
+    protected function getExportColumns()
+    {
+        $columns = [];
+        foreach($this->customColumns as $key => $item){
+            if (isset($item['exportable']) && $item['exportable'] === false) {
+                continue;
+            }
+            $columns[] = $item['title'] ?? $key;
+        }
+        return $columns;
+    }
+
+    protected function mapExportRow($row)
+    {
+        $data = [];
+        foreach($this->customColumns as $key => $item){
+            if (isset($item['exportable']) && $item['exportable'] === false) {
+                continue;
+            }
+
+            $value = $this->getExportValue($key, $row);
+
+            // Handle if value is array or object, convert to string
+            if (is_array($value) || is_object($value)) {
+                $value = json_encode($value, JSON_UNESCAPED_UNICODE);
+            }
+
+            $data[] = $value;
+        }
+        return $data;
+    }
+
+    protected function getExportValue($key, $row)
+    {
+        $value = $row->{$key} ?? '';
+
+        // Handle Native Enums (PHP 8.1+) using custom Trait
+        if ($value instanceof \BackedEnum && method_exists($value, 'description')) {
+            return $value->description();
+        }
+
+        // Handle Enums (BenSampo)
+        if ($value instanceof Enum) {
+            return $value->description ?? $value->key;
+        }
+
+        // Handle DateTime objects (Carbon)
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('Y-m-d H:i:s');
+        }
+
+        return $value;
     }
 }
