@@ -288,10 +288,13 @@ abstract class BaseDataTable extends DataTable
             fputcsv($file, $headers);
 
             // Write data rows
-            foreach ($this->query()->cursor() as $record) {
-                $row = $this->mapExportRow($record);
-                fputcsv($file, $row);
-            }
+            // Use chunk instead of cursor to allow eager loading (cursor disables eager loading)
+            $this->query()->chunk(1000, function ($records) use ($file) {
+                foreach ($records as $record) {
+                    $row = $this->mapExportRow($record);
+                    fputcsv($file, $row);
+                }
+            });
 
             fclose($file);
         };

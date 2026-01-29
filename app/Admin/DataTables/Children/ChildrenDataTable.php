@@ -72,7 +72,7 @@ class ChildrenDataTable extends BaseDataTable
     {
         return $this->repository->getByQueryBuilder(
             ['status' => ChildStatus::Active]
-        );
+        )->with(['user']);
     }
 
     protected function setCustomColumns(): void
