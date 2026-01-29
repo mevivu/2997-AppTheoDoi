@@ -20,7 +20,8 @@ class ChildrenDataTable extends BaseDataTable
 
     public function __construct(
         ChildrenRepositoryInterface $repository
-    ) {
+    )
+    {
         $this->repository = $repository;
 
         parent::__construct();
@@ -42,21 +43,21 @@ class ChildrenDataTable extends BaseDataTable
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4, 5,6];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-        $this->columnSearchDate = [3];
+        $this->columnSearchDate = [5, 6];
 
         $this->columnSearchSelect = [
             [
-                'column' => 4,
+                'column' => 7,
                 'data' => Gender::asSelectArray()
             ],
             [
-                'column' => 5,
+                'column' => 8,
                 'data' => BornStatus::asSelectArray()
             ],
             [
-                'column' => 6,
+                'column' => 9,
                 'data' => ChildStatus::asSelectArray()
             ],
         ];
@@ -85,7 +86,7 @@ class ChildrenDataTable extends BaseDataTable
             'status' => $this->view['status'],
             'is_born' => $this->view['is_born'],
             'fullname' => $this->view['fullname'],
-            'user_id' => function ($children) {
+            'user_fullname' => function ($children) {
                 return view($this->view['user'], [
                     'user' => $children->user
                 ])->render();
@@ -109,7 +110,7 @@ class ChildrenDataTable extends BaseDataTable
             'action',
             'status',
             'gender',
-            'user_id',
+            'user_fullname',
             'fullname',
             'checkbox',
             'is_born'
@@ -119,7 +120,7 @@ class ChildrenDataTable extends BaseDataTable
     public function setCustomFilterColumns(): void
     {
         $this->customFilterColumns = [
-            'user_id' => function ($query, $keyword) {
+            'user_fullname' => function ($query, $keyword) {
                 $query->whereHas('user', function ($subQuery) use ($keyword) {
                     $subQuery->where('fullname', 'like', "%$keyword%");
                 });
@@ -132,5 +133,45 @@ class ChildrenDataTable extends BaseDataTable
             },
 
         ];
+    }
+
+    protected function getExportValue($key, $row)
+    {
+        try {
+            switch ($key) {
+                case 'id':
+                    return  $row->id;
+                case 'fullname':
+                    return $row->fullname;
+                case 'user_id':
+                     return  $row->user->id ;
+                case 'user_fullname':
+                    return $row->user ? $row->user->fullname : '';
+                case 'birthday':
+                    return $row->birthday ? date('d/m/Y', strtotime($row->birthday)) : '';
+                case 'due_date':
+                    return $row->due_date ? date('d/m/Y', strtotime($row->due_date)) : '';
+                case 'is_born':
+                    // Handle Native Enum description if available
+                    if ($row->is_born instanceof \BackedEnum && method_exists($row->is_born, 'description')) {
+                        return $row->is_born->description();
+                    }
+                    return $row->is_born ?? '';
+                case 'status':
+                    // Handle Native Enum description if available
+                    if ($row->status instanceof \BackedEnum && method_exists($row->status, 'description')) {
+                        return $row->status->description();
+                    }
+                    // Fallback for raw integer value
+                    if (is_numeric($row->status)) {
+                        return \App\Enums\Child\ChildStatus::tryFrom($row->status)?->description() ?? $row->status;
+                    }
+                    return $row->status ?? '';
+            }
+        } catch (\Throwable $e) {
+            return '';
+        }
+
+        return parent::getExportValue($key, $row);
     }
 }

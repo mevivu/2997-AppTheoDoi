@@ -1504,21 +1504,36 @@ return [
             'footer' => '<input type="checkbox" class="form-check-input check-all" />',
             'visible' => false,
         ],
+        'id' => [
+            'title' => 'Mã trẻ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
         'fullname' => [
-            'title' => 'Họ tên trẻ',
+            'title' => 'Tên trẻ',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
         'user_id' => [
+            'title' => 'Mã cha/Mẹ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'user_fullname' => [
             'title' => 'Cha/Mẹ',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
 
         'birthday' => [
-            'title' => 'birth-day',
+            'title' => 'Ngày sinh',
             'addClass' => 'text-center align-middle',
             'orderable' => false,
+        ],
+        'due_date' => [
+            'title' => 'Ngày dự sinh',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
         ],
         'gender' => [
             'title' => 'gender',
