@@ -72,57 +72,44 @@ class NotificationService implements NotificationServiceInterface
 
         /**
          * =====================================
-         * CASE 1: CUSTOMER + ALL → CHUNK 200
+         * CASE 1: GỬI TẤT CẢ
+         * - types = All (1): gửi tất cả, option bị ẩn (null)
+         * - types = Customer (2) + option = All (1)
          * =====================================
          */
         if (
-            $type === NotificationOption::All->value
+            $type === NotificationType::All->value
+            || $option === NotificationOption::All->value
         ) {
-            $this->userRepository
+            $userIds = $this->userRepository
                 ->getQueryBuilder()
-                ->select(['id', 'device_token'])
-                ->whereNotNull('device_token')
-                ->chunk(200, function ($users) {
+                ->pluck('id');
 
-                    $notifications = [];
-                    $tokens = [];
+            $notifications = [];
+            foreach ($userIds as $userId) {
+                $notifications[] = [
+                    'user_id' => $userId,
+                    'title' => $this->data['title'],
+                    'message' => $this->data['message'],
+                    'status' => NotificationStatus::NOT_READ->value,
+                    'is_pushed' => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
 
-                    foreach ($users as $user) {
-                        $notifications[] = [
-                            'user_id' => $user->id,
-                            'title' => $this->data['title'],
-                            'message' => $this->data['message'],
-                            'status' => NotificationStatus::NOT_READ,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ];
-
-                        $tokens[] = $user->device_token;
-                    }
-
-                    // Bulk insert
-                    $this->repository->insert($notifications);
-
-                    // Queue Firebase (200 user / job)
-                    SendFirebaseNotificationJob::dispatch(
-                        $tokens,
-                        $this->data['title'],
-                        $this->data['message']
-                    )->onQueue('notifications');
-                });
+            // Bulk insert — CronJob sẽ gửi push notification sau
+            $this->repository->insert($notifications);
 
             return true;
         }
 
         /**
          * =====================================
-         * CASE 2: CUSTOMER + ONE → GỬI LẺ
+         * CASE 2: GỬI LẺ (option = One)
          * =====================================
          */
-        if (
-            $type === NotificationType::Customer->value &&
-            $option === NotificationOption::One->value
-        ) {
+        if ($option === NotificationOption::One->value) {
             $userIds = is_array($this->data['user_id'])
                 ? $this->data['user_id']
                 : [$this->data['user_id']];
@@ -130,20 +117,13 @@ class NotificationService implements NotificationServiceInterface
             $users = $this->userRepository->findMany($userIds);
 
             foreach ($users as $user) {
-                $notification = $this->repository->create([
+                // Tạo record — CronJob sẽ gửi push notification sau
+                $this->repository->create([
                     'user_id' => $user->id,
                     'title' => $this->data['title'],
                     'message' => $this->data['message'],
                     'status' => NotificationStatus::NOT_READ,
                 ]);
-
-                if ($notification && $user->device_token) {
-                    SendFirebaseNotificationJob::dispatch(
-                        [$user->device_token],
-                        $notification->title,
-                        $notification->message
-                    )->onQueue('notifications');
-                }
             }
 
             return true;

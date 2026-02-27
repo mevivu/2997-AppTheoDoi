@@ -13,12 +13,12 @@
                     </x-select>
                 </div>
             </div>
-            <div style="display: none" id="notification-option-select" class="col-12">
+            <div id="notification-option-select" class="col-12">
                 <div class="mb-3">
                     <i class="ti ti-moped"></i>
-                    <label for="">{{ __('Loại') }}</label>
-                    <x-select class="notification-option-select-value" name="option">
-                        <x-select-option value="100" :title="__('Chọn loại thông báo')" selected />
+                    <label for="">{{ __('Loại') }} <span class="text-danger">*</span></label>
+                    <x-select class="notification-option-select-value" name="option" required>
+                        <x-select-option value="" :title="__('Chọn loại thông báo')" selected disabled />
                         @foreach ($options as $key => $value)
                             <x-select-option :value="$key" :title="$value" />
                         @endforeach
@@ -30,7 +30,7 @@
             <div style="display: none" id="notification-customer-select" class="col-12">
                 <div class="mb-3">
                     <i class="ti ti-user-plus"></i>
-                    <label for="">{{ __('Nhân viên') }}</label>
+                    <label for="">{{ __('Khách hàng') }}</label>
                     <x-select name="user_id[]" class="select2-bs5-ajax" :data-url="route('admin.search.select.user')" id="user_id"
                         multiple="multiple">
                     </x-select>

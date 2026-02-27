@@ -22,7 +22,7 @@ class NotificationRequest extends BaseRequest
     {
         return [
             'types' => ['required', new Enum(NotificationType::class)],
-            'option' => ['nullable'],
+            'option' => ['required'],
             'user_id' => ['nullable'],
             'admin_id' => ['nullable'],
             'title' => ['required', 'string'],

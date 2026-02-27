@@ -114,6 +114,13 @@ return [
             'handler' => NullHandler::class,
         ],
 
+        'notification-push' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/notification-push.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+        ],
+
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],

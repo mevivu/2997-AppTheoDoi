@@ -38,14 +38,17 @@ class Notification extends Model
         /** Trạng thái xác nhận */
         'approval_status',
         /** Lưu user_Id customer */
-        'user_id_attribute'
+        'user_id_attribute',
+        /** Trạng thái gửi push notification */
+        'is_pushed',
     ];
 
     protected $casts = [
         'status' => NotificationStatus::class,
         'type' => MessageType::class,
         'is_verified' => VerifiedStatus::class,
-        'approval_status' => ApprovalStatus::class
+        'approval_status' => ApprovalStatus::class,
+        'is_pushed' => 'boolean',
     ];
 
 

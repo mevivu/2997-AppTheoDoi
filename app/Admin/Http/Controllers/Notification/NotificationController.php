@@ -98,7 +98,7 @@ class NotificationController extends Controller
     public function create(): View|Application
     {
         return view($this->view['create'], [
-            'types' => NotificationType::asSelectArray(),
+            'types' => collect(NotificationType::asSelectArray())->except(NotificationType::All->value)->toArray(),
             'options' => NotificationOption::asSelectArray(),
             'status' => NotificationStatus::asSelectArray(),
             'breadcrumbs' => $this->crums->add(__('notifications'), route($this->route['index']))->add(__('add'))

@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->command('package:update-expired')->everyMinute();
         $schedule->command('otp:clean')->daily();
+        $schedule->command('notification:send-push')->everyMinute()->withoutOverlapping();
 
     }
 
