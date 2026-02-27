@@ -140,11 +140,11 @@ class ChildrenDataTable extends BaseDataTable
         try {
             switch ($key) {
                 case 'id':
-                    return  $row->id;
+                    return 'TE' . $row->id;
                 case 'fullname':
                     return $row->fullname;
                 case 'user_id':
-                     return  $row->user->id ;
+                     return  $row->user ? 'CM' . $row->user->id : '';
                 case 'user_fullname':
                     return $row->user ? $row->user->fullname : '';
                 case 'birthday':
