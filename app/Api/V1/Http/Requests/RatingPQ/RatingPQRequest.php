@@ -27,7 +27,7 @@ class RatingPQRequest extends BaseRequest
     protected function methodPost(): array
     {
         return [
-            'assessment_date' => 'required|date_format:Y-m-d',
+            'assessment_date' => 'required|date_format:Y-m-d|before_or_equal:today',
             'height' => 'required|integer|min:1',
             'weight' => 'required|min:1',
             'strength' => 'nullable|integer|min:0',
@@ -40,7 +40,7 @@ class RatingPQRequest extends BaseRequest
     {
         return [
             'id' => 'required|integer|exists:ratings_pqs,id',
-            'assessment_date' => 'required|date_format:Y-m-d',
+            'assessment_date' => 'required|date_format:Y-m-d|before_or_equal:today',
             'height' => 'required|integer|min:1',
             'weight' => 'required|min:1',
             'strength' => 'nullable|integer|min:0',
@@ -86,6 +86,7 @@ class RatingPQRequest extends BaseRequest
             'child_id.exists' => 'ID trẻ em không tồn tại trong hệ thống.',
             'assessment_date.required' => 'Ngày đánh giá là bắt buộc.',
             'assessment_date.date_format' => 'Ngày đánh giá phải có định dạng YYYY-MM-DD.',
+            'assessment_date.before_or_equal' => 'Ngày đánh giá không được lớn hơn ngày hiện tại.',
             'height.required' => 'Chiều cao là bắt buộc.',
             'height.integer' => 'Chiều cao phải là một số nguyên.',
             'height.min' => 'Chiều cao tối thiểu là 1 cm.',
