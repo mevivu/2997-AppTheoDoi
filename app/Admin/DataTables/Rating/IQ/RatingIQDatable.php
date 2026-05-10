@@ -58,7 +58,7 @@ class RatingIQDatable extends BaseDataTable
             [
                 'type' => QuestionType::IQ
             ]
-        );
+        )->whereNotNull('score')->where('score', '>', 0)->orderBy('id', 'desc');
     }
 
     protected function setCustomColumns(): void

@@ -52,7 +52,7 @@ class RatingPQDataTable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getQueryBuilder();
+        return $this->repository->getQueryBuilder()->orderBy('id', 'desc');
     }
 
     protected function setCustomColumns(): void
