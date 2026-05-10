@@ -28,8 +28,8 @@ class RatingPQRequest extends BaseRequest
     {
         return [
             'assessment_date' => 'required|date_format:Y-m-d|before_or_equal:today',
-            'height' => 'required|integer|min:1',
-            'weight' => 'required|min:1',
+            'height' => 'required|integer|min:1|max:250',
+            'weight' => 'required|numeric|min:1|max:200',
             'strength' => 'nullable|integer|min:0',
             'endurance' => 'nullable|integer|min:0',
             'child_id' => ['required', 'integer', new ValidChildAge()],
@@ -41,8 +41,8 @@ class RatingPQRequest extends BaseRequest
         return [
             'id' => 'required|integer|exists:ratings_pqs,id',
             'assessment_date' => 'required|date_format:Y-m-d|before_or_equal:today',
-            'height' => 'required|integer|min:1',
-            'weight' => 'required|min:1',
+            'height' => 'required|integer|min:1|max:250',
+            'weight' => 'required|numeric|min:1|max:200',
             'strength' => 'nullable|integer|min:0',
             'endurance' => 'nullable|integer|min:0',
             'child_id' => ['required', 'integer', new ValidChildAge()],
@@ -90,8 +90,10 @@ class RatingPQRequest extends BaseRequest
             'height.required' => 'Chiều cao là bắt buộc.',
             'height.integer' => 'Chiều cao phải là một số nguyên.',
             'height.min' => 'Chiều cao tối thiểu là 1 cm.',
+            'height.max' => 'Chiều cao không được lớn hơn 250 cm. Vui lòng nhập lại chính xác hơn.',
             'weight.required' => 'Cân nặng là bắt buộc.',
             'weight.integer' => 'Cân nặng phải là một số nguyên.',
+            'weight.max' => 'Cân nặng không được lớn hơn 200 kg. Đơn vị là kilogram, vui lòng nhập lại.',
             'weight.min' => 'Cân nặng tối thiểu là 1 kg.',
             'strength.required' => 'Điểm sức mạnh là bắt buộc.',
             'strength.integer' => 'Điểm sức mạnh phải là một số nguyên.',
