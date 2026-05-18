@@ -71,7 +71,7 @@ trait JwtService
             $refreshToken = $this->createRefreshToken($user);
             // check package
             $package = $user->userPackages->first();
-            if ($package->current_type == PackageType::Normal) {
+            if (in_array($package->current_type, [PackageType::Normal, PackageType::Trial])) {
                 $this->deleteSessionToken($user->id);
                 $this->sessionRepository->create([
                     'user_id' => $user->id,
