@@ -7,6 +7,7 @@ use App\Api\V1\Http\Resources\Package\AuthPackageResource;
 use App\Enums\DeleteStatus;
 use App\Enums\Package\PackageType;
 use App\Models\User;
+use App\Enums\User\UserStatus;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -59,6 +60,12 @@ trait JwtService
         $user = $this->userRepository->findByField('email', $emailEncrypted);
 
         if ($user && Hash::check($this->login['password'], $user->password)) {
+            if ($user->status === UserStatus::Lock) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => __('Tài khoản của bạn đã bị khóa.')
+                ], 403);
+            }
 
             $token = JWTAuth::fromUser($user);
             $refreshToken = $this->createRefreshToken($user);
