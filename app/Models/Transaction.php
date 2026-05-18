@@ -21,7 +21,7 @@ class Transaction extends Model
     protected $fillable = [
         /** code */
         'code',
-        /** Google Order Id */
+        /** Mã Order ID từ Store (Dùng chung lưu Transaction ID của cả Google Play và Apple Store) */
         'google_order_id',
         /** Mã token của giao dịch Google Play */
         'purchase_token',

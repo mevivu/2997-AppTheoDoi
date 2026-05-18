@@ -48,6 +48,12 @@ class AppleStoreService implements AppleStoreServiceInterface
             $privateKeyContent = file_get_contents($privateKeyContent);
         }
 
+        // Format private key properly if it is missing PEM headers
+        if (!empty($privateKeyContent) && !str_contains($privateKeyContent, '-----BEGIN PRIVATE KEY-----')) {
+            $privateKeyContent = str_replace([' ', "\n", "\r"], '', $privateKeyContent);
+            $privateKeyContent = "-----BEGIN PRIVATE KEY-----\n" . wordwrap($privateKeyContent, 64, "\n", true) . "\n-----END PRIVATE KEY-----";
+        }
+
         try {
             return JWT::encode($payload, $privateKeyContent, 'ES256', $this->keyId);
         } catch (\Exception $e) {
