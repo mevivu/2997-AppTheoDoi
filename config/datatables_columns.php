@@ -1706,7 +1706,7 @@ return [
             'orderable' => false
         ],
         'full_year_grade' => [
-            'title' => 'Tổng điểm',
+            'title' => 'Điểm Cả năm',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],

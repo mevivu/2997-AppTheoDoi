@@ -5,12 +5,14 @@ namespace App\Api\V1\Services\Purchase;
 use App\Admin\Services\GooglePlay\GooglePlayServiceInterface;
 use App\Admin\Services\Transaction\TransactionServiceInterface;
 use App\Api\V1\Exception\BadRequestException;
+use App\Api\V1\Http\Requests\Purchase\AppleStoreRequest;
 use App\Api\V1\Http\Requests\Purchase\GooglePlayRequest;
 use App\Api\V1\Http\Resources\Package\AuthPackageResource;
 use App\Api\V1\Http\Resources\Package\PackageResource;
 use App\Api\V1\Repositories\Package\PackageRepositoryInterface;
 use App\Api\V1\Repositories\Transaction\TransactionRepositoryInterface;
 use App\Api\V1\Services\Notification\NotificationServiceInterface;
+use App\Admin\Services\AppleStore\AppleStoreServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\GooglePlay\SubscriptionState;
@@ -40,6 +42,7 @@ class PurchaseService implements PurchaseServiceInterface
     protected TransactionServiceInterface $transactionService;
     protected TransactionRepositoryInterface $transactionRepository;
     protected NotificationServiceInterface $notificationService;
+    protected AppleStoreServiceInterface $appleStoreService;
 
 
     public function __construct(
@@ -47,7 +50,8 @@ class PurchaseService implements PurchaseServiceInterface
         GooglePlayServiceInterface     $googlePlayService,
         TransactionServiceInterface    $transactionService,
         TransactionRepositoryInterface $transactionRepository,
-        NotificationServiceInterface   $notificationService
+        NotificationServiceInterface   $notificationService,
+        AppleStoreServiceInterface     $appleStoreService
     )
     {
         $this->packageRepository = $packageRepository;
@@ -55,6 +59,7 @@ class PurchaseService implements PurchaseServiceInterface
         $this->transactionService = $transactionService;
         $this->transactionRepository = $transactionRepository;
         $this->notificationService = $notificationService;
+        $this->appleStoreService = $appleStoreService;
     }
 
 
@@ -102,15 +107,47 @@ class PurchaseService implements PurchaseServiceInterface
         ];
     }
 
+    public function verifyPurchaseAppleStore(AppleStoreRequest $request): array
+    {
+        $data = $request->validated();
+        $user = $this->getCurrentUser();
+        $productId = $data['product_id'];
+        $transactionId = $data['transaction_id'];
+        $package = $this->packageRepository->findByField('code', $productId);
+
+        $verificationResult = $this->appleStoreService->verifyPurchase($productId, $transactionId, true);
+
+        if (!$verificationResult['success']) {
+            throw new BadRequestException(MessageSystem::VERIFY_ERROR . ($verificationResult['error'] ?? 'Unknown error'));
+        }
+
+        $purchaseData = $verificationResult['data'];
+        $statusValue = $purchaseData['subscriptionState'];
+        $isActive = $statusValue === 'SUBSCRIPTION_STATE_ACTIVE';
+
+        if ($isActive) {
+            $this->handlePurchase($user, $package, $purchaseData, $transactionId, TransactionEnumService::APPLE);
+        }
+        return [
+            'package' => new PackageResource($package),
+            'user_package' => new AuthPackageResource($user->userPackages->first()),
+            'product_id' => $productId,
+            'order_id' => $purchaseData['orderId'] ?? null,
+            'expiry_time' => $purchaseData['lineItem']['expiryTime'] ?? null,
+            'auto_renewing' => $purchaseData['lineItem']['autoRenewing'] ?? null,
+            'status' => $purchaseData['subscriptionState'] ?? null,
+        ];
+    }
+
     // Xử lý giao dịch mua thành công
-    private function handlePurchase($user, $package, $purchaseData, $purchaseToken): void
+    private function handlePurchase($user, $package, $purchaseData, $purchaseToken, TransactionEnumService $serviceType = TransactionEnumService::GOOGLE_PLAY): void
     {
         $orderId = $purchaseData['orderId'] ?? null;
-        if ($orderId && $this->transactionRepository->existsByOrderIdAndService($orderId, TransactionEnumService::GOOGLE_PLAY)) {
+        if ($orderId && $this->transactionRepository->existsByOrderIdAndService($orderId, $serviceType)) {
             return;
         }
         $this->updateOrCreateUserPackage($user, $package);
-        $this->transactionService->store($user, $package, TransactionEnumService::GOOGLE_PLAY, $orderId, $purchaseToken);
+        $this->transactionService->store($user, $package, $serviceType, $orderId, $purchaseToken);
         $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
     }
 

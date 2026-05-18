@@ -83,6 +83,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $heightWhoCurrent = round($heightChangeLasted - $who->height, 2);
 
 
+        $growthEvaluation = $this->evaluateHeightGrowth($heightChange, $heightChangeWho);
+
         return [
             'advice_message' => $adviceMessage,
             'oldest_record_exists' => $oldestRecordExists,
@@ -90,7 +92,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             'predicting_adult_height' => $predictingAdultHeight,
             'height_comparison' => [
                 'height_who_current' => $heightWhoCurrent,
-                'is_taller_than_who' => $heightChangeLasted > $who->height,
+                'is_taller_than_who' => $growthEvaluation['status'],
+                'message' => $growthEvaluation['message'],
             ],
             'child' => new ChildResource($child)
         ];
@@ -191,15 +194,27 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         }
     }
 
-    public function calculateCurrentHeightChangeWithHeightChanWho($heightChange, $heightChangeWho): bool
+    public function evaluateHeightGrowth($heightChange, $heightChangeWho): array
     {
         $result1 = $heightChangeWho * 0.75 * 12;
         $result2 = $heightChangeWho * 1.25 * 12;
-        if ($heightChange < $result1) {
-            return false;
+        
+        $isGoodGrowth = $heightChange >= $result1;
+
+        if ($heightChange == 0) {
+            $message = "Bạn hãy cung cấp thêm dữ liệu chiều cao của con bạn trong vòng 6-12 tháng trước để có dự đoán và đánh giá chiều cao chính xác hơn.";
+        } elseif ($heightChange < $result1) {
+            $message = "Tốc độ tăng chiều cao của con đang thấp hơn so với chuẩn WHO";
+        } elseif ($heightChange > $result2) {
+            $message = "Tốc độ tăng chiều cao của con đang cao hơn so với chuẩn WHO";
         } else {
-            return true;
+            $message = "Tốc độ tăng chiều cao của con đang đạt chuẩn WHO";
         }
+
+        return [
+            'status' => $isGoodGrowth,
+            'message' => $message,
+        ];
     }
 
 

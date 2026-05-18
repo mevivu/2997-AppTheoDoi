@@ -108,6 +108,7 @@ Route::controller(App\Api\V1\Http\Controllers\Purchase\PurchaseController::class
     ->as('purchase.')
     ->group(function () {
         Route::post('/google-play', 'verifyPurchaseGooglePlay');
+        Route::post('/apple-store', 'verifyPurchaseAppleStore');
         Route::post('/google-play/webhook', 'googlePlayWebhook');
     });
 

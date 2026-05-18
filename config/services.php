@@ -38,4 +38,12 @@ return [
         'package_name' => env('GOOGLE_PLAY_PACKAGE_NAME', 'com.mevivu.theodoi'),
     ],
 
+    'apple_store' => [
+        'shared_secret' => env('APPLE_STORE_SHARED_SECRET'),
+        'bundle_id' => env('APPLE_STORE_BUNDLE_ID', 'com.mevivu.theodoi'),
+        'issuer_id' => env('APPLE_STORE_ISSUER_ID'),
+        'key_id' => env('APPLE_STORE_KEY_ID'),
+        'private_key' => env('APPLE_STORE_PRIVATE_KEY'), // Can be raw string or file path
+    ],
+
 ];

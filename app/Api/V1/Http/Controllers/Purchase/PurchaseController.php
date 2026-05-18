@@ -3,6 +3,7 @@
 namespace App\Api\V1\Http\Controllers\Purchase;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Api\V1\Http\Requests\Purchase\AppleStoreRequest;
 use App\Api\V1\Http\Requests\Purchase\GooglePlayRequest;
 use App\Api\V1\Http\Requests\Purchase\WebhookGooglePlayRequest;
 use App\Api\V1\Services\Purchase\PurchaseServiceInterface;
@@ -82,6 +83,30 @@ class PurchaseController extends Controller
             DB::beginTransaction();
 
             $response = $this->purchaseService->verifyPurchaseGooglePlay($request);
+
+            DB::commit();
+
+            return $this->jsonResponseSuccess($response);
+        } catch (Exception $exception) {
+            DB::rollBack();
+
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
+        }
+    }
+
+    /**
+     * Xác minh giao dịch mua trên Apple Store
+     *
+     * @param AppleStoreRequest $request
+     * @return JsonResponse
+     */
+    public function verifyPurchaseAppleStore(AppleStoreRequest $request): JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $response = $this->purchaseService->verifyPurchaseAppleStore($request);
 
             DB::commit();
 
