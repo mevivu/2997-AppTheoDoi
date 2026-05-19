@@ -92,7 +92,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             'predicting_adult_height' => $predictingAdultHeight,
             'height_comparison' => [
                 'height_who_current' => $heightWhoCurrent,
-                'is_taller_than_who' => $growthEvaluation['status'],
+                'is_taller_than_who' => $heightWhoCurrent > 0,
                 'message' => $growthEvaluation['message'],
             ],
             'child' => new ChildResource($child)
