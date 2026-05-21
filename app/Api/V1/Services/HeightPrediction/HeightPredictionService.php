@@ -186,7 +186,13 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
     public function getAdviceMessage($heightChange, $heightChangeWho): string
     {
+        // Kiểm tra nếu dữ liệu bằng 0 (chưa có sự tăng trưởng hoặc chưa nhập dữ liệu)
+        if ($heightChange == 0) {
+            return "Bạn hãy cung cấp thêm dữ liệu chiều cao của con bạn trong vòng 6-12 tháng trước để có dự đoán và đánh giá chiều cao chính xác hơn.";
+        }
+
         $result = $heightChangeWho * 0.75 * 12;
+
         if ($heightChange < $result) {
             return "Bố mẹ cần thay đổi chế độ dinh dưỡng và vận động cho con hoặc tốt nhất là đi khám bác sĩ dinh dưỡng.";
         } else {
@@ -198,7 +204,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
     {
         $result1 = $heightChangeWho * 0.75 * 12;
         $result2 = $heightChangeWho * 1.25 * 12;
-        
+
         $isGoodGrowth = $heightChange >= $result1;
 
         if ($heightChange == 0) {
