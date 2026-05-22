@@ -52,7 +52,7 @@ class RatingPQDataTable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getQueryBuilder()->orderBy('id', 'desc');
+        return $this->repository->getQueryBuilder()->with(['child'])->orderBy('id', 'desc');
     }
 
     protected function setCustomColumns(): void
@@ -104,5 +104,17 @@ class RatingPQDataTable extends BaseDataTable
         ];
     }
 
+    protected function getExportValue($key, $row)
+    {
+        try {
+            switch ($key) {
+                case 'child_id':
+                    return $row->child_id ? 'TE' . $row->child_id : '';
+            }
+        } catch (\Throwable $e) {
+            return '';
+        }
 
+        return parent::getExportValue($key, $row);
+    }
 }
