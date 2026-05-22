@@ -37,6 +37,21 @@
                 </div>
             </div>
 
+            <!-- excel file -->
+            <div style="display: none" id="notification-excel-file-wrapper" class="col-12">
+                <div class="mb-3">
+                    <i class="ti ti-file-spreadsheet"></i>
+                    <label for="excel_file">{{ __('Tải lên file Excel') }} <span class="text-danger">*</span></label>
+                    <input type="file" class="form-control" id="excel_file" name="excel_file" accept=".xlsx, .xls, .csv">
+                    <div class="form-text">
+                        {{ __('Tải file Excel mẫu tại đây:') }}
+                        <a href="{{ route('admin.notification.downloadTemplate') }}" class="text-primary fw-bold">
+                            <i class="ti ti-download"></i> {{ __('Tải template mẫu') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <!-- title -->
             <div class="col-12">
                 <div class="mb-3">

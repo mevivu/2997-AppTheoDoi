@@ -27,6 +27,7 @@ class NotificationRequest extends BaseRequest
             'admin_id' => ['nullable'],
             'title' => ['required', 'string'],
             'message' => ['required'],
+            'excel_file' => ['nullable', 'file', 'mimes:xlsx,xls,csv'],
         ];
     }
 
@@ -60,6 +61,12 @@ class NotificationRequest extends BaseRequest
             if ($this->has('approval_status') && $notification && $notification->approval_status != ApprovalStatus::PENDING) {
                 $validator->errors()->add('approval_status', 'Thông báo đã được duyệt hoặc từ chối, không thể cập nhật.');
             }
+
+            if ($this->input('option') == \App\Enums\Notification\NotificationOption::Excel->value) {
+                if (!$this->hasFile('excel_file')) {
+                    $validator->errors()->add('excel_file', 'Vui lòng tải lên file Excel danh sách khách hàng.');
+                }
+            }
         });
     }
 
@@ -79,6 +86,8 @@ class NotificationRequest extends BaseRequest
             'id.required' => 'Id không được để trống',
             'id.exists' => 'Id không hợp lệ',
             'approval_status.enum' => 'Trạng thái phê duyệt không hợp lệ',
+            'excel_file.file' => 'File tải lên không hợp lệ.',
+            'excel_file.mimes' => 'File phải có định dạng .xlsx, .xls hoặc .csv.',
         ];
     }
 }

@@ -16,6 +16,8 @@ use App\Enums\ApprovalStatus;
 use App\Enums\Notification\NotificationOption;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
+use App\Admin\Exel\Notification\NotificationTemplateExport;
+use Maatwebsite\Excel\Facades\Excel;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
@@ -103,6 +105,11 @@ class NotificationController extends Controller
             'status' => NotificationStatus::asSelectArray(),
             'breadcrumbs' => $this->crums->add(__('notifications'), route($this->route['index']))->add(__('add'))
         ]);
+    }
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new NotificationTemplateExport(), 'template_gui_thong_bao.xlsx');
     }
 
     /**

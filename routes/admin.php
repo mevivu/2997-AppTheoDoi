@@ -451,6 +451,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::group(['middleware' => ['permission:createNotification', 'auth:admin']], function () {
                 Route::get('/add', 'create')->name('create');
                 Route::post('/add', 'store')->name('store');
+                Route::get('/download-template', 'downloadTemplate')->name('downloadTemplate');
             });
             Route::group(['middleware' => ['permission:viewNotification', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');

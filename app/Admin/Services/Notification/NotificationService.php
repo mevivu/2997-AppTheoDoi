@@ -17,6 +17,8 @@ use App\Enums\Notification\NotificationOption;
 use App\Enums\Package\PackageUserStatus;
 use App\Jobs\SendFirebaseNotificationJob;
 use App\Traits\UseLog;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -125,6 +127,71 @@ class NotificationService implements NotificationServiceInterface
                     'status' => NotificationStatus::NOT_READ,
                 ]);
             }
+
+            return true;
+        }
+
+        /**
+         * =====================================
+         * CASE 3: GỬI THEO DANH SÁCH EXCEL
+         * =====================================
+         */
+        if ($option === NotificationOption::Excel->value) {
+            if (!$request->hasFile('excel_file')) {
+                throw ValidationException::withMessages([
+                    'excel_file' => 'Vui lòng tải lên file Excel danh sách khách hàng.'
+                ]);
+            }
+
+            $file = $request->file('excel_file');
+            $rows = Excel::toArray(new \stdClass(), $file);
+
+            if (empty($rows) || empty($rows[0])) {
+                throw ValidationException::withMessages([
+                    'excel_file' => 'File Excel trống hoặc không đúng định dạng.'
+                ]);
+            }
+
+            $sheet = $rows[0];
+            $codes = [];
+            for ($i = 1; $i < count($sheet); $i++) {
+                $code = isset($sheet[$i][0]) ? trim($sheet[$i][0]) : '';
+                if ($code !== '') {
+                    $codes[] = $code;
+                }
+            }
+
+            if (empty($codes)) {
+                throw ValidationException::withMessages([
+                    'excel_file' => 'Không tìm thấy mã khách hàng nào trong file Excel.'
+                ]);
+            }
+
+            $userIds = $this->userRepository->getQueryBuilder()
+                ->whereIn('code', $codes)
+                ->pluck('id')
+                ->toArray();
+
+            if (empty($userIds)) {
+                throw ValidationException::withMessages([
+                    'excel_file' => 'Không tìm thấy khách hàng nào khớp với mã trong file Excel.'
+                ]);
+            }
+
+            $notifications = [];
+            foreach ($userIds as $userId) {
+                $notifications[] = [
+                    'user_id' => $userId,
+                    'title' => $this->data['title'],
+                    'message' => $this->data['message'],
+                    'status' => NotificationStatus::NOT_READ->value,
+                    'is_pushed' => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+
+            $this->repository->insert($notifications);
 
             return true;
         }

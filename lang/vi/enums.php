@@ -162,6 +162,7 @@ return [
     NotificationOption::class => [
         NotificationOption::All->value => 'Cho tất cả',
         NotificationOption::One->value => 'Cho một người',
+        NotificationOption::Excel->value => 'Gửi theo danh sách Excel',
     ],
     MessageType::class => [
         MessageType::UNCLASSIFIED->value => 'Không phân loại',

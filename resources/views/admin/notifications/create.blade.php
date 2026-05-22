@@ -6,7 +6,7 @@
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
-            <x-form id="notificationForm" :action="route('admin.notification.store')" type="post" :validate="true">
+            <x-form id="notificationForm" :action="route('admin.notification.store')" type="post" :validate="true" enctype="multipart/form-data">
                 <div class="row justify-content-center">
                     <input type="hidden" name="device_token" value="">
                     @include('admin.notifications.forms.create-left')

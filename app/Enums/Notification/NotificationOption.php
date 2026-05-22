@@ -9,4 +9,5 @@ enum NotificationOption: int
     use Enum;
     case All = 1;
     case One = 2;
+    case Excel = 3;
 }
