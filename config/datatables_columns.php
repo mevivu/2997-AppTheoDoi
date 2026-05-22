@@ -1524,6 +1524,11 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
+        'user_code' => [
+            'title' => 'Mã khách hàng',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
 
         'birthday' => [
             'title' => 'Ngày sinh',

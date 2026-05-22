@@ -43,21 +43,21 @@ class ChildrenDataTable extends BaseDataTable
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-        $this->columnSearchDate = [5, 6];
+        $this->columnSearchDate = [6, 7];
 
         $this->columnSearchSelect = [
             [
-                'column' => 7,
+                'column' => 8,
                 'data' => Gender::asSelectArray()
             ],
             [
-                'column' => 8,
+                'column' => 9,
                 'data' => BornStatus::asSelectArray()
             ],
             [
-                'column' => 9,
+                'column' => 10,
                 'data' => ChildStatus::asSelectArray()
             ],
         ];
@@ -91,6 +91,15 @@ class ChildrenDataTable extends BaseDataTable
                     'user' => $children->user
                 ])->render();
             },
+            'user_code' => function ($children) {
+                if (!$children->user) {
+                    return '';
+                }
+                return view('admin.users.datatable.editlink', [
+                    'id' => $children->user->id,
+                    'code' => $children->user->code
+                ])->render();
+            },
             'gender' => $this->view['gender'],
             'birthday' => '{{ date("d-m-Y", strtotime($birthday)) }}',
         ];
@@ -111,6 +120,7 @@ class ChildrenDataTable extends BaseDataTable
             'status',
             'gender',
             'user_fullname',
+            'user_code',
             'fullname',
             'checkbox',
             'is_born'
@@ -123,6 +133,11 @@ class ChildrenDataTable extends BaseDataTable
             'user_fullname' => function ($query, $keyword) {
                 $query->whereHas('user', function ($subQuery) use ($keyword) {
                     $subQuery->where('fullname', 'like', "%$keyword%");
+                });
+            },
+            'user_code' => function ($query, $keyword) {
+                $query->whereHas('user', function ($subQuery) use ($keyword) {
+                    $subQuery->where('code', 'like', "%$keyword%");
                 });
             },
             'fullname' => function ($query, $keyword) {
@@ -147,6 +162,8 @@ class ChildrenDataTable extends BaseDataTable
                      return  $row->user ? 'CM' . $row->user->id : '';
                 case 'user_fullname':
                     return $row->user ? $row->user->fullname : '';
+                case 'user_code':
+                    return $row->user ? $row->user->code : '';
                 case 'birthday':
                     return $row->birthday ? date('d/m/Y', strtotime($row->birthday)) : '';
                 case 'due_date':
