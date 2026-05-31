@@ -79,13 +79,6 @@ trait JwtService
             $token = JWTAuth::fromUser($user);
             $refreshToken = $this->createRefreshToken($user);
             
-            // Cập nhật device_token trực tiếp cho user nếu có
-            if (!empty($this->login['device_token'])) {
-                $this->userRepository->update($user->id, [
-                    'device_token' => $this->login['device_token']
-                ]);
-            }
-
             // check package
             $package = $user->userPackages->first();
             if (in_array($package->current_type, [PackageType::Normal, PackageType::Trial])) {
@@ -111,6 +104,14 @@ trait JwtService
                     'status' => DeleteStatus::NotDeleted
                 ]);
             }
+
+            // Cập nhật device_token trực tiếp cho user nếu có
+            if (!empty($this->login['device_token'])) {
+                $this->userRepository->update($user->id, [
+                    'device_token' => $this->login['device_token']
+                ]);
+            }
+
             return $this->respondWithToken($token, $refreshToken, $user);
 
         }
