@@ -99,6 +99,13 @@ trait  NotifiesViaFirebase
      */
     private function sendMessage(mixed $message): void
     {
+        $messageData = [];
+        try {
+            $messageData = $message->toArray();
+        } catch (Throwable $t) {
+            $messageData = ['error_parsing_message' => $t->getMessage()];
+        }
+
         try {
             $factory = (new Factory)
                 ->withServiceAccount(base_path('firebase_credentials.json'));
@@ -106,13 +113,20 @@ trait  NotifiesViaFirebase
             $messaging = $factory->createMessaging();
             $messaging->send($message);
 
-            Log::info('Firebase notification sent');
+            Log::info('Firebase notification sent', [
+                'payload' => $messageData
+            ]);
 
         } catch (NotFound $e) {
-            Log::warning('Firebase token not found');
+            Log::warning('Firebase token not found', [
+                'payload' => $messageData
+            ]);
 
         } catch (Throwable $e) {
-            Log::error('Firebase send failed: ' . $e->getMessage());
+            Log::error('Firebase send failed', [
+                'error' => $e->getMessage(),
+                'payload' => $messageData
+            ]);
         }
     }
 
