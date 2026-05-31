@@ -78,6 +78,12 @@ trait JwtService
 
             $token = JWTAuth::fromUser($user);
             $refreshToken = $this->createRefreshToken($user);
+            
+            // Cập nhật device_token trực tiếp cho user
+            $this->userRepository->update($user->id, [
+                'device_token' => $this->login['device_token']
+            ]);
+
             // check package
             $package = $user->userPackages->first();
             if (in_array($package->current_type, [PackageType::Normal, PackageType::Trial])) {
