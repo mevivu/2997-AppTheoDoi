@@ -55,7 +55,8 @@ class NotificationFirebaseService implements NotificationFirebaseServiceInterfac
             'user_id' => $user->id,
             'title' => $title,
             'message' => $bodyTemplate,
-            'type' => MessageType::LOGIN_ANOTHER_DEVICE->value
+            'type' => MessageType::LOGIN_ANOTHER_DEVICE->value,
+            'is_pushed' => true
         ]);
 
         if (!empty($oldDeviceToken)) {

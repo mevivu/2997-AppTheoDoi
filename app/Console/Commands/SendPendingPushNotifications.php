@@ -49,6 +49,10 @@ class SendPendingPushNotifications extends Command
             return self::SUCCESS;
         }
 
+        // Đánh dấu đã pushed ngay lập tức để tránh race condition/overlapping
+        Notification::whereIn('id', $pendingNotifications->pluck('id'))
+            ->update(['is_pushed' => true]);
+
         $this->info("Tìm thấy {$pendingNotifications->count()} thông báo cần gửi push.");
 
         // Lấy danh sách user_id duy nhất
@@ -60,9 +64,6 @@ class SendPendingPushNotifications extends Command
             ->pluck('device_token', 'id'); // [user_id => device_token]
 
         if ($usersWithToken->isEmpty()) {
-            // Không có user nào có token, đánh dấu tất cả là đã pushed
-            Notification::whereIn('id', $pendingNotifications->pluck('id'))
-                ->update(['is_pushed' => true]);
             $this->warn('Không có user nào có device_token. Đã đánh dấu tất cả is_pushed = true.');
             return self::SUCCESS;
         }
@@ -74,7 +75,7 @@ class SendPendingPushNotifications extends Command
 
         $totalSent = 0;
         $totalFailed = 0;
-        $processedIds = [];
+        $processedCount = $pendingNotifications->count();
 
         foreach ($grouped as $group) {
             $firstNotification = $group->first();
@@ -83,11 +84,8 @@ class SendPendingPushNotifications extends Command
 
             // Lấy tokens của users trong nhóm này
             $tokens = [];
-            $notificationIds = [];
 
             foreach ($group as $notification) {
-                $notificationIds[] = $notification->id;
-
                 if (isset($usersWithToken[$notification->user_id])) {
                     $tokens[] = $usersWithToken[$notification->user_id];
                 }
@@ -100,20 +98,11 @@ class SendPendingPushNotifications extends Command
                 $totalSent += $result['success'];
                 $totalFailed += $result['failed'];
             }
-
-            // Đánh dấu đã pushed
-            $processedIds = array_merge($processedIds, $notificationIds);
-        }
-
-        // Cập nhật tất cả notifications đã xử lý
-        if (!empty($processedIds)) {
-            Notification::whereIn('id', $processedIds)
-                ->update(['is_pushed' => true]);
         }
 
         $elapsed = round(microtime(true) - $startTime, 2);
         $summary = "Push notification hoàn tất: {$totalSent} thành công, {$totalFailed} thất bại, " .
-            count($processedIds) . " notifications đã xử lý trong {$elapsed}s";
+            $processedCount . " notifications đã xử lý trong {$elapsed}s";
 
         $this->info($summary);
         Log::channel('notification-push')->info("[notification:send-push] {$summary}");
