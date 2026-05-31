@@ -236,6 +236,12 @@ trait  NotifiesViaFirebase
         $notification = $notificationRepository->create($notificationData);
 
         if (!empty($deviceToken)) {
+            if (is_null($data)) {
+                $data = [];
+            }
+            if (!isset($data['type']) && !is_null($type)) {
+                $data['type'] = $type->value;
+            }
             $this->sendFirebaseNotification([$deviceToken], null, $title, $body, $notification->id, $data);
         }
     }
