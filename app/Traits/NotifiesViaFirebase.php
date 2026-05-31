@@ -101,7 +101,7 @@ trait  NotifiesViaFirebase
     {
         $messageData = [];
         try {
-            $messageData = $message->toArray();
+            $messageData = json_decode(json_encode($message), true);
         } catch (Throwable $t) {
             $messageData = ['error_parsing_message' => $t->getMessage()];
         }
