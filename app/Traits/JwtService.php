@@ -84,37 +84,35 @@ trait JwtService
                 'input_device_token' => $this->login['device_token'] ?? null,
             ]);
 
+            // Lấy token cũ hiện tại của user từ bảng users trước khi cập nhật
+            $oldUserDeviceToken = $user->device_token;
+
+            \Illuminate\Support\Facades\Log::info('Login device token compare', [
+                'user_id' => $user->id,
+                'old_user_device_token' => $oldUserDeviceToken,
+                'new_input_device_token' => $this->login['device_token'] ?? null,
+            ]);
+
             // check package
             $package = $user->userPackages->first();
             if (in_array($package->current_type, [PackageType::Normal, PackageType::Trial])) {
-                $oldSession = $this->sessionRepository->getBy([
-                    'user_id' => $user->id,
-                    'status' => DeleteStatus::NotDeleted
-                ])->first();
-
-                \Illuminate\Support\Facades\Log::info('Old session check', [
-                    'has_old_session' => !empty($oldSession),
-                    'old_device_token' => $oldSession ? $oldSession->device_token : null,
-                ]);
-
-                if (!empty($this->login['device_token']) && $oldSession && !empty($oldSession->device_token) && $oldSession->device_token !== $this->login['device_token']) {
-                    \Illuminate\Support\Facades\Log::info('Triggering notifyLoginAnotherDevice', [
+                if (!empty($this->login['device_token']) && !empty($oldUserDeviceToken) && $oldUserDeviceToken !== $this->login['device_token']) {
+                    \Illuminate\Support\Facades\Log::info('Triggering notifyLoginAnotherDevice using user device_token', [
                         'user_id' => $user->id,
-                        'old_device_token' => $oldSession->device_token,
+                        'old_device_token' => $oldUserDeviceToken,
                         'new_device_token' => $this->login['device_token'],
                     ]);
                     try {
                         $notificationService = app(NotificationFirebaseServiceInterface::class);
-                        $notificationService->notifyLoginAnotherDevice($user, $oldSession->device_token);
+                        $notificationService->notifyLoginAnotherDevice($user, $oldUserDeviceToken);
                     } catch (Exception $e) {
                         $this->logError('Failed to send login another device notification', $e);
                     }
                 } else {
-                    \Illuminate\Support\Facades\Log::info('Condition notifyLoginAnotherDevice skipped', [
+                    \Illuminate\Support\Facades\Log::info('Condition notifyLoginAnotherDevice skipped using user device_token', [
                         'input_empty' => empty($this->login['device_token']),
-                        'old_session_empty' => empty($oldSession),
-                        'old_device_token_empty' => $oldSession ? empty($oldSession->device_token) : true,
-                        'same_token' => $oldSession ? ($oldSession->device_token === $this->login['device_token']) : false,
+                        'old_device_token_empty' => empty($oldUserDeviceToken),
+                        'same_token' => ($oldUserDeviceToken === ($this->login['device_token'] ?? null)),
                     ]);
                 }
 
