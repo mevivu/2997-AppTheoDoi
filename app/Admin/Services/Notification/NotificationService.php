@@ -225,6 +225,7 @@ class NotificationService implements NotificationServiceInterface
                         $device_token = $item->device_token;
                         break;
                 }
+                $this->data['is_pushed'] = !empty($device_token);
                 $notification = $this->repository->create($this->data);
                 $this->data['device_token'] = $device_token;
                 if ($notification && $device_token) {
@@ -250,6 +251,7 @@ class NotificationService implements NotificationServiceInterface
 
                     $device_token = $user->user ? $user->user->device_token : $user->device_token;
 
+                    $this->data['is_pushed'] = !empty($device_token);
                     $notification = $this->repository->create($this->data);
 
                     $this->data['device_token'] = $device_token;

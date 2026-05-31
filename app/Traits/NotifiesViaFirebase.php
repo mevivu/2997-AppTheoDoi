@@ -226,7 +226,8 @@ trait  NotifiesViaFirebase
         $notificationData = [
             'user_id' => $user->id,
             'title' => $title,
-            'message' => $body
+            'message' => $body,
+            'is_pushed' => !empty($deviceToken)
         ];
 
         if (!is_null($type)) {
