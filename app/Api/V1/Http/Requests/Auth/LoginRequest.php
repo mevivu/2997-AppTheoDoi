@@ -16,7 +16,7 @@ class LoginRequest extends BaseRequest
         return [
             'email' => 'required|email',
             'password' => 'required',
-            'device_token' => 'required|string',
+            'device_token' => 'nullable|string',
         ];
     }
 }

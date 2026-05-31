@@ -79,10 +79,12 @@ trait JwtService
             $token = JWTAuth::fromUser($user);
             $refreshToken = $this->createRefreshToken($user);
             
-            // Cập nhật device_token trực tiếp cho user
-            $this->userRepository->update($user->id, [
-                'device_token' => $this->login['device_token']
-            ]);
+            // Cập nhật device_token trực tiếp cho user nếu có
+            if (!empty($this->login['device_token'])) {
+                $this->userRepository->update($user->id, [
+                    'device_token' => $this->login['device_token']
+                ]);
+            }
 
             // check package
             $package = $user->userPackages->first();
@@ -92,7 +94,7 @@ trait JwtService
                     'status' => DeleteStatus::NotDeleted
                 ])->first();
 
-                if ($oldSession && !empty($oldSession->device_token) && $oldSession->device_token !== $this->login['device_token']) {
+                if (!empty($this->login['device_token']) && $oldSession && !empty($oldSession->device_token) && $oldSession->device_token !== $this->login['device_token']) {
                     try {
                         $notificationService = app(NotificationFirebaseServiceInterface::class);
                         $notificationService->notifyLoginAnotherDevice($user, $oldSession->device_token);
@@ -105,7 +107,7 @@ trait JwtService
                 $this->sessionRepository->create([
                     'user_id' => $user->id,
                     'access_token' => $token,
-                    'device_token' => $this->login['device_token'],
+                    'device_token' => $this->login['device_token'] ?? null,
                     'status' => DeleteStatus::NotDeleted
                 ]);
             }
