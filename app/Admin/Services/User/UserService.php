@@ -4,6 +4,7 @@ namespace App\Admin\Services\User;
 
 use App\Admin\Repositories\Package\PackageRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
+use App\Admin\Services\Notification\NotificationFirebaseServiceInterface;
 use App\Admin\Traits\Roles;
 use App\AES\AESHelper;
 use App\Api\V1\Support\UseLog;
@@ -28,14 +29,18 @@ class UserService implements UserServiceInterface
 
     protected PackageRepositoryInterface $packageRepository;
 
+    protected NotificationFirebaseServiceInterface $notificationFirebaseService;
+
 
     public function __construct(
         UserRepositoryInterface    $repository,
-        PackageRepositoryInterface $packageRepository
+        PackageRepositoryInterface $packageRepository,
+        NotificationFirebaseServiceInterface $notificationFirebaseService
     )
     {
         $this->repository = $repository;
         $this->packageRepository = $packageRepository;
+        $this->notificationFirebaseService = $notificationFirebaseService;
     }
 
     /**
@@ -88,7 +93,15 @@ class UserService implements UserServiceInterface
             unset($data['password']);
         }
         $user = $this->repository->findOrFail($data['id']);
+        $oldStatus = $user->status;
         $user->update($data);
+        if ($user->status !== $oldStatus && ($user->status === UserStatus::Inactive || $user->status === UserStatus::Lock)) {
+            try {
+                $this->notificationFirebaseService->notifyUserLocked($user);
+            } catch (Exception $e) {
+                $this->logError('Failed to send lock notification', $e);
+            }
+        }
         $package = $this->packageRepository->findOrFail($packageId);
         $currentType = $package->type;
         $currentUserPackage = $user->userPackages()->where('status', PackageUserStatus::Active)->first();
@@ -124,12 +137,28 @@ class UserService implements UserServiceInterface
                 return true;
             case 'inactive':
                 foreach ($this->data['id'] as $value) {
-                    $this->repository->updateAttribute($value, 'status', UserStatus::Inactive);
+                    $user = $this->repository->find($value);
+                    if ($user && $user->status !== UserStatus::Inactive) {
+                        $this->repository->updateAttribute($value, 'status', UserStatus::Inactive);
+                        try {
+                            $this->notificationFirebaseService->notifyUserLocked($user);
+                        } catch (Exception $e) {
+                            $this->logError('Failed to send lock notification', $e);
+                        }
+                    }
                 }
                 return true;
             case 'lock':
                 foreach ($this->data['id'] as $value) {
-                    $this->repository->updateAttribute($value, 'status', UserStatus::Lock);
+                    $user = $this->repository->find($value);
+                    if ($user && $user->status !== UserStatus::Lock) {
+                        $this->repository->updateAttribute($value, 'status', UserStatus::Lock);
+                        try {
+                            $this->notificationFirebaseService->notifyUserLocked($user);
+                        } catch (Exception $e) {
+                            $this->logError('Failed to send lock notification', $e);
+                        }
+                    }
                 }
                 return true;
 
