@@ -62,12 +62,18 @@ trait  NotifiesViaFirebase
                 'notification' => [
                     'sound' => 'default'
                 ],
+                'fcm_options' => [
+                    'analytics_label' => 'kids360-android-delivery'
+                ]
             ]))
             ->withApnsConfig(ApnsConfig::fromArray([
                 'payload' => [
                     'aps' => [
                         'sound' => 'default'
                     ],
+                ],
+                'fcm_options' => [
+                    'analytics_label' => 'kids360-apns-delivery'
                 ]
             ]));
 

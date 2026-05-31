@@ -174,8 +174,11 @@
             <div class="row">
                 <div class="col">
                     <div class="card custom-shadow">
-                        <div class="card-header bg-white border-0 pt-4 pb-0">
-                            <h2 class="dashboard-title">{{ __('Dashboard') }}</h2>
+                        <div class="card-header bg-white border-0 pt-4 pb-0 d-flex align-items-center justify-content-between">
+                            <h2 class="dashboard-title mb-0">{{ __('Dashboard') }}</h2>
+                            <a href="{{ route('admin.firebase.report') }}" class="btn btn-primary d-flex align-items-center gap-2">
+                                <i class="ti ti-chart-bar" style="font-size: 1.25rem;"></i> Xem thống kê Firebase
+                            </a>
                         </div>
                         <div class="card-body">
                             <div class="row g-3">
@@ -648,8 +651,11 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
+

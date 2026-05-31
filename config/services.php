@@ -46,4 +46,10 @@ return [
         'private_key' => env('APPLE_STORE_PRIVATE_KEY'), // Can be raw string or file path
     ],
 
+    'firebase' => [
+        'analytics_property_id' => env('FIREBASE_ANALYTICS_PROPERTY_ID'),
+        'android_app_id' => env('FIREBASE_ANDROID_APP_ID'),
+    ],
+
+
 ];

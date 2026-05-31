@@ -10,4 +10,6 @@ interface NotificationFirebaseServiceInterface
     public function sendFirebaseNotificationToUser(User $user, string $title, string $body, ?MessageType $type = null);
 
     public function notifyUserPackageApproved(User $user);
+
+    public function notifyUserLocked(User $user);
 }

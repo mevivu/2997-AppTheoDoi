@@ -10,5 +10,6 @@ enum MessageType: string
 
     case UNCLASSIFIED = 'unclassified';
     case PAYMENT = 'payment';
+    case LOCK = 'lock';
 
 }

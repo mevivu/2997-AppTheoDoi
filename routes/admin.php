@@ -17,6 +17,7 @@ Route::controller(App\Admin\Http\Controllers\Auth\LoginController::class)
 
 Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
+    Route::get('/thong-ke-firebase', [App\Admin\Http\Controllers\FirebaseReport\FirebaseReportController::class, 'index'])->name('firebase.report');
 
     //WeightHeight
     Route::controller(\App\Admin\Http\Controllers\ProductCatalog\ProductCatalogController::class)

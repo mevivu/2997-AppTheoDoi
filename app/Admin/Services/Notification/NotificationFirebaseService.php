@@ -38,4 +38,11 @@ class NotificationFirebaseService implements NotificationFirebaseServiceInterfac
         $this->sendFirebaseNotificationToUser($user, $title, $bodyTemplate, MessageType::UNCLASSIFIED);
 
     }
+
+    public function notifyUserLocked(User $user): void
+    {
+        $title = config('notifications.user_locked.title', 'Tài khoản đã bị khóa');
+        $bodyTemplate = config('notifications.user_locked.message', 'Tài khoản của bạn đã bị khóa.');
+        $this->sendFirebaseNotificationToUser($user, $title, $bodyTemplate, MessageType::LOCK);
+    }
 }

@@ -29,4 +29,8 @@ return [
         'title' => 'Hoàn Tiền Thành Công',
         'message' => 'Xin chào {fullname}! Khoản thanh toán cho gói "{package_name}" của bạn đã được hoàn lại thành công. Số tiền sẽ sớm được ghi có về phương thức thanh toán ban đầu. Cảm ơn bạn đã đồng hành cùng chúng tôi!',
     ],
+    'user_locked' => [
+        'title' => 'Tài khoản đã bị khóa',
+        'message' => 'Tài khoản của bạn đã bị khóa do không hoạt động hoặc vi phạm điều khoản.'
+    ],
 ];

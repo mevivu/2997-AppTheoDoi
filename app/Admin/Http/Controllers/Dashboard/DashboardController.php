@@ -45,6 +45,7 @@ class DashboardController extends Controller
             'index' => 'admin.dashboard.index'
         ];
     }
+    
     public function index(){
         $rowCountTransaction = Transaction::where('is_deleted', DeleteStatus::NotDeleted)->count();
         $rowCountGPA = ClassGrade::where('status', ActiveStatus::Draft)->count();
@@ -99,3 +100,5 @@ class DashboardController extends Controller
     }
 
 }
+
+

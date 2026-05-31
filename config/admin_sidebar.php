@@ -10,6 +10,14 @@ return [
         'sub' => []
     ],
     [
+        'title' => 'Thống kê Firebase',
+        'routeName' => 'admin.firebase.report',
+        'icon' => '<i class="ti ti-chart-bar"></i>',
+        'roles' => [],
+        'permissions' => [],
+        'sub' => []
+    ],
+    [
         'title' => 'Giao dịch',
         'routeName' => null,
         'icon' => '<i class="ti ti-calendar-dollar"></i>',

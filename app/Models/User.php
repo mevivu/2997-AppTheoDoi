@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use App\Admin\Services\Notification\NotificationFirebaseServiceInterface;
 use App\Admin\Support\Eloquent\Sluggable;
 use App\Enums\Package\PackageStatus;
 use App\Enums\Package\PackageType;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Log;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
@@ -148,6 +151,20 @@ class User extends Authenticatable implements JWTSubject
                 'status' => PackageStatus::Active,
                 'current_type' => PackageType::Trial
             ]);
+        });
+
+        static::updated(function ($user) {
+            if ($user->wasChanged('status')) {
+                $newStatus = $user->status;
+                if ($newStatus === UserStatus::Inactive || $newStatus === UserStatus::Lock) {
+                    try {
+                        $notificationService = app(NotificationFirebaseServiceInterface::class);
+                        $notificationService->notifyUserLocked($user);
+                    } catch (Exception $e) {
+                        Log::error('Failed to send lock notification for user ' . $user->id . ': ' . $e->getMessage());
+                    }
+                }
+            }
         });
     }
 
