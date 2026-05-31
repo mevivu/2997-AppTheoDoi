@@ -22,6 +22,7 @@ use App\Traits\JwtService;
 use App\Traits\UseLog;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use App\Enums\User\UserStatus;
 use Illuminate\Support\Facades\Auth;
 use Throwable;
 
@@ -160,6 +161,22 @@ class AuthController extends Controller
             $data = $request->validated();
             $token = $data['access_token'];
             if (Auth::guard('api')->setToken($token)->check()) {
+                $user = Auth::guard('api')->user();
+                if ($user->status === UserStatus::Inactive) {
+                    $user->update(['status' => UserStatus::Lock]);
+                    $this->deleteSessionToken($user->id);
+                    return response()->json([
+                        'status' => 403,
+                        'message' => __('Tài khoản của bạn đã bị khóa.')
+                    ], 403);
+                }
+                if ($user->status === UserStatus::Lock) {
+                    $this->deleteSessionToken($user->id);
+                    return response()->json([
+                        'status' => 403,
+                        'message' => __('Tài khoản của bạn đã bị khóa.')
+                    ], 403);
+                }
                 return response()->json([
                     'status' => 200,
                     'message' => 'access_token còn hạn.'

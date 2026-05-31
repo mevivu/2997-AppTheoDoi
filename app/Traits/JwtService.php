@@ -67,6 +67,14 @@ trait JwtService
                 ], 403);
             }
 
+            if ($user->status === UserStatus::Inactive) {
+                $user->update(['status' => UserStatus::Lock]);
+                return response()->json([
+                    'status' => 403,
+                    'message' => __('Tài khoản của bạn đã bị khóa.')
+                ], 403);
+            }
+
             $token = JWTAuth::fromUser($user);
             $refreshToken = $this->createRefreshToken($user);
             // check package
