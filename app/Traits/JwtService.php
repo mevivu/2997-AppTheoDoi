@@ -79,6 +79,11 @@ trait JwtService
             $token = JWTAuth::fromUser($user);
             $refreshToken = $this->createRefreshToken($user);
             
+            \Illuminate\Support\Facades\Log::info('Login trace start', [
+                'user_id' => $user->id,
+                'input_device_token' => $this->login['device_token'] ?? null,
+            ]);
+
             // check package
             $package = $user->userPackages->first();
             if (in_array($package->current_type, [PackageType::Normal, PackageType::Trial])) {
@@ -87,13 +92,30 @@ trait JwtService
                     'status' => DeleteStatus::NotDeleted
                 ])->first();
 
+                \Illuminate\Support\Facades\Log::info('Old session check', [
+                    'has_old_session' => !empty($oldSession),
+                    'old_device_token' => $oldSession ? $oldSession->device_token : null,
+                ]);
+
                 if (!empty($this->login['device_token']) && $oldSession && !empty($oldSession->device_token) && $oldSession->device_token !== $this->login['device_token']) {
+                    \Illuminate\Support\Facades\Log::info('Triggering notifyLoginAnotherDevice', [
+                        'user_id' => $user->id,
+                        'old_device_token' => $oldSession->device_token,
+                        'new_device_token' => $this->login['device_token'],
+                    ]);
                     try {
                         $notificationService = app(NotificationFirebaseServiceInterface::class);
                         $notificationService->notifyLoginAnotherDevice($user, $oldSession->device_token);
                     } catch (Exception $e) {
                         $this->logError('Failed to send login another device notification', $e);
                     }
+                } else {
+                    \Illuminate\Support\Facades\Log::info('Condition notifyLoginAnotherDevice skipped', [
+                        'input_empty' => empty($this->login['device_token']),
+                        'old_session_empty' => empty($oldSession),
+                        'old_device_token_empty' => $oldSession ? empty($oldSession->device_token) : true,
+                        'same_token' => $oldSession ? ($oldSession->device_token === $this->login['device_token']) : false,
+                    ]);
                 }
 
                 $this->deleteSessionToken($user->id);
