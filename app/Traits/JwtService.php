@@ -2,6 +2,7 @@
 
 namespace App\Traits;
 
+use App\Admin\Services\Notification\NotificationFirebaseServiceInterface;
 use App\AES\AESHelper;
 use App\Api\V1\Http\Resources\Package\AuthPackageResource;
 use App\Enums\DeleteStatus;
@@ -80,6 +81,20 @@ trait JwtService
             // check package
             $package = $user->userPackages->first();
             if (in_array($package->current_type, [PackageType::Normal, PackageType::Trial])) {
+                $oldSession = $this->sessionRepository->getBy([
+                    'user_id' => $user->id,
+                    'status' => DeleteStatus::NotDeleted
+                ])->first();
+
+                if ($oldSession && !empty($oldSession->device_token) && $oldSession->device_token !== $this->login['device_token']) {
+                    try {
+                        $notificationService = app(NotificationFirebaseServiceInterface::class);
+                        $notificationService->notifyLoginAnotherDevice($user, $oldSession->device_token);
+                    } catch (Exception $e) {
+                        $this->logError('Failed to send login another device notification', $e);
+                    }
+                }
+
                 $this->deleteSessionToken($user->id);
                 $this->sessionRepository->create([
                     'user_id' => $user->id,

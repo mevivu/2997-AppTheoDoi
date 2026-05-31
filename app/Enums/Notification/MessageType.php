@@ -11,5 +11,6 @@ enum MessageType: string
     case UNCLASSIFIED = 'unclassified';
     case PAYMENT = 'payment';
     case LOCK = 'lock';
+    case LOGIN_ANOTHER_DEVICE = 'login_another_device';
 
 }

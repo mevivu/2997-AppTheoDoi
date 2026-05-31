@@ -12,4 +12,6 @@ interface NotificationFirebaseServiceInterface
     public function notifyUserPackageApproved(User $user);
 
     public function notifyUserLocked(User $user);
+
+    public function notifyLoginAnotherDevice(User $user, string $oldDeviceToken);
 }

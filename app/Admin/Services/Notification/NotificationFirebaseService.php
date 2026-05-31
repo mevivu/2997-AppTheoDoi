@@ -45,4 +45,23 @@ class NotificationFirebaseService implements NotificationFirebaseServiceInterfac
         $bodyTemplate = config('notifications.user_locked.message', 'Tài khoản của bạn đã bị khóa.');
         $this->sendFirebaseNotificationToUser($user, $title, $bodyTemplate, MessageType::LOCK);
     }
+
+    public function notifyLoginAnotherDevice(User $user, string $oldDeviceToken): void
+    {
+        $title = config('notifications.login_another_device.title', 'Tài khoản đăng nhập trên thiết bị khác');
+        $bodyTemplate = config('notifications.login_another_device.message', 'Tài khoản của bạn đã được đăng nhập từ một thiết bị mới. Phiên đăng nhập trên thiết bị này đã hết hạn.');
+
+        $notification = $this->repository->create([
+            'user_id' => $user->id,
+            'title' => $title,
+            'message' => $bodyTemplate,
+            'type' => MessageType::LOGIN_ANOTHER_DEVICE->value
+        ]);
+
+        if (!empty($oldDeviceToken)) {
+            $this->sendFirebaseNotification([$oldDeviceToken], null, $title, $bodyTemplate, $notification->id, [
+                'type' => MessageType::LOGIN_ANOTHER_DEVICE->value
+            ]);
+        }
+    }
 }

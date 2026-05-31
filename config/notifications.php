@@ -33,4 +33,8 @@ return [
         'title' => 'Tài khoản đã bị khóa',
         'message' => 'Tài khoản của bạn đã bị khóa do không hoạt động hoặc vi phạm điều khoản.'
     ],
+    'login_another_device' => [
+        'title' => 'Tài khoản đăng nhập trên thiết bị khác',
+        'message' => 'Tài khoản của bạn đã được đăng nhập từ một thiết bị mới. Phiên đăng nhập trên thiết bị này đã hết hạn.'
+    ],
 ];
