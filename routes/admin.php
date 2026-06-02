@@ -747,6 +747,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
             Route::group(['middleware' => ['permission:updateUser', 'auth:admin']], function () {
                 Route::put('/sua', 'update')->name('update');
+                Route::post('/clear-normal-tokens', 'clearNormalTokens')->name('clearNormalTokens');
             });
 
             Route::group(['middleware' => ['permission:deleteUser', 'auth:admin']], function () {

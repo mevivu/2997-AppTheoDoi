@@ -151,4 +151,13 @@ class UserController extends Controller
         }
         return back()->with('error', __('notifyFail'));
     }
+
+    public function clearNormalTokens(Request $request): RedirectResponse
+    {
+        $boolean = $this->service->clearNormalTokens();
+        if ($boolean) {
+            return back()->with('success', __('Đã đăng xuất toàn bộ tài khoản gói thường thành công.'));
+        }
+        return back()->with('error', __('Thực hiện thất bại.'));
+    }
 }

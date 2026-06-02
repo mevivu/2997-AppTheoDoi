@@ -180,4 +180,21 @@ class UserService implements UserServiceInterface
         }
     }
 
+    public function clearNormalTokens(): bool
+    {
+        try {
+            $userPackages = \App\Models\UserPackage::where('status', PackageUserStatus::Active)
+                ->whereIn('current_type', [PackageType::Normal, PackageType::Trial])
+                ->get();
+
+            foreach ($userPackages as $userPackage) {
+                $this->userSessionRepository->deleteAllSessionTokens($userPackage->user_id);
+            }
+            return true;
+        } catch (Exception $e) {
+            $this->logError('Failed to clear normal tokens:', $e);
+            return false;
+        }
+    }
+
 }

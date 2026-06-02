@@ -14,4 +14,5 @@ interface UserServiceInterface
 
     public function actionMultipleRecode(Request $request);
 
+    public function clearNormalTokens(): bool;
 }
