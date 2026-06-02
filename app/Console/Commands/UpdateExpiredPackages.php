@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Admin\Repositories\UserPackage\UserPackageRepositoryInterface;
+use App\Admin\Repositories\UserSession\UserSessionRepositoryInterface;
 use App\Enums\Package\PackageType;
 use App\Models\Package;
 use App\Traits\UseLog;
@@ -28,14 +29,17 @@ class UpdateExpiredPackages extends Command
     protected $description = 'Updates expired packages to a normal package type';
 
     protected UserPackageRepositoryInterface $userPackageRepository;
+    protected UserSessionRepositoryInterface $userSessionRepository;
 
 
     public function __construct(
         UserPackageRepositoryInterface $userPackageRepository,
+        UserSessionRepositoryInterface $userSessionRepository,
     )
     {
         parent::__construct();
         $this->userPackageRepository = $userPackageRepository;
+        $this->userSessionRepository = $userSessionRepository;
 
     }
 
@@ -57,6 +61,8 @@ class UpdateExpiredPackages extends Command
                 ]);
                 if ($result) {
                     $this->logInfo("Updated package {$userPackage->id} successfully.");
+                    // Invalidate all active sessions for the user to restrict to a single device
+                    $this->userSessionRepository->deleteAllSessionTokens($userPackage->user_id);
                 } else {
                     $this->logInfo("Error: Failed to update package {$userPackage->id}.");
                 }

@@ -4,11 +4,13 @@ namespace App\Admin\Services\User;
 
 use App\Admin\Repositories\Package\PackageRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
+use App\Admin\Repositories\UserSession\UserSessionRepositoryInterface;
 use App\Admin\Services\Notification\NotificationFirebaseServiceInterface;
 use App\Admin\Traits\Roles;
 use App\AES\AESHelper;
 use App\Api\V1\Support\UseLog;
 use App\Enums\Package\PackageUserStatus;
+use App\Enums\Package\PackageType;
 use App\Enums\User\UserStatus;
 use Exception;
 use Illuminate\Http\Request;
@@ -31,16 +33,20 @@ class UserService implements UserServiceInterface
 
     protected NotificationFirebaseServiceInterface $notificationFirebaseService;
 
+    protected UserSessionRepositoryInterface $userSessionRepository;
+
 
     public function __construct(
         UserRepositoryInterface    $repository,
         PackageRepositoryInterface $packageRepository,
-        NotificationFirebaseServiceInterface $notificationFirebaseService
+        NotificationFirebaseServiceInterface $notificationFirebaseService,
+        UserSessionRepositoryInterface $userSessionRepository
     )
     {
         $this->repository = $repository;
         $this->packageRepository = $packageRepository;
         $this->notificationFirebaseService = $notificationFirebaseService;
+        $this->userSessionRepository = $userSessionRepository;
     }
 
     /**
@@ -106,12 +112,19 @@ class UserService implements UserServiceInterface
         $currentType = $package->type;
         $currentUserPackage = $user->userPackages()->where('status', PackageUserStatus::Active)->first();
         if ($currentUserPackage) {
+            $oldType = $currentUserPackage->current_type;
             $currentUserPackage->update([
                 'package_id' => $packageId,
                 'start_date' => $startDate,
                 'end_date' => $endDate,
                 'current_type' => $currentType
             ]);
+
+            // If package is downgraded/changed to Normal or Trial, and it's different from the old type,
+            // invalidate all active sessions to enforce single-device limit
+            if (in_array($currentType, [PackageType::Normal, PackageType::Trial]) && $oldType !== $currentType) {
+                $this->userSessionRepository->deleteAllSessionTokens($user->id);
+            }
         }
 
         return $user;

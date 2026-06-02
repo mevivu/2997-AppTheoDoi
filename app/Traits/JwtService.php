@@ -117,13 +117,15 @@ trait JwtService
                 }
 
                 $this->deleteSessionToken($user->id);
-                $this->sessionRepository->create([
-                    'user_id' => $user->id,
-                    'access_token' => $token,
-                    'device_token' => $this->login['device_token'] ?? null,
-                    'status' => DeleteStatus::NotDeleted
-                ]);
             }
+
+            // Always create a new session entry regardless of the package type, to allow session invalidation upon downgrade
+            $this->sessionRepository->create([
+                'user_id' => $user->id,
+                'access_token' => $token,
+                'device_token' => $this->login['device_token'] ?? null,
+                'status' => DeleteStatus::NotDeleted
+            ]);
 
             // Cập nhật device_token trực tiếp cho user nếu có
             if (!empty($this->login['device_token'])) {

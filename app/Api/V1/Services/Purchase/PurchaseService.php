@@ -2,6 +2,7 @@
 
 namespace App\Api\V1\Services\Purchase;
 
+use App\Admin\Repositories\UserSession\UserSessionRepositoryInterface;
 use App\Admin\Services\GooglePlay\GooglePlayServiceInterface;
 use App\Admin\Services\Transaction\TransactionServiceInterface;
 use App\Api\V1\Exception\BadRequestException;
@@ -43,6 +44,7 @@ class PurchaseService implements PurchaseServiceInterface
     protected TransactionRepositoryInterface $transactionRepository;
     protected NotificationServiceInterface $notificationService;
     protected AppleStoreServiceInterface $appleStoreService;
+    protected UserSessionRepositoryInterface $userSessionRepository;
 
 
     public function __construct(
@@ -51,7 +53,8 @@ class PurchaseService implements PurchaseServiceInterface
         TransactionServiceInterface    $transactionService,
         TransactionRepositoryInterface $transactionRepository,
         NotificationServiceInterface   $notificationService,
-        AppleStoreServiceInterface     $appleStoreService
+        AppleStoreServiceInterface     $appleStoreService,
+        UserSessionRepositoryInterface $userSessionRepository
     )
     {
         $this->packageRepository = $packageRepository;
@@ -60,6 +63,7 @@ class PurchaseService implements PurchaseServiceInterface
         $this->transactionRepository = $transactionRepository;
         $this->notificationService = $notificationService;
         $this->appleStoreService = $appleStoreService;
+        $this->userSessionRepository = $userSessionRepository;
     }
 
 
@@ -240,6 +244,8 @@ class PurchaseService implements PurchaseServiceInterface
                 'current_type' => PackageType::Normal,
                 'end_date' => $now,
             ]);
+            // Invalidate all active sessions for the user on downgrade
+            $this->userSessionRepository->deleteAllSessionTokens($user->id);
         } else {
             $newEndDate = Carbon::parse($userPackage->end_date)->subDays($days);
             Log::info("Refund process: Adjusted end_date from {$userPackage->end_date} to {$newEndDate}");
@@ -249,6 +255,8 @@ class PurchaseService implements PurchaseServiceInterface
                     'current_type' => PackageType::Normal,
                     'end_date' => $now,
                 ]);
+                // Invalidate all active sessions for the user on downgrade
+                $this->userSessionRepository->deleteAllSessionTokens($user->id);
             } else {
                 $userPackage->update([
                     'end_date' => $newEndDate,
@@ -256,8 +264,5 @@ class PurchaseService implements PurchaseServiceInterface
             }
         }
         $this->notificationService->sendRefundNotification($transaction->user, $package->name);
-
-
-
     }
 }
