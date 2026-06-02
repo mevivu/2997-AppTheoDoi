@@ -34,7 +34,7 @@ return [
         'message' => 'Tài khoản của bạn đã bị khóa do không hoạt động hoặc vi phạm điều khoản.'
     ],
     'login_another_device' => [
-        'title' => 'Tài khoản đăng nhập trên thiết bị khác',
-        'message' => 'Tài khoản của bạn đã được đăng nhập từ một thiết bị mới. Phiên đăng nhập trên thiết bị này đã hết hạn.'
+        'title' => 'Tài khoản của bạn hiện đang được đăng nhập trên một thiết bị khác.',
+        'message' => "Nếu bạn muốn sử dụng tài khoản đồng thời trên nhiều thiết bị để cùng vợ hoặc chồng chia sẻ hành trình chăm sóc con với ứng dụng CHĂM CON 360, hãy nâng cấp lên \"Gói VIP 1 năm\".\n\nĐể đăng ký, vui lòng vào Tài khoản → Gói thành viên → Gói VIP 1 năm."
     ],
 ];
