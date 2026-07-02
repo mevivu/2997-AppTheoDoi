@@ -80,16 +80,10 @@ class PurchaseController extends Controller
     public function verifyPurchaseGooglePlay(GooglePlayRequest $request): JsonResponse
     {
         try {
-            DB::beginTransaction();
-
             $response = $this->purchaseService->verifyPurchaseGooglePlay($request);
-
-            DB::commit();
 
             return $this->jsonResponseSuccess($response);
         } catch (Exception $exception) {
-            DB::rollBack();
-
             $this->logError(MessageSystem::SERVER_ERROR, $exception);
             return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
@@ -104,16 +98,10 @@ class PurchaseController extends Controller
     public function verifyPurchaseAppleStore(AppleStoreRequest $request): JsonResponse
     {
         try {
-            DB::beginTransaction();
-
             $response = $this->purchaseService->verifyPurchaseAppleStore($request);
-
-            DB::commit();
 
             return $this->jsonResponseSuccess($response);
         } catch (Exception $exception) {
-            DB::rollBack();
-
             $this->logError(MessageSystem::SERVER_ERROR, $exception);
             return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }

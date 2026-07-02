@@ -24,6 +24,7 @@ use App\Enums\Transaction\TransactionStatus;
 use App\Traits\MessageSystem;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 
 class PurchaseService implements PurchaseServiceInterface
@@ -98,7 +99,9 @@ class PurchaseService implements PurchaseServiceInterface
         $isActive = $statusEnum->isActive();
 
         if ($isActive) {
-            $this->handlePurchase($user, $package, $purchaseData, $purchaseToken);
+            DB::transaction(function () use ($user, $package, $purchaseData, $purchaseToken) {
+                $this->handlePurchase($user, $package, $purchaseData, $purchaseToken);
+            });
         }
         return [
             'package' => new PackageResource($package),
@@ -130,7 +133,9 @@ class PurchaseService implements PurchaseServiceInterface
         $isActive = $statusValue === 'SUBSCRIPTION_STATE_ACTIVE';
 
         if ($isActive) {
-            $this->handlePurchase($user, $package, $purchaseData, $transactionId, TransactionEnumService::APPLE);
+            DB::transaction(function () use ($user, $package, $purchaseData, $transactionId) {
+                $this->handlePurchase($user, $package, $purchaseData, $transactionId, TransactionEnumService::APPLE);
+            });
         }
         return [
             'package' => new PackageResource($package),
