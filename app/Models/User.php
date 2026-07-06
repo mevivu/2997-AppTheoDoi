@@ -26,6 +26,8 @@ class User extends Authenticatable implements JWTSubject
      */
     protected $columnSlug = 'fullname';
 
+    
+
     protected $fillable = [
         /** Tên người dùng */
         'username',
