@@ -117,7 +117,12 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $predictAdulthood = $Adulthood - $currentAge;
 
         $heightOneYearAgo = $oldestRecord ? $oldestRecord->height : 0;
-        $increasedHeight = $currentHeight - $heightOneYearAgo;
+        $countDays = $latestDate->diffInDays($oldestRecord ? $oldestRecord->assessment_date : $latestDate);
+        if ($countDays == 0 || !$oldestRecord) {
+            $increasedHeight = $currentHeight - $heightOneYearAgo;
+        } else {
+            $increasedHeight = ($currentHeight - $heightOneYearAgo) * (365.3 / $countDays);
+        }
         $increasedHeight = max(0, min(7, $increasedHeight));
 
 
