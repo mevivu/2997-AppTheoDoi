@@ -21,6 +21,7 @@ use App\Enums\Package\PackageType;
 use App\Enums\Package\PackageUserStatus;
 use App\Enums\Transaction\TransactionEnumService;
 use App\Enums\Transaction\TransactionStatus;
+use App\Models\User;
 use App\Traits\MessageSystem;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -98,10 +99,16 @@ class PurchaseService implements PurchaseServiceInterface
         $statusEnum = SubscriptionState::tryFrom($statusValue);
         $isActive = $statusEnum->isActive();
 
+        $purchased = false;
         if ($isActive) {
-            DB::transaction(function () use ($user, $package, $purchaseData, $purchaseToken) {
-                $this->handlePurchase($user, $package, $purchaseData, $purchaseToken);
+            $purchased = DB::transaction(function () use ($user, $package, $purchaseData, $purchaseToken) {
+                User::where('id', $user->id)->lockForUpdate()->first();
+                return $this->handlePurchase($user, $package, $purchaseData, $purchaseToken);
             });
+        }
+
+        if ($purchased) {
+            $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
         }
         return [
             'package' => new PackageResource($package),
@@ -132,10 +139,16 @@ class PurchaseService implements PurchaseServiceInterface
         $statusValue = $purchaseData['subscriptionState'];
         $isActive = $statusValue === 'SUBSCRIPTION_STATE_ACTIVE';
 
+        $purchased = false;
         if ($isActive) {
-            DB::transaction(function () use ($user, $package, $purchaseData, $transactionId) {
-                $this->handlePurchase($user, $package, $purchaseData, $transactionId, TransactionEnumService::APPLE);
+            $purchased = DB::transaction(function () use ($user, $package, $purchaseData, $transactionId) {
+                User::where('id', $user->id)->lockForUpdate()->first();
+                return $this->handlePurchase($user, $package, $purchaseData, $transactionId, TransactionEnumService::APPLE);
             });
+        }
+
+        if ($purchased) {
+            $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
         }
         return [
             'package' => new PackageResource($package),
@@ -149,15 +162,15 @@ class PurchaseService implements PurchaseServiceInterface
     }
 
     // Xử lý giao dịch mua thành công
-    private function handlePurchase($user, $package, $purchaseData, $purchaseToken, TransactionEnumService $serviceType = TransactionEnumService::GOOGLE_PLAY): void
+    private function handlePurchase($user, $package, $purchaseData, $purchaseToken, TransactionEnumService $serviceType = TransactionEnumService::GOOGLE_PLAY): bool
     {
         $orderId = $purchaseData['orderId'] ?? null;
         if ($orderId && $this->transactionRepository->existsByOrderIdAndService($orderId, $serviceType)) {
-            return;
+            return false;
         }
         $this->updateOrCreateUserPackage($user, $package);
         $this->transactionService->store($user, $package, $serviceType, $orderId, $purchaseToken);
-        $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
+        return true;
     }
 
     private function updateOrCreateUserPackage($user, $package): void
