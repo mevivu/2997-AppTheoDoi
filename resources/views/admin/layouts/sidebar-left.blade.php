@@ -674,22 +674,29 @@
         });
 
         // Active state for current page
-        const currentPath = window.location.pathname;
-
-        // Check main menu
-        $('.menu-link').each(function() {
-            const href = $(this).attr('href');
-            if (href && href !== '#' && href === currentPath) {
-                $(this).addClass('active');
-            }
-        });
+        const currentUrl = window.location.href.split(/[?#]/)[0];
 
         // Check submenu
         $('.submenu-link').each(function() {
             const href = $(this).attr('href');
-            if (href && href === currentPath) {
-                $(this).addClass('active');
-                $(this).closest('.menu-item').find('.menu-link').addClass('active');
+            if (href && href !== '#') {
+                const linkUrl = href.split(/[?#]/)[0];
+                if (currentUrl === linkUrl || currentUrl.startsWith(linkUrl + '/')) {
+                    $(this).addClass('active');
+                    $(this).closest('.menu-item').find('.menu-link').addClass('active');
+                }
+            }
+        });
+
+        // Check main menu
+        $('.menu-link').each(function() {
+            if ($(this).hasClass('active')) return;
+            const href = $(this).attr('href');
+            if (href && href !== '#') {
+                const linkUrl = href.split(/[?#]/)[0];
+                if (currentUrl === linkUrl || currentUrl.startsWith(linkUrl + '/')) {
+                    $(this).addClass('active');
+                }
             }
         });
 
