@@ -61,7 +61,7 @@ class UserService implements UserServiceInterface
         $data['password'] = bcrypt($data['password']);
         $data['email'] = AESHelper::encrypt($data['email']);
         $data['username'] = $data['email'];
-        $data['phone'] = AESHelper::encrypt($data['phone']);
+        $data['phone'] = !empty($data['phone']) ? AESHelper::encrypt($data['phone']) : null;
         $data['address'] = AESHelper::encrypt($data['address']);
         $user = $this->repository->create($data);
 
@@ -88,7 +88,7 @@ class UserService implements UserServiceInterface
             $data['email'] = AESHelper::encrypt($data['email']);
         }
         if (isset($data['phone'])) {
-            $data['phone'] = AESHelper::encrypt($data['phone']);
+            $data['phone'] = !empty($data['phone']) ? AESHelper::encrypt($data['phone']) : null;
         }
         if (isset($data['address'])) {
             $data['address'] = AESHelper::encrypt($data['address']);

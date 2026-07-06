@@ -48,7 +48,7 @@
                 <label class="control-label">
                     <span class="ti ti-phone"></span>
                     {{ __('Số điện thoại') }}:</label>
-                <x-input-phone name="phone" :value="AESHelper::decrypt($user->phone)" :required="true" />
+                <x-input-phone name="phone" :value="$user->phone ? AESHelper::decrypt($user->phone) : ''" :required="false" />
             </div>
         </div>
         <!-- birthday -->

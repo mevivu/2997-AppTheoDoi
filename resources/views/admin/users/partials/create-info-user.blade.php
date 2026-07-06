@@ -50,7 +50,7 @@
                 <label class="control-label">
                     <span class="ti ti-phone"></span>
                     {{ __('Số điện thoại') }}:</label>
-                <x-input-phone name="phone" :value="old('phone')" :required="true" />
+                <x-input-phone name="phone" :value="old('phone')" :required="false" />
             </div>
         </div>
         <!-- birthday -->

@@ -22,7 +22,7 @@ class UserRequest extends BaseRequest
 
             'fullname' => ['required', 'string'],
             'phone' => [
-                'required',
+                'nullable',
                 new PhoneUnique(),
             ],
             'email' => [
@@ -58,7 +58,7 @@ class UserRequest extends BaseRequest
                 new EmailUnique($this->id),
             ],
             'phone' => [
-                'required',
+                'nullable',
                 new PhoneUnique($this->id),
             ],
             'password' => ['nullable', 'string', 'confirmed'],
