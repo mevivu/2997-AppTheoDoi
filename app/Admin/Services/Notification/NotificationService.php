@@ -83,25 +83,26 @@ class NotificationService implements NotificationServiceInterface
             $type === NotificationType::All->value
             || $option === NotificationOption::All->value
         ) {
-            $userIds = $this->userRepository
-                ->getQueryBuilder()
-                ->pluck('id');
+            $title = $this->data['title'];
+            $message = $this->data['message'];
 
-            $notifications = [];
-            foreach ($userIds as $userId) {
-                $notifications[] = [
-                    'user_id' => $userId,
-                    'title' => $this->data['title'],
-                    'message' => $this->data['message'],
-                    'status' => NotificationStatus::NOT_READ->value,
-                    'is_pushed' => false,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
-
-            // Bulk insert — CronJob sẽ gửi push notification sau
-            $this->repository->insert($notifications);
+            $this->userRepository->getQueryBuilder()
+                ->select('id')
+                ->chunk(1000, function ($users) use ($title, $message) {
+                    $notifications = [];
+                    foreach ($users as $user) {
+                        $notifications[] = [
+                            'user_id' => $user->id,
+                            'title' => $title,
+                            'message' => $message,
+                            'status' => NotificationStatus::NOT_READ->value,
+                            'is_pushed' => false,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                    $this->repository->insert($notifications);
+                });
 
             return true;
         }
@@ -116,16 +117,24 @@ class NotificationService implements NotificationServiceInterface
                 ? $this->data['user_id']
                 : [$this->data['user_id']];
 
-            $users = $this->userRepository->findMany($userIds);
+            $title = $this->data['title'];
+            $message = $this->data['message'];
 
-            foreach ($users as $user) {
-                // Tạo record — CronJob sẽ gửi push notification sau
-                $this->repository->create([
-                    'user_id' => $user->id,
-                    'title' => $this->data['title'],
-                    'message' => $this->data['message'],
-                    'status' => NotificationStatus::NOT_READ,
-                ]);
+            $userIdChunks = array_chunk($userIds, 1000);
+            foreach ($userIdChunks as $chunk) {
+                $notifications = [];
+                foreach ($chunk as $userId) {
+                    $notifications[] = [
+                        'user_id' => $userId,
+                        'title' => $title,
+                        'message' => $message,
+                        'status' => NotificationStatus::NOT_READ->value,
+                        'is_pushed' => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                $this->repository->insert($notifications);
             }
 
             return true;
@@ -178,20 +187,25 @@ class NotificationService implements NotificationServiceInterface
                 ]);
             }
 
-            $notifications = [];
-            foreach ($userIds as $userId) {
-                $notifications[] = [
-                    'user_id' => $userId,
-                    'title' => $this->data['title'],
-                    'message' => $this->data['message'],
-                    'status' => NotificationStatus::NOT_READ->value,
-                    'is_pushed' => false,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
+            $title = $this->data['title'];
+            $message = $this->data['message'];
 
-            $this->repository->insert($notifications);
+            $userIdChunks = array_chunk($userIds, 1000);
+            foreach ($userIdChunks as $chunk) {
+                $notifications = [];
+                foreach ($chunk as $userId) {
+                    $notifications[] = [
+                        'user_id' => $userId,
+                        'title' => $title,
+                        'message' => $message,
+                        'status' => NotificationStatus::NOT_READ->value,
+                        'is_pushed' => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+                $this->repository->insert($notifications);
+            }
 
             return true;
         }
