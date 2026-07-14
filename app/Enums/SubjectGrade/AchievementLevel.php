@@ -12,6 +12,8 @@ enum AchievementLevel: string
     case Excellent = 'excellent';       // Hoàn thành tốt
     case Completed = 'completed';       // Hoàn thành
     case NotCompleted = 'not_completed'; // Chưa hoàn thành
+    case Achieved = 'achieved';         // Đạt
+    case NotAchieved = 'not_achieved';  // Chưa đạt
 
     public function getTranslatedName(): string
     {
@@ -19,6 +21,8 @@ enum AchievementLevel: string
             self::Excellent => 'Hoàn thành tốt',
             self::Completed => 'Hoàn thành',
             self::NotCompleted => 'Chưa hoàn thành',
+            self::Achieved => 'Đạt',
+            self::NotAchieved => 'Chưa đạt',
         };
     }
 
@@ -35,6 +39,8 @@ enum AchievementLevel: string
             self::Excellent => 'bg-green',
             self::Completed => 'bg-blue',
             self::NotCompleted => 'bg-red',
+            self::Achieved => 'bg-yellow',
+            self::NotAchieved => 'bg-orange',
         };
     }
 
