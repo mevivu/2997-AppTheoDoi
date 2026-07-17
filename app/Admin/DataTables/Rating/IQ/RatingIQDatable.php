@@ -57,7 +57,8 @@ class RatingIQDatable extends BaseDataTable
         return $this->repository->getByQueryBuilder(
             [
                 'type' => QuestionType::IQ
-            ]
+            ],
+            ['child.user']
         )->whereNotNull('score')->where('score', '>', 0)->orderBy('id', 'desc');
     }
 
@@ -75,6 +76,15 @@ class RatingIQDatable extends BaseDataTable
                 return view($this->view['name'], [
                     'child' => $rating->child,
                 ])->render();
+            },
+            'parent_code' => function ($row) {
+                if ($row->child && $row->child->user) {
+                    return view('admin.users.datatable.editlink', [
+                        'id' => $row->child->user->id,
+                        'code' => 'CM' . $row->child->user->id
+                    ])->render();
+                }
+                return '';
             },
             'badge_image' => function ($rating) {
                 return view($this->view['image'], [
@@ -108,10 +118,27 @@ class RatingIQDatable extends BaseDataTable
     {
         $this->customRawColumns = [
             'child_id',
+            'parent_code',
             'action',
             'checkbox',
             'badge_image'
 
         ];
+    }
+
+    protected function getExportValue($key, $row)
+    {
+        try {
+            switch ($key) {
+                case 'child_id':
+                    return $row->child_id ? 'TE' . $row->child_id : '';
+                case 'parent_code':
+                    return ($row->child && $row->child->user) ? 'CM' . $row->child->user->id : '';
+            }
+        } catch (\Throwable $e) {
+            return '';
+        }
+
+        return parent::getExportValue($key, $row);
     }
 }

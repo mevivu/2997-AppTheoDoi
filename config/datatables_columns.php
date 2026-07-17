@@ -176,6 +176,11 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
+        'parent_code' => [
+            'title' => 'Mã cha/Mẹ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
         'self_regulation' => [
             'title' => 'Kiểm soát cảm xúc',
             'addClass' => 'text-center align-middle',
@@ -239,6 +244,11 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
+        'parent_code' => [
+            'title' => 'Mã cha/Mẹ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
         'score' => [
             'title' => 'Điểm ',
             'addClass' => 'text-center align-middle',
@@ -299,6 +309,11 @@ return [
         ],
         'child_id' => [
             'title' => 'Trẻ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'parent_code' => [
+            'title' => 'Mã cha/Mẹ',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
@@ -479,6 +494,11 @@ return [
         'child_id' => [
             'title' => 'Trẻ',
             'orderable' => true,
+            'addClass' => 'text-center align-middle'
+        ],
+        'parent_code' => [
+            'title' => 'Mã cha/Mẹ',
+            'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
         'assessment_date' => [

@@ -52,7 +52,7 @@ class RatingPQDataTable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getQueryBuilder()->with(['child'])->orderBy('id', 'desc');
+        return $this->repository->getQueryBuilder()->with(['child.user'])->orderBy('id', 'desc');
     }
 
     protected function setCustomColumns(): void
@@ -81,6 +81,15 @@ class RatingPQDataTable extends BaseDataTable
                     'child' => $children->child,
                 ])->render();
             },
+            'parent_code' => function ($row) {
+                if ($row->child && $row->child->user) {
+                    return view('admin.users.datatable.editlink', [
+                        'id' => $row->child->user->id,
+                        'code' => 'CM' . $row->child->user->id
+                    ])->render();
+                }
+                return '';
+            },
             'assessment_date' => '{{ format_date($assessment_date) }}',
 
         ];
@@ -98,6 +107,7 @@ class RatingPQDataTable extends BaseDataTable
     {
         $this->customRawColumns = [
             'child_id',
+            'parent_code',
             'action',
             'checkbox',
 
@@ -110,6 +120,8 @@ class RatingPQDataTable extends BaseDataTable
             switch ($key) {
                 case 'child_id':
                     return $row->child_id ? 'TE' . $row->child_id : '';
+                case 'parent_code':
+                    return ($row->child && $row->child->user) ? 'CM' . $row->child->user->id : '';
             }
         } catch (\Throwable $e) {
             return '';

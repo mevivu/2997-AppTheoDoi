@@ -57,7 +57,8 @@ class RatingAQDatable extends BaseDataTable
         return $this->repository->getByQueryBuilder(
             [
                 'type' => QuestionType::AQ
-            ]
+            ],
+            ['child.user']
         );
     }
 
@@ -76,6 +77,15 @@ class RatingAQDatable extends BaseDataTable
                 return view($this->view['name'], [
                     'child' => $rating->child,
                 ])->render();
+            },
+            'parent_code' => function ($row) {
+                if ($row->child && $row->child->user) {
+                    return view('admin.users.datatable.editlink', [
+                        'id' => $row->child->user->id,
+                        'code' => 'CM' . $row->child->user->id
+                    ])->render();
+                }
+                return '';
             },
         ];
     }
@@ -104,9 +114,26 @@ class RatingAQDatable extends BaseDataTable
     {
         $this->customRawColumns = [
             'child_id',
+            'parent_code',
             'action',
             'checkbox',
 
         ];
+    }
+
+    protected function getExportValue($key, $row)
+    {
+        try {
+            switch ($key) {
+                case 'child_id':
+                    return $row->child_id ? 'TE' . $row->child_id : '';
+                case 'parent_code':
+                    return ($row->child && $row->child->user) ? 'CM' . $row->child->user->id : '';
+            }
+        } catch (\Throwable $e) {
+            return '';
+        }
+
+        return parent::getExportValue($key, $row);
     }
 }
