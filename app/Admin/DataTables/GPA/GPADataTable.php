@@ -46,7 +46,7 @@ class GPADataTable extends BaseDataTable
                       $q->whereIn('semester', [SemesterStatus::Semester1, SemesterStatus::Semester2])
                         ->where('average_score', '>', 0);
                   });
-        })->with(['children', 'class', 'evaluations']);
+        })->with(['children.user', 'class', 'evaluations']);
     }
 
 
@@ -71,6 +71,18 @@ class GPADataTable extends BaseDataTable
     {
         $this->customEditColumns = [
             'status' => $this->view['status'],
+            'child_code' => function ($row) {
+                return $row->children ? 'TE' . $row->children->id : '';
+            },
+            'parent_code' => function ($row) {
+                if ($row->children && $row->children->user) {
+                    return view('admin.users.datatable.editlink', [
+                        'id' => $row->children->user->id,
+                        'code' => 'CM' . $row->children->user->id
+                    ])->render();
+                }
+                return '';
+            },
             'children.fullname' => function ($row) {
                 return view($this->view['children.fullname'], [
                     'children' => $row->children,
@@ -119,7 +131,7 @@ class GPADataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['children.fullname', 'class.name', 'semester1_grade', 'semester2_grade', 'full_year_grade', 'status'];
+        $this->customRawColumns = ['children.fullname', 'class.name', 'semester1_grade', 'semester2_grade', 'full_year_grade', 'status', 'child_code', 'parent_code'];
     }
 
     protected function setCustomFilterColumns(): void
@@ -165,6 +177,10 @@ class GPADataTable extends BaseDataTable
             }
 
             switch ($key) {
+                case 'child_code':
+                    return $row->children ? 'TE' . $row->children->id : '';
+                case 'parent_code':
+                    return ($row->children && $row->children->user) ? 'CM' . $row->children->user->id : '';
                 case 'children.fullname':
                     return $row->children?->fullname ?? '';
                 case 'class.name':

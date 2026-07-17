@@ -1709,6 +1709,16 @@ return [
         ],
     ],
     'gpa' => [
+        'child_code' => [
+            'title' => 'Mã trẻ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'parent_code' => [
+            'title' => 'Mã cha/Mẹ',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
         'children.fullname' => [
             'title' => 'Họ tên trẻ',
             'addClass' => 'text-center align-middle',
