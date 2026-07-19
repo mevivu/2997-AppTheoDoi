@@ -5,7 +5,7 @@ namespace App\Api\V1\Http\Controllers\BMI;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Http\Requests\BMI\BMIRequest;
 use App\Api\V1\Http\Resources\BMI\BMIResourceCollection;
-use App\Api\V1\Repositories\BMI1\BmiRepositoryInterface;
+use App\Api\V1\Repositories\Bmi\BmiRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use Exception;
 use App\Api\V1\Support\Response;

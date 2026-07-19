@@ -329,3 +329,11 @@ Route::controller(\App\Api\V1\Http\Controllers\Brand\BrandController::class)
     ->group(function () {
         Route::get('/', 'index');
     });
+
+//***** -- App Versions -- ******* //
+Route::controller(App\Api\V1\Http\Controllers\AppVersion\AppVersionController::class)
+    ->prefix('/app-versions')
+    ->as('appVersion.')
+    ->group(function () {
+        Route::get('/check', 'check');
+    });

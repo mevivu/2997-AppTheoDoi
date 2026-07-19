@@ -824,6 +824,14 @@ return [
 
         ]
     ],
+    [
+        'title' => 'Quản lý Phiên bản',
+        'routeName' => 'admin.app-version.index',
+        'icon' => '<i class="ti ti-versions"></i>',
+        'roles' => [],
+        'permissions' => ['viewAppVersion'],
+        'sub' => []
+    ],
 //    [
 //        'title' => 'Dev: Quyền',
 //        'routeName' => null,

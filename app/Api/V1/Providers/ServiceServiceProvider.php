@@ -33,6 +33,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Api\V1\Services\Transaction\TransactionServiceInterface' => 'App\Api\V1\Services\Transaction\TransactionService',
         'App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface' => 'App\Api\V1\Services\HeightPrediction\HeightPredictionService',
         'App\Api\V1\Services\Purchase\PurchaseServiceInterface' => 'App\Api\V1\Services\Purchase\PurchaseService',
+        'App\Api\V1\Services\AppVersion\AppVersionServiceInterface' => 'App\Api\V1\Services\AppVersion\AppVersionService',
 
     ];
 

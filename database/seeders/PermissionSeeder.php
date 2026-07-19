@@ -329,6 +329,15 @@ class PermissionSeeder extends Seeder
             'updated_at' => DB::raw('NOW()')
         ]);
 
+        DB::table('modules')->insert([
+            'id' => 33,
+            'name' => 'Quản lý Phiên bản',
+            'description' => '<p>Quản lý Phiên bản Ứng dụng</p>',
+            'status' => 2,
+            'created_at' => DB::raw('NOW()'),
+            'updated_at' => DB::raw('NOW()')
+        ]);
+
 
         // permissions
         DB::table('permissions')->insert([
@@ -1846,6 +1855,36 @@ class PermissionSeeder extends Seeder
             'permission_id' => 124,
             'role_id' => 1
         ]);
+
+        /** Start Permission AppVersion */
+        DB::table('permissions')->insert([
+            'id' => 125,
+            'title' => 'Xem Phiên bản',
+            'name' => 'viewAppVersion',
+            'guard_name' => 'admin',
+            'module_id' => 33,
+            'created_at' => DB::raw('NOW()'),
+            'updated_at' => DB::raw('NOW()')
+        ]);
+        DB::table('permissions')->insert([
+            'id' => 126,
+            'title' => 'Sửa Phiên bản',
+            'name' => 'updateAppVersion',
+            'guard_name' => 'admin',
+            'module_id' => 33,
+            'created_at' => DB::raw('NOW()'),
+            'updated_at' => DB::raw('NOW()')
+        ]);
+
+        DB::table('role_has_permissions')->insert([
+            'permission_id' => 125,
+            'role_id' => 1
+        ]);
+        DB::table('role_has_permissions')->insert([
+            'permission_id' => 126,
+            'role_id' => 1
+        ]);
+        /** End Permission AppVersion */
 
         /** End Permission Delivery */
 

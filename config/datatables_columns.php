@@ -1941,6 +1941,58 @@ return [
             'printable' => false,
             'addClass' => 'text-center align-middle',
         ],
+    ],
+    'app_versions' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'app_type' => [
+            'title' => 'Loại App',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'platform' => [
+            'title' => 'Nền tảng',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'notify' => [
+            'title' => 'Notify version',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'required' => [
+            'title' => 'Required version',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'checking_version' => [
+            'title' => 'Checking version',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'update_url' => [
+            'title' => 'Link cập nhật',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'status' => [
+            'title' => 'Trạng thái',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false
+        ],
+        'action' => [
+            'title' => 'Thao tác',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
     ]
 
 ];

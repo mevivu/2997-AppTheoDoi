@@ -61,6 +61,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Brand\BrandRepositoryInterface' => 'App\Admin\Repositories\Brand\BrandRepository',
         'App\Admin\Repositories\Guide\GuideRepositoryInterface' => 'App\Admin\Repositories\Guide\GuideRepository',
         'App\Admin\Repositories\Step\StepRepositoryInterface' => 'App\Admin\Repositories\Step\StepRepository',
+        'App\Admin\Repositories\AppVersion\AppVersionRepositoryInterface' => 'App\Admin\Repositories\AppVersion\AppVersionRepository',
         'App\Admin\Repositories\Children\UnBorn\ChildrenUnBornRepositoryInterface' => 'App\Admin\Repositories\Children\UnBorn\ChildrenUnUnBornRepository',
 
 
