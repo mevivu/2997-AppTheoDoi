@@ -329,14 +329,7 @@ class PermissionSeeder extends Seeder
             'updated_at' => DB::raw('NOW()')
         ]);
 
-        DB::table('modules')->insert([
-            'id' => 33,
-            'name' => 'Quản lý Phiên bản',
-            'description' => '<p>Quản lý Phiên bản Ứng dụng</p>',
-            'status' => 2,
-            'created_at' => DB::raw('NOW()'),
-            'updated_at' => DB::raw('NOW()')
-        ]);
+
 
 
         // permissions
