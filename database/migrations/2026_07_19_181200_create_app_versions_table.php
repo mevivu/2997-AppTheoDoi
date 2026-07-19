@@ -54,50 +54,6 @@ return new class extends Migration
                 'updated_at' => DB::raw('NOW()'),
             ]
         ]);
-
-        // Insert permissions and module
-        // Module ID: 33
-        // Permissions ID: 125, 126
-        DB::table('modules')->insert([
-            'id' => 33,
-            'name' => 'Quản lý Phiên bản',
-            'description' => '<p>Quản lý Phiên bản Ứng dụng</p>',
-            'status' => 2,
-            'created_at' => DB::raw('NOW()'),
-            'updated_at' => DB::raw('NOW()'),
-        ]);
-
-        DB::table('permissions')->insert([
-            [
-                'id' => 125,
-                'title' => 'Xem Phiên bản',
-                'name' => 'viewAppVersion',
-                'guard_name' => 'admin',
-                'module_id' => 33,
-                'created_at' => DB::raw('NOW()'),
-                'updated_at' => DB::raw('NOW()'),
-            ],
-            [
-                'id' => 126,
-                'title' => 'Sửa Phiên bản',
-                'name' => 'updateAppVersion',
-                'guard_name' => 'admin',
-                'module_id' => 33,
-                'created_at' => DB::raw('NOW()'),
-                'updated_at' => DB::raw('NOW()'),
-            ],
-        ]);
-
-        DB::table('role_has_permissions')->insert([
-            [
-                'permission_id' => 125,
-                'role_id' => 1,
-            ],
-            [
-                'permission_id' => 126,
-                'role_id' => 1,
-            ]
-        ]);
     }
 
     /**
@@ -107,9 +63,6 @@ return new class extends Migration
      */
     public function down()
     {
-        DB::table('role_has_permissions')->whereIn('permission_id', [125, 126])->delete();
-        DB::table('permissions')->whereIn('id', [125, 126])->delete();
-        DB::table('modules')->where('id', 33)->delete();
         Schema::dropIfExists('app_versions');
     }
 };

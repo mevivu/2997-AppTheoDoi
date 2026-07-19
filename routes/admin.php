@@ -984,11 +984,9 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->prefix('/app-versions')
         ->as('app-version.')
         ->group(function () {
-            Route::group(['middleware' => ['permission:mevivuDev', 'auth:admin']], function () {
-                Route::get('/', 'index')->name('index');
-                Route::get('/edit/{id}', 'edit')->name('edit');
-                Route::put('/edit', 'update')->name('update');
-            });
+            Route::get('/', 'index')->name('index');
+            Route::get('/edit/{id}', 'edit')->name('edit');
+            Route::put('/edit', 'update')->name('update');
         });
 
 
