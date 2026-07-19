@@ -829,7 +829,7 @@ return [
         'routeName' => 'admin.app-version.index',
         'icon' => '<i class="ti ti-versions"></i>',
         'roles' => [],
-        'permissions' => ['viewAppVersion'],
+        'permissions' => ['mevivuDev'],
         'sub' => []
     ],
 //    [
