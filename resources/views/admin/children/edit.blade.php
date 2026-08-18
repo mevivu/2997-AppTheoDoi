@@ -14,6 +14,8 @@
     $latestAq = $children->ratings()->where('type', QuestionType::AQ)->latest()->first();
     $latestPq = $children->ratingPQs()->latest()->first();
 
+    $predHeight = $heightPrediction['predicting_adult_height'] ?? 0;
+
     // Generate child initials
     $childNameParts = explode(' ', trim($children->fullname ?? ''));
     $childInitials = '';
@@ -40,7 +42,7 @@
                 class="mb-3"
                 icon="baby-carriage"
                 :title="__('Hồ sơ Trẻ em')"
-                :subtitle="__('Quản lý chi tiết thông tin của trẻ, phụ huynh và toàn bộ chỉ số đánh giá phát triển')"
+                :subtitle="__('Quản lý chi tiết thông tin của trẻ, phụ huynh, dự báo chiều cao và toàn bộ chỉ số đánh giá')"
                 :back-route="route(RouteAdminSystem::CHILDREN_INDEX)"
             />
 
@@ -58,40 +60,40 @@
                                 </div>
                             @endif
 
-                            <div>
-                                <div class="user-hero-title">
-                                    <span>{{ $children->fullname }}</span>
+                            <div class="min-w-0 flex-grow-1">
+                                <div class="d-flex align-items-center flex-wrap gap-2 mb-1">
+                                    <h4 class="mb-0 fw-bold text-dark fs-16">{{ $children->fullname }}</h4>
                                     <span class="user-code-badge">#{{ $children->id }}</span>
                                     @if($children->gender)
-                                        <span class="badge {{ $children->gender->value == 1 ? 'bg-blue-lt' : 'bg-pink-lt' }}">
+                                        <span class="badge {{ $children->gender->value == 1 ? 'bg-blue-lt' : 'bg-pink-lt' }} px-2 py-1 fs-12">
                                             {{ $children->gender->description() }}
                                         </span>
                                     @endif
                                     @if($children->is_born)
-                                        <span class="badge bg-light text-muted">{{ $children->is_born->description() }}</span>
+                                        <span class="badge bg-light text-muted px-2 py-1 fs-12">{{ $children->is_born->description() }}</span>
                                     @endif
                                     @if($children->status)
-                                        <span class="badge {{ $children->status->badge() }}">{{ $children->status->description() }}</span>
+                                        <span class="badge {{ $children->status->badge() }} px-2 py-1 fs-12">{{ $children->status->description() }}</span>
                                     @endif
                                 </div>
-                                <div class="d-flex align-items-center flex-wrap mt-1">
+                                <div class="d-flex align-items-center flex-wrap gap-2 text-muted fs-12">
                                     @if($parentUser)
-                                        <span class="user-meta-pill" title="Phụ huynh">
-                                            <i class="ti ti-users text-primary"></i> 
-                                            <strong>{{ __('Phụ huynh:') }}</strong> 
+                                        <span class="d-inline-flex align-items-center" title="Phụ huynh">
+                                            <i class="ti ti-users text-primary me-1"></i> 
+                                            {{ __('Phụ huynh:') }} 
                                             <a href="{{ route('admin.user.edit', $parentUser->id) }}" class="text-primary text-decoration-none fw-bold ms-1" target="_blank">
                                                 {{ $parentUser->fullname }}
                                             </a>
                                         </span>
                                     @endif
                                     @if($decryptedParentPhone)
-                                        <span class="user-meta-pill" title="Số điện thoại phụ huynh">
-                                            <i class="ti ti-phone text-success"></i> {{ $decryptedParentPhone }}
+                                        <span class="d-inline-flex align-items-center ms-1" title="Số điện thoại phụ huynh">
+                                            <i class="ti ti-phone text-success me-1"></i> {{ $decryptedParentPhone }}
                                         </span>
                                     @endif
                                     @if($children->birthday)
-                                        <span class="user-meta-pill" title="Ngày sinh">
-                                            <i class="ti ti-calendar text-muted"></i> {{ format_date($children->birthday, 'd/m/Y') }}
+                                        <span class="d-inline-flex align-items-center ms-1" title="Ngày sinh">
+                                            <i class="ti ti-calendar text-muted me-1"></i> {{ format_date($children->birthday, 'd/m/Y') }}
                                         </span>
                                     @endif
                                 </div>
@@ -101,48 +103,54 @@
 
                     <!-- Right: Assessment Stat Mini-Cards -->
                     <div class="col-12 col-xl-6">
-                        <div class="user-hero-stats-grid">
+                        <div class="child-hero-stats-grid">
+                            <!-- Dự báo chiều cao -->
+                            <div class="child-stat-card">
+                                <div class="child-stat-icon" style="background: #e0f2fe; color: #0284c7;">
+                                    <i class="ti ti-ruler-2"></i>
+                                </div>
+                                <div class="child-stat-content">
+                                    <div class="child-stat-label">{{ __('DỰ BÁO CC') }}</div>
+                                    <div class="child-stat-val text-info">{{ ($latestPq && $predHeight > 0) ? $predHeight . ' cm' : '--' }}</div>
+                                </div>
+                            </div>
+
                             <!-- IQ Score -->
-                            <div class="user-stat-card">
-                                <div class="user-stat-icon" style="background: #f5f3ff; color: #7c3aed;">
+                            <div class="child-stat-card">
+                                <div class="child-stat-icon" style="background: #f5f3ff; color: #7c3aed;">
                                     <i class="ti ti-brain"></i>
                                 </div>
-                                <div class="flex-grow-1 min-w-0 pe-1">
-                                    <div class="text-muted fs-11 fw-bold text-uppercase text-truncate">{{ __('IQ') }}</div>
-                                    <div class="fw-bold fs-13 text-purple text-truncate">{{ $latestIq ? $latestIq->score . ' đ' : '--' }}</div>
+                                <div class="child-stat-content">
+                                    <div class="child-stat-label">{{ __('IQ') }}</div>
+                                    <div class="child-stat-val text-purple">
+                                        {{ ($latestIq && $latestIq->score !== null && $latestIq->score !== '') ? $latestIq->score . ' đ' : '--' }}
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- EQ Score -->
-                            <div class="user-stat-card">
-                                <div class="user-stat-icon" style="background: #fdf2f8; color: #db2777;">
+                            <div class="child-stat-card">
+                                <div class="child-stat-icon" style="background: #fdf2f8; color: #db2777;">
                                     <i class="ti ti-heart"></i>
                                 </div>
-                                <div class="flex-grow-1 min-w-0 pe-1">
-                                    <div class="text-muted fs-11 fw-bold text-uppercase text-truncate">{{ __('EQ') }}</div>
-                                    <div class="fw-bold fs-13 text-pink text-truncate">{{ $latestEq ? $latestEq->score . ' đ' : '--' }}</div>
-                                </div>
-                            </div>
-
-                            <!-- AQ Score -->
-                            <div class="user-stat-card">
-                                <div class="user-stat-icon" style="background: #ecfdf5; color: #059669;">
-                                    <i class="ti ti-leaf"></i>
-                                </div>
-                                <div class="flex-grow-1 min-w-0 pe-1">
-                                    <div class="text-muted fs-11 fw-bold text-uppercase text-truncate">{{ __('AQ') }}</div>
-                                    <div class="fw-bold fs-13 text-success text-truncate">{{ $latestAq ? $latestAq->score . ' đ' : '--' }}</div>
+                                <div class="child-stat-content">
+                                    <div class="child-stat-label">{{ __('EQ') }}</div>
+                                    <div class="child-stat-val text-pink">
+                                        {{ ($latestEq && $latestEq->score !== null && $latestEq->score !== '') ? $latestEq->score . ' đ' : '--' }}
+                                    </div>
                                 </div>
                             </div>
 
                             <!-- PQ Score -->
-                            <div class="user-stat-card">
-                                <div class="user-stat-icon" style="background: #fff7ed; color: #ea580c;">
+                            <div class="child-stat-card">
+                                <div class="child-stat-icon" style="background: #fff7ed; color: #ea580c;">
                                     <i class="ti ti-activity"></i>
                                 </div>
-                                <div class="flex-grow-1 min-w-0 pe-1">
-                                    <div class="text-muted fs-11 fw-bold text-uppercase text-truncate">{{ __('PQ') }}</div>
-                                    <div class="fw-bold fs-13 text-orange text-truncate">{{ $latestPq ? ($latestPq->score ?? ($latestPq->bmi ? 'BMI ' . $latestPq->bmi : '--')) : '--' }}</div>
+                                <div class="child-stat-content">
+                                    <div class="child-stat-label">{{ __('PQ') }}</div>
+                                    <div class="child-stat-val text-orange">
+                                        {{ ($latestPq && $latestPq->height) ? $latestPq->height . ' cm' : (($latestPq && $latestPq->bmi) ? 'BMI ' . $latestPq->bmi : '--') }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -154,7 +162,7 @@
             <x-form id="notificationForm" :action="route(RouteAdminSystem::CHILDREN_UPDATE)" type="put" :validate="true">
                 <input type="hidden" name="id" value="{{ $children->id }}">
                 <div class="row g-4 justify-content-center">
-                    @include('admin.children.forms.edit-left', ['children' => $children])
+                    @include('admin.children.forms.edit-left', ['children' => $children, 'heightPrediction' => $heightPrediction])
                     @include('admin.children.forms.edit-right', ['children' => $children])
                 </div>
             </x-form>

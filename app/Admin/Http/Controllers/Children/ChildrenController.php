@@ -94,12 +94,23 @@ class ChildrenController extends Controller
      */
     public function edit($id): Factory|View|Application
     {
-
         $instance = $this->repository->findOrFail($id);
+
+        $heightPrediction = null;
+        try {
+            $heightService = app(\App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface::class);
+            $heightRequest = new \App\Api\V1\Http\Requests\HeightPrediction\HeightPredictionRequest();
+            $heightRequest->setValidator(validator(['child_id' => $id], ['child_id' => 'required']));
+            $heightPrediction = $heightService->index($heightRequest);
+        } catch (\Exception $e) {
+            Log::warning('Error calculating height prediction for child ' . $id . ': ' . $e->getMessage());
+        }
+
         return view(
             $this->view['edit'],
             [
                 'children' => $instance,
+                'heightPrediction' => $heightPrediction,
                 'gender' => Gender::asSelectArray(),
                 'birthday' => $instance->birthday,
                 'dueDate' => $instance->due_date,
@@ -108,7 +119,6 @@ class ChildrenController extends Controller
                 'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),
             ],
         );
-
     }
 
     public function update(ChildrenRequest $request): RedirectResponse
