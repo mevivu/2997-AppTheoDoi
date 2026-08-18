@@ -14,7 +14,7 @@ abstract class BaseDataTable extends DataTable
      *
      * @var array
      */
-    protected array $actions = ['reset', 'reload'];
+    protected array $actions = ['reset', 'reload', 'pageLength'];
     /**
      * Mảng chứa đường dẫn tới views
      *

@@ -503,4 +503,180 @@ function hideLoading($button, originalText = 'Xác nhận nạp tiền') {
     $button.find('.spinner-border').addClass('d-none');
 }
 
+/* ============================================
+   FLOATING BULK ACTIONS & CHECKBOX LOGIC
+   ============================================ */
+$(document).ready(function () {
+    function updateBulkActionsBar() {
+        var count = $('table.dataTable tbody input[type="checkbox"]:checked').length;
+        $('#selectedRowsCount').text(count);
+        if (count > 0) {
+            $('.floating-bulk-actions, .select-action-multiple').fadeIn(200);
+        } else {
+            $('.floating-bulk-actions, .select-action-multiple').fadeOut(200);
+        }
+    }
+
+    $(document).on('change', 'table.dataTable input[type="checkbox"]', function () {
+        updateBulkActionsBar();
+    });
+
+    $(document).on('click', '#btnDeselectAll', function (e) {
+        e.preventDefault();
+        $('table.dataTable input[type="checkbox"]').prop('checked', false).trigger('change');
+        $('table.dataTable tbody tr').removeClass('selected-row');
+        updateBulkActionsBar();
+    });
+});
+
+/* ============================================
+   DATATABLE GRID / TABLE VIEW SWITCHER LOGIC
+   ============================================ */
+$(document).ready(function () {
+    const STORAGE_KEY = 'datatable_view_mode';
+
+    function bindDatatableGridDataLabels() {
+        $('table.dataTable').each(function () {
+            const $table = $(this);
+            const headers = [];
+
+            $table.find('thead tr').first().find('th, td').each(function () {
+                const $th = $(this);
+                let labelText = $th.find('.header-cell-content span').text();
+                if (!labelText) {
+                    labelText = $th.find('span').first().text() || $th.text();
+                }
+                headers.push($.trim(labelText));
+            });
+
+            $table.find('tbody tr').each(function () {
+                $(this).find('td').each(function (index) {
+                    if (headers[index]) {
+                        $(this).attr('data-label', headers[index]);
+                    }
+                });
+            });
+        });
+    }
+
+    function applyDatatableViewMode(mode) {
+        const $tableWrapper = $('.table-responsive');
+        const $buttons = $('.btn-datatable-mode');
+
+        $buttons.each(function () {
+            const isTarget = $(this).data('mode') === mode;
+            $(this).toggleClass('active btn-white shadow-sm text-primary', isTarget)
+                   .toggleClass('text-secondary', !isTarget);
+        });
+
+        if (mode === 'grid') {
+            if (!$tableWrapper.hasClass('datatable-grid-active')) {
+                $tableWrapper.addClass('datatable-grid-active');
+            }
+            $('table.dataTable').css('width', '100%');
+            bindDatatableGridDataLabels();
+        } else {
+            $tableWrapper.removeClass('datatable-grid-active');
+            $('table.dataTable').css('width', '');
+        }
+
+        localStorage.setItem(STORAGE_KEY, mode);
+    }
+
+    $(document).on('click', '.btn-datatable-mode', function (e) {
+        e.preventDefault();
+        const mode = $(this).data('mode');
+        applyDatatableViewMode(mode);
+    });
+
+    $(document).on('draw.dt init.dt', function () {
+        $('.table-responsive').addClass('dt-ready');
+        const savedMode = localStorage.getItem(STORAGE_KEY) || 'table';
+        applyDatatableViewMode(savedMode);
+    });
+
+    const savedMode = localStorage.getItem(STORAGE_KEY) || 'table';
+    applyDatatableViewMode(savedMode);
+
+    /* ============================================
+       DRAG TO SCROLL HORIZONTALLY FOR TABLES
+       ============================================ */
+    (function () {
+        let isMouseDown = false;
+        let isDragging = false;
+        let startX = 0;
+        let scrollLeft = 0;
+        let $activeTarget = null;
+        const DRAG_THRESHOLD = 5;
+
+        const SCROLL_CONTAINER_SEL = '.table-responsive, .wrap-table-scroll';
+        const TABLE_SEL = SCROLL_CONTAINER_SEL + ', .table-responsive table, .wrap-table-scroll table';
+        const INTERACTIVE_SEL = 'input, select, button, a, label, .dropdown-menu, .dataTables_paginate, .check-all, .select2-container, .copy-btn';
+
+        function findScrollContainer($el) {
+            var $c = $el.closest('.table-responsive');
+            if ($c.length) {
+                if ($c.hasClass('datatable-grid-active')) return null;
+                if ($c[0].scrollWidth > $c[0].clientWidth) return $c;
+            }
+            $c = $el.closest('.wrap-table-scroll');
+            if ($c.length) {
+                if ($c.hasClass('datatable-grid-active')) return null;
+                if ($c[0].scrollWidth > $c[0].clientWidth) return $c;
+            }
+            return null;
+        }
+
+        $(document).on('mousedown', TABLE_SEL, function (e) {
+            if (e.which !== 1) return;
+            if ($(e.target).closest(INTERACTIVE_SEL).length) return;
+
+            const $container = findScrollContainer($(this));
+            if (!$container) return;
+
+            isMouseDown = true;
+            isDragging = false;
+            $activeTarget = $container;
+            startX = e.pageX;
+            scrollLeft = $activeTarget.scrollLeft();
+            e.preventDefault();
+        });
+
+        $(document).on('mousemove', function (e) {
+            if (!isMouseDown || !$activeTarget) return;
+
+            const dx = e.pageX - startX;
+
+            if (!isDragging && Math.abs(dx) >= DRAG_THRESHOLD) {
+                isDragging = true;
+                $activeTarget.addClass('dragging-active');
+            }
+
+            if (isDragging) {
+                e.preventDefault();
+                $activeTarget.scrollLeft(scrollLeft - dx);
+            }
+        });
+
+        $(document).on('mouseup', function () {
+            if (isDragging && $activeTarget) {
+                $activeTarget.removeClass('dragging-active');
+                setTimeout(function () { isDragging = false; }, 50);
+            } else {
+                isDragging = false;
+            }
+            isMouseDown = false;
+            $activeTarget = null;
+        });
+
+        $(document).on('click', TABLE_SEL + ' a, ' + TABLE_SEL + ' button', function (e) {
+            if (isDragging) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }
+        });
+    })();
+});
+
+
 

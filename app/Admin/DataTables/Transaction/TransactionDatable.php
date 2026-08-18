@@ -37,21 +37,18 @@ class TransactionDatable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-
         $this->columnAllSearch = [0, 1, 3, 4, 5, 6];
         $this->columnSearchDate = [6];
         $this->columnSearchSelect = [
             [
                 'column' => 4,
-                'data' => TransactionStatus::asSelectArray()
+                'data' => TransactionEnumService::asSelectArray()
             ],
             [
                 'column' => 5,
-                'data' => TransactionEnumService::asSelectArray()
+                'data' => TransactionStatus::asSelectArray()
             ],
-
         ];
-
     }
 
     /**
@@ -72,8 +69,8 @@ class TransactionDatable extends BaseDataTable
     protected function setCustomEditColumns(): void
     {
         $this->customEditColumns = [
-            'created_at' => '{{ $created_at ? format_datetime($created_at) : "" }}',
-            'amount' => '{{ $amount ? number_format($amount, 0) . " VND" : "" }}',
+            'created_at' => '<span class="text-muted fs-12 text-nowrap"><i class="ti ti-clock me-1"></i>{{ $created_at ? format_datetime($created_at) : "" }}</span>',
+            'amount' => '<span class="fw-bold text-success font-monospace fs-13 text-nowrap">{{ $amount ? number_format($amount, 0, ",", ".") . " đ" : "0 đ" }}</span>',
             'status' => $this->view['status'],
             'service' => $this->view['service'],
             'code' => $this->view['code'],
@@ -103,6 +100,7 @@ class TransactionDatable extends BaseDataTable
             'amount',
             'package_id',
             'service',
+            'created_at',
         ];
     }
 

@@ -126,38 +126,38 @@ return [
     ],
     'transaction' => [
         'code' => [
-            'title' => 'Mã giao dịch',
+            'title' => '<div class="header-cell-content"><i class="ti ti-code"></i><span>Mã giao dịch</span></div>',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
         'user_id' => [
-            'title' => 'Người dùng',
+            'title' => '<div class="header-cell-content"><i class="ti ti-user"></i><span>Khách hàng</span></div>',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
         'amount' => [
-            'title' => 'giá',
+            'title' => '<div class="header-cell-content"><i class="ti ti-currency-dollar"></i><span>Số tiền</span></div>',
             'width' => '150px',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
         'package_id' => [
-            'title' => 'gói',
+            'title' => '<div class="header-cell-content"><i class="ti ti-package"></i><span>Gói dịch vụ</span></div>',
             'addClass' => 'text-center align-middle',
             'orderable' => false
         ],
-        'status' => [
-            'title' => 'Trạng thái',
+        'service' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-layout-grid"></i><span>Cổng dịch vụ</span></div>',
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
-        'service' => [
-            'title' => 'service',
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-small"></i><span>Trạng thái</span></div>',
             'orderable' => false,
             'addClass' => 'text-center align-middle'
         ],
         'created_at' => [
-            'title' => 'Ngày tạo',
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Ngày tạo</span></div>',
             'width' => '150px',
             'orderable' => false,
             'addClass' => 'text-center align-middle'
