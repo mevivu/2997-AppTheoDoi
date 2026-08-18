@@ -58,7 +58,14 @@ class TransactionDatable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getQueryBuilderOrderBy();
+        $query = $this->repository->getQueryBuilderOrderBy();
+
+        $userId = request()->route('id') ?: request('user_id');
+        if ($userId) {
+            $query->where('user_id', $userId);
+        }
+
+        return $query;
     }
 
     protected function setCustomColumns(): void

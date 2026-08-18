@@ -8,6 +8,7 @@ use App\Admin\Repositories\Package\PackageRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Services\User\UserServiceInterface;
 use App\Admin\DataTables\User\UserDataTable;
+use App\Admin\DataTables\Transaction\TransactionDatable;
 use App\Enums\ActiveStatus;
 use App\Enums\Package\PackageType;
 use App\Traits\ResponseController;
@@ -159,5 +160,18 @@ class UserController extends Controller
             return back()->with('success', __('Đã đăng xuất toàn bộ tài khoản gói thường thành công.'));
         }
         return back()->with('error', __('Thực hiện thất bại.'));
+    }
+
+    public function history(TransactionDatable $dataTable)
+    {
+        $id = request()->route('id');
+        $user = $this->repository->findOrFail($id);
+        return $dataTable->render(
+            $this->view['history'],
+            [
+                'breadcrumbs' => $this->crums->add(__('Khách hàng'), route($this->route['index']))->add(__('Lịch sử giao dịch')),
+                'orderUser' => $user,
+            ]
+        );
     }
 }

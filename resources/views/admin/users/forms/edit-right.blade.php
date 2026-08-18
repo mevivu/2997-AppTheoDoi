@@ -44,7 +44,7 @@
         <div class="card-body p-3 d-flex flex-column gap-2">
             <a href="{{ route('admin.user.history', $user->id) }}" class="btn btn-outline-primary d-flex align-items-center justify-content-center gap-2 py-2">
                 <i class="ti ti-receipt fs-4"></i>
-                <span>{{ __('Lịch sử đơn hàng') }}</span>
+                <span>{{ __('Lịch sử giao dịch') }}</span>
             </a>
 
             <button type="button" class="btn btn-outline-danger d-flex align-items-center justify-content-center gap-2 py-2"

@@ -112,6 +112,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Child::class, 'user_id');
     }
 
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'user_id');
+    }
+
 
     public function roles(): BelongsToMany
     {

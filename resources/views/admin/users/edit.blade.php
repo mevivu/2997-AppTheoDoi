@@ -95,13 +95,13 @@
                                 </div>
                             </div>
 
-                            <!-- Lịch sử đơn hàng -->
-                            <a href="{{ route('admin.user.history', $user->id) }}" class="user-stat-card text-decoration-none" title="{{ __('Xem lịch sử đơn hàng') }}">
+                            <!-- Lịch sử giao dịch -->
+                            <a href="{{ route('admin.user.history', $user->id) }}" class="user-stat-card text-decoration-none" title="{{ __('Xem lịch sử giao dịch') }}">
                                 <div class="user-stat-icon icon-orders">
                                     <i class="ti ti-receipt"></i>
                                 </div>
                                 <div class="flex-grow-1 min-w-0 pe-1">
-                                    <div class="text-muted fs-11 fw-bold text-uppercase text-truncate">{{ __('Đơn Hàng') }}</div>
+                                    <div class="text-muted fs-11 fw-bold text-uppercase text-truncate">{{ __('Giao Dịch') }}</div>
                                     <div class="fw-bold fs-12 text-success d-inline-flex align-items-center gap-1 text-truncate">
                                         <span>{{ __('Xem chi tiết') }}</span> <i class="ti ti-arrow-right fs-12"></i>
                                     </div>
