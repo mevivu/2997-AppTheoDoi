@@ -11,10 +11,6 @@
         }
 
         answerType.on('change', function () {
-
-            answer.empty();
-            reIndexAnswers();
-
             if ($(this).val() === 'image') {
                 isImage = true;
                 answer.find('.answer_image').removeClass('d-none');
@@ -26,39 +22,88 @@
             }
         });
 
+        function getLetter(index) {
+            return String.fromCharCode(65 + (index % 26));
+        }
+
         function reIndexAnswers() {
-            answer.find('.form-check').each(function (index) {
-                $(this).find('input[type="radio"]').val(index);
+            answer.find('.answer-card-item').each(function (idx) {
+                $(this).find('.answer-letter-badge').text(getLetter(idx));
+                $(this).find('.radio-correct-answer').val(idx);
+                $(this).find('.answer_image').attr('data-answer', idx);
             });
         }
 
+        const html = function (isImage, newIndex) {
+            const letter = getLetter(newIndex);
+            return `
+                <div class="answer-card-item d-flex align-items-center gap-3">
+                    <div class="answer-letter-badge">${letter}</div>
+                    
+                    <div class="flex-grow-1">
+                        <input class="answer_normal form-control ${isImage ? 'd-none' : ''}" type="text" name="answers[answer][]"
+                               placeholder="Nhập nội dung đáp án ${letter}..." required />
+                        <div class="answer_image ${isImage ? '' : 'd-none'}" style="width: 220px;" data-answer="${newIndex}">
+                            <x-input-image-ckfinder name="answers[image][${newIndex}]" :value="old('answers.image[0]')" showImage="showAnswerImage-${newIndex}" />
+                        </div>
+                    </div>
 
-        const html = function (isImage, index) {
-            return `<div class="form-check d-flex align-items-center justify-content-start gap-2 mb-3">
-                <input class="form-check-input" type="radio" name="answers[is_correct]" value="${index}">
-                <x-input class="answer_normal ${isImage ? 'd-none' : ''}" type="text" name="answers[answer][]"
-                    placeholder="Nhập câu trả lời" />
-                <div class="answer_image ${isImage ? '' : 'd-none'}" style="width: 200px;" data-answer="${index}">
-                    <x-input-image-ckfinder name="answers[image][${index}]" :value="old('answers.image[0]')" showImage="showAnswerImage-${index}" />
+                    <div class="d-flex align-items-center gap-2">
+                        <label class="correct-option-pill mb-0">
+                            <input class="d-none radio-correct-answer" type="radio" name="answers[is_correct]" value="${newIndex}">
+                            <i class="ti ti-check-circle fs-5"></i>
+                            <span class="correct-text">{{ __('Đáp án đúng') }}</span>
+                        </label>
+                        
+                        <button type="button" class="btn btn-delete-answer remove_answer" title="{{ __('Xóa đáp án này') }}">
+                            <i class="ti ti-trash fs-5"></i>
+                        </button>
+                    </div>
                 </div>
-                <button type="button" class="btn btn-danger remove_answer">
-                    <i class="ti ti-x"></i>
-                </button>
-            </div>`;
+            `;
         };
 
         $('#add_answer').on('click', function () {
-            const newIndex = answer.find('.form-check').length;
-            answer.append(html(isImage, newIndex));
+            const currentCount = answer.find('.answer-card-item').length;
+            if (currentCount >= 10) {
+                alert('Tối đa 10 câu trả lời cho một câu hỏi.');
+                return;
+            }
+            answer.append(html(isImage, currentCount));
             reIndexAnswers();
         });
 
         answer.on('click', '.remove_answer', function () {
-            $(this).parent().remove();
+            const currentCount = answer.find('.answer-card-item').length;
+            if (currentCount <= 2) {
+                alert('Mỗi câu hỏi cần tối thiểu 2 đáp án lựa chọn.');
+                return;
+            }
+            const isChecked = $(this).closest('.answer-card-item').find('.radio-correct-answer').is(':checked');
+            $(this).closest('.answer-card-item').remove();
             reIndexAnswers();
-            $('input[type="radio"][name="answers[is_correct]"]:first').prop('checked', true);
+
+            if (isChecked) {
+                const firstCard = answer.find('.answer-card-item').first();
+                firstCard.find('.radio-correct-answer').prop('checked', true).trigger('change');
+            }
         });
 
+        // Handle active style on correct answer change
+        answer.on('change', '.radio-correct-answer', function() {
+            answer.find('.answer-card-item').removeClass('is-correct-card');
+            answer.find('.correct-option-pill').removeClass('active');
 
+            if ($(this).is(':checked')) {
+                $(this).closest('.answer-card-item').addClass('is-correct-card');
+                $(this).closest('.correct-option-pill').addClass('active');
+            }
+        });
+
+        // Direct click on correct-option-pill
+        answer.on('click', '.correct-option-pill', function(e) {
+            const radio = $(this).find('.radio-correct-answer');
+            radio.prop('checked', true).trigger('change');
+        });
     });
 </script>
