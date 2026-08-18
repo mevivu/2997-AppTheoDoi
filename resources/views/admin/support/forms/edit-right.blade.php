@@ -20,7 +20,7 @@
     <x-admin.form-actions
         :submit-title="__('Lưu thay đổi')"
         submit-icon="ti ti-device-floppy"
-        :back-route="$response->type == \App\Enums\Support\SupportType::HelpCenter ? route('admin.support.helpCenter') : route('admin.support.userGuide')"
+        :back-route="$response->type == \App\Enums\Support\SupportType::HelpCenter ? route('admin.support.help-center') : route('admin.support.guide')"
         :back-title="__('Quay lại')"
     />
 </div>

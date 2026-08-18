@@ -20,7 +20,7 @@
     <x-admin.form-actions
         :submit-title="__('Lưu')"
         submit-icon="ti ti-device-floppy"
-        :back-route="request()->back == 'help_center' ? route('admin.support.helpCenter') : route('admin.support.userGuide')"
+        :back-route="request()->back == 'guide' ? route('admin.support.guide') : route('admin.support.help-center')"
         :back-title="__('Quay lại')"
     />
 </div>

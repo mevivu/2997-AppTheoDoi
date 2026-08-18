@@ -14,7 +14,7 @@
                 icon="help-circle"
                 :title="__('Chỉnh sửa Bài Hỗ trợ / Trợ giúp')"
                 :subtitle="$response->title ?? __('Cập nhật thông tin chi tiết bài hỗ trợ')"
-                :back-route="route('admin.support.help-center')"
+                :back-route="$response->type == \App\Enums\Support\SupportType::HelpCenter ? route('admin.support.help-center') : route('admin.support.guide')"
             />
 
             <x-form :action="route(RouteAdminSystem::SUPPORT_UPDATE)" type="put" :validate="true">

@@ -14,7 +14,7 @@
                 icon="help-circle"
                 :title="__('Thêm Bài Hỗ trợ / Trợ giúp mới')"
                 :subtitle="__('Nhập thông tin câu hỏi và nội dung giải đáp hỗ trợ khách hàng')"
-                :back-route="route('admin.support.help-center')"
+                :back-route="request()->back == 'guide' ? route('admin.support.guide') : route('admin.support.help-center')"
             />
 
             <x-form :action="route(RouteAdminSystem::SUPPORT_STORE)" type="post" :validate="true">

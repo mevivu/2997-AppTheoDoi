@@ -10,7 +10,7 @@
                 <x-admin.page-header :title="__('Hướng dẫn sử dụng')"
                                      :subtitle="__('Quản lý các bài viết hướng dẫn tính năng cho người dùng')"
                                      icon="ti ti-help"
-                                     :addRoute="route('admin.support.create')"
+                                     :addRoute="route('admin.support.create', ['back' => 'guide'])"
                                      :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.support.multiple')" type="post" :validate="true">
