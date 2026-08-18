@@ -54,12 +54,18 @@ class RatingIQDatable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getByQueryBuilder(
+        $query = $this->repository->getByQueryBuilder(
             [
                 'type' => QuestionType::IQ
             ],
             ['child.user']
-        )->whereNotNull('score')->where('score', '>', 0)->orderBy('id', 'desc');
+        )->whereNotNull('score')->where('score', '>', 0);
+
+        if (request()->filled('child_id')) {
+            $query->where('child_id', request('child_id'));
+        }
+
+        return $query->orderBy('id', 'desc');
     }
 
     protected function setCustomColumns(): void
