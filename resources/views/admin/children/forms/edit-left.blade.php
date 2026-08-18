@@ -1,100 +1,47 @@
-@php
-    use App\AES\AESHelper;
-    use Carbon\Carbon;
-
-    $birthday = Carbon::parse($children->birthday)->format('Y-m-d');
-    $due_date = Carbon::parse($children->due_date)->format('Y-m-d');
-@endphp
-<div class="col-12 col-md-9">
-    <div class="card custom-shadow">
-        <div class="card-header justify-content-center">
-            <h2 class="mb-0">{{ __('Thông tin Trẻ em') }}</h2>
+<div class="col-12 col-lg-8 col-xl-9">
+    <div class="card border-0 custom-shadow rounded-3">
+        <!-- Navigation Pills Tabs -->
+        <div class="card-header bg-white border-bottom p-3">
+            <ul class="nav nav-pills custom-profile-tabs card-header-pills w-100" id="childProfileTabs" role="tablist">
+                <li class="nav-item flex-fill" role="presentation">
+                    <button class="nav-link active w-100 text-center py-2" id="tab-child-info" data-bs-toggle="tab" data-bs-target="#content-child-info" type="button" role="tab" aria-selected="true">
+                        <i class="ti ti-baby-carriage me-1 fs-5"></i>
+                        <span>{{ __('Thông Tin & Phụ Huynh') }}</span>
+                    </button>
+                </li>
+                <li class="nav-item flex-fill" role="presentation">
+                    <button class="nav-link w-100 text-center py-2" id="tab-child-assessment" data-bs-toggle="tab" data-bs-target="#content-child-assessment" type="button" role="tab" aria-selected="false">
+                        <i class="ti ti-chart-dots me-1 fs-5"></i>
+                        <span>{{ __('Thống Kê Đánh Giá (IQ, EQ, AQ, PQ)') }}</span>
+                    </button>
+                </li>
+                <li class="nav-item flex-fill" role="presentation">
+                    <button class="nav-link w-100 text-center py-2" id="tab-child-vaccination" data-bs-toggle="tab" data-bs-target="#content-child-vaccination" type="button" role="tab" aria-selected="false">
+                        <i class="ti ti-vaccine me-1 fs-5"></i>
+                        <span>{{ __('Lịch Tiêm Chủng') }}</span>
+                    </button>
+                </li>
+            </ul>
         </div>
-        <div class="row card-body">
 
-            <!-- Fullname -->
-            <div class="col-md-6 col-sm-12">
-                <div class="mb-3">
-                    <label class="control-label">{{ __('Họ và tên') }}: <span class="text-danger">*</span></label>
-                    <x-input name="fullname" :value="old('fullname')" :required="true" placeholder="{{ __('Họ và tên') }}"
-                        value="{{ $children->fullname }}" />
+        <!-- Tab Content Panes -->
+        <div class="card-body p-4">
+            <div class="tab-content" id="childProfileTabsContent">
+                <!-- Tab 1: Thông tin cơ bản & Phụ huynh -->
+                <div class="tab-pane fade show active" id="content-child-info" role="tabpanel" aria-labelledby="tab-child-info">
+                    @include('admin.children.partials.child-info', ['children' => $children])
                 </div>
-            </div>
 
-            <!-- birthday -->
-            <div class="col-md-6 col-sm-12">
-                @if ($children->is_born == \App\Enums\Child\BornStatus::Born)
-                    <div class="mb-3" id="date_birthday">
-                        <label class="control-label">{{ __('Ngày sinh') }}:</label>
-                        <x-input type="date" name="birthday" placeholder="{{ __('Ngày sinh') }}"
-                            value="{{ $birthday }}" />
-                    </div>
-                @else
-                    <div class="mb-3 d-none" id="date_birthday">
-                        <label class="control-label">{{ __('Ngày sinh') }}:</label>
-                        <x-input type="date" name="birthday" placeholder="{{ __('Ngày sinh') }}"
-                            value="{{ old('birthday') }}" />
-                    </div>
-                @endif
-
-                @if ($children->is_born == \App\Enums\Child\BornStatus::Unborn)
-                    <div class="mb-3" id="due_date">
-                        <label class="control-label">{{ __('Ngày dự sinh') }}:</label>
-                        <x-input type="date" name="due_date" placeholder="{{ __('Ngày dự sinh') }}"
-                            value="{{ $due_date }}" />
-                    </div>
-                @else
-                    <div class="mb-3 d-none" id="due_date">
-                        <label class="control-label">{{ __('Ngày dự sinh') }}:</label>
-                        <x-input type="date" name="due_date" placeholder="{{ __('Ngày dự sinh') }}"
-                            value="{{ old('due_date') }}" />
-                    </div>
-                @endif
-            </div>
-
-            <!-- gender-->
-            <div class="col-md-6 col-sm-12">
-                <div class="mb-3">
-                    <label class="control-label">{{ __('Giới tính') }}: <span class="text-danger">*</span></label>
-                    <x-select name="gender" :required="true">
-                        @foreach ($gender as $key => $value)
-                            <x-select-option :option="$children->gender->value" :value="$key" :title="$value" />
-                        @endforeach
-                    </x-select>
+                <!-- Tab 2: Thống kê đánh giá -->
+                <div class="tab-pane fade" id="content-child-assessment" role="tabpanel" aria-labelledby="tab-child-assessment">
+                    @include('admin.children.partials.assessment-info', ['children' => $children])
                 </div>
-            </div>
 
-            <div class="col-md-6 col-sm-12">
-                <label class="control-label">
-                    <span class="ti ti-user"></span>
-                    @lang('Cha/mẹ'):</label>
-                <x-select class="select2-bs5-ajax" name="user_id" id="user_id" :data-url="route('admin.search.select.user')">
-                    <x-select-option :option="$children->user_id" :value="$children->user_id" :title="$children->user->fullname . '-' . AESHelper::decrypt($children->user->phone)" :selected="old('user_id') ? old('user_id') == $children->user_id : true" />
-                </x-select>
-            </div>
-
-            <!-- age -->
-            <div class="col-md-6 col-sm-12">
-                <div class="mb-3">
-                    <label class="control-label">{{ __('age') }}:</label>
-                    <x-input name="age"
-                             disabled
-                             placeholder="{{ __('age') }}"
-                             value="{{ $children->age }}" />
-                </div>
-            </div>
-
-            <!-- month -->
-            <div class="col-md-6 col-sm-12">
-                <div class="mb-3">
-                    <label class="control-label">{{ __('month') }}:</label>
-                    <x-input name="month"
-                             disabled
-                             placeholder="{{ __('month') }}"
-                             value="{{ $children->month }}" />
+                <!-- Tab 3: Tiêm chủng -->
+                <div class="tab-pane fade" id="content-child-vaccination" role="tabpanel" aria-labelledby="tab-child-vaccination">
+                    @include('admin.children.partials.vaccination-info', ['children' => $children])
                 </div>
             </div>
         </div>
-
     </div>
 </div>
