@@ -7,8 +7,9 @@
 
             <div class="col-md-6">
                 <div class="mb-3">
-                    <span class="ti ti-math"></span>
-                    {{ __('Môn học') }}:</label>
+                    <label class="control-label">
+                        <span class="ti ti-math"></span>
+                        {{ __('Môn học') }}: <span class="text-danger">*</span></label>
                     <x-input type="text" name="name" :value="$response->name" :required="true" />
                 </div>
             </div>

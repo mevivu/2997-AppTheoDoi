@@ -1,24 +1,29 @@
+@php use App\Traits\RouteAdminSystem; @endphp
 @extends('admin.layouts.master')
+
 @push('libs-css')
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
+    @include('admin.common.css.style')
+    @include('admin.common.css.action')
 @endpush
-@push('custom-css')
-    <style>
-        .pac-container {
-            z-index: 99999999 !important;
-        }
-    </style>
-@endpush
+
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
-            <x-form :action="route('admin.step.store')" type="post" :validate="true">
-                <div class="row justify-content-center">
+            <x-admin.page-header
+                class="mb-4"
+                icon="list-numbers"
+                :title="__('Thêm Bước hướng dẫn mới')"
+                :subtitle="__('Nhập thông tin bước thực hiện trong chuỗi hướng dẫn')"
+                :back-route="route('admin.develop.steps', request()->route('developGuideId'))"
+            />
+
+            <x-form :action="route(RouteAdminSystem::STEP_STORE)" type="post" :validate="true">
+                <div class="row g-4 justify-content-center">
                     @include('admin.step.forms.create-left')
                     @include('admin.step.forms.create-right')
                 </div>
-                @include('admin.forms.actions-fixed')
             </x-form>
         </div>
     </div>

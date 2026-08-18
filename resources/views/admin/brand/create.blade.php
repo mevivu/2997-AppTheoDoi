@@ -1,25 +1,27 @@
+@php use App\Traits\RouteAdminSystem; @endphp
 @extends('admin.layouts.master')
 
 @push('libs-css')
-@endpush
-
-@push('custom-css')
-    <style>
-        .pac-container {
-            z-index: 99999999 !important;
-        }
-    </style>
+    @include('admin.common.css.style')
+    @include('admin.common.css.action')
 @endpush
 
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
-            <x-form :action="route('admin.brand.store')" type="post" :validate="true">
-                <div class="row justify-content-center">
-                    @include('admin.brand.forms.create-left')  <!-- Include form left section -->
-                    @include('admin.brand.forms.create-right') <!-- Include form right section -->
+            <x-admin.page-header
+                class="mb-4"
+                icon="building-store"
+                :title="__('Thêm Thương hiệu mới')"
+                :subtitle="__('Nhập thông tin thương hiệu và đối tác cung cấp')"
+                :back-route="route(RouteAdminSystem::BRAND_INDEX)"
+            />
+
+            <x-form :action="route(RouteAdminSystem::BRAND_STORE)" type="post" :validate="true">
+                <div class="row g-4 justify-content-center">
+                    @include('admin.brand.forms.create-left')
+                    @include('admin.brand.forms.create-right')
                 </div>
-                @include('admin.forms.actions-fixed')  <!-- Include action buttons -->
             </x-form>
         </div>
     </div>
@@ -31,5 +33,5 @@
 @endpush
 
 @push('custom-js')
-    @include('admin.brand.scripts.script') <!-- Include custom scripts -->
+    @include('admin.brand.scripts.script')
 @endpush

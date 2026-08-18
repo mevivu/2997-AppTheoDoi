@@ -3,10 +3,10 @@
         <div class="card-header">
             {{ __('Đăng') }}
         </div>
-        <div class="card-body p-2 ">
+        <div class="card-body p-2">
             <div class="w-100 d-flex align-items-center h-100 gap-2">
                 <x-button.submit :title="__('save')" name="submitter" value="save"
-                    class="flex-column gap-1 text-wrap p-2 flex-grow-1" />
+                                 class="flex-column gap-1 text-wrap p-2 flex-grow-1" />
                 <x-link :href="$back" class="btn btn-outline w-50">
                     {{ __('Quay lại') }}
                 </x-link>
@@ -16,12 +16,12 @@
 
     <div class="card mb-3 custom-shadow">
         <div class="card-header">
-            {{ __('Trạng thái') }}
+            {{ __('Trạng thái') }} <span class="text-danger ms-1">*</span>
         </div>
         <div class="card-body p-2">
             <x-select name="question[status]" :required="true">
                 @foreach ($status as $key => $value)
-                    <x-select-option :value="$key" :title="$value" :option="$response->status->value" />
+                    <x-select-option :value="$key" :title="$value" :selected="$response->status->value == $key"/>
                 @endforeach
             </x-select>
         </div>

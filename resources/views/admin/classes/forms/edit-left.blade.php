@@ -8,7 +8,7 @@
             <!-- Name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Tên')</label>
+                    <label class="control-label">@lang('Tên') <span class="text-danger">*</span></label>
                     <x-input type="text"
                              name="name"
                              :value="$response->name"
@@ -20,10 +20,11 @@
             <div class=" col-12">
                 <label class="control-label">
                     <span class="ti ti-user"></span>
-                    @lang('Môn'):</label>
+                    @lang('Môn'): <span class="text-danger">*</span></label>
                 <x-select class="select2-bs5-ajax"
                           name="subject_id[]"
                           id="subject_id"
+                          :required="true"
                           multiple
                           :data-url="route('admin.search.select.subject')">
                     @foreach ($response->subjects as $subject)

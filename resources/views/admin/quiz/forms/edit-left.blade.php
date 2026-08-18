@@ -6,7 +6,7 @@
             <!-- type -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('type')</label>
+                    <label class="control-label">@lang('type') <span class="text-danger">*</span></label>
                     <x-select name="type" disabled :required="true">
                         @foreach ($type as $key => $value)
                             <x-select-option :value="$key" :title="$value" :selected="$instance->type->value == $key"/>
@@ -18,7 +18,7 @@
             <!-- title -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('title')</label>
+                    <label class="control-label">@lang('title') <span class="text-danger">*</span></label>
                     <x-input type="text" name="title" :value="$instance->title" :required="true"
                              :placeholder="__('title')"/>
                 </div>
@@ -27,7 +27,7 @@
                 <!-- age -->
                 <div class="col-12">
                     <div class="mb-3">
-                        <label class="control-label">@lang('age')</label>
+                        <label class="control-label">@lang('age') <span class="text-danger">*</span></label>
                         <x-input type="text" name="age" :value="$instance->age" :required="true"
                                  :placeholder="__('age')"/>
                     </div>

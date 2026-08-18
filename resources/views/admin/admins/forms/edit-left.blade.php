@@ -7,14 +7,14 @@
             <!-- Email Address -->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Email') }}:</label>
+                    <label class="control-label">{{ __('Email') }}: <span class="text-danger">*</span></label>
                     <x-input-email name="email" :value="$admin->email" :required="true" />
                 </div>
             </div>
             <!-- Fullname -->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Họ và tên') }}:</label>
+                    <label class="control-label">{{ __('Họ và tên') }}: <span class="text-danger">*</span></label>
                     <x-input name="fullname" :value="$admin->fullname" :required="true" placeholder="{{ __('Họ và tên') }}" />
                 </div>
             </div>
@@ -35,7 +35,7 @@
             </div>
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Số điện thoại') }}:</label>
+                    <label class="control-label">{{ __('Số điện thoại') }}: <span class="text-danger">*</span></label>
                     <x-input-phone name="phone" :value="$admin->phone" :required="true" />
                 </div>
             </div>
@@ -51,7 +51,7 @@
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="{{ $role->name }}" name="roles[]"
                             id="check{{ $role->id }}" {{ $admin->roles->contains($role->id) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="flexCheckDefault">
+                        <label class="form-check-label" for="check{{ $role->id }}">
                             {{ $role->title }}
                         </label>
                     </div>

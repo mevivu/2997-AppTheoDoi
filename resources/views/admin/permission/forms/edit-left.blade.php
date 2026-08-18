@@ -8,7 +8,7 @@
             <!-- tile -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Tên Quyền') }}:</label>
+                    <label class="control-label">{{ __('Tên Quyền') }}: <span class="text-danger">*</span></label>
                     <x-input name="title" :value="$permission->title" :required="true"
                         placeholder="{{ __('Ví dụ: Sửa bài viết') }}" />
                 </div>
@@ -17,7 +17,7 @@
             <!-- name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Slug') }}:</label>
+                    <label class="control-label">{{ __('Slug') }}: <span class="text-danger">*</span></label>
                     <x-input name="name" :value="$permission->name" :required="true"
                         placeholder="{{ __('Viết liền không khoảng cách, không dấu dựa theo tên Quyền. Ví dụ: editPost') }}" />
                 </div>
@@ -27,7 +27,7 @@
             <!-- guard_name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Nhóm Quyền của') }}:</label>
+                    <label class="control-label">{{ __('Nhóm Quyền của') }}: <span class="text-danger">*</span></label>
                     <x-select name="guard_name" :required="true">
                         <x-select-option :option="$permission->guard_name" value="admin" title="Admin" />
                         <x-select-option :option="$permission->guard_name" value="web" title="Thành viên trên Web" />
@@ -38,7 +38,7 @@
             <!-- type -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Loại') }}:</label>
+                    <label class="control-label">{{ __('Loại') }}: <span class="text-danger">*</span></label>
                     <x-select name="type" :required="true">
                         @foreach ($types as $key => $value)
                             <x-select-option :option="$permission->type" :value="$key" :title="$value" />

@@ -7,14 +7,14 @@
 
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Tên bài tập') }}:</label>
+                    <label class="control-label">{{ __('Tên bài tập') }}: <span class="text-danger">*</span></label>
                     <x-input type="text" name="name" :value="old('name')" :required="true" />
                 </div>
             </div>
 
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Loại bài tập') }}:</label>
+                    <label class="control-label">{{ __('Loại bài tập') }}: <span class="text-danger">*</span></label>
                     <x-select name="exercise_type" :required="true">
                         @foreach ($types as $key => $value)
                             <x-select-option :value="$key" :title="$value" />

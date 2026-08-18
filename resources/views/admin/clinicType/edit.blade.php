@@ -1,18 +1,30 @@
+@php use App\Traits\RouteAdminSystem; @endphp
 @extends('admin.layouts.master')
+
 @push('libs-css')
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
+    @include('admin.common.css.style')
+    @include('admin.common.css.action')
 @endpush
+
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
-            <x-form :action="route('admin.clinicType.update')" type="put" :validate="true">
+            <x-admin.page-header
+                class="mb-4"
+                icon="building-community"
+                :title="__('Chỉnh sửa Loại hình Phòng khám')"
+                :subtitle="$instance->name ?? __('Cập nhật thông tin chi tiết loại hình phòng khám')"
+                :back-route="route(RouteAdminSystem::CLINIC_TYPE_INDEX)"
+            />
+
+            <x-form :action="route(RouteAdminSystem::CLINIC_TYPE_UPDATE)" type="put" :validate="true">
                 <x-input type="hidden" name="id" :value="$instance->id"/>
-                <div class="row justify-content-center">
+                <div class="row g-4 justify-content-center">
                     @include('admin.clinicType.forms.edit-left')
                     @include('admin.clinicType.forms.edit-right')
                 </div>
-                @include('admin.forms.actions-fixed')
             </x-form>
         </div>
     </div>
@@ -26,6 +38,4 @@
 @endpush
 
 @push('custom-js')
-
-
 @endpush

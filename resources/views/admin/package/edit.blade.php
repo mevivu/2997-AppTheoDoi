@@ -1,18 +1,30 @@
+@php use App\Traits\RouteAdminSystem; @endphp
 @extends('admin.layouts.master')
+
 @push('libs-css')
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
+    @include('admin.common.css.style')
+    @include('admin.common.css.action')
 @endpush
+
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
-            <x-form :action="route('admin.package.update')" type="put" :validate="true">
+            <x-admin.page-header
+                class="mb-4"
+                icon="box"
+                :title="__('Chỉnh sửa Gói cước / Dịch vụ')"
+                :subtitle="$instance->name ?? __('Cập nhật thông tin chi tiết gói cước')"
+                :back-route="route(RouteAdminSystem::PACKAGE_INDEX)"
+            />
+
+            <x-form :action="route(RouteAdminSystem::PACKAGE_UPDATE)" type="put" :validate="true">
                 <x-input type="hidden" name="id" :value="$instance->id" />
-                <div class="row justify-content-center">
+                <div class="row g-4 justify-content-center">
                     @include('admin.package.forms.edit-left')
                     @include('admin.package.forms.edit-right')
                 </div>
-                @include('admin.forms.actions-fixed')
             </x-form>
         </div>
     </div>

@@ -7,14 +7,14 @@
 
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Tuổi') }}:</label>
+                    <label class="control-label">{{ __('Tuổi') }}: <span class="text-danger">*</span></label>
                     <x-input type="number" min="0" name="age" :value="old('age')" :required="true"/>
                 </div>
             </div>
 
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Giới tính') }}:</label>
+                    <label class="control-label">{{ __('Giới tính') }}: <span class="text-danger">*</span></label>
                     <x-select name="gender" :required="true">
                         @foreach ($gender as $key => $value)
                             <x-select-option :value="$key" :title="$value"/>
@@ -25,7 +25,7 @@
 
             <div class="col-md-3">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Z-score -3') }}:</label>
+                    <label class="control-label">{{ __('Z-score -3') }}: <span class="text-danger">*</span></label>
                     <x-input type="number"
                              min="0" step="0.01"
                              name="z_score_minus_3"
@@ -36,7 +36,7 @@
 
             <div class="col-md-3">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Z-score -2') }}:</label>
+                    <label class="control-label">{{ __('Z-score -2') }}: <span class="text-danger">*</span></label>
                     <x-input type="number"
                              step="0.01"
                              name="z_score_minus_2"
@@ -46,7 +46,7 @@
             </div>
             <div class="col-md-3">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Z-score -1') }}:</label>
+                    <label class="control-label">{{ __('Z-score -1') }}: <span class="text-danger">*</span></label>
                     <x-input type="number"
                              step="0.01"
                              name="z_score_minus_1"
@@ -56,7 +56,7 @@
             </div>
             <div class="col-md-3">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Z-score 0') }}:</label>
+                    <label class="control-label">{{ __('Z-score 0') }}: <span class="text-danger">*</span></label>
                     <x-input type="number"
                              step="0.01"
                              name="z_score_0"
@@ -66,7 +66,7 @@
             </div>
             <div class="col-md-3">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Z-score +1') }}:</label>
+                    <label class="control-label">{{ __('Z-score +1') }}: <span class="text-danger">*</span></label>
                     <x-input type="number"
                              step="0.01"
                              name="z_score_plus_1"
@@ -76,7 +76,7 @@
             </div>
             <div class="col-md-3">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Z-score +2') }}:</label>
+                    <label class="control-label">{{ __('Z-score +2') }}: <span class="text-danger">*</span></label>
                     <x-input type="number"
                              step="0.01"
                              name="z_score_plus_2"
@@ -86,7 +86,7 @@
             </div>
             <div class="col-md-3">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Z-score +3') }}:</label>
+                    <label class="control-label">{{ __('Z-score +3') }}: <span class="text-danger">*</span></label>
                     <x-input type="number"
                              step="0.01"
                              name="z_score_plus_3"

@@ -1,26 +1,25 @@
+@php use App\Traits\RouteAdminSystem; @endphp
 @extends('admin.layouts.master')
 
+@push('libs-css')
+    @include('admin.common.css.style')
+    @include('admin.common.css.action')
+@endpush
+
 @section('content')
-    <div class="page-header d-print-none">
-        <div class="container-fluid">
-            <div class="row g-2 align-items-center">
-                <div class="col">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"
-                                    class="text-muted">{{ __('Dashboard') }}</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('Sửa Admin') }}</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="page-body">
         <div class="container-fluid">
-            <x-form :action="route('admin.admin.update')" type="put" :validate="true">
+            <x-admin.page-header
+                class="mb-4"
+                icon="user-edit"
+                :title="__('Chỉnh sửa Admin')"
+                :subtitle="$admin->fullname ?? __('Cập nhật thông tin chi tiết tài khoản quản trị viên')"
+                :back-route="route(RouteAdminSystem::ADMIN_INDEX)"
+            />
+
+            <x-form :action="route(RouteAdminSystem::ADMIN_UPDATE)" type="put" :validate="true">
                 <x-input type="hidden" name="id" :value="$admin->id" />
-                <div class="row justify-content-center">
+                <div class="row g-4 justify-content-center">
                     @include('admin.admins.forms.edit-left')
                     @include('admin.admins.forms.edit-right')
                 </div>

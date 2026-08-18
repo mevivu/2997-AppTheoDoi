@@ -1,37 +1,13 @@
-<div class="col-12 col-md-3">
-
-
-    <div class="card mb-3 custom-shadow">
-        <div class="card-header">
-            {{ __('Hoạt động') }}
+@php use App\Traits\RouteAdminSystem; @endphp
+<div class="col-12 col-lg-4 col-xl-3">
+    <div class="card border-0 custom-shadow rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom px-4 py-3">
+            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.05rem;">
+                <i class="ti ti-typography text-primary me-2 fs-4"></i>
+                {{ __('Loại đối tượng') }}
+            </h5>
         </div>
-        <div class="card-body p-2">
-            <div class="w-100 d-flex align-items-center h-100 gap-2">
-                <x-button.submit :title="__('save')" name="submitter" value="save"
-                                 class="flex-column gap-1 text-wrap p-2 flex-grow-1"/>
-                @if (request()->back == 'admin')
-                    <x-link :href="route('admin.vaccination.admin')" class="btn btn-outline w-50">
-                        {{ __('Quay lại') }}
-                    </x-link>
-                @elseif(request()->back == 'user')
-                    <x-link :href="route('admin.vaccination.user')" class="btn btn-outline w-50">
-                        {{ __('Quay lại') }}
-                    </x-link>
-                @else
-                    <x-link :href="route('admin.vaccination.admin')" class="btn btn-outline w-50">
-                        {{ __('Quay lại') }}
-                    </x-link>
-                @endif
-
-            </div>
-        </div>
-    </div>
-    <div class="card mb-3 custom-shadow">
-        <div class="card-header">
-            <span class="ti ti-typography"></span>
-            @lang('loại')
-        </div>
-        <div class="card-body p-2">
+        <div class="card-body p-4">
             <x-select name="type" disabled :required="true">
                 @foreach ($type as $key => $value)
                     <x-select-option :value="$key" :title="$value"/>
@@ -41,13 +17,26 @@
         <x-input type="hidden" name="type" value="admin"/>
     </div>
 
-    <div class="card mb-3 custom-shadow">
-        <div class="card-header">
-            <span class="ti ti-photo me-1"></span>
-            @lang('avatar')
+    <div class="card border-0 custom-shadow rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom px-4 py-3">
+            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.05rem;">
+                <i class="ti ti-photo-heart text-primary me-2 fs-4"></i>
+                {{ __('Ảnh minh họa') }}
+            </h5>
         </div>
-        <div class="card-body p-2">
-            <x-input-image-ckfinder name="image" :value="old('image')" showImage="featureImage"/>
+        <div class="card-body p-4 text-center">
+            <div class="settings-logo-upload-wrapper text-center my-2 p-3">
+                <x-input-image-ckfinder name="image" :value="old('image')" showImage="featureImage"/>
+            </div>
+            <p class="text-muted fs-12 mb-0">{{ __('Hỗ trợ định dạng JPG, PNG, WEBP. Nhấp vào ảnh để thay đổi qua CKFinder.') }}</p>
         </div>
     </div>
+
+    {{-- Floating Form Actions --}}
+    <x-admin.form-actions
+        :submit-title="__('Lưu lịch tiêm chủng')"
+        submit-icon="ti ti-device-floppy"
+        :back-route="request()->back == 'user' ? route('admin.vaccination.user') : route('admin.vaccination.admin')"
+        :back-title="__('Quay lại')"
+    />
 </div>

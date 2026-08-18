@@ -5,7 +5,7 @@
             <!-- Tiêu đề hướng dẫn -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Tiêu đề')</label>
+                    <label class="control-label">@lang('Tiêu đề') <span class="text-danger">*</span></label>
                     <x-input name="title" :value="old('title')" :required="true" :placeholder="__('Tiêu đề')" />
                 </div>
             </div>

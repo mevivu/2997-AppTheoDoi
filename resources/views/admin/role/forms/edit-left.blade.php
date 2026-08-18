@@ -8,7 +8,7 @@
             <!-- tile -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Tên vai trò') }}:</label>
+                    <label class="control-label">{{ __('Tên vai trò') }}: <span class="text-danger">*</span></label>
                     <x-input name="title" :value="$role->title" :required="true"
                         placeholder="{{ __('Ví dụ: Kế toán') }}" />
                 </div>
@@ -27,7 +27,7 @@
 			<!-- guard_name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Vai trò của ( Guard Name )') }}:</label>
+                    <label class="control-label">{{ __('Vai trò của ( Guard Name )') }}: <span class="text-danger">*</span></label>
                     <x-select name="guard_name" :required="true">
 						<x-select-option :option="$role->guard_name" value="admin" title="Admin" />
 						<x-select-option :option="$role->guard_name" value="web" title="Thành viên trên Web" />

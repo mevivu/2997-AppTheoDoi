@@ -5,7 +5,7 @@
             <!-- Name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Tên')</label>
+                    <label class="control-label">@lang('Tên') <span class="text-danger">*</span></label>
                     <x-input type="text" name="name" :value="$instance->name" :required="true" :placeholder="__('name')" />
                 </div>
             </div>
@@ -13,7 +13,7 @@
             <!-- Code -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Mã gói')</label>
+                    <label class="control-label">@lang('Mã gói') <span class="text-danger">*</span></label>
                     <x-input type="text" name="code" :value="$instance->code" :required="true" :placeholder="__('Mã gói')" />
                     <div class="alert alert-warning mt-2 d-flex align-items-start gap-2" role="alert">
                         <i class="ti ti-alert-triangle fs-5 mt-1"></i>
@@ -28,14 +28,14 @@
             <!-- price -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('price')</label>
+                    <label class="control-label">@lang('price') <span class="text-danger">*</span></label>
                     <x-input-price name="price" :value="$instance->price" :required="true" :placeholder="__('price')" />
                 </div>
             </div>
 
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('type')</label>
+                    <label class="control-label">@lang('type') <span class="text-danger">*</span></label>
                     <x-select name="type" :required="true">
                         @foreach ($type as $key => $value)
                             <x-select-option :value="$key" :title="$value" :selected="$instance->type->value == $key" />
@@ -47,7 +47,7 @@
             <!-- days -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Số ngày')</label>
+                    <label class="control-label">@lang('Số ngày') <span class="text-danger">*</span></label>
                     <x-input name="days"
                              type="number"
                              :value="$instance->days"

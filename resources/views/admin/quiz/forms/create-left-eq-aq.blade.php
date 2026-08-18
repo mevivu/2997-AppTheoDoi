@@ -8,7 +8,7 @@
             <!-- title -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('title')</label>
+                    <label class="control-label">@lang('title') <span class="text-danger">*</span></label>
                     <x-input name="title" :value="old('title')" :required="true" :placeholder="__('title')" />
                 </div>
             </div>
@@ -17,7 +17,7 @@
                 <!-- age -->
                 <div class="col-12">
                     <div class="mb-3">
-                        <label class="control-label">@lang('age')</label>
+                        <label class="control-label">@lang('age') <span class="text-danger">*</span></label>
                         <x-input name="age" type="number" :value="old('age')" :required="true" :placeholder="__('age')" />
                     </div>
                 </div>

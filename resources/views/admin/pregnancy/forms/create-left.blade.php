@@ -5,13 +5,12 @@
         </div>
         <div class="row card-body">
 
-
             <!-- children -->
             <div class="col-md-12 col-sm-12">
                 <label class="control-label">
                     <span class="ti ti-user"></span>
-                    @lang('Trẻ em'):</label>
-                <x-select class="select2-bs5-ajax" name="child_id" id="child_id"
+                    @lang('Trẻ em'): <span class="text-danger">*</span></label>
+                <x-select class="select2-bs5-ajax" name="child_id" id="child_id" :required="true"
                           :data-url="route('admin.search.select.childrenBorn')">
                 </x-select>
             </div>
@@ -20,7 +19,6 @@
             <div class="col-md-6 col-12 mt-2">
                 <div class="mb-3">
                     <label class="control-label">
-
                         <span class="ti ti-calendar-search"></span>
                         @lang('Tuần'):</label>
                     <x-input type="number" name="week" :value="old('week')"/>
@@ -53,7 +51,6 @@
                     <x-input type="number" name="head_circumference" :value="old('head_circumference')"/>
                 </div>
             </div>
-
 
         </div>
 

@@ -8,7 +8,7 @@
             <!-- title -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Tên vai trò') }}:</label>
+                    <label class="control-label">{{ __('Tên vai trò') }}: <span class="text-danger">*</span></label>
                     <x-input name="title" :value="old('title')" :required="true"
                         placeholder="{{ __('Ví dụ: Kế toán') }}" />
                 </div>
@@ -17,7 +17,7 @@
 			<!-- name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Slug') }}:</label>
+                    <label class="control-label">{{ __('Slug') }}: <span class="text-danger">*</span></label>
                     <x-input name="name" :value="old('name')" :required="true"
                         placeholder="{{ __('Viết liền không khoảng cách, không dấu dựa theo tên vai trò. Ví dụ: ketoan') }}" />
                 </div>
@@ -27,7 +27,7 @@
 			<!-- guard_name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Vai trò của ( Guard Name )') }}:</label>
+                    <label class="control-label">{{ __('Vai trò của ( Guard Name )') }}: <span class="text-danger">*</span></label>
                     <x-select name="guard_name" :value="old('guard_name')" :required="true" >
 						<x-select-option value="admin" title="Admin" />
 						<x-select-option value="web" title="Thành viên trên Web" />

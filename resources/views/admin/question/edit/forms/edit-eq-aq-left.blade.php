@@ -21,7 +21,7 @@
 
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label class="control-label">{{ __('Nhóm câu hỏi') }}:</label>
+                        <label class="control-label">{{ __('Nhóm câu hỏi') }}: <span class="text-danger">*</span></label>
                         <x-select name="question[question_group_id]" :required="true">
                             @foreach ($questionGroups as $key => $value)
                                 <x-select-option :value="$key" :title="$value"
@@ -33,7 +33,7 @@
 
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Câu hỏi') }}:</label>
+                    <label class="control-label">{{ __('Câu hỏi') }}: <span class="text-danger">*</span></label>
                     <x-input name="question[question]" :required="true" :value="$response->question"/>
                 </div>
             </div>
@@ -64,7 +64,7 @@
 
             <div class="col-md-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Loại câu trả lời') }}:</label>
+                    <label class="control-label">{{ __('Loại câu trả lời') }}: <span class="text-danger">*</span></label>
                     <x-select name="answers[type]" :required="true" id="answer_type">
                         @foreach ($answer_types as $key => $value)
                             <x-select-option :value="$key" :title="$value" :selected="$type == $key"/>
@@ -75,7 +75,7 @@
 
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Nhóm tuổi') }}:</label>
+                    <label class="control-label">{{ __('Nhóm tuổi') }}: <span class="text-danger">*</span></label>
                     <x-select name="question[age_group]" :required="true">
                         @foreach ($age_group as $key => $value)
                             <x-select-option :value="$key" :title="$value"

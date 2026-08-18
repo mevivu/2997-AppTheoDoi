@@ -1,19 +1,30 @@
 @extends('admin.layouts.master')
+
 @push('libs-css')
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
+    @include('admin.common.css.style')
+    @include('admin.common.css.action')
 @endpush
+
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
+            <x-admin.page-header
+                class="mb-4"
+                icon="brain"
+                :title="__('Chỉnh sửa Câu hỏi Trắc nghiệm')"
+                :subtitle="__('Cập nhật nội dung câu hỏi và các đáp án')"
+                :back-route="route($route)"
+            />
+
             <x-form :action="route('admin.quiz.updateIQ')" type="put" :validate="true">
                 <x-input type="hidden" name="id" :value="$instance->id"/>
                 <x-input type="hidden" name="type" :value="$instance->type->value"/>
-                <div class="row justify-content-center">
+                <div class="row g-4 justify-content-center">
                     @include('admin.quiz.forms.edit-left')
                     @include('admin.quiz.forms.edit-right')
                 </div>
-                @include('admin.forms.actions-fixed')
             </x-form>
         </div>
     </div>
@@ -29,6 +40,4 @@
 
 @push('custom-js')
     @include('admin.quiz.scripts.edit-iq')
-
-
 @endpush

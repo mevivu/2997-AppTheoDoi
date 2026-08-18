@@ -14,7 +14,7 @@
             <!-- Title -->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Tiêu đề') }}:</label>
+                    <label class="control-label">{{ __('Tiêu đề') }}: <span class="text-danger">*</span></label>
                     <x-input name="title" :value="old('name')" :required="true"
                              placeholder="{{ __('Tiêu đề') }}"
                              value="{{ $response->title }}"/>
@@ -40,7 +40,7 @@
             <div class="col-12">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-box-padding"></span>
-                        {{ __('Nội dung') }}:</label>
+                        {{ __('Nội dung') }}: <span class="text-danger">*</span></label>
                     <textarea name="content" class="ckeditor visually-hidden">{{ $response->content }}</textarea>
                 </div>
             </div>
@@ -49,6 +49,7 @@
             <div>
                 <div class="col-12">
                     <div class="card-body p-2">
+                        <label class="form-label fw-bold mb-2">Hình ảnh:</label>
                         <x-input-gallery-ckfinder name="image[]"
                                                   type="multiple"
                                                   label="Hình ảnh"

@@ -1,7 +1,11 @@
 <div class="d-flex justify-content-between align-items-center">
     <label class="form-label">
         <span class="ti ti-map"></span>
-        {{ $label }}</label>
+        {{ $label }}
+        @if(isset($required) && $required)
+            <span class="text-danger">*</span>
+        @endif
+    </label>
     <div id="getCurrentLocation" class="text-danger d-flex align-items-center">
         <div class="spinner-border text-danger me-1" role="status" style="display: none;">
             <span class="visually-hidden">Loading...</span>

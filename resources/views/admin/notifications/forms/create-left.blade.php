@@ -5,7 +5,7 @@
             <div class="col-12">
                 <div class="mb-3">
                     <i class="ti ti-user-pin"></i>
-                    <label for="">{{ __('Đối tượng') }}</label>
+                    <label for="">{{ __('Đối tượng') }} <span class="text-danger">*</span></label>
                     <x-select class="notification-type" name="types" :required="true">
                         @foreach ($types as $key => $value)
                             <x-select-option :value="$key" :title="$value" />

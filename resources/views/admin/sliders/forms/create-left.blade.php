@@ -7,7 +7,7 @@
             <!-- name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Tên slider') }}:</label>
+                    <label class="control-label">{{ __('Tên slider') }}: <span class="text-danger">*</span></label>
                     <x-input name="name" :value="old('name')" :required="true"
                         placeholder="{{ __('Tên slider') }}" />
                 </div>
@@ -15,7 +15,7 @@
             <!-- name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Key') }}:</label>
+                    <label class="control-label">{{ __('Key') }}: <span class="text-danger">*</span></label>
                     <x-input name="plain_key" :value="old('plain_key')" :required="true"
                         placeholder="{{ __('Định danh slider') }}" />
                 </div>

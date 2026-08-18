@@ -1,19 +1,30 @@
+@php use App\Traits\RouteAdminSystem; @endphp
 @extends('admin.layouts.master')
+
 @push('libs-css')
-<link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
-<link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
+    @include('admin.common.css.style')
+    @include('admin.common.css.action')
 @endpush
+
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
-            <x-form id="notificationForm" :action="route('admin.children.store')" type="post" :validate="true">
-                <div class="row justify-content-center">
-                    <input type="hidden" name="device_token" value="">
+            <x-admin.page-header
+                class="mb-4"
+                icon="baby-carriage"
+                :title="__('Thêm Hồ sơ Trẻ mới')"
+                :subtitle="__('Nhập thông tin chi tiết để theo dõi quá trình phát triển của trẻ')"
+                :back-route="route(RouteAdminSystem::CHILDREN_INDEX)"
+            />
+
+            <x-form id="notificationForm" :action="route(RouteAdminSystem::CHILDREN_STORE)" type="post" :validate="true">
+                <input type="hidden" name="device_token" value="">
+                <div class="row g-4 justify-content-center">
                     @include('admin.children.forms.create-left')
                     @include('admin.children.forms.create-right')
-
                 </div>
-                @include('admin.forms.actions-fixed')
             </x-form>
         </div>
     </div>
@@ -30,5 +41,5 @@
 @endpush
 
 @push('custom-js')
-@include('admin.children.scripts.scripts')
+    @include('admin.children.scripts.scripts')
 @endpush

@@ -11,7 +11,7 @@
             <div class="mb-3">
                 <label class="control-label">
                     <span class="ti ti-user"></span>
-                    {{ __('Họ và tên') }}:</label>
+                    {{ __('Họ và tên') }}: <span class="text-danger">*</span></label>
                 <x-input name="fullname" :value="old('fullname')" :required="true" placeholder="{{ __('Họ và tên') }}" />
             </div>
         </div>
@@ -20,7 +20,7 @@
             <div class="mb-3">
                 <label class="control-label">
                     <span class="ti ti-mail"></span>
-                    {{ __('Email') }}:</label>
+                    {{ __('Email') }}: <span class="text-danger">*</span></label>
                 <x-input-email name="email" :value="old('email')" :required="true" />
             </div>
         </div>
@@ -29,7 +29,7 @@
             <div class="mb-3">
                 <label class="control-label">
                     <span class="ti ti-lock"></span>
-                    @lang('password'):</label>
+                    @lang('password'): <span class="text-danger">*</span></label>
                 <x-input-password name="password" :required="true" />
             </div>
         </div>
@@ -38,7 +38,7 @@
             <div class="mb-3">
                 <label class="control-label">
                     <span class="ti ti-lock"></span>
-                    @lang('passwordConfirm'):</label>
+                    @lang('passwordConfirm'): <span class="text-danger">*</span></label>
                 <x-input-password name="password_confirmation" :required="true"
                     data-parsley-equalto="input[name='password']"
                     data-parsley-equalto-message="{{ __('passwordMismatch') }}" />
@@ -68,7 +68,7 @@
             <div class="mb-3">
                 <label class="control-label">
                     <span class="ti ti-user-circle"></span>
-                    {{ __('Giới tính') }}:</label>
+                    {{ __('Giới tính') }}: <span class="text-danger">*</span></label>
                 <x-select name="gender" :required="true">
                     @foreach ($gender as $key => $value)
                         <x-select-option :value="$key" :title="__($value)" />

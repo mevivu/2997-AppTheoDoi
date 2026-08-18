@@ -8,7 +8,7 @@
             <!-- Name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Tên')</label>
+                    <label class="control-label">@lang('Tên') <span class="text-danger">*</span></label>
                     <x-input type="text"
                              name="name"
                              :value="$instance->name"
@@ -19,7 +19,7 @@
             <!-- position -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Thứ tự')</label>
+                    <label class="control-label">@lang('Thứ tự') <span class="text-danger">*</span></label>
                     <x-input type="number"
                              name="position"
                              :value="$instance->position"

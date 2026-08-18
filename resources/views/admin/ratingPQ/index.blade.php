@@ -8,10 +8,8 @@
         <div class="container-fluid">
             <div class="card custom-shadow">
                 <x-admin.page-header :title="__('Đánh giá thể chất (PQ)')"
-                                     :subtitle="__('Quản lý danh sách tiêu chí và bài đánh giá thể chất')"
-                                     icon="ti ti-run"
-                                     :addRoute="route('admin.ratingPQ.create')"
-                                     :addText="__('Thêm mới')" />
+                                     :subtitle="__('Quản lý danh sách kết quả đánh giá thể chất của trẻ')"
+                                     icon="ti ti-run" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.ratingPQ.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

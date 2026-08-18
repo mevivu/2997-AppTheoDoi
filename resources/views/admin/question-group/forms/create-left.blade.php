@@ -7,7 +7,7 @@
 
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Tên nhóm câu hỏi') }}:</label>
+                    <label class="control-label">{{ __('Tên nhóm câu hỏi') }}: <span class="text-danger">*</span></label>
                     <x-input type="text" name="name" :value="old('name')" :required="true" />
                 </div>
             </div>

@@ -7,28 +7,28 @@
             <!-- Email Address -->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Email') }}:</label>
+                    <label class="control-label">{{ __('Email') }}: <span class="text-danger">*</span></label>
                     <x-input-email name="email" :value="old('email')" :required="true" />
                 </div>
             </div>
             <!-- Fullname -->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Họ và tên') }}:</label>
+                    <label class="control-label">{{ __('Họ và tên') }}: <span class="text-danger">*</span></label>
                     <x-input name="fullname" :value="old('fullname')" :required="true" placeholder="{{ __('Họ và tên') }}" />
                 </div>
             </div>
             <!-- new password -->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Mật khẩu') }}:</label>
+                    <label class="control-label">{{ __('Mật khẩu') }}: <span class="text-danger">*</span></label>
                     <x-input-password name="password" :required="true" />
                 </div>
             </div>
             <!-- new password confirmation-->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Xác nhận mật khẩu') }}:</label>
+                    <label class="control-label">{{ __('Xác nhận mật khẩu') }}: <span class="text-danger">*</span></label>
                     <x-input-password name="password_confirmation" :required="true"
                         data-parsley-equalto="input[name='password']"
                         data-parsley-equalto-message="{{ __('Mật khẩu không khớp.') }}" />
@@ -36,7 +36,7 @@
             </div>
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Số điện thoại') }}:</label>
+                    <label class="control-label">{{ __('Số điện thoại') }}: <span class="text-danger">*</span></label>
                     <x-input-phone name="phone" :value="old('phone')" :required="true" />
                 </div>
             </div>
@@ -53,7 +53,7 @@
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="{{ $role->name }}" name="roles[]"
                             id="check{{ $role->id }}">
-                        <label class="form-check-label" for="flexCheckDefault">
+                        <label class="form-check-label" for="check{{ $role->id }}">
                             {{ $role->title }}
                         </label>
                     </div>

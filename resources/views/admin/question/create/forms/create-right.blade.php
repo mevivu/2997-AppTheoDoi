@@ -16,7 +16,7 @@
 
     <div class="card mb-3 custom-shadow">
         <div class="card-header">
-            {{ __('Trạng thái') }}
+            {{ __('Trạng thái') }} <span class="text-danger ms-1">*</span>
         </div>
         <div class="card-body p-2">
             <x-select name="question[status]" :required="true">

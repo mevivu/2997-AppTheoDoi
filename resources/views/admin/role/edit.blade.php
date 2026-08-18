@@ -1,27 +1,25 @@
+@php use App\Traits\RouteAdminSystem; @endphp
 @extends('admin.layouts.master')
+
 @push('libs-css')
+    @include('admin.common.css.style')
+    @include('admin.common.css.action')
 @endpush
+
 @section('content')
-    <div class="page-header d-print-none">
-        <div class="container-fluid">
-            <div class="row g-2 align-items-center">
-                <div class="col">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"
-                                    class="text-muted">{{ __('Dashboard') }}</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('Sửa vai trò') }}</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="page-body">
-        <div class="container-xl">
-            <x-form :action="route('admin.role.update')" type="put" :validate="true">
+        <div class="container-fluid">
+            <x-admin.page-header
+                class="mb-4"
+                icon="shield-lock"
+                :title="__('Chỉnh sửa Vai trò')"
+                :subtitle="$role->title ?? __('Cập nhật thông tin vai trò và danh sách quyền hạn')"
+                :back-route="route(RouteAdminSystem::ROLE_INDEX)"
+            />
+
+            <x-form :action="route(RouteAdminSystem::ROLE_UPDATE)" type="put" :validate="true">
                 <x-input type="hidden" name="id" :value="$role->id" />
-                <div class="row justify-content-center">
+                <div class="row g-4 justify-content-center">
                     @include('admin.role.forms.edit-left')
                     @include('admin.role.forms.edit-right')
                 </div>
@@ -31,12 +29,8 @@
 @endsection
 
 @push('libs-js')
-<!-- ckfinder js -->
 @endpush
 
-
 @push('custom-js')
-@include('admin.role.scripts.selectAllPermissions')
-
-
+    @include('admin.role.scripts.selectAllPermissions')
 @endpush

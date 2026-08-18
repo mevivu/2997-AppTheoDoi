@@ -21,7 +21,7 @@
 
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Nội dung câu hỏi') }}:</label>
+                    <label class="control-label">{{ __('Nội dung câu hỏi') }}: <span class="text-danger">*</span></label>
                     <x-input type="text" name="question[question]" :value="old('question.question')" :required="true" />
                 </div>
             </div>
@@ -42,7 +42,7 @@
 
             <div class="col-md-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Loại câu trả lời') }}:</label>
+                    <label class="control-label">{{ __('Loại câu trả lời') }}: <span class="text-danger">*</span></label>
                     <x-select name="answers[type]" :required="true" id="answer_type">
                         @foreach ($answer_types as $key => $value)
                             <x-select-option :value="$key" :title="$value" :selected="old('answer.type') == $key" />

@@ -1,27 +1,25 @@
+@php use App\Traits\RouteAdminSystem; @endphp
 @extends('admin.layouts.master')
+
 @push('libs-css')
+    @include('admin.common.css.style')
+    @include('admin.common.css.action')
 @endpush
+
 @section('content')
-    <div class="page-header d-print-none">
-        <div class="container-fluid">
-            <div class="row g-2 align-items-center">
-                <div class="col">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"
-                                    class="text-muted">{{ __('Dashboard') }}</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('Sửa Module') }}</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="page-body">
-        <div class="container-xl">
-            <x-form :action="route('admin.module.update')" type="put" :validate="true">
+        <div class="container-fluid">
+            <x-admin.page-header
+                class="mb-4"
+                icon="box"
+                :title="__('Chỉnh sửa Module')"
+                :subtitle="$module->name ?? __('Cập nhật thông tin chi tiết module')"
+                :back-route="route(RouteAdminSystem::MODULE_INDEX)"
+            />
+
+            <x-form :action="route(RouteAdminSystem::MODULE_UPDATE)" type="put" :validate="true">
                 <x-input type="hidden" name="id" :value="$module->id" />
-                <div class="row justify-content-center">
+                <div class="row g-4 justify-content-center">
                     @include('admin.module.forms.edit-left')
                     @include('admin.module.forms.edit-right')
                 </div>
@@ -31,11 +29,9 @@
 @endsection
 
 @push('libs-js')
-<!-- ckfinder js -->
-<script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
-<script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
+    <script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
 @endpush
 
 @push('custom-js')
-
 @endpush

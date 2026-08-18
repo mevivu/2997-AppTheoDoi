@@ -9,7 +9,7 @@
                 <div class="mb-3">
                     <label class="control-label">
                         <span class="ti ti-math"></span>
-                        {{ __('Môn học') }}:</label>
+                        {{ __('Môn học') }}: <span class="text-danger">*</span></label>
                     <x-input type="text" name="name" :value="old('name')" :required="true" />
                 </div>
             </div>

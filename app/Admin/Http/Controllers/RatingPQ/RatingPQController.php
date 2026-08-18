@@ -30,8 +30,6 @@ class RatingPQController extends Controller
     {
         return [
             'index' => 'admin.ratingPQ.index',
-            'create' => 'admin.ratingPQ.create',
-            'edit' => 'admin.ratingPQ.edit'
         ];
     }
 
@@ -39,8 +37,6 @@ class RatingPQController extends Controller
     {
         return [
             'index' => 'admin.ratingPQ.index',
-            'create' => 'admin.ratingPQ.create',
-            'edit' => 'admin.ratingPQ.edit',
             'delete' => 'admin.ratingPQ.delete'
         ];
     }

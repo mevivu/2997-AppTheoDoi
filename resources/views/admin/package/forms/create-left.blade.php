@@ -5,7 +5,7 @@
             <!-- Name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Tên')</label>
+                    <label class="control-label">@lang('Tên') <span class="text-danger">*</span></label>
                     <x-input name="name" :value="old('name')" :required="true" :placeholder="__('name')" />
                 </div>
             </div>
@@ -14,14 +14,14 @@
             <!-- price -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('price')</label>
+                    <label class="control-label">@lang('price') <span class="text-danger">*</span></label>
                     <x-input-price name="price" :value="old('price')" :required="true" :placeholder="__('price')" />
                 </div>
             </div>
 
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('type')</label>
+                    <label class="control-label">@lang('type') <span class="text-danger">*</span></label>
                     <x-select name="type" :required="true">
                         @foreach ($type as $key => $value)
                             <x-select-option :value="$key" :title="$value" />
@@ -33,7 +33,7 @@
             <!-- days -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Số ngày')</label>
+                    <label class="control-label">@lang('Số ngày') <span class="text-danger">*</span></label>
                     <x-input name="days"
                              type="number"
                              :value="old('days')"

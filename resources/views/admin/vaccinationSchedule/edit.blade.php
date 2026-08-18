@@ -1,18 +1,30 @@
+@php use App\Traits\RouteAdminSystem; @endphp
 @extends('admin.layouts.master')
+
 @push('libs-css')
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
+    @include('admin.common.css.style')
+    @include('admin.common.css.action')
 @endpush
+
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
+            <x-admin.page-header
+                class="mb-4"
+                icon="vaccine"
+                :title="__('Chỉnh sửa Lịch tiêm chủng')"
+                :subtitle="__('Cập nhật thông tin chi tiết mũi tiêm chủng')"
+                :back-route="$instance->type == \App\Enums\Permission\PermissionType::USER ? route('admin.vaccination.user') : route('admin.vaccination.admin')"
+            />
+
             <x-form :action="route('admin.vaccination.update')" type="put" :validate="true">
                 <x-input type="hidden" name="id" :value="$instance->id"/>
-                <div class="row justify-content-center">
+                <div class="row g-4 justify-content-center">
                     @include('admin.vaccinationSchedule.forms.edit-left')
                     @include('admin.vaccinationSchedule.forms.edit-right')
                 </div>
-                @include('admin.forms.actions-fixed')
             </x-form>
         </div>
     </div>
@@ -31,4 +43,3 @@
 @push('custom-js')
     @include('admin.vaccinationSchedule.scripts.scripts')
 @endpush
-

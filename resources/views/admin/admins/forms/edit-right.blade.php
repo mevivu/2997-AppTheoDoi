@@ -1,16 +1,10 @@
-<div class="col-12 col-md-3">
-    <div class="card custom-shadow">
-        <div class="card-header">
-            {{ __('Đăng') }}
-        </div>
-        <div class="card-body p-2">
-            <div class="w-100 d-flex align-items-center h-100 gap-2">
-                <x-button.submit :title="__('save')" name="submitter" value="save"
-                    class="flex-column gap-1 text-wrap p-2 flex-grow-1" />
-                <x-button type="submit" name="submitter" value="saveAndExit" class="p-2 text-wrap w-50">
-                    @lang('save&exit')
-                </x-button>
-            </div>
-        </div>
-    </div>
+@php use App\Traits\RouteAdminSystem; @endphp
+<div class="col-12 col-lg-4 col-xl-3">
+    {{-- Floating Form Actions --}}
+    <x-admin.form-actions
+        :submit-title="__('Lưu thay đổi')"
+        submit-icon="ti ti-device-floppy"
+        :back-route="route(RouteAdminSystem::ADMIN_INDEX)"
+        :back-title="__('Quay lại')"
+    />
 </div>

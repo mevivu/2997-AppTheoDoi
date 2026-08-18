@@ -7,7 +7,7 @@
             <!-- name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Tiêu đề') }}:</label>
+                    <label class="control-label">{{ __('Tiêu đề') }}: <span class="text-danger">*</span></label>
                     <x-input name="title" :value="$sliderItem->title" :required="true"
                         placeholder="{{ __('Tiêu đề') }}" />
                 </div>
@@ -15,7 +15,7 @@
             <!-- link -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Link') }}:</label>
+                    <label class="control-label">{{ __('Link') }}: <span class="text-danger">*</span></label>
                     <x-input name="link" :value="$sliderItem->link" :required="true"
                         placeholder="{{ __('link') }}" />
                 </div>
@@ -23,7 +23,7 @@
             <!-- position -->
             <div class="col-md-12 col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Vị trí') }}:</label>
+                    <label class="control-label">{{ __('Vị trí') }}: <span class="text-danger">*</span></label>
                     <x-input type="number" name="position" :value="$sliderItem->position" :required="true" />
                 </div>
             </div>

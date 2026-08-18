@@ -8,14 +8,14 @@
 <div class="col-12 col-md-9">
     <div class="card custom-shadow">
         <div class="card-header justify-content-center">
-            <h2 class="mb-0">{{ __('Thông tin Admin') }}</h2>
+            <h2 class="mb-0">{{ __('Thông tin Trẻ em') }}</h2>
         </div>
         <div class="row card-body">
 
             <!-- Fullname -->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Họ và tên') }}:</label>
+                    <label class="control-label">{{ __('Họ và tên') }}: <span class="text-danger">*</span></label>
                     <x-input name="fullname" :value="old('fullname')" :required="true" placeholder="{{ __('Họ và tên') }}"
                         value="{{ $children->fullname }}" />
                 </div>
@@ -55,7 +55,7 @@
             <!-- gender-->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Giới tính') }}:</label>
+                    <label class="control-label">{{ __('Giới tính') }}: <span class="text-danger">*</span></label>
                     <x-select name="gender" :required="true">
                         @foreach ($gender as $key => $value)
                             <x-select-option :option="$children->gender->value" :value="$key" :title="$value" />

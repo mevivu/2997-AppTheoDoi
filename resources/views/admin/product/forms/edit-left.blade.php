@@ -9,7 +9,7 @@
                 <div class="mb-3">
                     <label class="control-label">
                         <span class="ti ti-tag"></span>
-                        {{ __('Tên sản phẩm') }}:</label>
+                        {{ __('Tên sản phẩm') }}: <span class="text-danger">*</span></label>
                     <x-input name="name" :value="$product->name" :required="true" placeholder="{{ __('Tên sản phẩm') }}" />
                 </div>
             </div>
@@ -28,7 +28,7 @@
                 <div class="mb-3">
                     <label class="control-label">
                         <span class="ti ti-tag"></span>
-                        {{ __('Link') }}:</label>
+                        {{ __('Link') }}: <span class="text-danger">*</span></label>
                     <x-input name="link" :value="$product->link" :required="true" placeholder="{{ __('Link') }}" />
                 </div>
             </div>
@@ -38,7 +38,7 @@
                 <div class="mb-3">
                     <label class="control-label">
                         <span class="ti ti-package"></span>
-                        {{ __('Thương hiệu') }}:</label>
+                        {{ __('Thương hiệu') }}: <span class="text-danger">*</span></label>
                     <select class="form-control" id="brand_id" name="brand_id">
                         @foreach($brands as $brand)
                             <option value="{{ $brand->id }}" @selected($brand->id == $product->brand_id)>

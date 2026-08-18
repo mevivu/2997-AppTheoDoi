@@ -8,7 +8,7 @@
             <!-- name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Tên Module') }}:</label>
+                    <label class="control-label">{{ __('Tên Module') }}: <span class="text-danger">*</span></label>
                     <x-input name="name" :value="$module->name" :required="true"
                         placeholder="{{ __('Ví dụ: Sửa Module') }}" />
                 </div>

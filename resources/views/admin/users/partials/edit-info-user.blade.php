@@ -2,7 +2,6 @@
 <div class="card ">
     <div class="card-header justify-content-center">
         <h2 class="mb-0">{{ __('Thông tin khách hàng') }}</h2>
-
     </div>
     <div class="row card-body">
         <!-- Fullname -->
@@ -10,7 +9,7 @@
             <div class="mb-3">
                 <label class="control-label">
                     <span class="ti ti-user"></span>
-                    {{ __('Họ và tên') }}:</label>
+                    {{ __('Họ và tên') }}: <span class="text-danger">*</span></label>
                 <x-input name="fullname" :value="$user->fullname" :required="true" placeholder="{{ __('Họ và tên') }}" />
             </div>
         </div>
@@ -19,7 +18,7 @@
             <div class="mb-3">
                 <label class="control-label">
                     <span class="ti ti-mail"></span>
-                    {{ __('Email') }}:</label>
+                    {{ __('Email') }}: <span class="text-danger">*</span></label>
                 <x-input-email name="email" :value="AESHelper::decrypt($user->email)" :required="true" />
             </div>
         </div>
@@ -57,7 +56,7 @@
                 <label class="control-label">
                     <span class="ti ti-calendar"></span>
                     @lang('birthday'):</label>
-                <x-input type="date" name="birthday" :value="isset($user->birthday) ? format_date($user->birthday, 'Y-m-d') : null" required="true" />
+                <x-input type="date" name="birthday" :value="isset($user->birthday) ? format_date($user->birthday, 'Y-m-d') : null" />
             </div>
         </div>
 
@@ -67,9 +66,9 @@
             <div class="mb-3">
                 <label class="control-label">
                     <span class="ti ti-user-circle"></span>
-                    {{ __('Giới tính') }}:
+                    {{ __('Giới tính') }}: <span class="text-danger">*</span>
                 </label>
-                <select name="gender" class="form-control">
+                <select name="gender" class="form-control" required>
                     <option value="" {{ is_null($user->gender) ? 'selected' : '' }}>{{ __('Chọn Giới tính') }}</option>
                     @foreach ($gender as $key => $value)
                         <option value="{{ $key }}" {{ !is_null($user->gender) && $user->gender->value == $key ? 'selected' : '' }}>{{ __($value) }}</option>

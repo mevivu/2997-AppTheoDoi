@@ -6,7 +6,7 @@
         @foreach ($settings as $setting)
             <div class="col-12">
                 <div class="mb-3">
-                    <label for="{{ $setting->setting_key }}" class="form-label">{{ $setting->setting_name }}</label>
+                    <label for="{{ $setting->setting_key }}" class="form-label">{{ $setting->setting_name }} @if($setting->type_input != App\Enums\Setting\SettingTypeInput::Checkbox()) <span class="text-danger">*</span> @endif</label>
                     @if ($setting->type_input == App\Enums\Setting\SettingTypeInput::Checkbox())
                         <!-- Handling Checkbox Type -->
                         <div class="form-check form-switch">

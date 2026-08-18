@@ -1,11 +1,24 @@
+@php use App\Traits\RouteAdminSystem; @endphp
 @extends('admin.layouts.master')
+
 @push('libs-css')
+    @include('admin.common.css.style')
+    @include('admin.common.css.action')
 @endpush
+
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
-            <x-form :action="route('admin.support.store')" type="post" :validate="true">
-                <div class="row justify-content-center">
+            <x-admin.page-header
+                class="mb-4"
+                icon="help-circle"
+                :title="__('Thêm Bài Hỗ trợ / Trợ giúp mới')"
+                :subtitle="__('Nhập thông tin câu hỏi và nội dung giải đáp hỗ trợ khách hàng')"
+                :back-route="route('admin.support.help-center')"
+            />
+
+            <x-form :action="route(RouteAdminSystem::SUPPORT_STORE)" type="post" :validate="true">
+                <div class="row g-4 justify-content-center">
                     @include('admin.support.forms.create-left')
                     @include('admin.support.forms.create-right')
                 </div>
@@ -15,9 +28,9 @@
 @endsection
 
 @push('libs-js')
-    <!-- ckfinder js -->
     <script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
     <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
+    @include('ckfinder::setup')
 @endpush
 
 @push('custom-js')

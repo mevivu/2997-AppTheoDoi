@@ -1,26 +1,13 @@
-<div class="col-12 col-md-3">
-    <div class="card mb-3 custom-shadow">
-        <div class="card-header">
-            <span class="ti ti-upload me-1"></span>
-            {{ __('Hành động') }}
+@php use App\Traits\RouteAdminSystem; @endphp
+<div class="col-12 col-lg-4 col-xl-3">
+    <div class="card border-0 custom-shadow rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom px-4 py-3">
+            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.05rem;">
+                <i class="ti ti-category text-primary me-2 fs-4"></i>
+                {{ __('Danh mục sản phẩm') }}
+            </h5>
         </div>
-        <div class="card-body p-2">
-            <div class="w-100 d-flex align-items-center h-100 gap-2">
-                <x-button.submit :title="__('save')" name="submitter" value="save"
-                                         class="flex-column gap-1 text-wrap p-2 flex-grow-1" />
-                <x-link :href="route('admin.product.index')" class="w-50 btn btn-outline"
-                                :title="'Quay lại'" />
-            </div>
-        </div>
-    </div>
-
-            <!-- Product Catalog -->
-    <div class="card mb-3 custom-shadow">
-        <div class="card-header">
-            @lang('Danh mục sản phẩm')
-        </div>
-        <div class="card-body p-2">
-            <div class="form-check">
+        <div class="card-body p-4 wrap-list-checkbox">
             @foreach($productCatalogs as $catalog)
                 <x-input-checkbox
                     name="product_catalog_id[]"
@@ -29,36 +16,48 @@
                     :checked="in_array($catalog->id, old('product_catalog_id', $selectedProductCatalogIds)) ? [$catalog->id] : []"
                 />
             @endforeach
-            </div>
         </div>
     </div>
 
-            <!-- Status -->
-            <div class="card mb-3 custom-shadow">
-                <div class="card-header">
-                    @lang('Trạng thái')
-                </div>
-                <div class="card-body p-2">
-                    <x-select name="status" :required="true">
-                        @foreach(\App\Enums\Brand\BrandStatus::asSelectArray() as $key => $value)
-                            <x-select-option
-                                value="{{ $key }}"
-                                title="{{ $value }}"
-                                :selected="(string) old('status', $product->status->value ?? '') === (string) $key" />
-                        @endforeach
-                    </x-select>
-                </div>
-            </div>
-
-            <div class="card mb-3 custom-shadow">
-                <div class="card-header">
-                    <span class="ti ti-photo me-1"></span>
-                    {{ __('Ảnh đại diện') }}
-                </div>
-                <div class="card-body p-2">
-                    <x-input-image-ckfinder name="image" showImage="image" :value="$product->image" />
-                </div>
-            </div>
+    <div class="card border-0 custom-shadow rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom px-4 py-3">
+            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.05rem;">
+                <i class="ti ti-toggle-right text-primary me-2 fs-4"></i>
+                {{ __('Trạng thái') }} <span class="text-danger ms-1">*</span>
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <x-select name="status" :required="true">
+                @foreach(\App\Enums\Brand\BrandStatus::asSelectArray() as $key => $value)
+                    <x-select-option
+                        value="{{ $key }}"
+                        title="{{ $value }}"
+                        :selected="(string) old('status', $product->status->value ?? '') === (string) $key" />
+                @endforeach
+            </x-select>
         </div>
     </div>
+
+    <div class="card border-0 custom-shadow rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom px-4 py-3">
+            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.05rem;">
+                <i class="ti ti-photo-heart text-primary me-2 fs-4"></i>
+                {{ __('Ảnh đại diện') }}
+            </h5>
+        </div>
+        <div class="card-body p-4 text-center">
+            <div class="settings-logo-upload-wrapper text-center my-2 p-3">
+                <x-input-image-ckfinder name="image" showImage="image" :value="$product->image" />
+            </div>
+            <p class="text-muted fs-12 mb-0">{{ __('Hỗ trợ định dạng JPG, PNG, WEBP. Nhấp vào ảnh để thay đổi qua CKFinder.') }}</p>
+        </div>
+    </div>
+
+    {{-- Floating Form Actions --}}
+    <x-admin.form-actions
+        :submit-title="__('Lưu thay đổi')"
+        submit-icon="ti ti-device-floppy"
+        :back-route="route(RouteAdminSystem::PRODUCT_INDEX)"
+        :back-title="__('Quay lại')"
+    />
 </div>

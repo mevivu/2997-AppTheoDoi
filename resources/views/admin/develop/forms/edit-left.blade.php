@@ -5,7 +5,7 @@
             <!-- Tiêu đề hướng dẫn -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Tiêu đề hướng dẫn')</label>
+                    <label class="control-label">@lang('Tiêu đề hướng dẫn') <span class="text-danger">*</span></label>
                     <x-input type="text" name="title" :value="$instance->title" :required="true" :placeholder="__('Tiêu đề hướng dẫn')" />
                 </div>
             </div>
@@ -40,7 +40,7 @@
                                         </div>
 
                                         <div class="mb-3">
-                                            <label class="control-label d-block text-start">@lang('Tiêu đề tháng')</label>
+                                            <label class="control-label d-block text-start">@lang('Tiêu đề tháng') <span class="text-danger">*</span></label>
                                             <x-input name="steps[{{ $loop->index }}][title]" :required="true" :placeholder="__('Tiêu đề bước')" :value="$step->title" class="w-100"/>
                                         </div>
 

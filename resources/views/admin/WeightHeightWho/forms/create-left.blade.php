@@ -9,14 +9,14 @@
                 <div class="mb-3">
                     <label class="control-label">
                         <span class="ti ti-weight"></span>
-                        {{ __('Cân nặng') }}(Kg):</label>
+                        {{ __('Cân nặng') }}(Kg): <span class="text-danger">*</span></label>
                     <x-input type="number" min="1" name="weight" placeholder="Nhập Cân nặng(kg) của bạn" :required="true"/>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-building-lighthouse"></span>
-                        {{ __('Chiều Cao') }}(cm):</label>
+                        {{ __('Chiều Cao') }}(cm): <span class="text-danger">*</span></label>
                     <x-input type="number" min="1" name="height" placeholder="Nhập chiều cao(cm) của bạn" :required="true"/>
                 </div>
             </div>
@@ -24,14 +24,14 @@
                 <div class="mb-3">
                     <label class="control-label">
                         <span class="ti ti-old"></span>
-                        {{ __('Tuổi') }}:</label>
+                        {{ __('Tuổi') }}: <span class="text-danger">*</span></label>
                     <x-input type="number" min="1" name="age" placeholder="Nhập tuổi của bạn" :required="true"/>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-calendar-stats"></span>
-                        {{ __('Tháng') }}:</label>
+                        {{ __('Tháng') }}: <span class="text-danger">*</span></label>
                     <x-input type="number" min="1" max="12" placeholder="Nhập tháng của bạn" name="month" :required="true"/>
                 </div>
             </div>
@@ -39,7 +39,7 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-exchange-vertical"></span>
-                        {{ __('Tằn cân so với kỳ trước') }}(Kg):</label>
+                        {{ __('Tăng cân so với kỳ trước') }}(Kg):</label>
                     <x-input type="number"
                              step="0.01"
                              name="weight_change"
@@ -52,7 +52,7 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-exchange-vertical"></span>
-                        {{ __('Tằn chiều cao so với kỳ trước') }}(cm):</label>
+                        {{ __('Tăng chiều cao so với kỳ trước') }}(cm):</label>
                     <x-input type="number"
                              step="0.01"
                              name="height_change"
@@ -63,7 +63,7 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-gender-genderfluid"></span>
-                        {{ __('Giới tính') }}:</label>
+                        {{ __('Giới tính') }}: <span class="text-danger">*</span></label>
                     <x-select name="gender" :required="true">
                         @foreach ($gender as $key => $value)
                             <x-select-option :value="$key" :title="$value"/>

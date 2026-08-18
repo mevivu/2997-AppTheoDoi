@@ -9,7 +9,7 @@
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-article"></span>
-                        {{ __('Tiêu đề') }}:</label>
+                        {{ __('Tiêu đề') }}: <span class="text-danger">*</span></label>
                     <x-input name="title" :value="old('title')" :required="true" placeholder="{{ __('Tiêu đề') }}"/>
                 </div>
             </div>
@@ -18,15 +18,15 @@
             <div class="col-md-6 col-sm-12">
                 <label class="control-label">
                     <span class="ti ti-user"></span>
-                    @lang('Trẻ em'):</label>
-                <x-select class="select2-bs5-ajax" name="child_id" id="child_id"
+                    @lang('Trẻ em'): <span class="text-danger">*</span></label>
+                <x-select class="select2-bs5-ajax" name="child_id" id="child_id" :required="true"
                           :data-url="route('admin.search.select.children')">
                 </x-select>
             </div>
             <div class="col-12">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-box-padding"></span>
-                        {{ __('Nội dung') }}:</label>
+                        {{ __('Nội dung') }}: <span class="text-danger">*</span></label>
                     <textarea name="content" class="ckeditor visually-hidden">{{ old('content') }}</textarea>
                 </div>
             </div>
@@ -35,11 +35,10 @@
             <div>
                 <div class="col-12">
                     <div class="card-body p-2">
+                        <label class="form-label fw-bold mb-2">Hình ảnh: <span class="text-danger">*</span></label>
                         <x-input-gallery-ckfinder name="image[]"
                                                   type="multiple"
                                                   label="Hình ảnh"/>
-
-
                     </div>
                 </div>
             </div>

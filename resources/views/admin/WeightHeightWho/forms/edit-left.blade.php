@@ -8,7 +8,7 @@
                 <div class="mb-3">
                     <label class="control-label">
                         <span class="ti ti-weight"></span>
-                        {{ __('Cân nặng') }}(kg):</label>
+                        {{ __('Cân nặng') }}(kg): <span class="text-danger">*</span></label>
                     <x-input type="number"
                              min="1"
                              name="weight"
@@ -20,7 +20,7 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-building-lighthouse"></span>
-                        {{ __('Chiều cao') }}(cm):</label>
+                        {{ __('Chiều cao') }}(cm): <span class="text-danger">*</span></label>
                     <x-input type="number"
                              min="1"
                              name="height"
@@ -60,7 +60,7 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-exchange-vertical"></span>
-                        {{ __('Tằn cân so với kỳ trước') }}(Kg):</label>
+                        {{ __('Tăng cân so với kỳ trước') }}(Kg):</label>
                     <x-input type="number"
                              step="0.01"
                              name="weight_change"
@@ -74,7 +74,7 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-exchange-vertical"></span>
-                        {{ __('Tằn chiều cao so với kỳ trước') }}(cm):</label>
+                        {{ __('Tăng chiều cao so với kỳ trước') }}(cm):</label>
                     <x-input type="number"
                              step="0.01"
                              name="height_change"
@@ -87,7 +87,7 @@
             <div class="col-md-6">
                 <div class="mb-3">
                     <label class="control-label"><span class="ti ti-gender-genderfluid"></span>
-                        {{ __('Giới tính') }}:</label>
+                        {{ __('Giới tính') }}: <span class="text-danger">*</span></label>
                     <x-select name="gender" :required="true">
                         @foreach ($gender as $key => $value)
                             <x-select-option :value="$key" :title="$value" :option="$response->gender->value"/>

@@ -4,7 +4,7 @@
             <!-- Name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Tên')</label>
+                    <label class="control-label">@lang('Tên') <span class="text-danger">*</span></label>
                     <x-input name="name"
                              :value="old('name')"
                              :required="true"
@@ -31,7 +31,7 @@
                 <div class="col-6">
                     <div class="mb-3">
                         <i class="ti ti-clock"></i>
-                        <label class="control-label">@lang('performed_on')</label>
+                        <label class="control-label">@lang('performed_on') <span class="text-danger">*</span></label>
                         <x-input input
                                  type="datetime-local"
                                  name="performed_on"

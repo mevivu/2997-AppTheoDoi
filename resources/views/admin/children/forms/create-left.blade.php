@@ -8,7 +8,7 @@
             <!-- Fullname -->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Họ và tên') }}:</label>
+                    <label class="control-label">{{ __('Họ và tên') }}: <span class="text-danger">*</span></label>
                     <x-input name="fullname" :value="old('fullname')" :required="true" placeholder="{{ __('Họ và tên') }}" />
                 </div>
             </div>
@@ -31,7 +31,7 @@
             <!-- gender-->
             <div class="col-md-6 col-sm-12">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Giới tính') }}:</label>
+                    <label class="control-label">{{ __('Giới tính') }}: <span class="text-danger">*</span></label>
                     <x-select name="gender" :required="true">
                         @foreach ($gender as $key => $value)
                             <x-select-option :value="$key" :title="$value" />

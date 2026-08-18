@@ -7,7 +7,7 @@
 
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Tuổi') }}:</label>
+                    <label class="control-label">{{ __('Tuổi') }}: <span class="text-danger">*</span></label>
                     <x-input type="number" min="0" name="age" :value="$response->age" :required="true" />
                 </div>
             </div>
@@ -16,7 +16,7 @@
 
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Chiều cao dự kiến (cm)') }}:</label>
+                    <label class="control-label">{{ __('Chiều cao dự kiến (cm)') }}: <span class="text-danger">*</span></label>
                     <x-input type="number" min="1" step="0.01" name="height_expected" :value="$response->height_expected"
                         :required="true" />
                 </div>
@@ -24,7 +24,7 @@
 
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label class="control-label">{{ __('Cân nặng dự kiến (kg)') }}:</label>
+                    <label class="control-label">{{ __('Cân nặng dự kiến (kg)') }}: <span class="text-danger">*</span></label>
                     <x-input type="number" min="1" step="0.01" name="weight_expected" :value="$response->weight_expected"
                         :required="true" />
                 </div>

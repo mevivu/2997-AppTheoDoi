@@ -5,7 +5,7 @@
             <!-- Name -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('Tên')</label>
+                    <label class="control-label">@lang('Tên') <span class="text-danger">*</span></label>
                     <x-input type="text"
                              name="name"
                              :value="$instance->name"
@@ -15,12 +15,11 @@
             </div>
 
             <!-- hotline -->
-            <!-- hotline -->
             <div class="col-md-6 col-12">
                 <div class="mb-3">
                     <label class="control-label">
                         <span class="ti ti-phone"></span>
-                        {{ __('hotline') }}:</label>
+                        {{ __('hotline') }}: <span class="text-danger">*</span></label>
                     <x-input name="hotline"
                              type="tel"
                              :value="$instance->hotline"
@@ -32,10 +31,11 @@
             <!-- clinic_type-->
             <div class="col-md-6 col-12 mb-3">
                 <i class="ti ti-user-plus"></i>
-                <label class="control-label">@lang('clinic_type'):</label>
+                <label class="control-label">@lang('clinic_type'): <span class="text-danger">*</span></label>
                 <x-select class="select2-bs5-ajax"
                           name="clinic_type_id"
                           id="clinic_type_id"
+                          :required="true"
                           :data-url="route('admin.search.select.clinicType')">
                     <x-select-option :option="$instance->clinic_type_id"
                                      :value="$instance->clinic_type_id"
@@ -48,7 +48,7 @@
                 <div class="mb-3">
                     <label class="control-label">
                         <i class="ti ti-clock"></i>
-                        @lang('opening_time')</label>
+                        @lang('opening_time') <span class="text-danger">*</span></label>
                     <x-input type="time"
                              name="opening_time"
                              :value="$instance->opening_time"
@@ -62,7 +62,7 @@
                 <div class="mb-3">
                     <label class="control-label">
                         <i class="ti ti-clock"></i>
-                        @lang('closing_time')</label>
+                        @lang('closing_time') <span class="text-danger">*</span></label>
                     <x-input type="time"
                              name="closing_time"
                              :required="true"
@@ -74,7 +74,7 @@
             <!-- address -->
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('address')</label>
+                    <label class="control-label">@lang('address') <span class="text-danger">*</span></label>
                     <x-input name="address"
                              :value="$instance->address"
                              :required="true"
