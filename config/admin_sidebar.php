@@ -503,41 +503,12 @@ return [
         ]
     ],
     [
-        'title' => 'quiz',
-        'routeName' => 'admin.expected.index',
-        'icon' => '<i class="ti ti-award"></i>',
+        'title' => 'Bài kiểm tra IQ',
+        'routeName' => 'admin.quiz.iq',
+        'icon' => '<i class="ti ti-brain"></i>',
         'roles' => [],
         'permissions' => ['createQuiz', 'viewQuiz', 'updateQuiz', 'deleteQuiz'],
-        'sub' => [
-            [
-                'title' => 'Bài kiểm tra IQ',
-                'routeName' => 'admin.quiz.iq',
-                'icon' => '<i class="ti ti-brain"></i>',
-                'roles' => [],
-                'permissions' => ['viewQuiz'],
-            ],
-//            [
-//                'title' => 'Bài kiểm tra EQ',
-//                'routeName' => 'admin.quiz.eq',
-//                'icon' => '<i class="ti ti-heart"></i>',
-//                'roles' => [],
-//                'permissions' => ['viewQuiz'],
-//            ],
-//            [
-//                'title' => 'Bài kiểm tra AQ',
-//                'routeName' => 'admin.quiz.aq',
-//                'icon' => '<i class="ti ti-leaf"></i>',
-//                'roles' => [],
-//                'permissions' => ['viewQuiz'],
-//            ],
-//            [
-//                'title' => 'Bài kiểm tra PQ',
-//                'routeName' => 'admin.quiz.pq',
-//                'icon' => '<i class="ti ti-switch"></i>',
-//                'roles' => [],
-//                'permissions' => ['viewQuiz'],
-//            ]
-        ]
+        'sub' => [],
     ],
     [
         'title' => 'Khách hàng',

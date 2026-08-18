@@ -1,51 +1,33 @@
 @php use App\Enums\Question\QuestionType; @endphp
 <div class="col-12 col-lg-4 col-xl-3">
-    @if($instance->type == QuestionType::AQ || $instance->type == QuestionType::EQ)
-        <div class="card border-0 custom-shadow rounded-3 mb-4">
-            <div class="card-header bg-white border-bottom px-4 py-3">
-                <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.05rem;">
-                    <i class="ti ti-category text-primary me-2 fs-4"></i>
-                    {{ __('Nhóm độ tuổi') }} <span class="text-danger ms-1">*</span>
-                </h5>
+    <!-- Thống kê nhanh bài test -->
+    <div class="quiz-summary-stat-box" id="sidebar-summary-box">
+        <div class="d-flex align-items-center justify-content-between mb-1">
+            <div class="stat-label mb-0">
+                <i class="ti ti-award me-1"></i>{{ __('Tổng câu hỏi đã chọn') }}
             </div>
-            <div class="card-body p-4">
-                <x-select name="age_group" :required="true">
-                    <x-select-option value="" title="Chọn loại" :selected="$instance->age_group === null"/>
-                    @foreach ($age_group as $key => $value)
-                        <x-select-option :value="$key" :title="$value" :selected="!is_null($instance->age_group) && $instance->age_group->value == $key"/>
-                    @endforeach
-                </x-select>
-            </div>
+            <span id="sidebar-validation-badge" class="badge bg-success-lt fw-bold fs-11">
+                <i class="ti ti-check me-1"></i>{{ __('15/15 câu') }}
+            </span>
         </div>
-    @endif
-
-    @if($instance->type == QuestionType::EQ)
-        <div class="card border-0 custom-shadow rounded-3 mb-4">
-            <div class="card-header bg-white border-bottom px-4 py-3">
-                <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.05rem;">
-                    <i class="ti ti-arrows-shuffle text-primary me-2 fs-4"></i>
-                    {{ __('Hiển thị ngẫu nhiên') }}
-                </h5>
-            </div>
-            <div class="card-body p-4">
-                <x-select name="random">
-                    <x-select-option value="" title="Chọn ngẫu nhiên" :selected="is_null(old('random'))"/>
-                    @foreach ($random as $key => $value)
-                        <x-select-option :value="$key" :title="$value" :selected="old('random') == $key"/>
-                    @endforeach
-                </x-select>
-            </div>
+        <div class="d-flex align-items-baseline gap-2">
+            <span class="stat-count" id="sidebar-selected-count">{{ $selected_questions->count() }}</span>
+            <span class="fs-13 fw-semibold text-primary">/ 15 {{ __('câu') }}</span>
         </div>
-    @endif
+        <div class="stat-sub" id="sidebar-status-text">
+            <i class="ti ti-clock me-1"></i>{{ __('Thời gian làm bài: ~') }}<span id="estimated-time">{{ round($selected_questions->count() * 1.5) }}</span> {{ __('phút') }}
+        </div>
+    </div>
 
+    <!-- Trạng thái -->
     <div class="card border-0 custom-shadow rounded-3 mb-4">
         <div class="card-header bg-white border-bottom px-4 py-3">
-            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.05rem;">
+            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.02rem;">
                 <i class="ti ti-toggle-right text-primary me-2 fs-4"></i>
                 {{ __('Trạng thái') }} <span class="text-danger ms-1">*</span>
             </h5>
         </div>
-        <div class="card-body p-4">
+        <div class="card-body p-3">
             <x-select name="status" :required="true">
                 @foreach ($status as $key => $value)
                     <x-select-option :value="$key" :title="$value" :selected="$instance->status->value == $key"/>

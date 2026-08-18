@@ -76,11 +76,12 @@
                         </li>
                     @endif
 
-                    <li class="menu-item {{ count($item['sub']) > 0 ? 'has-submenu' : '' }}"
+                    <li class="menu-item {{ !empty($item['sub']) ? 'has-submenu' : '' }}"
                         data-title="{{ strtolower(__($displayTitle)) }}">
                         @php
+                            $hasSub = !empty($item['sub']);
                             $parentHref = '#';
-                            if (count($item['sub']) > 0) {
+                            if ($hasSub) {
                                 foreach ($item['sub'] as $subItem) {
                                     if ($subItem['routeName'] === $item['routeName']) {
                                         if (auth('admin')->user()->checkPermissions($subItem['permissions']) || in_array('mevivuDev', $subItem['permissions'])) {
@@ -110,14 +111,14 @@
 
                             <div class="menu-right-actions ms-auto d-flex align-items-center">
                                 <span class="arrow-slot text-end">
-                                    @if (count($item['sub']))
+                                    @if ($hasSub)
                                         <i class="ti ti-chevron-right submenu-arrow"></i>
                                     @endif
                                 </span>
                             </div>
                         </x-admin-item-link-sidebar-left>
 
-                        @if (count($item['sub']))
+                        @if ($hasSub)
                             <div class="submenu-container">
                                 <ul class="submenu-list">
                                     @foreach ($item['sub'] as $subItem)

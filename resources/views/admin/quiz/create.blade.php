@@ -1,16 +1,10 @@
 @extends('admin.layouts.master')
 
 @push('libs-css')
+    <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('/public/libs/select2/dist/css/select2-bootstrap-5-theme.min.css') }}">
     @include('admin.common.css.style')
     @include('admin.common.css.action')
-@endpush
-
-@push('custom-css')
-    <style>
-        .pac-container {
-            z-index: 99999999 !important;
-        }
-    </style>
 @endpush
 
 @section('content')
@@ -19,8 +13,8 @@
             <x-admin.page-header
                 class="mb-4"
                 icon="brain"
-                :title="__('Thêm Câu hỏi Trắc nghiệm IQ mới')"
-                :subtitle="__('Nhập thông tin câu hỏi và các phương án trả lời')"
+                :title="__('Thêm mới Bài kiểm tra IQ')"
+                :subtitle="__('Nhập thông tin cơ bản để tạo mới bài kiểm tra IQ cho trẻ')"
                 :back-route="route($route)"
             />
 
@@ -37,6 +31,8 @@
 @push('libs-js')
     <script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
     <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
+    <script src="{{ asset('/public/libs/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('/public/libs/select2/dist/js/i18n/vi.js') }}"></script>
 @endpush
 
 @push('custom-js')

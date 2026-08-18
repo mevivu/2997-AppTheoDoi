@@ -1,12 +1,105 @@
-
 <script>
     $(document).ready(function () {
         const questionsUrl = "{{ route('admin.question.type') }}";
         const questionsUrlIDS = "{{ route('admin.question.by-ids') }}";
         let selectedQuestionIds = @json($selected_questions->pluck('id'));
-        let debounceTimer;
+        let searchDebounceTimer;
+        let updateDebounceTimer;
         let firstLoad = true;
         let load = firstLoad;
+
+        function updateAllCounters() {
+            const count = selectedQuestionIds.length;
+            const type = $('#type-select').val();
+            const isIQ = (type === 'iq' || type === 'IQ' || type == '{{ \App\Enums\Question\QuestionType::IQ->value }}');
+
+            $('#header-checked-count').text(count);
+            $('#sidebar-selected-count').text(count);
+            $('#estimated-time').text(Math.round(count * 1.5));
+
+            if (isIQ) {
+                if (count < 15) {
+                    const diff = 15 - count;
+                    $('#checked-count')
+                        .attr('class', 'badge bg-warning text-dark fw-bold')
+                        .html(`<i class="ti ti-alert-triangle me-1"></i>${count}/15 câu (thiếu ${diff} câu)`);
+                    
+                    $('#iq-rule-alert')
+                        .attr('class', 'alert alert-warning d-flex align-items-center py-2 px-3 mb-3 border-0 bg-warning-lt rounded-3')
+                        .find('i').attr('class', 'ti ti-alert-triangle fs-3 me-2 text-warning flex-shrink-0');
+                    
+                    $('#iq-validation-notice')
+                        .attr('class', 'ms-2 fw-bold text-warning')
+                        .html(`— ⚠️ Hiện tại mới chọn <strong>${count}/15</strong> câu (cần thêm <strong>${diff}</strong> câu)`);
+
+                    $('#sidebar-validation-badge')
+                        .attr('class', 'badge bg-warning-lt text-warning fw-bold fs-11')
+                        .html(`<i class="ti ti-alert-triangle me-1"></i>Thiếu ${diff} câu`);
+
+                    $('#sidebar-status-text')
+                        .attr('class', 'stat-sub text-warning fw-semibold')
+                        .html(`<i class="ti ti-alert-circle me-1"></i>Cần chọn thêm ${diff} câu để đủ 15 câu`);
+                } else if (count === 15) {
+                    $('#checked-count')
+                        .attr('class', 'badge bg-success fw-bold')
+                        .html(`<i class="ti ti-check me-1"></i>Đã đủ 15/15 câu chuẩn`);
+
+                    $('#iq-rule-alert')
+                        .attr('class', 'alert alert-success d-flex align-items-center py-2 px-3 mb-3 border-0 bg-success-lt rounded-3')
+                        .find('i').attr('class', 'ti ti-circle-check fs-3 me-2 text-success flex-shrink-0');
+
+                    $('#iq-validation-notice')
+                        .attr('class', 'ms-2 fw-bold text-success')
+                        .html(`— ✅ Tuyệt vời! Đã chọn đủ đúng <strong>15/15</strong> câu hỏi.`);
+
+                    $('#sidebar-validation-badge')
+                        .attr('class', 'badge bg-success-lt text-success fw-bold fs-11')
+                        .html(`<i class="ti ti-check me-1"></i>Chuẩn 15/15`);
+
+                    $('#sidebar-status-text')
+                        .attr('class', 'stat-sub text-success fw-semibold')
+                        .html(`<i class="ti ti-circle-check me-1"></i>Đã đủ số lượng câu hỏi quy định`);
+                } else {
+                    const diff = count - 15;
+                    $('#checked-count')
+                        .attr('class', 'badge bg-danger fw-bold')
+                        .html(`<i class="ti ti-alert-circle me-1"></i>${count}/15 câu (thừa ${diff} câu)`);
+
+                    $('#iq-rule-alert')
+                        .attr('class', 'alert alert-danger d-flex align-items-center py-2 px-3 mb-3 border-0 bg-danger-lt rounded-3')
+                        .find('i').attr('class', 'ti ti-alert-circle fs-3 me-2 text-danger flex-shrink-0');
+
+                    $('#iq-validation-notice')
+                        .attr('class', 'ms-2 fw-bold text-danger')
+                        .html(`— ❌ Đang vượt quá <strong>${diff}</strong> câu (cần bỏ bớt để đủ 15 câu)`);
+
+                    $('#sidebar-validation-badge')
+                        .attr('class', 'badge bg-danger-lt text-danger fw-bold fs-11')
+                        .html(`<i class="ti ti-x me-1"></i>Thừa ${diff} câu`);
+
+                    $('#sidebar-status-text')
+                        .attr('class', 'stat-sub text-danger fw-semibold')
+                        .html(`<i class="ti ti-alert-circle me-1"></i>Cần bỏ bớt ${diff} câu để đủ 15 câu`);
+                }
+            } else {
+                $('#checked-count').attr('class', 'badge bg-success fw-bold').text(count + ' câu');
+            }
+
+            if (count === 0) {
+                $('#empty-selected-box').show();
+                $('#selected-questions').hide();
+            } else {
+                $('#empty-selected-box').hide();
+                $('#selected-questions').show();
+            }
+        }
+
+        function reindexSequenceNumbers() {
+            $('#selected-questions .quiz-selected-item').each(function (index) {
+                const seq = (index + 1).toString().padStart(2, '0');
+                $(this).find('.seq-num').text(seq);
+            });
+        }
 
         function init() {
             if (firstLoad) {
@@ -14,35 +107,86 @@
                 firstLoad = false;
             }
 
-            $('#type-select').on('change', function () {
-                fetchQuestions($(this).val());
+            // Real-time search with debounce
+            $('#search-keyword, #search-age').on('input', function () {
+                clearTimeout(searchDebounceTimer);
+                searchDebounceTimer = setTimeout(function () {
+                    const type = $('#type-select').val();
+                    const keyword = $('#search-keyword').val();
+                    const age = $('#search-age').val();
+                    fetchQuestions(type, keyword, age);
+                }, 350);
             });
 
+            // Clear filter button
             $('#clear-button').on('click', function () {
                 $('#search-keyword').val('');
+                $('#search-age').val('');
                 fetchQuestions($('#type-select').val());
             });
 
-            $('#search-button').on('click', function (e) {
-                e.preventDefault();
-                const type = $('#type-select').val();
-                const keyword = $('#search-keyword').val();
-                const age = $('#search-age').val();
-                fetchQuestions(type, keyword,age);
+            // Toggle selection from available cards
+            $('#questions-container').on('click', '.quiz-question-card', function (e) {
+                if ($(e.target).is('a')) return;
+                const id = Number($(this).data('id'));
+                const isCurrentlySelected = selectedQuestionIds.includes(id);
+                updateSelections(id, !isCurrentlySelected);
             });
 
-            $('#questions-container').on('change', 'input[name="question_ids[]"]', function () {
-                const id = Number($(this).val());
-                const isChecked = $(this).is(':checked');
-                updateSelections(id, isChecked);
-            });
-
-            $('#selected-questions').on('click', '.remove-question', function () {
+            // Remove question from selected list
+            $('#selected-questions').on('click', '.btn-remove', function (e) {
+                e.stopPropagation();
                 const idToRemove = Number($(this).data('id'));
                 selectedQuestionIds = selectedQuestionIds.filter(id => id !== idToRemove);
-                $(`#question-${idToRemove}`).prop('checked', false);
+                
+                // Update card state in left column if visible
+                $(`#card-${idToRemove}`).removeClass('is-selected').find('.btn-add-indicator').html('<i class="ti ti-plus"></i>');
+                
                 syncInput();
-                updateSelectedQuestions();
+                updateAllCounters();
+                
+                // Animate removal from DOM
+                $(this).closest('.quiz-selected-item').slideUp(150, function () {
+                    $(this).remove();
+                    reindexSequenceNumbers();
+                    updateAllCounters();
+                });
+            });
+
+            // Intercept form submission for instant client-side validation
+            $('form').on('submit', function (e) {
+                const type = $('#type-select').val();
+                const isIQ = (type === 'iq' || type === 'IQ' || type == '{{ \App\Enums\Question\QuestionType::IQ->value }}');
+                if (isIQ) {
+                    const count = selectedQuestionIds.length;
+                    if (count !== 15) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        const msg = count < 15
+                            ? `Bài kiểm tra IQ phải có đúng 15 câu hỏi. Hiện tại bạn mới chọn ${count}/15 câu (thiếu ${15 - count} câu).`
+                            : `Bài kiểm tra IQ phải có đúng 15 câu hỏi. Hiện tại bạn đang chọn ${count}/15 câu (thừa ${count - 15} câu).`;
+
+                        if (typeof msgWarning === 'function') {
+                            msgWarning(msg);
+                        } else if (typeof msgError === 'function') {
+                            msgError(msg);
+                        } else {
+                            alert(msg);
+                        }
+
+                        // Focus & smooth scroll to question rule banner
+                        $('#selected-panel-body').addClass('border border-warning shadow-sm');
+                        $('html, body').animate({
+                            scrollTop: $('#iq-rule-alert').offset().top - 100
+                        }, 300);
+                        setTimeout(() => {
+                            $('#selected-panel-body').removeClass('border border-warning shadow-sm');
+                        }, 2500);
+
+                        return false;
+                    }
+                }
             });
 
             loadInitial();
@@ -65,21 +209,27 @@
                 data: { type, keyword, age },
                 success: function (response) {
                     $('#loading').hide();
-                    if (response.data?.length) {
+                    if (response.data && response.data.length) {
+                        $('#available-count').text(response.data.length);
                         renderQuestions(response.data, container);
-                        const panelBody = $('#question-panel-body');
-                        if (panelBody.is(':hidden')) {
-                            panelBody.slideDown(200);
-                            $('#toggle-question-panel').text('Ẩn');
-                        }
                     } else {
-                        container.html('<div>Không có câu hỏi nào.</div>');
+                        $('#available-count').text(0);
+                        container.html(`
+                            <div class="quiz-empty-box py-4">
+                                <i class="ti ti-file-search"></i>
+                                <div class="empty-text">${__('Không tìm thấy câu hỏi phù hợp.')}</div>
+                            </div>
+                        `);
                     }
-                    $('#checked-count').text(selectedQuestionIds.length);
                 },
                 error: function () {
                     $('#loading').hide();
-                    container.html('<div>Lỗi khi tải câu hỏi.</div>');
+                    container.html(`
+                        <div class="quiz-empty-box text-danger py-4">
+                            <i class="ti ti-alert-circle"></i>
+                            <div class="empty-text">${__('Lỗi khi tải danh sách câu hỏi.')}</div>
+                        </div>
+                    `);
                 }
             });
         }
@@ -88,56 +238,46 @@
             container.empty();
 
             questions.forEach(q => {
-                const isChecked = selectedQuestionIds.includes(q.id);
-                const checkedAttr = isChecked ? 'checked' : '';
-                const selectedClass = isChecked ? 'bg-selected' : '';
+                const isSelected = selectedQuestionIds.includes(q.id);
+                const selectedClass = isSelected ? 'is-selected' : '';
+                const actionIcon = isSelected ? '<i class="ti ti-check text-success fs-5"></i>' : '<i class="ti ti-plus text-primary fs-5"></i>';
+                const ageText = q.age ? `${q.age} tuổi` : '';
+
                 const html = `
-            <div class="card mb-2 border shadow-sm ${selectedClass}" id="card-${q.id}" data-id="${q.id}">
-                <div class="card-body d-flex align-items-start py-2 px-3">
-                    <div class="form-check mb-0">
-                        <input class="form-check-input" type="checkbox" name="question_ids[]" value="${q.id}" id="question-${q.id}" ${checkedAttr}>
-                        <label class="form-check-label ms-2" for="question-${q.id}">
-                          <strong>${q.code}</strong> - ${q.question}
-                        </label>
+                    <div class="quiz-question-card ${selectedClass}" id="card-${q.id}" data-id="${q.id}">
+                        <div class="card-top-meta">
+                            <span class="code-badge">#${q.code}</span>
+                            <div class="d-flex align-items-center gap-1">
+                                ${ageText ? `<span class="age-badge">${ageText}</span>` : ''}
+                                <span class="btn-add-indicator ms-1">${actionIcon}</span>
+                            </div>
+                        </div>
+                        <p class="question-text">${q.question}</p>
                     </div>
-                </div>
-            </div>
-        `;
+                `;
                 container.append(html);
-            });
-
-            // ✅ Sự kiện đổi màu khi checkbox thay đổi
-            container.find('input[type="checkbox"]').off('change').on('change', function () {
-                const card = $(this).closest('.card');
-                card.toggleClass('bg-selected', this.checked);
-            });
-
-            // ✅ Click vào toàn bộ card (trừ checkbox & label) cũng check được
-            container.find('.card').off('click').on('click', function (e) {
-                if (!$(e.target).is('input[type="checkbox"], label')) {
-                    const checkbox = $(this).find('input[type="checkbox"]');
-                    checkbox.prop('checked', !checkbox.prop('checked')).trigger('change');
-                }
             });
 
             if (window.MathJax) MathJax.typesetPromise();
         }
 
-
-
         function updateSelections(id, isChecked) {
+            const card = $(`#card-${id}`);
             if (isChecked && !selectedQuestionIds.includes(id)) {
                 selectedQuestionIds.push(id);
+                card.addClass('is-selected').find('.btn-add-indicator').html('<i class="ti ti-check text-success fs-5"></i>');
             } else if (!isChecked) {
                 selectedQuestionIds = selectedQuestionIds.filter(qid => qid !== id);
+                card.removeClass('is-selected').find('.btn-add-indicator').html('<i class="ti ti-plus text-primary fs-5"></i>');
             }
             syncInput();
+            updateAllCounters();
             debounceUpdateSelectedQuestions();
         }
 
         function debounceUpdateSelectedQuestions() {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(updateSelectedQuestions, 1000);
+            clearTimeout(updateDebounceTimer);
+            updateDebounceTimer = setTimeout(updateSelectedQuestions, 400);
         }
 
         function syncInput() {
@@ -147,15 +287,17 @@
         function updateSelectedQuestions() {
             const container = $('#selected-questions');
             const loader = $('#loading-indicator');
-            container.empty();
-            loader.show();
-
+            
             if (!selectedQuestionIds.length) {
-                $('#checked-count').text(0);
+                container.empty();
+                updateAllCounters();
                 loader.hide();
                 return;
             }
+
+            loader.show();
             const quizId = $('input[name="id"]').val();
+
             $.ajax({
                 url: questionsUrlIDS,
                 type: 'POST',
@@ -167,73 +309,63 @@
                 },
                 success: function (response) {
                     load = false;
-                    const list = $('<ul class="list-group"></ul>');
-                    response.data.forEach(q => {
-                        const detailUrl = `${urlHome}/admin/question/edit/iq/${q.id}`;
-                        const item = $(`
-                        <li class="list-group-item d-flex justify-content-between align-items-start" data-id="${q.id}">
-                            <div class="question-text">
-                                <div class="fw-semibold text-dark mb-1">
-                                    <i class="ti ti-hash text-muted me-1"></i>
-                                    <a href="${detailUrl}" target="_blank" class="text-decoration-none link-primary">
-                                        ${q.code}
-                                    </a>
+                    container.empty();
+
+                    if (response.data && response.data.length) {
+                        response.data.forEach((q, index) => {
+                            const seq = (index + 1).toString().padStart(2, '0');
+                            const detailUrl = `${urlHome}/admin/question/edit/iq/${q.id}`;
+                            const ageInfo = q.age ? `<span class="badge bg-light text-muted">${q.age} tuổi</span>` : '';
+
+                            const item = $(`
+                                <div class="quiz-selected-item" data-id="${q.id}">
+                                    <div class="drag-handle" title="Kéo để đổi vị trí">
+                                        <i class="ti ti-grip-vertical"></i>
+                                    </div>
+                                    <div class="seq-num">${seq}</div>
+                                    <div class="item-content">
+                                        <div class="item-meta">
+                                            <a href="${detailUrl}" target="_blank" class="fw-bold text-primary text-decoration-none">
+                                                #${q.code}
+                                            </a>
+                                            ${ageInfo}
+                                        </div>
+                                        <div class="item-text" title="${q.question}">${q.question}</div>
+                                    </div>
+                                    <button type="button" class="btn-remove" data-id="${q.id}" title="Xóa khỏi bài test">
+                                        <i class="ti ti-trash"></i>
+                                    </button>
                                 </div>
-                                <div class="text-secondary small">${q.question}</div>
-                            </div>
-                          <button type="button"
-                                class="btn btn-outline-danger btn-icon btn-rounded remove-question"
-                                data-id="${q.id}" title="Xoá câu hỏi"
-                                style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
-                            <i class="ti ti-trash fs-5"></i>
-                        </button>
+                            `);
+                            container.append(item);
+                        });
 
-                        </li>
-                    `);
-                        list.append(item);
-                    });
+                        // Init Sortable.js
+                        new Sortable(container[0], {
+                            handle: '.drag-handle',
+                            animation: 180,
+                            ghostClass: 'bg-primary-lt',
+                            onEnd: function () {
+                                selectedQuestionIds = container.find('.quiz-selected-item').map(function () {
+                                    return Number($(this).data('id'));
+                                }).get();
+                                syncInput();
+                                reindexSequenceNumbers();
+                            }
+                        });
+                    }
 
-
-
-                    container.append(list);
                     loader.hide();
-                    $('#checked-count').text(selectedQuestionIds.length);
+                    updateAllCounters();
                     if (window.MathJax) MathJax.typesetPromise();
-
-                    // Sortable Init
-                    new Sortable(list[0], {
-                        animation: 150,
-                        onEnd: function () {
-                            selectedQuestionIds = list.find('.list-group-item').map(function () {
-                                return Number($(this).data('id'));
-                            }).get();
-                            syncInput();
-                        }
-                    });
                 },
                 error: function (err) {
-                    console.error("Lỗi khi tải câu hỏi:", err);
+                    console.error("Lỗi khi tải câu hỏi đã chọn:", err);
                     loader.hide();
                 }
             });
         }
 
         init();
-
-        $(document).ready(function () {
-            $('#toggle-question-panel').on('click', function () {
-                $('#question-panel-body').slideToggle(200);
-
-                const isHidden = $(this).text().trim() === 'Ẩn';
-                $(this).text(isHidden ? 'Hiển thị' : 'Ẩn');
-            });
-        });
-
-        $('#toggle-selected-panel').on('click', function () {
-            const panel = $('#selected-panel-body');
-            const isHidden = panel.is(':hidden');
-            panel.slideToggle(200);
-            $(this).text(isHidden ? 'Ẩn' : 'Hiển thị');
-        });
     });
 </script>

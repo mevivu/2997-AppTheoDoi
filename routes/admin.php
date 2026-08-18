@@ -395,28 +395,20 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::get('/', 'index')->name('index');
             });
         });
-    //Quiz
+    //Quiz (IQ)
     Route::controller(\App\Admin\Http\Controllers\Quiz\QuizController::class)
         ->prefix('/bai-kiem-tra')
         ->as('quiz.')
         ->group(function () {
             Route::group(['middleware' => ['permission:createQuiz', 'auth:admin']], function () {
                 Route::get('/add/iq', 'createIq')->name('createIq');
-                Route::get('/add/aq', 'createAq')->name('createAq');
-                Route::get('/add/eq', 'createEq')->name('createEq');
-                Route::get('/add/pq', 'createPq')->name('createPq');
-                Route::post('/add', 'store')->name('store');
                 Route::post('/add-iq', 'storeIQ')->name('storeIQ');
             });
             Route::group(['middleware' => ['permission:viewQuiz', 'auth:admin']], function () {
                 Route::get('/iq', 'iq')->name('iq');
-                Route::get('/eq', 'eq')->name('eq');
-                Route::get('/aq', 'aq')->name('aq');
-                Route::get('/pq', 'pq')->name('pq');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
             Route::group(['middleware' => ['permission:updateQuiz', 'auth:admin']], function () {
-                Route::put('/edit', 'update')->name('update');
                 Route::put('/edit-iq', 'updateIQ')->name('updateIQ');
                 Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
             });

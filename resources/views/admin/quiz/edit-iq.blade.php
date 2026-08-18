@@ -13,8 +13,8 @@
             <x-admin.page-header
                 class="mb-4"
                 icon="brain"
-                :title="__('Chỉnh sửa Câu hỏi Trắc nghiệm')"
-                :subtitle="__('Cập nhật nội dung câu hỏi và các đáp án')"
+                :title="__('Chỉnh sửa Bài kiểm tra: ') . $instance->title"
+                :subtitle="__('Cập nhật nội dung thông tin và quản lý danh sách câu hỏi trong bài kiểm tra')"
                 :back-route="route($route)"
             />
 
