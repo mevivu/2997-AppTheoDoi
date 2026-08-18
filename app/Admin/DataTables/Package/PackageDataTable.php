@@ -12,8 +12,6 @@ class PackageDataTable extends BaseDataTable
 {
     protected $nameTable = 'packageTable';
 
-    protected array $actions = ['reset', 'reload'];
-
     public function __construct(
         PackageRepositoryInterface $repository
     )
@@ -78,6 +76,7 @@ class PackageDataTable extends BaseDataTable
     protected function setCustomAddColumns(): void
     {
         $this->customAddColumns = [
+            'action' => $this->view['action'],
             'checkbox' => $this->view['checkbox'],
         ];
     }
