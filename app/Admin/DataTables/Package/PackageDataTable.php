@@ -5,6 +5,7 @@ namespace App\Admin\DataTables\Package;
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Package\PackageRepositoryInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Package\PackageStatus;
 use App\Enums\Package\PackageType;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -36,7 +37,7 @@ class PackageDataTable extends BaseDataTable
     {
         return $this->repository->getByQueryBuilder(
             [
-
+                'status' => PackageStatus::Active->value,
             ]
         );
     }
