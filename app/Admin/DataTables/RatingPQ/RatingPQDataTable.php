@@ -52,7 +52,13 @@ class RatingPQDataTable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getQueryBuilder()->with(['child.user'])->orderBy('id', 'desc');
+        $query = $this->repository->getQueryBuilder()->with(['child.user']);
+
+        if (request()->filled('child_id')) {
+            $query->where('child_id', request('child_id'));
+        }
+
+        return $query->orderBy('id', 'desc');
     }
 
     protected function setCustomColumns(): void

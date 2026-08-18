@@ -54,12 +54,18 @@ class RatingEQDatable extends BaseDataTable
      */
     public function query(): Builder
     {
-        return $this->repository->getByQueryBuilder(
+        $query = $this->repository->getByQueryBuilder(
             [
                 'type' => QuestionType::EQ
             ],
             ['child.user']
         );
+
+        if (request()->filled('child_id')) {
+            $query->where('child_id', request('child_id'));
+        }
+
+        return $query->orderBy('id', 'desc');
     }
 
     protected function setCustomColumns(): void
