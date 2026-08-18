@@ -1,661 +1,441 @@
 @extends('admin.layouts.master')
 
 @section('content')
-    <style>
-        :root {
-            /* Primary Colors */
-            --health-color: #10B981;
-            --health-bg: rgba(16, 185, 129, 0.1);
-            --education-color: #4573F9;
-            --education-bg: rgba(69, 115, 249, 0.1);
-            --system-color: #8B5CF6;
-            --system-bg: rgba(139, 92, 246, 0.1);
-            --user-color: #F59E0B;
-            --user-bg: rgba(245, 158, 11, 0.1);
-        }
-
-        .page-body {
-            background: #F8FAFC;
-            min-height: 100vh;
-            padding: 2rem 0;
-        }
-
-        .dashboard-title {
-            font-size: 1.75rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: #1a1f36;
-        }
-
-        .card-sm {
-            background: white;
-            border: none;
-            border-radius: 16px;
-            transition: all 0.3s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Health Category */
-        .card-sm[data-category="health"] {
-            border-left: 4px solid var(--health-color);
-        }
-        .card-sm[data-category="health"] .iconModuleMevivu {
-            background: var(--health-bg);
-            color: var(--health-color);
-        }
-        .card-sm[data-category="health"]:hover .iconModuleMevivu {
-            background: var(--health-color);
-            color: white;
-        }
-        .card-sm[data-category="health"]:hover {
-            box-shadow: 0 8px 16px rgba(16, 185, 129, 0.2);
-        }
-
-        /* Education Category */
-        .card-sm[data-category="education"] {
-            border-left: 4px solid var(--education-color);
-        }
-        .card-sm[data-category="education"] .iconModuleMevivu {
-            background: var(--education-bg);
-            color: var(--education-color);
-        }
-        .card-sm[data-category="education"]:hover .iconModuleMevivu {
-            background: var(--education-color);
-            color: white;
-        }
-        .card-sm[data-category="education"]:hover {
-            box-shadow: 0 8px 16px rgba(69, 115, 249, 0.2);
-        }
-
-        /* System Category */
-        .card-sm[data-category="system"] {
-            border-left: 4px solid var(--system-color);
-        }
-        .card-sm[data-category="system"] .iconModuleMevivu {
-            background: var(--system-bg);
-            color: var(--system-color);
-        }
-        .card-sm[data-category="system"]:hover .iconModuleMevivu {
-            background: var(--system-color);
-            color: white;
-        }
-        .card-sm[data-category="system"]:hover {
-            box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2);
-        }
-
-        /* User Category */
-        .card-sm[data-category="user"] {
-            border-left: 4px solid var(--user-color);
-        }
-        .card-sm[data-category="user"] .iconModuleMevivu {
-            background: var(--user-bg);
-            color: var(--user-color);
-        }
-        .card-sm[data-category="user"]:hover .iconModuleMevivu {
-            background: var(--user-color);
-            color: white;
-        }
-        .card-sm[data-category="user"]:hover {
-            box-shadow: 0 8px 16px rgba(245, 158, 11, 0.2);
-        }
-
-        .card-sm:hover {
-            transform: translateY(-4px);
-        }
-
-        .card-sm .card-body {
-            padding: 1.5rem;
-        }
-
-        .iconModuleMevivu {
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            font-size: 24px;
-            margin-right: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .card-sm:hover .iconModuleMevivu {
-            transform: scale(1.1);
-        }
-
-        .font-weight-medium {
-            font-size: 1.1rem;
-            color: #1E293B;
-            text-decoration: none;
-            font-weight: 600;
-            display: block;
-            margin-bottom: 0.5rem;
-            transition: color 0.3s ease;
-        }
-
-        .font-weight-medium:hover {
-            opacity: 0.9;
-        }
-
-        .text-secondary {
-            font-size: 0.875rem;
-            color: #64748B;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .custom-shadow {
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-
-        .card-header {
-            background: transparent !important;
-            border-bottom: 1px solid #E5E7EB;
-            padding: 1.5rem;
-        }
-
-        .row.g-3 {
-            margin: 0 -0.75rem;
-        }
-
-        .col-sm-6.col-lg-3.mb-3 {
-            padding: 0.75rem;
-        }
-    </style>
-
-    <div class="page-body">
+    <div class="page-body pt-3 pb-5">
         <div class="container-fluid">
-            <div class="row">
-                <div class="col">
-                    <div class="card custom-shadow">
-                        <div class="card-header bg-white border-0 pt-4 pb-0 d-flex align-items-center justify-content-between">
-                            <h2 class="dashboard-title mb-0">{{ __('Dashboard') }}</h2>
-                            <a href="{{ route('admin.firebase.report') }}" class="btn btn-primary d-flex align-items-center gap-2">
-                                <i class="ti ti-chart-bar" style="font-size: 1.25rem;"></i> Xem thống kê Firebase
-                            </a>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-3">
-
-                                {{--User--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="user">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-users"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.user.index')" title="Khách hàng"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountUser}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{--Children--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="user">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-baby-carriage"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.children.index')" title="Trẻ em"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{$rowCountChildren}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Transaction-->
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="system">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-calendar-dollar"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.transaction.index')" title="Giao dịch"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountTransaction }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <br>
-                                {{--GPA--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="education">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-calendar-dollar"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.gpa.index')" title="GPA"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountGPA }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--Guide--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="system">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-calendar-dollar"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.guide.index')" title="Hướng dẫn"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountGuide }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--Journal--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="user">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-external-link"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.journal.prescription')" title="Nhật ký"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountJournal }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--Pregnancy--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="health">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-pennant"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.pregnancy.index')" title="Thai kỳ"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountPregnancy }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Notification Card -->
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="user">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-bell"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.notification.index')" title="Thông báo"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountNotification }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--  slider--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="system">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-photo"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.slider.index')" title="Slider"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountSlider }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--  Package--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="education">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-package-import"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.package.index')" title="Gói"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountPackage }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--  Exercise--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="health">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-book"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.exercise.physical')" title="Bài tập"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountExercise }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--Post--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="user">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-article"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.post.index')" title="Bài viết"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountPost }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--BMI--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="health">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-info-circle"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.bmi.index')" title="BMI"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountBMI }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--Expected--}}
-{{--                                <div class="col-sm-6 col-lg-3 mb-3">--}}
-{{--                                    <div class="card card-sm">--}}
-{{--                                        <div class="card-body">--}}
-{{--                                            <div class="row align-items-center">--}}
-{{--                                                <div class="col-auto">--}}
-{{--                                                    <span class="iconModuleMevivu ti ti-award"></span>--}}
-{{--                                                </div>--}}
-{{--                                                <div class="col">--}}
-{{--                                                    <x-link :href="route('admin.expected.index')" title="Thông tin dự kiến"--}}
-{{--                                                            class="font-weight-medium">--}}
-{{--                                                    </x-link>--}}
-{{--                                                    <div class="text-secondary">--}}
-{{--                                                        Số lượng: {{ $rowCountExpected }}--}}
-{{--                                                    </div>--}}
-{{--                                                </div>--}}
-{{--                                            </div>--}}
-{{--                                        </div>--}}
-{{--                                    </div>--}}
-{{--                                </div>--}}
-                                {{--Product--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="education">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-brand-producthunt"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.product.index')" title="Sản phẩm"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountProduct }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--Question--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="user">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-help-hexagon"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.question.iq')" title="Câu hỏi"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountQuestion }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--Quiz--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="system">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-award"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.quiz.iq')" title="Bài kiểm tra"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{ $rowCountQuiz }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{--VaccinationSchedule--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="health">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-calendar-bolt"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.vaccination.admin')" title="Lịch tiêm chủng"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{$rowCountVaccinationSchedule}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {{--Education--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="education">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-star"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.quality.index')" title="Khung giáo dục"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{$rowCountEducation}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--Clinic--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="health">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-mushroom"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.clinic.index')" title="Phòng khám"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{$rowCountClinic}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--Role--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="user">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-user-check"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.role.index')" title="Vai trò"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{$rowCountRole}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--Support--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="user">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-lifebuoy"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.support.help-center')" title="Hỗ trợ khách hàng"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{$rowCountSupport}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {{--Admin Card--}}
-                                <div class="col-sm-6 col-lg-3 mb-3">
-                                    <div class="card card-sm" data-category="user">
-                                        <div class="card-body">
-                                            <div class="row align-items-center">
-                                                <div class="col-auto">
-                                                    <span class="iconModuleMevivu ti ti-user-shield"></span>
-                                                </div>
-                                                <div class="col">
-                                                    <x-link :href="route('admin.admin.index')" title="Quản trị viên"
-                                                            class="font-weight-medium">
-                                                    </x-link>
-                                                    <div class="text-secondary">
-                                                        Số lượng: {{$rowCountAdmin}}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
+            <!-- 🌟 HERO WELCOME BANNER -->
+            <div class="dashboard-hero-banner d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+                <div>
+                    <h2 class="dashboard-hero-title d-flex align-items-center gap-2">
+                        <span>👋 {{ __('Xin chào') }}, {{ auth('admin')->user()->fullname ?? auth('admin')->user()->username ?? 'Admin' }}!</span>
+                    </h2>
+                    <p class="dashboard-hero-desc">
+                        {{ __('Chào mừng bạn trở lại Trung tâm Quản trị Hệ thống Chăm Con. Dưới đây là tổng quan các chỉ số vận hành mới nhất.') }}
+                    </p>
+                </div>
+                <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                    @if (Route::has('admin.firebase.report'))
+                        <a href="{{ route('admin.firebase.report') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm fw-bold px-3 py-2">
+                            <i class="ti ti-chart-bar fs-4"></i>
+                            <span>{{ __('Báo cáo Firebase') }}</span>
+                        </a>
+                    @endif
                 </div>
             </div>
+
+            <!-- 🌟 TOP 4 CORE KPI CARDS (Vị trí #1: Khách hàng, Vị trí #2: Trẻ em) -->
+            <div class="row g-3 mb-4">
+                <!-- 🥇 TOP 1: KHÁCH HÀNG (PHỤ HUYNH) -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="kpi-card-featured kpi-users">
+                        <div>
+                            <div class="kpi-top">
+                                <div class="kpi-icon-wrap">
+                                    <i class="ti ti-users"></i>
+                                </div>
+                                <span class="kpi-rank-badge bg-warning-lt text-warning fw-bold">
+                                    <i class="ti ti-crown me-1"></i>{{ __('Vị trí #1') }}
+                                </span>
+                            </div>
+                            <div class="kpi-label">{{ __('Khách hàng (Phụ huynh)') }}</div>
+                            <div class="kpi-number">{{ number_format($rowCountUser) }}</div>
+                            <div class="kpi-subtitle">{{ __('Tài khoản phụ huynh đang hoạt động') }}</div>
+                        </div>
+                        <div>
+                            <a href="{{ route('admin.user.index') }}" class="kpi-action-link w-100 justify-content-between">
+                                <span>{{ __('Quản lý khách hàng') }}</span>
+                                <i class="ti ti-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🥈 TOP 2: HỒ SƠ TRẺ EM -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="kpi-card-featured kpi-children">
+                        <div>
+                            <div class="kpi-top">
+                                <div class="kpi-icon-wrap">
+                                    <i class="ti ti-baby-carriage"></i>
+                                </div>
+                                <span class="kpi-rank-badge bg-success-lt text-success fw-bold">
+                                    <i class="ti ti-star me-1"></i>{{ __('Vị trí #2') }}
+                                </span>
+                            </div>
+                            <div class="kpi-label">{{ __('Hồ sơ Trẻ em') }}</div>
+                            <div class="kpi-number">{{ number_format($rowCountChildren) }}</div>
+                            <div class="kpi-subtitle">{{ __('Hồ sơ trẻ đang được theo dõi phát triển') }}</div>
+                        </div>
+                        <div>
+                            <a href="{{ route('admin.children.index') }}" class="kpi-action-link w-100 justify-content-between">
+                                <span>{{ __('Danh sách trẻ em') }}</span>
+                                <i class="ti ti-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🥉 TOP 3: GIAO DỊCH DỊCH VỤ -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="kpi-card-featured kpi-transactions">
+                        <div>
+                            <div class="kpi-top">
+                                <div class="kpi-icon-wrap">
+                                    <i class="ti ti-receipt-2"></i>
+                                </div>
+                                <span class="kpi-rank-badge bg-purple-lt text-purple fw-bold">
+                                    {{ __('Tài chính') }}
+                                </span>
+                            </div>
+                            <div class="kpi-label">{{ __('Giao dịch hệ thống') }}</div>
+                            <div class="kpi-number">{{ number_format($rowCountTransaction) }}</div>
+                            <div class="kpi-subtitle">{{ __('Tổng đơn thanh toán dịch vụ / gói') }}</div>
+                        </div>
+                        <div>
+                            <a href="{{ route('admin.transaction.index') }}" class="kpi-action-link w-100 justify-content-between">
+                                <span>{{ __('Quản lý giao dịch') }}</span>
+                                <i class="ti ti-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOP 4: BÀI KIỂM TRA & CÂU HỎI -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="kpi-card-featured kpi-quiz">
+                        <div>
+                            <div class="kpi-top">
+                                <div class="kpi-icon-wrap">
+                                    <i class="ti ti-brain"></i>
+                                </div>
+                                <span class="kpi-rank-badge bg-primary-lt text-primary fw-bold">
+                                    {{ __('Đánh giá IQ') }}
+                                </span>
+                            </div>
+                            <div class="kpi-label">{{ __('Bài kiểm tra IQ') }}</div>
+                            <div class="kpi-number">{{ number_format($rowCountQuiz) }}</div>
+                            <div class="kpi-subtitle">{{ __('Đang có ') }} <strong>{{ number_format($rowCountQuestion) }}</strong> {{ __('câu hỏi trong kho') }}</div>
+                        </div>
+                        <div>
+                            <a href="{{ route('admin.quiz.iq') }}" class="kpi-action-link w-100 justify-content-between">
+                                <span>{{ __('Quản lý bài test IQ') }}</span>
+                                <i class="ti ti-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 PHÂN NHÓM CHUYÊN MÔN THEO LĨNH VỰC NGHIỆP VỤ
+                 ============================================ -->
+
+            <!-- 🏥 KHỐI 1: THEO DÕI SỨC KHỎE & THỂ CHẤT TRẺ EM -->
+            <div class="dashboard-category-header">
+                <span class="category-icon bg-emerald-lt text-success">
+                    <i class="ti ti-heart-rate-monitor"></i>
+                </span>
+                <h3 class="category-title">{{ __('Theo dõi Sức khỏe & Thể chất Trẻ em') }}</h3>
+                <span class="category-count">5 {{ __('module') }}</span>
+            </div>
+            <div class="row g-3 mb-4">
+                <!-- Lịch tiêm chủng -->
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a href="{{ route('admin.vaccination.admin') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-success-lt text-success">
+                            <i class="ti ti-vaccine"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Lịch tiêm chủng') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountVaccinationSchedule) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Đánh giá BMI -->
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a href="{{ route('admin.bmi.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-primary-lt text-primary">
+                            <i class="ti ti-scale"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Chỉ số BMI') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountBMI) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Theo dõi Thai kỳ -->
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a href="{{ route('admin.pregnancy.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-pink-lt text-pink">
+                            <i class="ti ti-flower"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Theo dõi Thai kỳ') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountPregnancy) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Nhật ký & Đơn thuốc -->
+                <div class="col-12 col-sm-6 col-lg-6 col-xl-6">
+                    <a href="{{ route('admin.journal.prescription') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-cyan-lt text-cyan">
+                            <i class="ti ti-notebook"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Nhật ký & Thuốc') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountJournal) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Phòng khám -->
+                <div class="col-12 col-sm-6 col-lg-6 col-xl-6">
+                    <a href="{{ route('admin.clinic.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-azure-lt text-azure">
+                            <i class="ti ti-building-hospital"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Phòng khám liên kết') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountClinic) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 🎓 KHỐI 2: GIÁO DỤC, TRÍ TUỆ & ĐÁNH GIÁ TRẺ -->
+            <div class="dashboard-category-header">
+                <span class="category-icon bg-primary-lt text-primary">
+                    <i class="ti ti-school"></i>
+                </span>
+                <h3 class="category-title">{{ __('Giáo dục, Trí tuệ & Đánh giá Trẻ') }}</h3>
+                <span class="category-count">5 {{ __('module') }}</span>
+            </div>
+            <div class="row g-3 mb-4">
+                <!-- Học lực GPA -->
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a href="{{ route('admin.gpa.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-indigo-lt text-indigo">
+                            <i class="ti ti-certificate"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Học lực GPA') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountGPA) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Bài kiểm tra IQ -->
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a href="{{ route('admin.quiz.iq') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-blue-lt text-blue">
+                            <i class="ti ti-brain"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Bài kiểm tra IQ') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountQuiz) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Ngân hàng câu hỏi -->
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a href="{{ route('admin.question.iq') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-teal-lt text-teal">
+                            <i class="ti ti-help-circle"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Ngân hàng câu hỏi') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountQuestion) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Bài tập phát triển -->
+                <div class="col-12 col-sm-6 col-lg-6 col-xl-6">
+                    <a href="{{ route('admin.exercise.physical') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-orange-lt text-orange">
+                            <i class="ti ti-run"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Bài tập phát triển') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountExercise) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Khung giáo dục chuẩn -->
+                <div class="col-12 col-sm-6 col-lg-6 col-xl-6">
+                    <a href="{{ route('admin.quality.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-yellow-lt text-yellow">
+                            <i class="ti ti-star"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Khung giáo dục chuẩn') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountEducation) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 📦 KHỐI 3: DỊCH VỤ, NỘI DUNG & TƯƠNG TÁC -->
+            <div class="dashboard-category-header">
+                <span class="category-icon bg-purple-lt text-purple">
+                    <i class="ti ti-box"></i>
+                </span>
+                <h3 class="category-title">{{ __('Dịch vụ, Nội dung & Tương tác') }}</h3>
+                <span class="category-count">6 {{ __('module') }}</span>
+            </div>
+            <div class="row g-3 mb-4">
+                <!-- Gói dịch vụ -->
+                <div class="col-12 col-sm-6 col-md-4">
+                    <a href="{{ route('admin.package.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-purple-lt text-purple">
+                            <i class="ti ti-package"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Gói dịch vụ') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountPackage) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Sản phẩm -->
+                <div class="col-12 col-sm-6 col-md-4">
+                    <a href="{{ route('admin.product.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-cyan-lt text-cyan">
+                            <i class="ti ti-shopping-bag"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Sản phẩm & Khóa học') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountProduct) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Bài viết tin tức -->
+                <div class="col-12 col-sm-6 col-md-4">
+                    <a href="{{ route('admin.post.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-blue-lt text-blue">
+                            <i class="ti ti-article"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Bài viết & Tin tức') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountPost) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Hướng dẫn phụ huynh -->
+                <div class="col-12 col-sm-6 col-md-4">
+                    <a href="{{ route('admin.guide.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-green-lt text-green">
+                            <i class="ti ti-compass"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Hướng dẫn phụ huynh') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountGuide) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Slider & Banner -->
+                <div class="col-12 col-sm-6 col-md-4">
+                    <a href="{{ route('admin.slider.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-azure-lt text-azure">
+                            <i class="ti ti-slideshow"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Slider & Banner') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountSlider) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Thông báo đẩy -->
+                <div class="col-12 col-sm-6 col-md-4">
+                    <a href="{{ route('admin.notification.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-amber-lt text-amber">
+                            <i class="ti ti-bell-ringing"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Thông báo đẩy') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountNotification) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- ⚙️ KHỐI 4: QUẢN TRỊ HỆ THỐNG & PHÂN QUYỀN -->
+            <div class="dashboard-category-header">
+                <span class="category-icon bg-secondary-lt text-secondary">
+                    <i class="ti ti-settings"></i>
+                </span>
+                <h3 class="category-title">{{ __('Quản trị Hệ thống, Nhân sự & Hỗ trợ') }}</h3>
+                <span class="category-count">3 {{ __('module') }}</span>
+            </div>
+            <div class="row g-3">
+                <!-- Quản trị viên -->
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a href="{{ route('admin.admin.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-dark-lt text-dark">
+                            <i class="ti ti-user-shield"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Quản trị viên hệ thống') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountAdmin) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Vai trò & Phân quyền -->
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a href="{{ route('admin.role.index') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-purple-lt text-purple">
+                            <i class="ti ti-shield-check"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Vai trò & Phân quyền') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountRole) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+
+                <!-- Trung tâm hỗ trợ khách hàng -->
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <a href="{{ route('admin.support.help-center') }}" class="dashboard-module-card">
+                        <div class="module-icon bg-danger-lt text-danger">
+                            <i class="ti ti-headset"></i>
+                        </div>
+                        <div class="module-info">
+                            <div class="module-name">{{ __('Trung tâm hỗ trợ khách hàng') }}</div>
+                            <div class="module-count">{{ __('Số lượng:') }} <strong>{{ number_format($rowCountSupport) }}</strong></div>
+                        </div>
+                        <i class="ti ti-chevron-right module-arrow"></i>
+                    </a>
+                </div>
+            </div>
+
         </div>
     </div>
 @endsection
-
-
