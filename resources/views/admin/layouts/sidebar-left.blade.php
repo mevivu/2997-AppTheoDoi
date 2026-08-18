@@ -58,7 +58,7 @@
                             $showHeading = 'QUẢN LÝ DỊCH VỤ & NỘI DUNG';
                         } elseif ($item['title'] === 'Khách hàng') {
                             $showHeading = 'NGƯỜI DÙNG & HỖ TRỢ';
-                        } elseif ($item['title'] === 'Vai trò' || $item['title'] === 'Admin') {
+                        } elseif ($item['title'] === 'Vai trò' || $item['title'] === 'Admin' || $item['title'] === 'Quản trị viên') {
                             $showHeading = 'HỆ THỐNG & PHÂN QUYỀN';
                         } elseif ($item['title'] === 'Cài đặt') {
                             $showHeading = 'CẤU HÌNH HỆ THỐNG';

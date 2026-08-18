@@ -61,7 +61,7 @@ return [
     ],
 
     [
-        'title' => 'Đánh giá học lực (GPA)',
+        'title' => 'Học lực (GPA)',
         'routeName' => null,
         'icon' => '<i class="ti ti-bell-school"></i>',
         'roles' => [],
@@ -77,7 +77,7 @@ return [
         ]
     ],
     [
-        'title' => 'Đánh giá thể chất (PQ)',
+        'title' => 'Thể chất (PQ)',
         'routeName' => null,
         'icon' => '<i class="ti ti-writing"></i>',
         'roles' => [],
@@ -100,7 +100,7 @@ return [
         ]
     ],
     [
-        'title' => 'Đánh giá (EQ,IQ,AQ)',
+        'title' => 'Chỉ số (EQ, IQ, AQ)',
         'routeName' => null,
         'icon' => '<i class="ti ti-writing"></i>',
         'roles' => [],

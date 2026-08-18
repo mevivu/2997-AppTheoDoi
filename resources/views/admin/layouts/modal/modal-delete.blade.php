@@ -1,15 +1,17 @@
 <div class="modal modal-blur fade" id="modalDelete" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
-        <div class="modal-content">
+        <div class="modal-content custom-confirm-modal">
             <div class="modal-body">
+                <div class="modal-icon-badge badge-danger">
+                    <i class="ti ti-trash"></i>
+                </div>
                 <div class="modal-title">{{ __('Bạn có chắc?') }}</div>
-                <div>{{ __('Nếu bạn tiếp tục, bạn sẽ xóa dữ liệu ra khỏi dữ liệu hệ thống.') }}</div>
+                <p class="modal-desc">{{ __('Nếu bạn tiếp tục, dữ liệu này sẽ bị xóa khỏi hệ thống.') }}</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-link link-secondary me-auto"
-                    data-bs-dismiss="modal">{{ __('Hủy') }}</button>
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">{{ __('Hủy') }}</button>
                 <x-form id="modalFormDelete" action="#" type="delete">
-                    <button type="submit" class="btn btn-danger">{{ __('Xóa') }}</button>
+                    <button type="submit" class="btn btn-danger">{{ __('Xác nhận xóa') }}</button>
                 </x-form>
             </div>
         </div>
