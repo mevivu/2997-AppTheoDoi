@@ -17,14 +17,19 @@ use Throwable;
 
 class SendPendingPushNotifications extends Command
 {
-    protected $signature = 'notification:send-push';
+    protected $signature = 'notification:send-push {--hours=72 : Số giờ tối đa được coi là còn hạn (mặc định: 72 giờ / 3 ngày)}';
 
-    protected $description = 'Gửi push notification cho các thông báo chưa được gửi (is_pushed = false)';
+    protected $description = 'Gửi push notification cho các thông báo chưa được gửi và còn hạn (is_pushed = false, created_at >= threshold)';
 
     /**
      * Số notification xử lý tối đa mỗi lần chạy.
      */
     private const BATCH_LIMIT = 1000;
+
+    /**
+     * Số giờ tối đa để thông báo được coi là còn hạn gửi push.
+     */
+    private const DEFAULT_MAX_AGE_HOURS = 72;
 
     /**
      * Số token gửi tối đa mỗi lần gọi sendMulticast().
@@ -36,16 +41,30 @@ class SendPendingPushNotifications extends Command
     public function handle(): int
     {
         $startTime = microtime(true);
+        $maxAgeHours = (int) ($this->option('hours') ?: self::DEFAULT_MAX_AGE_HOURS);
+        $validThreshold = now()->subHours($maxAgeHours);
 
-        // Lấy notifications chưa push cho USER (có user_id, không phải admin)
+        // 1. Tự động đánh dấu bỏ qua các thông báo đã quá hạn (không gửi push làm phiền user)
+        $expiredCount = Notification::where('is_pushed', false)
+            ->where('created_at', '<', $validThreshold)
+            ->update(['is_pushed' => true]);
+
+        if ($expiredCount > 0) {
+            $expiredMsg = "Đã bỏ qua {$expiredCount} thông báo quá hạn (> {$maxAgeHours} giờ).";
+            $this->warn($expiredMsg);
+            Log::channel('notification-push')->warning("[notification:send-push] {$expiredMsg}");
+        }
+
+        // 2. Lấy notifications CÒN HẠN chưa push cho USER (ưu tiên mới nhất)
         $pendingNotifications = Notification::where('is_pushed', false)
             ->whereNotNull('user_id')
-            ->orderBy('id')
+            ->where('created_at', '>=', $validThreshold)
+            ->orderByDesc('id')
             ->limit(self::BATCH_LIMIT)
             ->get();
 
         if ($pendingNotifications->isEmpty()) {
-            $this->info('Không có thông báo nào cần gửi push.');
+            $this->info('Không có thông báo còn hạn nào cần gửi push.');
             return self::SUCCESS;
         }
 
@@ -53,7 +72,7 @@ class SendPendingPushNotifications extends Command
         Notification::whereIn('id', $pendingNotifications->pluck('id'))
             ->update(['is_pushed' => true]);
 
-        $this->info("Tìm thấy {$pendingNotifications->count()} thông báo cần gửi push.");
+        $this->info("Tìm thấy {$pendingNotifications->count()} thông báo còn hạn cần gửi push.");
 
         // Lấy danh sách user_id duy nhất
         $userIds = $pendingNotifications->pluck('user_id')->unique()->values();
