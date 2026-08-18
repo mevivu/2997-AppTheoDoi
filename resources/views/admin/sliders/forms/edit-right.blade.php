@@ -1,4 +1,7 @@
-@php use App\Traits\RouteAdminSystem; @endphp
+@php
+    use App\Traits\RouteAdminSystem;
+    $currentStatus = $slider->status?->value ?? $slider->status;
+@endphp
 <div class="col-12 col-lg-4 col-xl-3">
     <div class="card border-0 custom-shadow rounded-3 mb-4">
         <div class="card-header bg-white border-bottom px-4 py-3">
@@ -10,7 +13,7 @@
         <div class="card-body p-4">
             <x-select name="status" :required="true">
                 @foreach ($status as $key => $value)
-                    <x-select-option :value="$key" :title="$value" :selected="$slider->status->value == $key" />
+                    <x-select-option :option="$currentStatus" :value="$key" :title="$value" />
                 @endforeach
             </x-select>
         </div>
