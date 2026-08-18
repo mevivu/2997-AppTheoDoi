@@ -1707,11 +1707,6 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false,
         ],
-        'status' => [
-            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
-            'orderable' => false,
-            'addClass' => 'text-center align-middle',
-        ],
     ],
     'brand' => [
         'checkbox' => [

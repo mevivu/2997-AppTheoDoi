@@ -29,7 +29,6 @@ class GPADataTable extends BaseDataTable
         $this->view = [
             'index' => 'admin.gpa.index',
             'children.fullname' => 'admin.gpa.datatable.name',
-            'status' => 'admin.gpa.datatable.status',
         ];
     }
 
@@ -52,14 +51,8 @@ class GPADataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [0, 1, 5];
-        $this->columnSearchSelect = [
-            [
-                'column' => 5,
-                'data' => ActiveStatus::asSelectArray(),
-            ],
-
-        ];
+        $this->columnAllSearch = [0, 1, 2, 3];
+        $this->columnSearchSelect = [];
     }
 
     protected function setCustomColumns(): void
@@ -70,9 +63,14 @@ class GPADataTable extends BaseDataTable
     protected function setCustomEditColumns(): void
     {
         $this->customEditColumns = [
-            'status' => $this->view['status'],
             'child_code' => function ($row) {
-                return $row->children ? 'TE' . $row->children->id : '';
+                if ($row->children) {
+                    return view('admin.children.datatable.editlink', [
+                        'id' => $row->children->id,
+                        'code' => 'TE' . $row->children->id
+                    ])->render();
+                }
+                return '';
             },
             'parent_code' => function ($row) {
                 if ($row->children && $row->children->user) {
@@ -131,7 +129,7 @@ class GPADataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['children.fullname', 'class.name', 'semester1_grade', 'semester2_grade', 'full_year_grade', 'status', 'child_code', 'parent_code'];
+        $this->customRawColumns = ['children.fullname', 'class.name', 'semester1_grade', 'semester2_grade', 'full_year_grade', 'child_code', 'parent_code'];
     }
 
     protected function setCustomFilterColumns(): void
