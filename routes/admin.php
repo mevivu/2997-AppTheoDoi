@@ -1,7 +1,13 @@
 <?php
 
+use App\Admin\Http\Controllers\Pwa\PwaController;
 use App\Admin\Http\Controllers\Transaction\TransactionController;
 use Illuminate\Support\Facades\Route;
+
+// PWA routes
+Route::get('/manifest.webmanifest', [PwaController::class, 'manifest'])->name('manifest');
+Route::get('/sw.js', [PwaController::class, 'serviceWorker'])->name('service-worker');
+Route::get('/offline', [PwaController::class, 'offline'])->name('offline');
 
 Route::get('/', [App\Admin\Http\Controllers\Home\HomeController::class, 'index']);
 
@@ -989,6 +995,23 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::put('/edit', 'update')->name('update');
         });
 
+
+    //auth
+    Route::controller(App\Admin\Http\Controllers\Auth\ProfileController::class)
+        ->prefix('/thong-tin-ca-nhan')
+        ->as('profile.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::put('/', 'update')->name('update');
+        });
+
+    Route::controller(App\Admin\Http\Controllers\Auth\ChangePasswordController::class)
+        ->prefix('/mat-khau')
+        ->as('password.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::put('/', 'update')->name('update');
+        });
 
     Route::post('/logout', [App\Admin\Http\Controllers\Auth\LogoutController::class, 'logout'])->name('logout');
 });

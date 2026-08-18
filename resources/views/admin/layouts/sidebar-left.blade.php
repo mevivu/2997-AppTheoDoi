@@ -1,39 +1,120 @@
-    <!-- Sidebar Collapsed with Hover -->
-<aside id="sidebar" class="sidebar-collapsed">
-    <!-- Logo -->
+@php use App\Traits\ImageSystem; use App\Traits\RouteAdminSystem; @endphp
+
+<!-- Sidebar Main Container -->
+<aside id="sidebar" class="sidebar">
+    <!-- Logo & Brand Header -->
     <div class="sidebar-logo">
-        <x-link :href="route('admin.dashboard')">
+        <x-link :href="route(RouteAdminSystem::ADMIN_DASHBOARD)"
+                class="d-flex align-items-center gap-2 text-decoration-none w-100">
             @php
                 $settingRepository = app()->make(App\Admin\Repositories\Setting\SettingRepository::class);
                 $settings = $settingRepository->getAll();
+                $siteLogo = $settings->where('setting_key', 'site_logo')->first()?->plain_value
+                    ?? ImageSystem::DEFAULT_IMAGE;
+                $siteName = $settings->where('setting_key', 'site_name')->first()?->plain_value
+                    ?? 'Chăm Con';
             @endphp
-            <img src="{{ asset($settings->where('setting_key', 'site_logo')->first()->plain_value) }}" alt="Logo"
-                 class="logo-img">
+
+            <!-- Sleek Avatar Container for Logo -->
+            <div class="logo-wrapper flex-shrink-0 d-flex align-items-center justify-content-center">
+                <img src="{{ asset($siteLogo) }}" alt="Logo" class="logo-img">
+            </div>
+
+            <!-- Brand Name & Subtitle -->
+            <div class="brand-details flex-grow-1 min-w-0" style="word-break: break-word; white-space: normal;">
+                <div class="brand-text" style="word-break: break-word; white-space: normal; line-height: 1.25; font-size: 13.5px; font-weight: 700; color: #0f172a;">{{ $siteName }}</div>
+                <div class="brand-subtitle" style="font-size: 11px; margin-top: 2px; color: #3b82f6; font-weight: 600;">{{ __('Quản lý hệ thống') }}</div>
+            </div>
         </x-link>
     </div>
 
-    <!-- Mobile Search - Chỉ hiện trên mobile -->
-    <div class="sidebar-mobile-search">
-        <div class="mobile-search-wrapper">
-            <i class="ti ti-search mobile-search-icon"></i>
-            <input type="text" id="sidebarMobileSearch" class="mobile-search-input" placeholder="Tìm kiếm menu...">
-            <button class="mobile-search-clear" id="mobileClearSearch" style="display: none;">
-                <i class="ti ti-x"></i>
+    <!-- Live Module Search Container (FE Live Search) -->
+    <div class="sidebar-search-container px-3 py-2">
+        <div class="position-relative">
+            <input type="text" id="sidebarSearchInput" class="form-control form-control-sm sidebar-search-input"
+                   placeholder="🔍 Tìm module..."
+                   aria-label="Tìm kiếm module">
+            <button type="button" id="btnClearSidebarSearch"
+                    class="btn btn-link text-muted position-absolute p-0 border-0 d-none"
+                    style="right: 8px; top: 4px; font-size: 14px; text-decoration: none; outline: none; opacity: 0.7;">
+                &times;
             </button>
         </div>
     </div>
 
-    <!-- Navigation Menu -->
+    <!-- Navigation Menu Container -->
     <nav class="sidebar-menu">
-        <ul class="menu-list">
+        <ul class="menu-list" id="accordionSidebar">
             @foreach ($menu as $index => $item)
                 @if (auth('admin')->user()->checkPermissions($item['permissions']) || in_array('mevivuDev', $item['permissions']))
-                    <li class="menu-item {{ count($item['sub']) > 0 ? 'has-submenu' : '' }}">
-                        <x-admin-item-link-sidebar-left class="menu-link" :href="count($item['sub']) > 0 ? '#' : $routeName($item['routeName'], $item['param'] ?? [])" :dropdown="false">
-                            <span class="menu-icon">
+                    @php
+                        // Determine section headings based on module landmarks
+                        $showHeading = null;
+                        if ($item['routeName'] === 'admin.dashboard') {
+                            $showHeading = 'TỔNG QUAN & BÁO CÁO';
+                        } elseif ($item['title'] === 'Quá trình phát triển') {
+                            $showHeading = 'THEO DÕI & ĐÁNH GIÁ TRẺ';
+                        } elseif ($item['title'] === 'Giao dịch') {
+                            $showHeading = 'QUẢN LÝ DỊCH VỤ & NỘI DUNG';
+                        } elseif ($item['title'] === 'Khách hàng') {
+                            $showHeading = 'NGƯỜI DÙNG & HỖ TRỢ';
+                        } elseif ($item['title'] === 'Vai trò' || $item['title'] === 'Admin') {
+                            $showHeading = 'HỆ THỐNG & PHÂN QUYỀN';
+                        } elseif ($item['title'] === 'Cài đặt') {
+                            $showHeading = 'CẤU HÌNH HỆ THỐNG';
+                        }
+
+                        $displayTitle = $item['title'];
+                    @endphp
+
+                    @if ($showHeading)
+                        <li class="sidebar-heading-item">
+                            <hr class="sidebar-divider my-2">
+                            <div class="sidebar-heading text-uppercase text-muted fw-bold px-3 py-1 fs-11">
+                                {{ __($showHeading) }}
+                            </div>
+                        </li>
+                    @endif
+
+                    <li class="menu-item {{ count($item['sub']) > 0 ? 'has-submenu' : '' }}"
+                        data-title="{{ strtolower(__($displayTitle)) }}">
+                        @php
+                            $parentHref = '#';
+                            if (count($item['sub']) > 0) {
+                                foreach ($item['sub'] as $subItem) {
+                                    if ($subItem['routeName'] === $item['routeName']) {
+                                        if (auth('admin')->user()->checkPermissions($subItem['permissions']) || in_array('mevivuDev', $subItem['permissions'])) {
+                                            $parentHref = $routeName($subItem['routeName'], $subItem['param'] ?? []);
+                                            break;
+                                        }
+                                    }
+                                }
+                                if ($parentHref === '#') {
+                                    foreach ($item['sub'] as $subItem) {
+                                        if (auth('admin')->user()->checkPermissions($subItem['permissions']) || in_array('mevivuDev', $subItem['permissions'])) {
+                                            $parentHref = $routeName($subItem['routeName'], $subItem['param'] ?? []);
+                                            break;
+                                        }
+                                    }
+                                }
+                            } else {
+                                $parentHref = $item['routeName'] ? $routeName($item['routeName'], $item['param'] ?? []) : '#';
+                            }
+                        @endphp
+
+                        <x-admin-item-link-sidebar-left class="menu-link" :href="$parentHref" :dropdown="false">
+                            <span class="menu-icon position-relative">
                                 {!! __($item['icon']) !!}
                             </span>
-                            <span class="menu-tooltip">{{ __($item['title']) }}</span>
+                            <span class="menu-title">{{ __($displayTitle) }}</span>
+
+                            <div class="menu-right-actions ms-auto d-flex align-items-center">
+                                <span class="arrow-slot text-end">
+                                    @if (count($item['sub']))
+                                        <i class="ti ti-chevron-right submenu-arrow"></i>
+                                    @endif
+                                </span>
+                            </div>
                         </x-admin-item-link-sidebar-left>
 
                         @if (count($item['sub']))
@@ -41,12 +122,15 @@
                                 <ul class="submenu-list">
                                     @foreach ($item['sub'] as $subItem)
                                         @if (auth('admin')->user()->checkPermissions($subItem['permissions']) || in_array('mevivuDev', $subItem['permissions']))
-                                            <li class="submenu-item">
-                                                <x-admin-item-link-sidebar-left class="submenu-link" :href="$routeName($subItem['routeName'], $subItem['param'] ?? [])">
+                                            <li class="submenu-item"
+                                                data-title="{{ strtolower(__($subItem['title'])) }}">
+                                                <x-admin-item-link-sidebar-left class="submenu-link"
+                                                                                :href="$routeName($subItem['routeName'], $subItem['param'] ?? [])">
                                                     <span class="submenu-icon">
                                                         {!! __($subItem['icon']) !!}
                                                     </span>
-                                                    <span class="submenu-text">{{ __($subItem['title']) }}</span>
+                                                    <span
+                                                        class="submenu-text me-auto">{{ __($subItem['title']) }}</span>
                                                 </x-admin-item-link-sidebar-left>
                                             </li>
                                         @endif
@@ -62,59 +146,150 @@
 </aside>
 
 <style>
-    /* Reset */
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+    /* ==========================================
+       SIDEBAR DEFAULT STYLES (EXPANDED 250px)
+       ========================================== */
+    /* Remove all link underlines in sidebar */
+    .sidebar a,
+    .sidebar a:hover,
+    .sidebar a:focus,
+    .sidebar a:active,
+    .menu-link,
+    .menu-link:hover,
+    .menu-link:focus,
+    .submenu-link,
+    .submenu-link:hover,
+    .submenu-link:focus,
+    .submenu-text,
+    .menu-title,
+    .brand-text,
+    .brand-subtitle {
+        text-decoration: none !important;
     }
 
-    /* Sidebar Container */
-    .sidebar-collapsed {
+    /* Sidebar Badge Counter & Arrow Styling */
+    .menu-right-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+
+    .arrow-slot {
+        width: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-shrink: 0;
+        margin-left: auto;
+    }
+
+    .sidebar {
         position: fixed;
         top: 0;
         left: 0;
-        width: 100px;
+        width: 250px;
         height: 100vh;
+        height: 100dvh;
+        max-height: 100dvh;
         background: #ffffff;
         z-index: 1001;
         display: flex;
         flex-direction: column;
-        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
-        border-right: 1px solid #f0f0f0;
+        box-shadow: 2px 0 12px rgba(0, 0, 0, 0.05);
+        border-right: 1px solid #eef2f6;
+        transition: all 0.3s ease;
+    }
+
+    .page-wrapper {
+        margin-left: 250px !important;
+        padding: 0 24px 24px 24px;
+        transition: margin-left 0.3s ease;
     }
 
     /* Logo Section */
     .sidebar-logo {
-        height: 64px;
+        min-height: 72px;
+        height: auto;
         display: flex;
         align-items: center;
-        justify-content: center;
-        background: #fafafa;
-        border-bottom: 1px solid #f0f0f0;
-        padding: 8px;
+        justify-content: space-between;
+        background: #ffffff;
+        border-bottom: 1px solid #eef2f6;
+        padding: 10px 16px;
         flex-shrink: 0;
     }
 
-    .sidebar-logo a {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .logo-wrapper {
+        width: 44px;
+        height: 44px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+        border: 1px solid #e2e8f0;
+        transition: all 0.25s ease;
     }
 
     .logo-img {
-        width: 40px;
-        height: 40px;
+        width: 32px;
+        height: 32px;
         object-fit: contain;
-        display: block;
     }
 
-    .sidebar-logo a {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 40px;
-        min-height: 40px;
+    .brand-text {
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: -0.2px;
+        color: #0f172a;
+        line-height: 1.2;
+        transition: opacity 0.2s ease;
+    }
+
+    .brand-subtitle {
+        font-size: 11px;
+        font-weight: 600;
+        color: #2563eb;
+        letter-spacing: 0.2px;
+        line-height: 1.1;
+        margin-top: 2px;
+    }
+
+    /* Search Container */
+    .sidebar-search-container {
+        border-bottom: 1px solid #f1f5f9;
+        background: #fafafa;
+        transition: all 0.3s ease;
+    }
+
+    .sidebar-search-input {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 20px;
+        padding: 5px 24px 5px 12px;
+        font-size: 12px;
+        height: 32px;
+        color: #334155;
+        transition: all 0.2s ease;
+    }
+
+    .sidebar-search-input:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        outline: none;
+    }
+
+    /* Section Headings */
+    .sidebar-heading {
+        font-size: 11px;
+        letter-spacing: 0.5px;
+        color: #94a3b8 !important;
+        white-space: nowrap;
+    }
+
+    .sidebar-divider {
+        border-top: 1px solid #f1f5f9;
+        opacity: 1;
+        margin: 6px 16px;
     }
 
     /* Menu Container */
@@ -122,13 +297,12 @@
         flex: 1;
         overflow-y: auto;
         overflow-x: visible;
-        padding: 4px 0;
-        /* Ẩn scrollbar nhưng vẫn scroll được */
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE and Edge */
+        padding: 8px 0 80px 0;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        -webkit-overflow-scrolling: touch;
     }
 
-    /* Ẩn scrollbar cho Chrome, Safari, Opera */
     .sidebar-menu::-webkit-scrollbar {
         display: none;
     }
@@ -139,53 +313,46 @@
         margin: 0;
     }
 
-    /* Menu Item */
+    /* Menu Item Styling (Expanded Mode: Row Layout) */
     .menu-item {
         position: relative;
-        margin: 2px 0;
+        margin: 2px 10px;
     }
 
     .menu-link {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
-        justify-content: center;
-        padding: 8px 4px;
-        width: 100px;
-        color: rgba(0, 0, 0, 0.65);
+        justify-content: flex-start;
+        padding: 10px 14px;
+        width: 100%;
+        color: #475569;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         position: relative;
         cursor: pointer;
-        gap: 4px;
+        gap: 12px;
+        border-radius: 8px;
     }
 
     .menu-link:hover {
-        color: #1890ff;
-        background: rgba(24, 144, 255, 0.08);
+        color: #2563eb;
+        background: #f0f6ff;
     }
 
     .menu-link.active {
-        color: #1890ff;
-        background: rgba(24, 144, 255, 0.12);
+        color: #2563eb;
+        background: #eff6ff;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
     }
 
-    .menu-link.active::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 3px;
-        background: #1890ff;
-    }
-
-    /* Menu Icon */
     .menu-icon {
         font-size: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
+        min-width: 24px;
     }
 
     .menu-icon i,
@@ -195,629 +362,424 @@
         height: 20px;
     }
 
-    /* Tooltip - Hiển thị dưới icon như label */
-    .menu-tooltip {
-        font-size: 11px;
-        line-height: 1.2;
-        text-align: center;
-        max-width: 92px;
-        word-wrap: break-word;
+    .menu-title {
+        font-size: 14px;
         color: inherit;
-        opacity: 1;
-        pointer-events: auto;
-        position: static;
-        transform: none;
-        background: transparent;
-        padding: 0;
-        box-shadow: none;
-        border: none;
-        transition: none;
-        z-index: auto;
+        white-space: nowrap;
+        flex: 1;
     }
 
-    .menu-tooltip::before {
-        display: none;
+    .submenu-arrow {
+        font-size: 14px;
+        transition: transform 0.2s ease;
+        color: #94a3b8;
+        flex-shrink: 0;
+        margin-left: 6px;
     }
 
-    /* Submenu Container */
+    /* Submenu Container (Expanded Mode: Inline Accordion) */
     .submenu-container {
-        position: fixed;
-        left: 100px;
-        min-width: 220px;
-        max-width: 280px;
-        background: #ffffff;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        border-radius: 4px;
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
-        transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-        z-index: 10000;
-        border: 1px solid #f0f0f0;
+        display: none;
+        padding-left: 12px;
+        margin-top: 4px;
     }
 
-    /* Tạo vùng hover "cầu nối" để không bị mất hover */
-    .submenu-container::before {
-        content: '';
-        position: absolute;
-        right: 100%;
-        top: 0;
-        bottom: 0;
-        width: 20px;
-        background: transparent;
+    .menu-item.has-submenu.open .submenu-container {
+        display: block;
     }
 
-    /* CRITICAL: Show submenu on hover */
-    .menu-item.has-submenu:hover .submenu-container {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-        transition-delay: 0s;
+    .menu-item.has-submenu.open .submenu-arrow {
+        transform: rotate(90deg);
     }
 
-    /* Keep submenu visible when hovering over it */
-    .submenu-container:hover {
-        opacity: 1;
-        visibility: visible;
-        pointer-events: auto;
-    }
-
-    /* Loại bỏ delay khi hover ra để tránh mất submenu quá nhanh */
-    .menu-item.has-submenu .submenu-container {
-        transition: opacity 0.15s ease, visibility 0.15s ease;
-    }
-
-    .menu-item.has-submenu:not(:hover) .submenu-container {
-        transition-delay: 0.1s;
-    }
-
-    /* Submenu List */
     .submenu-list {
         list-style: none;
-        padding: 8px 0;
+        padding: 0;
         margin: 0;
-        max-height: 400px;
-        overflow-y: auto;
-        /* Ẩn scrollbar nhưng vẫn scroll được */
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE and Edge */
-    }
-
-    /* Ẩn scrollbar cho Chrome, Safari, Opera */
-    .submenu-list::-webkit-scrollbar {
-        display: none;
-    }
-
-    .submenu-item {
-        margin: 0;
+        border-left: 2px solid #e2e8f0;
     }
 
     .submenu-link {
         display: flex;
         align-items: center;
-        padding: 10px 16px;
-        color: rgba(0, 0, 0, 0.65);
+        padding: 8px 14px;
+        color: #64748b;
         text-decoration: none;
         transition: all 0.2s ease;
-        font-size: 14px;
+        font-size: 13px;
+        border-radius: 6px;
+        margin: 2px 0 2px 8px;
     }
 
     .submenu-link:hover {
-        color: #1890ff;
-        background: #e6f7ff;
+        color: #2563eb;
+        background: #f1f5f9;
     }
 
     .submenu-link.active {
-        color: #1890ff;
-        background: #e6f7ff;
-        font-weight: 500;
+        color: #2563eb;
+        background: #e0edff;
+        font-weight: 600;
     }
 
     .submenu-icon {
-        margin-right: 10px;
-        font-size: 16px;
+        margin-right: 8px;
+        font-size: 15px;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 20px;
-    }
-
-    .submenu-icon i,
-    .submenu-icon svg {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
     }
 
     .submenu-text {
         flex: 1;
     }
 
-    /* Page Wrapper Adjustment */
-    .page-wrapper {
-        margin-left: 100px;
-        transition: margin-left 0.3s ease;
+    .sidebar-no-result {
+        padding: 16px 8px;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 12px;
     }
 
-    /* Mobile Search - Ẩn trên desktop */
-    .sidebar-mobile-search {
-        display: none;
+    /* ==========================================
+       SIDEBAR COLLAPSED / MINI STYLES (80px)
+       ========================================== */
+    body.sidebar-mini .sidebar {
+        width: 80px;
     }
 
-    /* Responsive */
+    body.sidebar-mini .page-wrapper {
+        margin-left: 80px !important;
+    }
+
+    body.sidebar-mini .brand-details,
+    body.sidebar-mini .sidebar-toggle-btn,
+    body.sidebar-mini .menu-title,
+    body.sidebar-mini .submenu-arrow,
+    body.sidebar-mini .menu-right-actions,
+    body.sidebar-mini .sidebar-heading {
+        display: none !important;
+    }
+
+    body.sidebar-mini .sidebar-logo {
+        padding: 10px;
+        justify-content: center;
+    }
+
+    body.sidebar-mini .logo-wrapper {
+        margin: 0 auto;
+    }
+
+    body.sidebar-mini .sidebar-search-container {
+        padding: 8px 6px;
+    }
+
+    body.sidebar-mini .sidebar-search-input {
+        padding: 5px 8px;
+        text-align: center;
+    }
+
+    body.sidebar-mini .sidebar-search-input::placeholder {
+        color: transparent;
+    }
+
+    body.sidebar-mini .menu-item {
+        margin: 4px 6px;
+    }
+
+    body.sidebar-mini .menu-link {
+        justify-content: center;
+        padding: 12px 6px;
+        gap: 0;
+    }
+
+    /* Floating Hover Card for Submenu in Mini Mode */
+    body.sidebar-mini .menu-item.has-submenu .submenu-container {
+        position: fixed;
+        left: 80px;
+        min-width: 245px;
+        background: #ffffff;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        padding: 8px;
+        display: block !important;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+        transition-delay: 0.15s; /* Delay hiding so cursor has time to bridge over */
+        z-index: 10000;
+        margin-top: 0;
+    }
+
+    /* Invisible hover bridge connecting sidebar menu-item to floating submenu */
+    body.sidebar-mini .menu-item.has-submenu .submenu-container::before {
+        content: '';
+        position: absolute;
+        right: 100%;
+        top: -15px;
+        bottom: -15px;
+        width: 30px;
+        background: transparent;
+    }
+
+    body.sidebar-mini .menu-item.has-submenu:hover .submenu-container,
+    body.sidebar-mini .menu-item.has-submenu .submenu-container:hover {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+        transition-delay: 0s; /* Instant show on hover */
+    }
+
+    body.sidebar-mini .submenu-list {
+        border-left: none;
+    }
+
+    /* ==========================================
+       RESPONSIVE MOBILE/TABLET (< 992px)
+       ========================================== */
     @media (max-width: 991.98px) {
-        .sidebar-collapsed {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            width: 280px;
+        .sidebar {
+            left: -290px !important;
+            width: 280px !important;
+            height: 100vh !important;
+            height: 100dvh !important;
+            max-height: 100dvh !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            z-index: 100001 !important;
         }
 
-        .sidebar-collapsed.mobile-open {
-            transform: translateX(0);
-        }
-
-        /* Logo lớn hơn trên mobile */
-        .sidebar-logo {
-            height: 70px;
-        }
-
-        .logo-img {
-            width: 48px;
-            height: 48px;
-        }
-
-        /* Mobile Search - Hiện trên mobile */
-        .sidebar-mobile-search {
-            display: block;
-            padding: 12px 16px;
-            border-bottom: 1px solid #f0f0f0;
-            background: #fafafa;
-        }
-
-        .mobile-search-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            background: #fff;
-            border: 1px solid #e8e8e8;
-            border-radius: 6px;
-        }
-
-        .mobile-search-icon {
-            position: absolute;
-            left: 10px;
-            color: rgba(0, 0, 0, 0.45);
-            font-size: 16px;
-            pointer-events: none;
-        }
-
-        .mobile-search-input {
-            width: 100%;
-            padding: 8px 36px 8px 36px;
-            border: none;
-            background: transparent;
-            outline: none;
-            font-size: 14px;
-            color: rgba(0, 0, 0, 0.85);
-        }
-
-        .mobile-search-input::placeholder {
-            color: rgba(0, 0, 0, 0.45);
-        }
-
-        .mobile-search-clear {
-            position: absolute;
-            right: 6px;
-            background: transparent;
-            border: none;
-            color: rgba(0, 0, 0, 0.45);
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .mobile-search-clear:active {
-            background: rgba(0, 0, 0, 0.06);
-        }
-
-        /* Menu items mở rộng trên mobile */
-        .menu-item {
-            margin: 0;
-        }
-
-        .menu-link {
-            flex-direction: row;
-            justify-content: flex-start;
-            width: 100%;
-            padding: 12px 16px;
-            gap: 12px;
-        }
-
-        .menu-icon {
-            font-size: 22px;
-        }
-
-        .menu-icon i,
-        .menu-icon svg {
-            font-size: 22px;
-            width: 22px;
-            height: 22px;
-        }
-
-        .menu-tooltip {
-            display: block !important;
-            font-size: 14px;
-            text-align: left;
-            max-width: none;
-            position: static;
-            opacity: 1;
-        }
-
-        /* Submenu trên mobile */
-        .submenu-container {
-            position: static !important;
-            left: auto !important;
-            top: auto !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            pointer-events: auto !important;
-            box-shadow: none;
-            border: none;
-            border-radius: 0;
-            background: #f5f5f5;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .submenu-container::before {
-            display: none;
-        }
-
-        .menu-item.has-submenu.mobile-submenu-open .submenu-container {
-            max-height: 500px;
-        }
-
-        .submenu-list {
-            padding: 0;
-        }
-
-        .submenu-item {
-            border-bottom: 1px solid #e8e8e8;
-        }
-
-        .submenu-item:last-child {
-            border-bottom: none;
-        }
-
-        .submenu-link {
-            padding: 12px 16px 12px 52px;
-            background: transparent;
-        }
-
-        .submenu-link:hover {
-            background: #e0e0e0;
-        }
-
-        .submenu-link.active {
-            background: #d6f0ff;
-        }
-
-        /* Thêm icon mũi tên cho menu có submenu */
-        .menu-item.has-submenu .menu-link::after {
-            content: '';
-            margin-left: auto;
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 6px solid currentColor;
-            transition: transform 0.3s ease;
-        }
-
-        .menu-item.has-submenu.mobile-submenu-open .menu-link::after {
-            transform: rotate(180deg);
-        }
-
-        /* Mobile toggle button */
-        .mobile-toggle {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1100;
-            background: #ffffff;
-            color: rgba(0, 0, 0, 0.85);
-            border: 1px solid #f0f0f0;
-            border-radius: 4px;
-            padding: 10px 12px;
-            font-size: 20px;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .mobile-toggle i,
-        .mobile-toggle svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        /* Overlay khi sidebar mở */
-        .sidebar-overlay {
+        .sidebar-backdrop {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(2px);
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
+            z-index: 100000 !important;
         }
 
-        .sidebar-overlay.active {
+        body.mobile-sidebar-open .sidebar-backdrop {
             opacity: 1;
             visibility: visible;
         }
 
+        body.sidebar-mini .sidebar {
+            left: -290px !important;
+            width: 280px !important;
+        }
+
+        body.mobile-sidebar-open .sidebar,
+        body.sidebar-mini.mobile-sidebar-open .sidebar {
+            left: 0 !important;
+            width: 280px !important;
+            z-index: 100005 !important;
+        }
+
         .page-wrapper {
-            margin-left: 0;
+            margin-left: 0 !important;
+            width: 100% !important;
+            padding: 10px 8px !important;
         }
 
-        /* Cải thiện scroll trên mobile */
-        .sidebar-menu {
-            padding: 8px 0;
+        body.sidebar-mini .page-wrapper {
+            margin-left: 0 !important;
         }
-
-        /* Scrollbar đã được ẩn ở phần CSS chính */
     }
 </style>
 
 <script src="{{ asset('public/libs/jquery/jquery.min.js') }}"></script>
 
 <script>
-    $(document).ready(function() {
-        let submenuUpdateTimeout;
-        let isUpdating = false;
-        let activeSubmenu = null;
+    $(document).ready(function () {
+        // Toggle Sidebar Expand / Collapse Mode
+        const $body = $('body');
+        const $sidebarToggleBtn = $('#btnToggleSidebar, #sidebarToggle');
 
-        // Function to update submenu position
-        function updateSubmenuPosition($menuItem) {
-            if ($(window).width() > 991.98) {
-                const $submenu = $menuItem.find('.submenu-container');
-                const $sidebar = $('.sidebar-collapsed');
+        // Check stored state
+        if (localStorage.getItem('sidebar-mini') === '1') {
+            $body.addClass('sidebar-mini');
+        }
 
-                // Lấy vị trí của menu item so với viewport (không phải document)
-                const menuItemRect = $menuItem[0].getBoundingClientRect();
-                const sidebarWidth = $sidebar.outerWidth();
+        $sidebarToggleBtn.on('click', function (e) {
+            e.preventDefault();
+            if ($(window).width() < 992) {
+                $body.toggleClass('mobile-sidebar-open');
+            } else {
+                $body.toggleClass('sidebar-mini');
+                if ($body.hasClass('sidebar-mini')) {
+                    localStorage.setItem('sidebar-mini', '1');
+                } else {
+                    localStorage.setItem('sidebar-mini', '0');
+                }
+            }
+        });
+
+        // Đóng Offcanvas Sidebar khi click màn che mờ
+        $('#sidebarBackdrop').on('click', function () {
+            $body.removeClass('mobile-sidebar-open');
+        });
+
+        // Submenu Accordion Toggle for Expanded Mode
+        $('.menu-item.has-submenu > .menu-link').on('click', function (e) {
+            if (!$body.hasClass('sidebar-mini')) {
+                e.preventDefault();
+                const $parentItem = $(this).closest('.menu-item');
+                $parentItem.toggleClass('open');
+            }
+        });
+
+        // Position Floating Submenu in Mini Mode
+        $('.menu-item.has-submenu').on('mouseenter', function () {
+            if ($body.hasClass('sidebar-mini')) {
+                const $submenu = $(this).find('.submenu-container');
+                const menuItemRect = this.getBoundingClientRect();
                 const windowHeight = $(window).height();
-
-                // Tính toán vị trí dựa trên viewport
                 let topPosition = menuItemRect.top;
-                const maxSubmenuHeight = windowHeight - 40; // Padding top + bottom
+                const maxSubmenuHeight = windowHeight - 40;
 
-                // Điều chỉnh max-height động
                 $submenu.find('.submenu-list').css('max-height', maxSubmenuHeight + 'px');
-
-                // Nếu submenu quá cao, căn chỉnh để không bị cắt
-                const submenuHeight = Math.min($submenu.outerHeight(), maxSubmenuHeight);
+                const submenuHeight = Math.min($submenu.outerHeight() || 200, maxSubmenuHeight);
 
                 if (topPosition + submenuHeight > windowHeight - 20) {
                     topPosition = Math.max(20, windowHeight - submenuHeight - 20);
                 }
 
-                // Set position với fixed positioning
                 $submenu.css({
-                    'position': 'fixed',
-                    'left': sidebarWidth + 'px',
                     'top': topPosition + 'px'
                 });
             }
-        }
-
-        // Update all visible submenus
-        function updateAllVisibleSubmenus() {
-            if (!isUpdating && activeSubmenu) {
-                isUpdating = true;
-                requestAnimationFrame(function() {
-                    updateSubmenuPosition(activeSubmenu);
-                    isUpdating = false;
-                });
-            }
-        }
-
-        // Track active submenu on hover
-        $('.menu-item.has-submenu').on('mouseenter', function() {
-            activeSubmenu = $(this);
-            updateSubmenuPosition($(this));
         });
 
-        $('.menu-item.has-submenu').on('mouseleave', function() {
-            // Delay clearing to allow hover transition to submenu
-            setTimeout(function() {
-                if (!$('.submenu-container:hover').length) {
-                    activeSubmenu = null;
-                }
-            }, 100);
-        });
+        // Live Module Search Logic (Real-time FE Filtering)
+        const $searchInput = $('#sidebarSearchInput');
+        const $clearBtn = $('#btnClearSidebarSearch');
 
-        // Keep tracking when hovering submenu
-        $(document).on('mouseenter', '.submenu-container', function() {
-            activeSubmenu = $(this).closest('.menu-item.has-submenu');
-        });
+        $searchInput.on('keyup input search', function () {
+            const query = $.trim($(this).val()).toLowerCase();
 
-        $(document).on('mouseleave', '.submenu-container', function() {
-            activeSubmenu = null;
-        });
-
-        // Update submenu positions on scroll - chỉ khi có submenu đang hiển thị
-        let scrollTimeout;
-        $(window).on('scroll', function() {
-            if (activeSubmenu) {
-                clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(updateAllVisibleSubmenus, 5);
-            }
-        });
-
-        // Update on sidebar scroll
-        $('.sidebar-menu').on('scroll', function() {
-            if (activeSubmenu) {
-                clearTimeout(submenuUpdateTimeout);
-                submenuUpdateTimeout = setTimeout(updateAllVisibleSubmenus, 5);
-            }
-        });
-
-        // Active state for current page
-        const currentUrl = window.location.href.split(/[?#]/)[0];
-
-        // Check submenu
-        $('.submenu-link').each(function() {
-            const href = $(this).attr('href');
-            if (href && href !== '#') {
-                const linkUrl = href.split(/[?#]/)[0];
-                if (currentUrl === linkUrl || currentUrl.startsWith(linkUrl + '/')) {
-                    $(this).addClass('active');
-                    $(this).closest('.menu-item').find('.menu-link').addClass('active');
-                }
-            }
-        });
-
-        // Check main menu
-        $('.menu-link').each(function() {
-            if ($(this).hasClass('active')) return;
-            const href = $(this).attr('href');
-            if (href && href !== '#') {
-                const linkUrl = href.split(/[?#]/)[0];
-                if (currentUrl === linkUrl || currentUrl.startsWith(linkUrl + '/')) {
-                    $(this).addClass('active');
-                }
-            }
-        });
-
-        // Mobile: Create toggle button if not exists
-        if ($(window).width() <= 991.98 && $('#mobileToggle').length === 0) {
-            $('body').prepend(`
-            <button id="mobileToggle" class="mobile-toggle">
-                <i class="ti ti-menu-2"></i>
-            </button>
-        `);
-            if ($('.sidebar-overlay').length === 0) {
-                $('body').append('<div class="sidebar-overlay"></div>');
-            }
-        }
-
-        // Toggle sidebar on mobile
-        $(document).on('click', '#mobileToggle', function() {
-            $('.sidebar-collapsed').toggleClass('mobile-open');
-            $('.sidebar-overlay').toggleClass('active');
-            $('body').toggleClass('sidebar-mobile-open');
-        });
-
-        // Đóng sidebar khi click overlay
-        $(document).on('click', '.sidebar-overlay', function() {
-            $('.sidebar-collapsed').removeClass('mobile-open');
-            $(this).removeClass('active');
-            $('body').removeClass('sidebar-mobile-open');
-        });
-
-        // Toggle submenu trên mobile
-        $('.menu-item.has-submenu .menu-link').on('click', function(e) {
-            if ($(window).width() <= 991.98) {
-                e.preventDefault();
-                const $menuItem = $(this).closest('.menu-item');
-                const isOpen = $menuItem.hasClass('mobile-submenu-open');
-
-                // Đóng tất cả submenu khác
-                $('.menu-item.has-submenu').removeClass('mobile-submenu-open');
-
-                // Toggle submenu hiện tại
-                if (!isOpen) {
-                    $menuItem.addClass('mobile-submenu-open');
-                }
-            }
-        });
-
-        // Close sidebar mobile when click on submenu link
-        $('.submenu-link').on('click', function() {
-            if ($(window).width() <= 991.98) {
-                $('.sidebar-collapsed').removeClass('mobile-open');
-                $('.sidebar-overlay').removeClass('active');
-                $('body').removeClass('sidebar-mobile-open');
-                $('.menu-item.has-submenu').removeClass('mobile-submenu-open');
-            }
-        });
-
-        // Handle resize
-        $(window).on('resize', function() {
-            if ($(window).width() > 991.98) {
-                $('.sidebar-collapsed').removeClass('mobile-open');
-                $('.sidebar-overlay').removeClass('active');
-                $('body').removeClass('sidebar-mobile-open');
-                $('.menu-item.has-submenu').removeClass('mobile-submenu-open');
-                $('#mobileToggle').remove();
-                $('.sidebar-overlay').remove();
-                activeSubmenu = null;
-            } else if ($('#mobileToggle').length === 0) {
-                $('body').prepend(`
-                <button id="mobileToggle" class="mobile-toggle">
-                    <i class="ti ti-menu-2"></i>
-                </button>
-            `);
-                if ($('.sidebar-overlay').length === 0) {
-                    $('body').append('<div class="sidebar-overlay"></div>');
-                }
-            }
-        });
-
-        // Ngăn scroll body khi sidebar mở trên mobile
-        $(document).on('click', '#mobileToggle', function() {
-            if ($('.sidebar-collapsed').hasClass('mobile-open')) {
-                $('body').css('overflow', 'hidden');
+            if (query.length > 0) {
+                $clearBtn.removeClass('d-none');
             } else {
-                $('body').css('overflow', '');
+                $clearBtn.addClass('d-none');
             }
+
+            filterSidebarMenu(query);
         });
 
-        $(document).on('click', '.sidebar-overlay, .submenu-link', function() {
-            $('body').css('overflow', '');
+        $clearBtn.on('click', function () {
+            $searchInput.val('');
+            $clearBtn.addClass('d-none');
+            filterSidebarMenu('');
+            $searchInput.focus();
         });
 
-        // Mobile Search Functionality
-        const mobileSearchInput = $('#sidebarMobileSearch');
-        const mobileClearBtn = $('#mobileClearSearch');
+        function filterSidebarMenu(query) {
+            const $menuItems = $('.menu-item');
+            const $headings = $('.sidebar-heading-item');
+            let hasMatch = false;
 
-        if (mobileSearchInput.length) {
-            mobileSearchInput.on('input', function() {
-                const value = $(this).val().toLowerCase();
-                mobileClearBtn.toggle(value.length > 0);
+            if (!query) {
+                $menuItems.show();
+                $headings.show();
+                $('.submenu-item').show();
+                $('#sidebarNoResult').remove();
+                return;
+            }
 
-                if (value) {
-                    $('.menu-item').each(function() {
-                        const $menuItem = $(this);
-                        const menuText = $menuItem.find('.menu-tooltip').text().toLowerCase();
-                        let hasMatch = menuText.includes(value);
+            $menuItems.each(function () {
+                const $item = $(this);
+                const itemTitle = $item.find('.menu-title').text().toLowerCase();
+                const $subItems = $item.find('.submenu-item');
+                let itemMatched = false;
 
-                        $menuItem.find('.submenu-text').each(function() {
-                            if ($(this).text().toLowerCase().includes(value)) {
-                                hasMatch = true;
-                            }
-                        });
-
-                        $menuItem.toggle(hasMatch);
+                if (itemTitle.indexOf(query) !== -1) {
+                    itemMatched = true;
+                    $subItems.show();
+                } else if ($subItems.length > 0) {
+                    let subMatchedCount = 0;
+                    $subItems.each(function () {
+                        const $sub = $(this);
+                        const subTitle = $sub.find('.submenu-text').text().toLowerCase();
+                        if (subTitle.indexOf(query) !== -1) {
+                            $sub.show();
+                            subMatchedCount++;
+                        } else {
+                            $sub.hide();
+                        }
                     });
+
+                    if (subMatchedCount > 0) {
+                        itemMatched = true;
+                        $item.addClass('open');
+                    }
+                }
+
+                if (itemMatched) {
+                    $item.show();
+                    hasMatch = true;
                 } else {
-                    $('.menu-item').show();
+                    $item.hide();
                 }
             });
 
-            mobileClearBtn.on('click', function() {
-                mobileSearchInput.val('').trigger('input').focus();
+            $headings.hide();
+
+            let $noResult = $('#sidebarNoResult');
+            if (!hasMatch) {
+                if (!$noResult.length) {
+                    $('#accordionSidebar').append(`
+                        <li id="sidebarNoResult" class="sidebar-no-result">
+                            <i class="ti ti-search-off fs-4 mb-1 text-primary d-block"></i>
+                            <span>{{ __('Không tìm thấy module') }}</span>
+                        </li>
+                    `);
+                }
+            } else {
+                $noResult.remove();
+            }
+        }
+
+        // Auto Active & Auto Open Submenu for Current Route (Best/Exact Match)
+        const currentUrl = window.location.href.split(/[?#]/)[0];
+        let $bestMatch = null;
+        let maxMatchLength = 0;
+
+        $('.submenu-link').each(function () {
+            const href = $(this).attr('href');
+            if (href && href !== '#') {
+                const linkUrl = href.split(/[?#]/)[0];
+                if (currentUrl === linkUrl) {
+                    $bestMatch = $(this);
+                    maxMatchLength = 99999;
+                } else if (currentUrl.startsWith(linkUrl + '/') && linkUrl.length > maxMatchLength && maxMatchLength < 99999) {
+                    $bestMatch = $(this);
+                    maxMatchLength = linkUrl.length;
+                }
+            }
+        });
+
+        if ($bestMatch) {
+            $bestMatch.addClass('active');
+            const $menuItem = $bestMatch.closest('.menu-item');
+            $menuItem.addClass('open');
+            $menuItem.find('> .menu-link').addClass('active');
+        } else {
+            $('.menu-link').each(function () {
+                if ($(this).hasClass('active')) return;
+                const href = $(this).attr('href');
+                if (href && href !== '#') {
+                    const linkUrl = href.split(/[?#]/)[0];
+                    if (currentUrl === linkUrl || currentUrl.startsWith(linkUrl + '/')) {
+                        $(this).addClass('active');
+                    }
+                }
             });
         }
     });

@@ -8,6 +8,7 @@
 <body>
 <div class="page">
     <x-admin-sidebar-left/>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
     @include('admin.layouts.sidebar-top')
     <div class="page-wrapper">
         @section('breadcrumbs')
@@ -21,7 +22,7 @@
 </div>
 
 <!-- Back to top button -->
-<div class="back-to-top">
+<div class="back-to-top" id="backToTop" title="Lên đầu trang">
     <i class="ti ti-arrow-up"></i>
 </div>
 

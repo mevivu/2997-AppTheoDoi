@@ -16,7 +16,9 @@ class ProfileRequest extends BaseRequest
         return [
             'fullname' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'regex:/((09|03|07|08|05)+([0-9]{8})\b)/', 'unique:App\Models\Admin,phone,'.auth('admin')->user()->id],
-            'address' => ['nullable']
+            'email' => ['nullable', 'email', 'unique:App\Models\Admin,email,'.auth('admin')->user()->id],
+            'address' => ['nullable', 'string'],
+            'avatar' => ['nullable']
         ];
     }
 }

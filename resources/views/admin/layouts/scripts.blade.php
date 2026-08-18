@@ -64,4 +64,11 @@
         });
     });
 </script>
+<script>
+    window.adminPwaConfig = {
+        swUrl: @json(route('admin.service-worker')),
+        scope: @json(parse_url(url('/admin'), PHP_URL_PATH).'/')
+    };
+</script>
+<script src="{{ asset('public/admin/assets/js/admin-pwa.js') }}"></script>
 @stack('custom-js')

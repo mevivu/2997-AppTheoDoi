@@ -6,11 +6,19 @@
 <meta name="currency" content="{{ config('custom.currency') }}">
 <meta name="position_currency" content="{{ config('custom.format.position_currency') }}">
 <title>@yield('title', 'Admin')</title>
+<link rel="manifest" href="{{ route('admin.manifest') }}">
+<meta name="theme-color" content="#2563eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Chăm Con Admin">
+<link rel="apple-touch-icon" href="{{ asset('/public/admin/assets/images/admin-icon-192.png') }}">
 @php
     $settingRepository = app()->make(App\Admin\Repositories\Setting\SettingRepository::class);
     $settings = $settingRepository->getAll();
+    $siteLogo = $settings->where('setting_key', 'site_logo')->first()?->plain_value
+        ?? \App\Traits\ImageSystem::DEFAULT_IMAGE;
 @endphp
-<link rel="shortcut icon" type="image/x-icon" href="{{ asset($settings->where('setting_key', 'site_logo')->first()->plain_value) }}" />
+<link rel="shortcut icon" type="image/x-icon" href="{{ asset($siteLogo) }}" />
 <!-- CSS files -->
 <link href="{{ asset('/public/libs/tabler/dist/css/tabler.min.css') }}" rel="stylesheet"/>
 <link href="{{ asset('/public/libs/tabler/dist/css/tabler-vendors.min.css') }}" rel="stylesheet"/>
