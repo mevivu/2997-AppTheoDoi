@@ -30,13 +30,40 @@ class ChildController extends Controller
     public function __construct(
         ChildRepositoryInterface $repository,
         ChildServiceInterface    $service
-
     )
     {
         $this->repository = $repository;
         $this->service = $service;
-        $this->middleware('auth:api');
+        $this->middleware('auth:api')->except(['getDefaultAvatars']);
+    }
 
+    /**
+     * Lấy danh sách ảnh đại diện mặc định của trẻ
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Thực hiện thành công",
+     *     "data": [
+     *         {
+     *             "id": 1,
+     *             "name": "Avatar 1",
+     *             "path": "/public/assets/images/children/child_avatar1.png",
+     *             "url": "https://example.com/public/assets/images/children/child_avatar1.png"
+     *         }
+     *     ]
+     * }
+     *
+     * @return JsonResponse
+     */
+    public function getDefaultAvatars(): JsonResponse
+    {
+        try {
+            $avatars = $this->service->getDefaultAvatars();
+            return $this->jsonResponseSuccess($avatars);
+        } catch (Exception $exception) {
+            $this->logError('Get Child Default Avatars failed:', $exception);
+            return $this->jsonResponseError('Lấy danh sách ảnh đại diện thất bại', 500);
+        }
     }
 
     /**

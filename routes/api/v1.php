@@ -78,6 +78,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
     ->prefix('/children')
     ->as('child.')
     ->group(function () {
+        Route::get('/default-avatars', 'getDefaultAvatars');
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
         Route::post('/', 'store');

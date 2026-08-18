@@ -14,4 +14,6 @@ interface ChildServiceInterface
     public function index(Request $request);
 
     public function syncChildren(Request $request);
+
+    public function getDefaultAvatars(): array;
 }

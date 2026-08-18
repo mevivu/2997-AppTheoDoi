@@ -22,7 +22,7 @@ class ChildSyncRequest extends BaseRequest
             'children.*.fullname' => 'required|string|max:255',
             'children.*.gender' => ['required', new Enum(Gender::class)],
             'children.*.is_born' => ['required', new Enum(BornStatus::class)],
-            'children.*.avatar' => 'nullable|file|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'children.*.avatar' => 'nullable',
         ];
 
         $children = $this->input('children', []);
