@@ -6,17 +6,14 @@
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
-            <div class="card">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list')</h2>
-                    <x-link :href="route('admin.vaccination.create',['back' => 'admin'])" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+            <div class="card custom-shadow">
+                <x-admin.page-header :title="__('Lịch tiêm chủng chuẩn')"
+                                     :subtitle="__('Quản lý phác đồ và lịch tiêm chủng định kỳ chuẩn cho trẻ')"
+                                     icon="ti ti-needle"
+                                     :addRoute="route('admin.vaccination.create',['back' => 'admin'])"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
-                    <x-form id="formMultiple" :action="route('admin.vaccination.multiple')" type="post"
-                            :validate="true">
+                    <x-form id="formMultiple" :action="route('admin.vaccination.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">
                             <x-admin.partials.toggle-column-datatable/>
                             @isset($actionMultiple)

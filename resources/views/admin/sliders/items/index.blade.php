@@ -5,12 +5,13 @@
 
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách slider item') }} - <x-link class="text-primary" :href="route('admin.slider.edit', $slider->id)" :title="$slider->name" /></h2>
-                    <x-link :href="route('admin.slider.item.create', $slider->id)" class="btn btn-primary"><i class="ti ti-plus"></i>{{ __('Thêm slider item') }}</x-link>
-                </div>
+                <x-admin.page-header :title="__('Danh sách Item Slider') . ' - ' . $slider->name"
+                                     :subtitle="__('Quản lý các hình ảnh và liên kết trong slider')"
+                                     icon="ti ti-photo-plus"
+                                     :addRoute="route('admin.slider.item.create', $slider->id)"
+                                     :addText="__('Thêm slider item')" />
                 <div class="card-body">
                     <div class="table-responsive position-relative">
                         <x-admin.partials.toggle-column-datatable />
@@ -23,14 +24,12 @@
 @endsection
 
 @push('libs-js')
-<!-- button in datatable -->
-<script src="{{ asset('/public/vendor/datatables/buttons.server-side.js') }}"></script>
+    <!-- button in datatable -->
+    <script src="{{ asset('/public/vendor/datatables/buttons.server-side.js') }}"></script>
 @endpush
 
 @push('custom-js')
+    {{ $dataTable->scripts() }}
 
-{{ $dataTable->scripts() }}
-
-@include('admin.sliders.items.scripts.datatable')
-
+    @include('admin.sliders.items.scripts.datatable')
 @endpush

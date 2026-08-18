@@ -7,37 +7,33 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách Cân nặng chiều cao Theo chuẩn Who') }}</h2>
-                    <div>
-                        <x-link :href="route('admin.weight-height-who.create')"
-                                class="btn btn-primary"><i class="ti ti-plus"></i>{{ __('Thêm mới') }}
-                        </x-link>
-
+                <x-admin.page-header :title="__('Danh sách Cân nặng - Chiều cao chuẩn WHO')"
+                                     :subtitle="__('Bảng quy chuẩn tăng trưởng chiều cao và cân nặng theo độ tuổi của WHO')"
+                                     icon="ti ti-scale"
+                                     :addRoute="route('admin.weight-height-who.create')"
+                                     :addText="__('Thêm mới')">
+                    <x-slot name="actions">
                         <button type="button"
-                                class="btn btn-success"
+                                class="btn btn-success rounded-pill px-3 shadow-sm d-inline-flex align-items-center"
                                 data-bs-toggle="modal"
                                 data-bs-target="#importExcelModal">
-                            <i class="ti ti-file"></i> {{ __('Import') }}
+                            <i class="ti ti-file-import me-1"></i> {{ __('Import') }}
                         </button>
-
-                        <a href="{{ route('admin.weight-height-who.export') }}" class="btn btn-info">
-                            <i class="ti ti-export"></i> {{ __('Export') }}
+                        <a href="{{ route('admin.weight-height-who.export') }}" class="btn btn-info rounded-pill px-3 shadow-sm d-inline-flex align-items-center">
+                            <i class="ti ti-file-export me-1"></i> {{ __('Export') }}
                         </a>
-                    </div>
-                </div>
+                    </x-slot>
+                </x-admin.page-header>
                 <div class="card-body">
-                    <div class="card-body">
-                        <x-form id="formMultiple" :action="route('admin.weight-height-who.multiple')" type="post" :validate="true">
-                            <div class="table-responsive position-relative">
-                                <x-admin.partials.toggle-column-datatable />
-                                @isset($actionMultiple)
-                                    <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple" />
-                                @endisset
-                                {{ $dataTable->table(['class' => 'table table-bordered'], true) }}
-                            </div>
-                        </x-form>
-                    </div>
+                    <x-form id="formMultiple" :action="route('admin.weight-height-who.multiple')" type="post" :validate="true">
+                        <div class="table-responsive position-relative">
+                            <x-admin.partials.toggle-column-datatable />
+                            @isset($actionMultiple)
+                                <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple" />
+                            @endisset
+                            {{ $dataTable->table(['class' => 'table table-bordered'], true) }}
+                        </div>
+                    </x-form>
                 </div>
                 <!-- Modal Import-->
                 <div class="modal fade" id="importExcelModal" tabindex="-1" aria-labelledby="importExcelModalLabel"

@@ -4,42 +4,24 @@
 @endpush
 
 @section('content')
-    <div class="page-header d-print-none">
-        <div class="container-fluid">
-            <div class="row g-2 align-items-center">
-                <div class="col">
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"
-                                    class="text-muted">{{ __('Dashboard') }}</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">{{ __('Bài tập thể chất') }}
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="page-body">
-        <div class="container-xl">
+        <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách bài tập thể chất') }}</h2>
-                    <x-link :href="route('admin.exercise.create', ['back' => 'physical'])" class="btn btn-primary"><i
-                            class="ti ti-plus"></i>{{ __('Thêm bài tập') }}</x-link>
-                </div>
+                <x-admin.page-header :title="__('Danh sách bài tập thể chất')"
+                                     :subtitle="__('Quản lý các bài tập vận động và rèn luyện thể lực')"
+                                     icon="ti ti-run"
+                                     :addRoute="route('admin.exercise.create', ['back' => 'physical'])"
+                                     :addText="__('Thêm bài tập')" />
                 <div class="card-body">
-                    <div class="card-body">
-                        <x-form id="formMultiple" :action="route('admin.exercise.multiple')" type="post" :validate="true">
-                            <div class="table-responsive position-relative">
-                                <x-admin.partials.toggle-column-datatable />
-                                @isset($actionMultiple)
-                                    <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple" />
-                                @endisset
-                                {{ $dataTable->table(['class' => 'table table-bordered'], true) }}
-                            </div>
-                        </x-form>
-                    </div>
+                    <x-form id="formMultiple" :action="route('admin.exercise.multiple')" type="post" :validate="true">
+                        <div class="table-responsive position-relative">
+                            <x-admin.partials.toggle-column-datatable />
+                            @isset($actionMultiple)
+                                <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple" />
+                            @endisset
+                            {{ $dataTable->table(['class' => 'table table-bordered'], true) }}
+                        </div>
+                    </x-form>
                 </div>
             </div>
         </div>
@@ -57,5 +39,4 @@
     @include('admin.scripts.datatable-toggle-columns', [
         'id_table' => $dataTable->getTableAttribute('id'),
     ])
-
 @endpush

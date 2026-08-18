@@ -6,14 +6,12 @@
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
-            <div class="card">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list')</h2>
-                    <x-link :href="route('admin.package.create')" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+            <div class="card custom-shadow">
+                <x-admin.page-header :title="__('Quản lý Gói dịch vụ')"
+                                     :subtitle="__('Quản lý các gói tài khoản VIP và dịch vụ trong ứng dụng')"
+                                     icon="ti ti-package"
+                                     :addRoute="route('admin.package.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.package.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">
@@ -41,5 +39,4 @@
     @include('admin.scripts.datatable-toggle-columns', [
         'id_table' => $dataTable->getTableAttribute('id'),
     ])
-
 @endpush

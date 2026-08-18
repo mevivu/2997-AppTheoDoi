@@ -12,8 +12,6 @@ class DevelopDataTable extends BaseDataTable
 {
     protected $nameTable = 'developTable';
 
-    protected array $actions = ['reset', 'reload'];
-
     public function __construct(
         GuideRepositoryInterface $repository
     ) {
@@ -66,7 +64,7 @@ class DevelopDataTable extends BaseDataTable
     protected function setCustomEditColumns(): void
     {
         $this->customEditColumns = [
-            'created_at' => '{{ $created_at ? format_datetime($created_at) : "" }}',
+            'created_at' => '<span class="text-muted fs-12 text-nowrap"><i class="ti ti-clock me-1"></i>{{ $created_at ? format_datetime($created_at) : "" }}</span>',
             'action' => $this->view['action'],
             'title' => $this->view['title'],
             'status' => $this->view['status'],

@@ -7,22 +7,21 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách câu hỏi EQ') }}</h2>
-                    <x-link :href="route('admin.question.createEq')" class="btn btn-primary"><i class="ti ti-plus"></i>{{ __('Thêm mới') }}</x-link>
-                </div>
+                <x-admin.page-header :title="__('Danh sách câu hỏi EQ (Cảm xúc)')"
+                                     :subtitle="__('Ngân hàng câu hỏi trắc nghiệm đánh giá chỉ số EQ')"
+                                     icon="ti ti-help"
+                                     :addRoute="route('admin.question.createEq')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
-                    <div class="card-body">
-                        <x-form id="formMultiple" :action="route('admin.question.multiple')" type="post" :validate="true">
-                            <div class="table-responsive position-relative">
-                                <x-admin.partials.toggle-column-datatable />
-                                @isset($actionMultiple)
-                                    <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple" />
-                                @endisset
-                                {{ $dataTable->table(['class' => 'table table-bordered'], true) }}
-                            </div>
-                        </x-form>
-                    </div>
+                    <x-form id="formMultiple" :action="route('admin.question.multiple')" type="post" :validate="true">
+                        <div class="table-responsive position-relative">
+                            <x-admin.partials.toggle-column-datatable />
+                            @isset($actionMultiple)
+                                <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple" />
+                            @endisset
+                            {{ $dataTable->table(['class' => 'table table-bordered'], true) }}
+                        </div>
+                    </x-form>
                 </div>
             </div>
         </div>
@@ -41,5 +40,4 @@
         'id_table' => $dataTable->getTableAttribute('id'),
     ])
     @include('admin.common.copy')
-
 @endpush

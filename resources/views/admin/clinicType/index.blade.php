@@ -7,13 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list')</h2>
-                    <x-link :href="route('admin.clinicType.create')" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Loại phòng khám')"
+                                     :subtitle="__('Quản lý phân loại cơ sở y tế và phòng khám')"
+                                     icon="ti ti-building"
+                                     :addRoute="route('admin.clinicType.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.clinicType.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

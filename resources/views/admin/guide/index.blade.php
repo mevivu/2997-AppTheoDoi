@@ -7,13 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('Danh sách Hướng Dẫn')</h2>
-                    <x-link :href="route('admin.guide.create')" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Danh sách Hướng dẫn')"
+                                     :subtitle="__('Quản lý các danh mục và bài viết hướng dẫn chuyên môn')"
+                                     icon="ti ti-book-2"
+                                     :addRoute="route('admin.guide.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.guide.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

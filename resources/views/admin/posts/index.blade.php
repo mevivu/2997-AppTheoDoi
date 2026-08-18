@@ -7,10 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách bài viết') }}</h2>
-                    <x-link :href="route('admin.post.create')" class="btn btn-primary"><i class="ti ti-plus"></i>{{ __('Thêm bài viết') }}</x-link>
-                </div>
+                <x-admin.page-header :title="__('Danh sách bài viết')"
+                                     :subtitle="__('Quản lý các bài viết tin tức và cẩm nang chăm sóc trẻ')"
+                                     icon="ti ti-news"
+                                     :addRoute="route('admin.post.create')"
+                                     :addText="__('Thêm bài viết')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.post.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">
@@ -28,15 +29,14 @@
 @endsection
 
 @push('libs-js')
-<!-- button in datatable -->
-<script src="{{ asset('/public/vendor/datatables/buttons.server-side.js') }}"></script>
+    <!-- button in datatable -->
+    <script src="{{ asset('/public/vendor/datatables/buttons.server-side.js') }}"></script>
 @endpush
 
 @push('custom-js')
-
     {{ $dataTable->scripts() }}
 
     @include('admin.scripts.datatable-toggle-columns', [
-            'id_table' => $dataTable->getTableAttribute('id')
+        'id_table' => $dataTable->getTableAttribute('id')
     ])
 @endpush

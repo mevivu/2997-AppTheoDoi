@@ -7,16 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-{{--                <div class="card-header justify-content-between">--}}
-{{--                    <h2 class="mb-0">@lang('list')</h2>--}}
-{{--                    <x-link :href="route('admin.vaccination.create',['back' => 'user'])" class="btn btn-primary">--}}
-{{--                        <i class="ti ti-plus"></i>--}}
-{{--                        <span class="ms-1">@lang('add')</span>--}}
-{{--                    </x-link>--}}
-{{--                </div>--}}
+                <x-admin.page-header :title="__('Lịch sử tiêm chủng của trẻ')"
+                                     :subtitle="__('Theo dõi lịch sử và trạng thái tiêm vắc-xin của các bé')"
+                                     icon="ti ti-calendar-event" />
                 <div class="card-body">
-                    <x-form id="formMultiple" :action="route('admin.vaccination.multiple')" type="post"
-                            :validate="true">
+                    <x-form id="formMultiple" :action="route('admin.vaccination.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">
                             <x-admin.partials.toggle-column-datatable/>
                             @isset($actionMultiple)
@@ -42,5 +37,4 @@
     @include('admin.scripts.datatable-toggle-columns', [
         'id_table' => $dataTable->getTableAttribute('id'),
     ])
-
 @endpush

@@ -7,11 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách slider') }}</h2>
-                    <x-link :href="route('admin.slider.create')" class="btn btn-primary"><i
-                            class="ti ti-plus"></i>{{ __('Thêm slider') }}</x-link>
-                </div>
+                <x-admin.page-header :title="__('Danh sách Slider & Banner')"
+                                     :subtitle="__('Quản lý các banner trình chiếu và quảng cáo')"
+                                     icon="ti ti-photo"
+                                     :addRoute="route('admin.slider.create')"
+                                     :addText="__('Thêm slider')" />
                 <div class="card-body">
                     <div class="table-responsive position-relative">
                         <x-admin.partials.toggle-column-datatable />

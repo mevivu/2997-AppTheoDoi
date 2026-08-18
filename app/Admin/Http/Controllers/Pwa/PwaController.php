@@ -10,10 +10,14 @@ class PwaController extends Controller
 {
     public function manifest(): Response
     {
+        $settingRepository = app()->make(\App\Admin\Repositories\Setting\SettingRepository::class);
+        $settings = $settingRepository->getAll();
+        $siteName = $settings->where('setting_key', 'site_name')->first()?->plain_value ?? 'Chăm Con 360';
+
         return response([
-            'name' => 'Chăm Con 360 - Quản trị hệ thống',
-            'short_name' => 'Chăm Con Admin',
-            'description' => 'Hệ thống CMS Quản trị Chăm Con 360.',
+            'name' => $siteName . ' - Quản trị hệ thống',
+            'short_name' => $siteName . ' Admin',
+            'description' => 'Hệ thống CMS Quản trị ' . $siteName . '.',
             'start_url' => route('admin.dashboard'),
             'scope' => url('/admin').'/',
             'display' => 'standalone',
@@ -21,9 +25,9 @@ class PwaController extends Controller
             'theme_color' => '#2563eb',
             'lang' => 'vi',
             'icons' => [
-                ['src' => asset('/public/admin/assets/images/admin-icon-192.png'), 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any'],
-                ['src' => asset('/public/admin/assets/images/admin-icon-512.png'), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any'],
-                ['src' => asset('/public/admin/assets/images/admin-icon-maskable-512.png'), 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable'],
+                ['src' => asset('/public/admin/assets/images/admin-icon-192.png') . '?v=1.0.4', 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any'],
+                ['src' => asset('/public/admin/assets/images/admin-icon-512.png') . '?v=1.0.4', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any'],
+                ['src' => asset('/public/admin/assets/images/admin-icon-maskable-512.png') . '?v=1.0.4', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'maskable'],
             ],
         ])->header('Content-Type', 'application/manifest+json');
     }

@@ -7,13 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list')</h2>
-                    <x-link :href="route('admin.product.create')" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Danh sách Sản phẩm')"
+                                     :subtitle="__('Quản lý thông tin các sản phẩm và vật phẩm chăm sóc mẹ & bé')"
+                                     icon="ti ti-shopping-bag"
+                                     :addRoute="route('admin.product.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.product.actionMultiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

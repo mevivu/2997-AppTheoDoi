@@ -7,13 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách nhật ký khoảnh khắc') }}</h2>
-                    <x-link :href="route('admin.journal.create',['back' => 'moment'])" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Nhật ký khoảnh khắc')"
+                                     :subtitle="__('Lưu giữ và theo dõi các khoảnh khắc đáng nhớ của trẻ')"
+                                     icon="ti ti-camera"
+                                     :addRoute="route('admin.journal.create', ['back' => 'moment'])"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.children.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

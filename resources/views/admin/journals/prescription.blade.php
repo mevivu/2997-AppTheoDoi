@@ -7,13 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Hồ sơ y tế') }}</h2>
-                    <x-link :href="route('admin.journal.create',['back' => 'prescription'])" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Hồ sơ y tế & Đơn thuốc')"
+                                     :subtitle="__('Theo dõi lịch sử khám bệnh và đơn thuốc của trẻ')"
+                                     icon="ti ti-prescription"
+                                     :addRoute="route('admin.journal.create', ['back' => 'prescription'])"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.children.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

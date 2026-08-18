@@ -12,14 +12,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list') thứ tự hướng dẫn của: <x-link
-                            :href="route('admin.guide.edit', $developGuide->id)">{{ $developGuide->title }}</x-link></h2>
-                    <x-link :href="route('admin.step.create', request()->route('developGuideId'))" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Thứ tự hướng dẫn: ') . ($developGuide->title ?? '')"
+                                     :subtitle="__('Quản lý các bước chi tiết trong bài viết hướng dẫn')"
+                                     icon="ti ti-list-numbers"
+                                     :addRoute="route('admin.step.create', request()->route('developGuideId'))"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.step.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

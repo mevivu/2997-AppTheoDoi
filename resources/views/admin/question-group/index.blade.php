@@ -7,22 +7,21 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-{{--                <div class="card-header justify-content-between">--}}
-{{--                    <h2 class="mb-0">{{ __('Danh sách nhóm câu hỏi') }}</h2>--}}
-{{--                    <x-link :href="route('admin.question-group.create')" class="btn btn-primary"><i class="ti ti-plus"></i>{{ __('Thêm mới') }}</x-link>--}}
-{{--                </div>--}}
+                <x-admin.page-header :title="__('Danh sách Nhóm câu hỏi')"
+                                     :subtitle="__('Quản lý phân loại các nhóm câu hỏi đánh giá chỉ số')"
+                                     icon="ti ti-folders"
+                                     :addRoute="route('admin.question-group.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
-                    <div class="card-body">
-                        <x-form id="formMultiple" :action="route('admin.question-group.multiple')" type="post" :validate="true">
-                            <div class="table-responsive position-relative">
-                                <x-admin.partials.toggle-column-datatable />
-                                @isset($actionMultiple)
-                                    <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple" />
-                                @endisset
-                                {{ $dataTable->table(['class' => 'table table-bordered'], true) }}
-                            </div>
-                        </x-form>
-                    </div>
+                    <x-form id="formMultiple" :action="route('admin.question-group.multiple')" type="post" :validate="true">
+                        <div class="table-responsive position-relative">
+                            <x-admin.partials.toggle-column-datatable />
+                            @isset($actionMultiple)
+                                <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple" />
+                            @endisset
+                            {{ $dataTable->table(['class' => 'table table-bordered'], true) }}
+                        </div>
+                    </x-form>
                 </div>
             </div>
         </div>
@@ -40,5 +39,4 @@
     @include('admin.scripts.datatable-toggle-columns', [
         'id_table' => $dataTable->getTableAttribute('id'),
     ])
-
 @endpush

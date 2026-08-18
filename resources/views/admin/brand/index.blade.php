@@ -7,13 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list')</h2>
-                    <x-link :href="route('admin.brand.create')" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Danh sách Thương hiệu')"
+                                     :subtitle="__('Quản lý các nhãn hiệu và thương hiệu đối tác')"
+                                     icon="ti ti-trademark"
+                                     :addRoute="route('admin.brand.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.brand.actionMultiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

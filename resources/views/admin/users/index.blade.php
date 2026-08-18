@@ -7,22 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách khách hàng') }}</h2>
-                    <div class="d-flex align-items-center gap-2">
-                        {{-- <form action="{{ route('admin.user.clearNormalTokens') }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn đăng xuất tất cả tài khoản gói thường để áp dụng phiên đăng nhập mới?');">
-                            @csrf
-                            <button type="submit" class="btn btn-warning">
-                                <i class="ti ti-logout"></i>
-                                <span class="ms-1">{{ __('Đăng xuất toàn bộ gói thường') }}</span>
-                            </button>
-                        </form> --}}
-                        <x-link :href="route('admin.user.create')" class="btn btn-primary">
-                            <i class="ti ti-plus"></i>
-                            <span class="ms-1">@lang('add')</span>
-                        </x-link>
-                    </div>
-                </div>
+                <x-admin.page-header :title="__('Danh sách khách hàng')"
+                                     :subtitle="__('Quản lý thông tin tài khoản cha mẹ và người dùng ứng dụng')"
+                                     icon="ti ti-users"
+                                     :addRoute="route('admin.user.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.user.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

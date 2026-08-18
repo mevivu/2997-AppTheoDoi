@@ -7,13 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách trẻ em') }}</h2>
-                    <x-link :href="route('admin.children.create')" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Danh sách hồ sơ trẻ em')"
+                                     :subtitle="__('Quản lý hồ sơ thông tin và chỉ số phát triển của các bé')"
+                                     icon="ti ti-mood-smile"
+                                     :addRoute="route('admin.children.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.children.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

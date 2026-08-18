@@ -1,4 +1,3 @@
-
 @extends('admin.layouts.master')
 
 @push('libs-css')
@@ -8,13 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list')</h2>
-                    <x-link :href="route('admin.role.create')" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Danh sách Vai trò & Phân quyền')"
+                                     :subtitle="__('Quản lý các nhóm vai trò và quyền hạn quản trị trong hệ thống')"
+                                     icon="ti ti-shield-lock"
+                                     :addRoute="route('admin.role.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <div class="table-responsive position-relative">
                         <x-admin.partials.toggle-column-datatable />
@@ -32,12 +29,9 @@
 @endpush
 
 @push('custom-js')
-
     {{ $dataTable->scripts() }}
 
     @include('admin.scripts.datatable-toggle-columns', [
         'id_table' => $dataTable->getTableAttribute('id')
     ])
-
 @endpush
-

@@ -7,13 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách Đánh giá') }}</h2>
-                    <x-link :href="route('admin.pregnancy.create')" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Đánh giá thể chất (PQ)')"
+                                     :subtitle="__('Quản lý danh sách tiêu chí và bài đánh giá thể chất')"
+                                     icon="ti ti-run"
+                                     :addRoute="route('admin.ratingPQ.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.ratingPQ.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">
@@ -41,5 +39,4 @@
     @include('admin.scripts.datatable-toggle-columns', [
         'id_table' => $dataTable->getTableAttribute('id'),
     ])
-
 @endpush

@@ -6,16 +6,28 @@
     'breadcrumbs' => null,
     'addRoute' => null,
     'addTitle' => null,
+    'addText' => null,
     'backRoute' => null,
     'backTitle' => null,
 ])
+
+@php
+    $iconClass = $icon;
+    if ($icon) {
+        if (!str_starts_with($icon, 'ti ') && !str_starts_with($icon, 'ti-')) {
+            $iconClass = 'ti ti-' . $icon;
+        } elseif (str_starts_with($icon, 'ti-') && !str_starts_with($icon, 'ti ')) {
+            $iconClass = 'ti ' . $icon;
+        }
+    }
+@endphp
 
 <div {{ $attributes->class(['page-header-custom', 'has-icon' => !empty($icon)]) }}>
     <div class="header-content d-flex justify-content-between align-items-center flex-wrap gap-2 gap-md-3">
         <div class="header-title-box d-flex align-items-center gap-2 gap-md-3">
             @if ($icon)
                 <div class="ph-icon-box flex-shrink-0">
-                    <i class="ti {{ str_starts_with($icon, 'ti-') ? $icon : 'ti-' . $icon }}"></i>
+                    <i class="{{ $iconClass }}"></i>
                 </div>
             @endif
 
@@ -51,7 +63,7 @@
             @if ($addRoute)
                 <x-link :href="$addRoute" class="btn btn-primary btn-add-custom">
                     <i class="ti ti-plus"></i>
-                    <span>{{ $addTitle ?? __('Thêm') }}</span>
+                    <span>{{ $addTitle ?? $addText ?? __('Thêm') }}</span>
                 </x-link>
             @endif
 

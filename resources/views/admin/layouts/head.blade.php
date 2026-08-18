@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Chăm Con Admin">
-<link rel="apple-touch-icon" href="{{ asset('/public/admin/assets/images/admin-icon-192.png') }}">
+<link rel="apple-touch-icon" href="{{ asset('/public/admin/assets/images/admin-icon-192.png') }}?v=1.0.4">
 @php
     $settingRepository = app()->make(App\Admin\Repositories\Setting\SettingRepository::class);
     $settings = $settingRepository->getAll();
@@ -39,6 +39,6 @@
     font-feature-settings: "cv03", "cv04", "cv11";
     }
 </style>
-<link href="{{ asset('public/admin/assets/css/style.css') }}?v=1.0.2" rel="stylesheet">
+<link href="{{ asset('public/admin/assets/css/style.css') }}?v=1.0.4" rel="stylesheet">
 @stack('libs-css')
 @stack('custom-css')

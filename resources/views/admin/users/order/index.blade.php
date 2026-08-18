@@ -3,16 +3,17 @@
 @push('libs-css')
 @endpush
 
+@php
+    $orderUser = \App\Models\User::find(request()->route('id'));
+@endphp
+
 @section('content')
     <div class="page-body">
-        <div class="container-xl">
-            <div class="card">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('Đơn hàng của')
-
-                        <x-link :href="route('admin.user.edit', request()->route('id'))" :title="\App\Models\User::find(request()->route('id'))->fullname" class="text-decoration-underline" />
-                    </h2>
-                </div>
+        <div class="container-fluid">
+            <div class="card custom-shadow">
+                <x-admin.page-header :title="__('Lịch sử đơn hàng: ') . ($orderUser->fullname ?? '')"
+                                     :subtitle="__('Theo dõi các đơn hàng và gói dịch vụ đã mua của khách hàng')"
+                                     icon="ti ti-shopping-cart" />
                 <div class="card-body">
                     <div class="table-responsive position-relative">
                         <x-admin.partials.toggle-column-datatable />

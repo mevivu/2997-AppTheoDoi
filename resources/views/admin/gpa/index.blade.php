@@ -7,20 +7,16 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách GPA') }}</h2>
-                </div>
+                <x-admin.page-header :title="__('Danh sách GPA')"
+                                     :subtitle="__('Theo dõi kết quả đánh giá điểm học lực của trẻ')"
+                                     icon="ti ti-school" />
                 <div class="card-body">
-                    <div class="card-body">
-
-                        <div class="table-responsive position-relative">
-                            <x-admin.partials.toggle-column-datatable />
-                            @isset($actionMultiple)
-                                <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple" />
-                            @endisset
-                            {{ $dataTable->table(['class' => 'table table-bordered'], true) }}
-                        </div>
-
+                    <div class="table-responsive position-relative">
+                        <x-admin.partials.toggle-column-datatable />
+                        @isset($actionMultiple)
+                            <x-admin.partials.select-action-multiple :actionMultiple="$actionMultiple" />
+                        @endisset
+                        {{ $dataTable->table(['class' => 'table table-bordered'], true) }}
                     </div>
                 </div>
             </div>

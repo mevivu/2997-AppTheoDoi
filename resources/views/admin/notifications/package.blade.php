@@ -1,27 +1,15 @@
 @extends('admin.layouts.master')
 
 @push('libs-css')
-
 @endpush
 
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('Danh Sách Thông Báo')</h2>
-                    <div class="d-flex justify-content-between gap-2">
-                        <x-button.modal-delete class="btn btn-danger d-none" id="deleteSelect">
-                            <i class="ti ti-trash"></i>
-                            <span class="ms-1">@lang('deleteMulti')</span>
-                        </x-button.modal-delete>
-                        <x-link :href="route('admin.notification.create')" class="btn btn-primary">
-                            <i class="ti ti-plus"></i>
-                            <span class="ms-1">@lang('add')</span>
-                        </x-link>
-                    </div>
-                </div>
-
+                <x-admin.page-header :title="__('Duyệt thông báo gói dịch vụ')"
+                                     :subtitle="__('Quản lý phê duyệt các thông báo gia hạn và nâng cấp gói')"
+                                     icon="ti ti-bell-ringing" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.notification.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">
@@ -49,5 +37,4 @@
     @include('admin.scripts.datatable-toggle-columns', [
         'id_table' => $dataTable->getTableAttribute('id'),
     ])
-
 @endpush

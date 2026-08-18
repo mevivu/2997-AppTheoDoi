@@ -7,13 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách Thai kì') }}</h2>
-                    <x-link :href="route('admin.pregnancy.create')" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Quản lý Thai kỳ')"
+                                     :subtitle="__('Theo dõi các giai đoạn và thông tin thai kỳ của mẹ')"
+                                     icon="ti ti-heartbeat"
+                                     :addRoute="route('admin.pregnancy.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.pregnancy.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

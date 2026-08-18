@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Chăm Con Admin">
-<link rel="apple-touch-icon" href="{{ asset('/public/admin/assets/images/admin-icon-192.png') }}">
+<link rel="apple-touch-icon" href="{{ asset('/public/admin/assets/images/admin-icon-192.png') }}?v=1.0.4">
 <link rel="shortcut icon" type="image/x-icon" href="{{ asset(config('custom.images.favicon', '/public/assets/images/logo.png')) }}" />
 <!-- CSS files -->
 <link href="{{ asset('/public/libs/tabler/dist/css/tabler.min.css') }}" rel="stylesheet"/>

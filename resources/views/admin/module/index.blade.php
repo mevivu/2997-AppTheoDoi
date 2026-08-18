@@ -6,14 +6,12 @@
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
-            <div class="card">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list')</h2>
-                    <x-link :href="route('admin.module.create')" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+            <div class="card custom-shadow">
+                <x-admin.page-header :title="__('Danh sách Phân hệ / Module')"
+                                     :subtitle="__('Quản lý các module chức năng của hệ thống')"
+                                     icon="ti ti-components"
+                                     :addRoute="route('admin.module.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.module.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

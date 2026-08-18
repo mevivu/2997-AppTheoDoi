@@ -1,4 +1,4 @@
-
-<x-button.modal-delete class="btn-icon" data-route="{{ route('admin.admin.delete', $id) }}">
-    <i class="ti ti-trash"></i>
-</x-button.modal-delete>
+<x-admin.datatable.action-group>
+    <x-admin.datatable.action-edit :href="route('admin.admin.edit', $id)" />
+    <x-admin.datatable.action-delete :route="route('admin.admin.delete', $id)" />
+</x-admin.datatable.action-group>

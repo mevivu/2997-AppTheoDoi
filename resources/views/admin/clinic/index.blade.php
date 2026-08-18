@@ -6,36 +6,32 @@
     @include('admin.common.style.modal_exel')
     @include('admin.common.style.style')
 @endpush
+
 @section('content')
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách phòng khám') }}</h2>
-                    <div class="action-buttons-wrapper">
-                        <x-link :href="route('admin.clinic.create')" class="btn btn-modern btn-primary-enhanced">
-                            <i class="ti ti-plus btn-icon"></i>{{ __('add') }}
-                        </x-link>
-
-                        <button type="button" class="btn btn-modern btn-success-enhanced" data-bs-toggle="modal"
+                <x-admin.page-header :title="__('Danh sách phòng khám')"
+                                     :subtitle="__('Quản lý hệ thống cơ sở y tế và phòng khám đối tác')"
+                                     icon="ti ti-building-hospital"
+                                     :addRoute="route('admin.clinic.create')"
+                                     :addText="__('Thêm mới')">
+                    <x-slot name="actions">
+                        <button type="button" class="btn btn-success rounded-pill px-3 shadow-sm d-inline-flex align-items-center" data-bs-toggle="modal"
                                 data-bs-target="#importExcelModal">
-                            <i class="ti ti-file btn-icon"></i>{{ __('Import') }}
+                            <i class="ti ti-file-import me-1"></i>{{ __('Import') }}
                         </button>
-
-                        <!-- Export Template Button -->
-                        <a href="{{ route('admin.clinic.exportTemplate') }}" class="btn btn-modern btn-dark-blue-enhanced">
-                            <i class="ti ti-download btn-icon"></i>{{ __('Export Template') }}
+                        <a href="{{ route('admin.clinic.exportTemplate') }}" class="btn btn-secondary rounded-pill px-3 shadow-sm d-inline-flex align-items-center">
+                            <i class="ti ti-template me-1"></i>{{ __('Template') }}
                         </a>
-
-                        <a href="{{ route('admin.address.exportProvince') }}" class="btn btn-modern btn-info-enhanced">
-                            <i class="ti ti-download btn-icon"></i>{{ __('Export tỉnh') }}
+                        <a href="{{ route('admin.address.exportProvince') }}" class="btn btn-info rounded-pill px-3 shadow-sm d-inline-flex align-items-center">
+                            <i class="ti ti-map-pin me-1"></i>{{ __('Tỉnh/Thành') }}
                         </a>
-
-                        <a href="{{ route('admin.address.exportWard') }}" class="btn btn-modern btn-warning-enhanced">
-                            <i class="ti ti-download btn-icon"></i>{{ __('Export phường/xã') }}
+                        <a href="{{ route('admin.address.exportWard') }}" class="btn btn-warning rounded-pill px-3 shadow-sm d-inline-flex align-items-center">
+                            <i class="ti ti-map me-1"></i>{{ __('Phường/Xã') }}
                         </a>
-                    </div>
-                </div>
+                    </x-slot>
+                </x-admin.page-header>
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.clinic.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">
@@ -66,8 +62,4 @@
     @include('admin.scripts.datatable-toggle-columns', [
         'id_table' => $dataTable->getTableAttribute('id'),
     ])
-
-    @include('admin.common.js.modal_exel', [
-     'importRoute' => route('admin.clinic.import'),
- ])
 @endpush

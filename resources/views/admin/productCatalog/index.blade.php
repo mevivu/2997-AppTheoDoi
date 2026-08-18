@@ -9,13 +9,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list')</h2>
-                    <x-link :href="route('admin.category.create')" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Danh mục sản phẩm')"
+                                     :subtitle="__('Quản lý các nhóm danh mục phân loại sản phẩm')"
+                                     icon="ti ti-layout-grid"
+                                     :addRoute="route('admin.category.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.category.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">

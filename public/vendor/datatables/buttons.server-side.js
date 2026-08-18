@@ -340,4 +340,19 @@
             },
         });
     }
+
+    if (typeof DataTable.ext.buttons.pageLength !== "undefined") {
+        $.extend(DataTable.ext.buttons.pageLength, {
+            text: function (dt) {
+                return dt.i18n(
+                    "buttons.pageLength",
+                    {
+                        "-1": '<i class="ti ti-list"></i> Hiển thị tất cả bản ghi',
+                        _: '<i class="ti ti-list"></i> Hiển thị %d bản ghi',
+                    },
+                    dt.page.len()
+                );
+            },
+        });
+    }
 })(jQuery, jQuery.fn.dataTable);

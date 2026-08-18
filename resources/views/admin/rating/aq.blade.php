@@ -9,9 +9,9 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('Danh sách đánh giá AQ')</h2>
-                </div>
+                <x-admin.page-header :title="__('Đánh giá AQ (Vượt khó)')"
+                                     :subtitle="__('Theo dõi và đánh giá chỉ số vượt khó của trẻ')"
+                                     icon="ti ti-shield-check" />
                 <div class="card-body">
                     <x-form id="formMultiple" :action="route('admin.rating.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">
@@ -42,5 +42,4 @@
     @include('admin.scripts.datatable-toggle-columns', [
         'id_table' => $dataTable->getTableAttribute('id'),
     ])
-
 @endpush

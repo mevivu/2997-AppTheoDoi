@@ -7,9 +7,9 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">{{ __('Danh sách Phiên bản Ứng dụng') }}</h2>
-                </div>
+                <x-admin.page-header :title="__('Danh sách Phiên bản Ứng dụng')"
+                                     :subtitle="__('Quản lý các phiên bản phát hành và cập nhật app mobile')"
+                                     icon="ti ti-brand-appstore" />
                 <div class="card-body">
                     <div class="table-responsive position-relative">
                         <x-admin.partials.toggle-column-datatable />

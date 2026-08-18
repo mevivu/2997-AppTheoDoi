@@ -1,4 +1,3 @@
-
 @extends('admin.layouts.master')
 
 @push('libs-css')
@@ -8,13 +7,11 @@
     <div class="page-body">
         <div class="container-fluid">
             <div class="card custom-shadow">
-                <div class="card-header justify-content-between">
-                    <h2 class="mb-0">@lang('list')</h2>
-                    <x-link :href="route('admin.post_category.create')" class="btn btn-primary">
-                        <i class="ti ti-plus"></i>
-                        <span class="ms-1">@lang('add')</span>
-                    </x-link>
-                </div>
+                <x-admin.page-header :title="__('Chuyên mục bài viết')"
+                                     :subtitle="__('Quản lý danh mục phân loại bài viết cẩm nang')"
+                                     icon="ti ti-category"
+                                     :addRoute="route('admin.post_category.create')"
+                                     :addText="__('Thêm mới')" />
                 <div class="card-body">
                     <div class="table-responsive position-relative">
                         <x-admin.partials.toggle-column-datatable />
@@ -32,11 +29,9 @@
 @endpush
 
 @push('custom-js')
-
     {{ $dataTable->scripts() }}
 
     @include('admin.scripts.datatable-toggle-columns', [
         'id_table' => $dataTable->getTableAttribute('id')
     ])
 @endpush
-
