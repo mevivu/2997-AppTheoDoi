@@ -65,6 +65,9 @@ class FirebaseAnalyticsService
             } elseif ($period === '7d') {
                 $days = 7;
                 $dimensionName = 'date';
+            } elseif ($period === '90d' || $period === '3m') {
+                $days = 90;
+                $dimensionName = 'date';
             }
 
             $response = $httpClient->post($url, [
@@ -247,6 +250,15 @@ class FirebaseAnalyticsService
                 $result[] = [
                     'date' => $date->format('d/m'),
                     'users' => rand(30, 80)
+                ];
+            }
+        } elseif ($period === '90d' || $period === '3m') {
+            $startDate = now()->subDays(90);
+            for ($i = 0; $i < 90; $i++) {
+                $date = $startDate->copy()->addDays($i);
+                $result[] = [
+                    'date' => $date->format('d/m'),
+                    'users' => rand(50, 150) + (int)(sin($i / 2) * 20)
                 ];
             }
         } else {

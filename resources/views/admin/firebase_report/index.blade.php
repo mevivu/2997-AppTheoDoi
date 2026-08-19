@@ -116,6 +116,7 @@
                                                         <button type="button" class="btn-filter-pill btn-period" data-period="1d">1 Ngày</button>
                                                         <button type="button" class="btn-filter-pill btn-period" data-period="7d">1 Tuần</button>
                                                         <button type="button" class="btn-filter-pill btn-period active" data-period="30d">1 Tháng</button>
+                                                        <button type="button" class="btn-filter-pill btn-period" data-period="90d">3 Tháng</button>
                                                     </div>
                                                 </div>
                                                 <div class="position-relative">
@@ -248,6 +249,8 @@
                             titleText = 'Người dùng hoạt động (24 giờ gần nhất)';
                         } else if (period === '7d') {
                             titleText = 'Người dùng hoạt động (7 ngày gần nhất)';
+                        } else if (period === '90d' || period === '3m') {
+                            titleText = 'Người dùng hoạt động (3 tháng gần nhất)';
                         }
                         $('#chart-active-users-title').text(titleText);
                     },
