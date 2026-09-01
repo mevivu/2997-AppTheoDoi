@@ -77,10 +77,10 @@
             const len = val.length;
             const counter = $('#message-char-count');
 
-            counter.text(`${len}/300`);
-            if (len > 250) {
+            counter.text(`${len}/1000`);
+            if (len > 900) {
                 counter.attr('class', 'char-counter danger');
-            } else if (len > 180) {
+            } else if (len > 750) {
                 counter.attr('class', 'char-counter warning');
             } else {
                 counter.attr('class', 'char-counter');

@@ -208,10 +208,10 @@
                     <label class="form-label fw-bold text-dark mb-0">
                         {{ __('Nội dung chi tiết') }} <span class="text-danger">*</span>
                     </label>
-                    <span class="char-counter" id="message-char-count">0/300</span>
+                    <span class="char-counter" id="message-char-count">0/1000</span>
                 </div>
                 <textarea id="notification_message" name="message" class="form-control" rows="5"
-                          required maxlength="300"
+                          required maxlength="1000"
                           placeholder="{{ __('Nhập nội dung thông điệp muốn truyền tải đến người dùng...') }}">{{ old('message') }}</textarea>
                 <small class="text-muted d-block mt-1 fs-12">
                     <i class="ti ti-device-mobile me-1"></i>{{ __('Khuyến nghị: Nội dung từ 80 - 200 ký tự mang lại tỷ lệ đọc cao nhất.') }}
