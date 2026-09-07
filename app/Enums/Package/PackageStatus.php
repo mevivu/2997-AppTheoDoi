@@ -19,9 +19,9 @@ enum PackageStatus: string
     public function badge(): string
     {
         return match ($this) {
-            PackageStatus::Active => 'bg-green',
-            PackageStatus::Deleted => 'bg-red',
-            PackageStatus::Draft => '',
+            PackageStatus::Active => 'bg-green text-white',
+            PackageStatus::Deleted => 'bg-red text-white',
+            PackageStatus::Draft => 'bg-warning text-white',
         };
     }
 }

@@ -37,7 +37,7 @@ class PackageDataTable extends BaseDataTable
     {
         return $this->repository->getByQueryBuilder(
             [
-                'status' => PackageStatus::Active->value,
+                ['status', '!=', PackageStatus::Deleted->value],
             ]
         );
     }
@@ -53,7 +53,7 @@ class PackageDataTable extends BaseDataTable
             ],
             [
                 'column' => 3,
-                'data' => ActiveStatus::asSelectArray()
+                'data' => PackageStatus::asSelectArray()
             ],
 
         ];

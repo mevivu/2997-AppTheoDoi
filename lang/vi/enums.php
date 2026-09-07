@@ -130,6 +130,11 @@ return [
         PackageDiscountType::Percent->value => 'Giảm theo phần trăm (%)',
         PackageDiscountType::Fixed->value => 'Giảm theo số tiền (VNĐ)',
     ],
+    PackageStatus::class => [
+        PackageStatus::Active->value => 'Đang hoạt động',
+        PackageStatus::Draft->value => 'Bản nháp',
+        PackageStatus::Deleted->value => 'Đã xóa',
+    ],
     Gender::class => [
         Gender::Male->value => 'Nam',
         Gender::Female->value => 'Nữ',
