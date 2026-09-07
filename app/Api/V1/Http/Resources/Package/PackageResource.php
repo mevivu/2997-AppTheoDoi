@@ -22,16 +22,16 @@ class PackageResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'price' => $this->price,
+            'price' => (float) $this->price,
             'description' => json_decode($this->description),
             'type' => $this->type,
             'code' => $this->code,
             'discount_type' => $this->discount_type?->value ?? 'none',
             'discount_value' => (float) ($this->discount_value ?? 0),
+            'discount_amount' => (float) ($this->discount_amount ?? 0),
             'discount_code' => $this->discount_code,
-            'final_price' => $this->final_price,
-            'has_discount' => $this->has_discount,
-            'discount_display' => $this->discount_display,
+            'final_price' => (float) $this->final_price,
+            'has_discount' => (bool) $this->has_discount,
         ];
     }
 }

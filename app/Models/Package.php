@@ -38,6 +38,7 @@ class Package extends Model
         'discount_code'
     ];
     protected $casts = [
+        'price' => 'float',
         'status' => PackageStatus::class,
         'type' => PackageType::class,
         'discount_type' => PackageDiscountType::class,
@@ -46,9 +47,20 @@ class Package extends Model
 
     protected $appends = [
         'final_price',
+        'discount_amount',
         'has_discount',
         'discount_display',
     ];
+
+    /**
+     * Số tiền thực tế được giảm (VNĐ)
+     */
+    public function getDiscountAmountAttribute(): float
+    {
+        $price = (float) $this->price;
+        $finalPrice = (float) $this->final_price;
+        return max(0, round($price - $finalPrice));
+    }
 
     /**
      * Tính giá bán sau khi áp dụng giảm giá
