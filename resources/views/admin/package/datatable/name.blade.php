@@ -38,8 +38,5 @@
         @else
             <span class="text-muted small">{{ format_price($origPrice) }}</span>
         @endif
-        <span class="badge bg-azure-lt px-1 py-0 small" title="Hạn mức thiết bị đăng nhập">
-            <i class="ti ti-devices"></i> {{ $max_devices ?? 1 }} máy
-        </span>
     </div>
 </div>

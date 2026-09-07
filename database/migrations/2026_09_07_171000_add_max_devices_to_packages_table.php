@@ -15,9 +15,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('packages', function (Blueprint $table) {
-            $table->unsignedInteger('max_devices')->default(1)->after('days')->comment('Số thiết bị đăng nhập tối đa cho phép');
-        });
+        if (!Schema::hasColumn('packages', 'max_devices')) {
+            Schema::table('packages', function (Blueprint $table) {
+                $table->unsignedInteger('max_devices')->default(1)->after('days')->comment('Số thiết bị đăng nhập tối đa cho phép');
+            });
+        }
 
         // Cập nhật mặc định: Gói 1 năm / VIP 1 năm (type = 12) tối đa 5 thiết bị
         DB::table('packages')

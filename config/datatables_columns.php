@@ -967,6 +967,12 @@ return [
             'width' => '150px',
             'addClass' => 'text-center align-middle',
         ],
+        'max_devices' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-devices"></i><span>Số thiết bị</span></div>',
+            'orderable' => true,
+            'width' => '140px',
+            'addClass' => 'text-center align-middle',
+        ],
         'status' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
             'orderable' => false,

@@ -128,7 +128,7 @@
             </div>
 
             <!-- days -->
-            <div class="col-12">
+            <div class="col-md-6 col-12">
                 <div class="mb-3">
                     <label class="control-label">@lang('Số ngày') <span class="text-danger">*</span></label>
                     <x-input name="days"
@@ -140,16 +140,26 @@
             </div>
 
             <!-- max_devices -->
-            <div class="col-12">
+            <div class="col-md-6 col-12">
                 <div class="mb-3">
                     <label class="control-label">@lang('Số thiết bị tối đa') <span class="text-danger">*</span></label>
                     <x-input name="max_devices"
+                             id="max_devices_input"
                              type="number"
                              min="1"
                              :value="old('max_devices', 1)"
                              :required="true"
                              :placeholder="__('Số thiết bị tối đa cho phép đăng nhập')" />
-                    <small class="text-muted">
+                    <div class="mt-2 d-flex align-items-center gap-1 flex-wrap">
+                        <span class="text-muted small me-1"><i class="ti ti-hand-click"></i> Chọn nhanh:</span>
+                        <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 btn-preset-devices" data-value="1">1 máy</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 btn-preset-devices" data-value="2">2 máy</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 btn-preset-devices" data-value="3">3 máy</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 btn-preset-devices" data-value="5">5 máy</button>
+                        <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 btn-preset-devices" data-value="10">10 máy</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 btn-preset-devices" data-value="999">Không giới hạn</button>
+                    </div>
+                    <small class="text-muted d-block mt-1">
                         <i class="ti ti-info-circle"></i> @lang('Chính sách hệ thống: Gói Free tối đa 01 thiết bị, VIP 1 năm tối đa 05 thiết bị.')
                     </small>
                 </div>

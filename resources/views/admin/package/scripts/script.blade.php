@@ -140,5 +140,38 @@
 
         // Trigger on load
         updateDiscountUI();
+
+        // ==========================================
+        // Max Devices Quick Presets Logic
+        // ==========================================
+        const $maxDevicesInput = $('input[name="max_devices"]');
+        const $devicePresetButtons = $('.btn-preset-devices');
+
+        function updateActiveDevicePreset() {
+            const currentVal = String($maxDevicesInput.val() || '').trim();
+            $devicePresetButtons.each(function() {
+                const presetVal = String($(this).attr('data-value')).trim();
+                if (presetVal === currentVal) {
+                    $(this).removeClass('btn-outline-primary btn-outline-secondary')
+                           .addClass('btn-primary active text-white');
+                } else {
+                    $(this).removeClass('btn-primary active text-white')
+                           .addClass(presetVal === '999' ? 'btn-outline-secondary' : 'btn-outline-primary');
+                }
+            });
+        }
+
+        $devicePresetButtons.on('click', function(e) {
+            e.preventDefault();
+            const val = $(this).attr('data-value');
+            $maxDevicesInput.val(val).trigger('change');
+            updateActiveDevicePreset();
+        });
+
+        $maxDevicesInput.on('input change', function() {
+            updateActiveDevicePreset();
+        });
+
+        updateActiveDevicePreset();
     });
 </script>

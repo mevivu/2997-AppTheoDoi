@@ -7,6 +7,7 @@ use App\Admin\Repositories\Package\PackageRepositoryInterface;
 use App\Enums\ActiveStatus;
 use App\Enums\Package\PackageStatus;
 use App\Enums\Package\PackageType;
+use App\Models\Package;
 use Illuminate\Database\Eloquent\Builder;
 
 class PackageDataTable extends BaseDataTable
@@ -29,6 +30,7 @@ class PackageDataTable extends BaseDataTable
             'name' => 'admin.package.datatable.name',
             'status' => 'admin.package.datatable.status',
             'type' => 'admin.package.datatable.type',
+            'max_devices' => 'admin.package.datatable.max_devices',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
@@ -44,8 +46,18 @@ class PackageDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [ 1, 2, 3, 4];
-        $this->columnSearchDate = [4];
+        $deviceOptions = Package::query()
+            ->whereNotNull('max_devices')
+            ->distinct()
+            ->orderBy('max_devices')
+            ->pluck('max_devices')
+            ->mapWithKeys(function ($val) {
+                return [$val => $val . ' thiết bị'];
+            })
+            ->all();
+
+        $this->columnAllSearch = [ 1, 2, 3, 4, 5 ];
+        $this->columnSearchDate = [ 5 ];
         $this->columnSearchSelect = [
             [
                 'column' => 2,
@@ -53,9 +65,12 @@ class PackageDataTable extends BaseDataTable
             ],
             [
                 'column' => 3,
+                'data' => $deviceOptions
+            ],
+            [
+                'column' => 4,
                 'data' => PackageStatus::asSelectArray()
             ],
-
         ];
     }
 
@@ -71,6 +86,16 @@ class PackageDataTable extends BaseDataTable
             'name' => $this->view['name'],
             'status' => $this->view['status'],
             'type' => $this->view['type'],
+            'max_devices' => $this->view['max_devices'],
+        ];
+    }
+
+    protected function setCustomFilterColumns(): void
+    {
+        $this->customFilterColumns = [
+            'max_devices' => function ($query, $keyword) {
+                $query->where('max_devices', $keyword);
+            },
         ];
     }
 
@@ -84,6 +109,6 @@ class PackageDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['action', 'name', 'status', 'checkbox', 'type'];
+        $this->customRawColumns = ['action', 'name', 'status', 'checkbox', 'type', 'max_devices'];
     }
 }
