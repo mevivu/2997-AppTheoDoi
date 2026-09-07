@@ -44,6 +44,12 @@ class Package extends Model
         'discount_value' => 'float',
     ];
 
+    protected $appends = [
+        'final_price',
+        'has_discount',
+        'discount_display',
+    ];
+
     /**
      * Tính giá bán sau khi áp dụng giảm giá
      */
