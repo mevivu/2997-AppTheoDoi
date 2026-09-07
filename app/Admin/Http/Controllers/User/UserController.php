@@ -17,6 +17,7 @@ use App\Enums\User\{Gender, UserStatus};
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -175,18 +176,64 @@ class UserController extends Controller
         );
     }
 
-    public function revokeDevice($userId, $deviceId): RedirectResponse
+    public function revokeDevice(Request $request, $userId, $deviceId): JsonResponse|RedirectResponse
     {
         $result = $this->service->revokeDevice((int) $userId, (int) $deviceId);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            if ($result) {
+                $user = $this->repository->findOrFail($userId);
+                $activeCount = $user->activeDevices()->count();
+                $maxAllowed = $user->getMaxDevicesAllowed();
+                return response()->json([
+                    'status' => 200,
+                    'success' => true,
+                    'message' => __('Đã giải phóng thiết bị thành công. Khách hàng có thể đăng nhập trên thiết bị mới.'),
+                    'data' => [
+                        'device_id' => (int) $deviceId,
+                        'active_count' => $activeCount,
+                        'max_allowed' => $maxAllowed,
+                    ]
+                ]);
+            }
+            return response()->json([
+                'status' => 400,
+                'success' => false,
+                'message' => __('Giải phóng thiết bị thất bại hoặc không tìm thấy thiết bị.')
+            ], 400);
+        }
+
         if ($result) {
             return back()->with('success', __('Đã giải phóng thiết bị thành công. Khách hàng có thể đăng nhập trên thiết bị mới.'));
         }
         return back()->with('error', __('Giải phóng thiết bị thất bại hoặc không tìm thấy thiết bị.'));
     }
 
-    public function revokeAllDevices($userId): RedirectResponse
+    public function revokeAllDevices(Request $request, $userId): JsonResponse|RedirectResponse
     {
         $result = $this->service->revokeAllDevices((int) $userId);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            if ($result) {
+                $user = $this->repository->findOrFail($userId);
+                $maxAllowed = $user->getMaxDevicesAllowed();
+                return response()->json([
+                    'status' => 200,
+                    'success' => true,
+                    'message' => __('Đã giải phóng toàn bộ thiết bị của khách hàng thành công.'),
+                    'data' => [
+                        'active_count' => 0,
+                        'max_allowed' => $maxAllowed,
+                    ]
+                ]);
+            }
+            return response()->json([
+                'status' => 400,
+                'success' => false,
+                'message' => __('Thực hiện thất bại.')
+            ], 400);
+        }
+
         if ($result) {
             return back()->with('success', __('Đã giải phóng toàn bộ thiết bị của khách hàng thành công.'));
         }

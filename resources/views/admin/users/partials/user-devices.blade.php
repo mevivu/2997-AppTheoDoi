@@ -17,38 +17,38 @@
                 <div>
                     <h5 class="mb-1 fw-bold text-dark d-flex align-items-center gap-2">
                         <span>{{ __('Quản lý Thiết Bị Đăng Nhập') }}</span>
-                        <span class="badge {{ $activeCount >= $maxAllowed ? 'bg-danger text-white' : 'bg-success text-white' }} px-2 py-1 fs-12">
-                            {{ $activeCount }} / {{ $maxAllowed }} {{ __('thiết bị') }}
+                        <span id="device-quota-badge" class="badge {{ $activeCount >= $maxAllowed ? 'bg-danger text-white' : 'bg-success text-white' }} px-2 py-1 fs-12">
+                            <span id="active-device-count">{{ $activeCount }}</span> / <span id="max-device-count">{{ $maxAllowed }}</span> {{ __('thiết bị') }}
                         </span>
                     </h5>
                     <p class="mb-0 text-muted fs-13">
                         {{ __('Gói hiện tại:') }} <strong class="text-primary">{{ $packageName }}</strong> &bull; 
-                        @if($activeCount >= $maxAllowed)
-                            <span class="text-danger fw-semibold">{{ __('Đã đạt giới hạn tối đa. Cần giải phóng thiết bị cũ trước khi liên kết máy mới.') }}</span>
-                        @else
-                            <span class="text-success fw-semibold">{{ __('Còn trống :count slot liên kết thiết bị.', ['count' => $maxAllowed - $activeCount]) }}</span>
-                        @endif
+                        <span id="device-quota-status-text">
+                            @if($activeCount >= $maxAllowed)
+                                <span class="text-danger fw-semibold">{{ __('Đã đạt giới hạn tối đa. Cần giải phóng thiết bị cũ trước khi liên kết máy mới.') }}</span>
+                            @else
+                                <span class="text-success fw-semibold">{{ __('Còn trống :count slot liên kết thiết bị.', ['count' => $maxAllowed - $activeCount]) }}</span>
+                            @endif
+                        </span>
                     </p>
                 </div>
             </div>
 
-            @if($activeCount > 0)
-                <div>
-                    <form action="{{ route('admin.user.device.revokeAll', $user->id) }}" method="POST" onsubmit="return confirm('{{ __('Bạn có chắc chắn muốn giải phóng TOÀN BỘ thiết bị của khách hàng này? Người dùng sẽ bị đăng xuất trên tất cả máy và có thể đăng nhập lại từ đầu.') }}');">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1">
-                            <i class="ti ti-device-mobile-off"></i>
-                            <span>{{ __('Giải phóng toàn bộ thiết bị') }}</span>
-                        </button>
-                    </form>
-                </div>
-            @endif
+            <div id="wrap-revoke-all-btn" style="{{ $activeCount > 0 ? '' : 'display: none !important;' }}">
+                <button type="button" 
+                        class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1 btn-revoke-all-devices"
+                        data-url="{{ route('admin.user.device.revokeAll', $user->id) }}"
+                        data-user-name="{{ $user->fullname }}">
+                    <i class="ti ti-device-mobile-off"></i>
+                    <span>{{ __('Giải phóng toàn bộ thiết bị') }}</span>
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Device List Table -->
     <div class="table-responsive border rounded-3">
-        <table class="table table-vcenter table-hover mb-0">
+        <table class="table table-vcenter table-hover mb-0" id="table-user-devices">
             <thead class="table-light">
                 <tr>
                     <th class="text-muted fs-12 fw-bold text-uppercase">{{ __('Tên thiết bị') }}</th>
@@ -61,10 +61,10 @@
             </thead>
             <tbody>
                 @forelse($devices as $device)
-                    <tr>
+                    <tr id="device-row-{{ $device->id }}">
                         <td>
                             <div class="d-flex align-items-center gap-2">
-                                <div class="avatar avatar-sm {{ $device->is_active ? 'bg-primary-lt text-primary' : 'bg-secondary-lt text-secondary' }} rounded-circle">
+                                <div id="device-avatar-{{ $device->id }}" class="avatar avatar-sm {{ $device->is_active ? 'bg-primary-lt text-primary' : 'bg-secondary-lt text-secondary' }} rounded-circle">
                                     <i class="ti ti-device-mobile fs-3"></i>
                                 </div>
                                 <div>
@@ -92,33 +92,35 @@
                                 <i class="ti ti-clock me-1"></i>{{ $device->last_active_at ? format_datetime($device->last_active_at) : __('Chưa ghi nhận') }}
                             </span>
                         </td>
-                        <td class="text-center">
+                        <td class="text-center" id="device-status-col-{{ $device->id }}">
                             @if($device->is_active)
-                                <span class="badge bg-success-lt px-2 py-1">
+                                <span class="badge bg-success-lt px-2 py-1 badge-device-status">
                                     <i class="ti ti-circle-check me-1"></i>{{ __('Đang liên kết') }}
                                 </span>
                             @else
-                                <span class="badge bg-secondary-lt px-2 py-1">
+                                <span class="badge bg-secondary-lt px-2 py-1 badge-device-status">
                                     <i class="ti ti-ban me-1"></i>{{ __('Đã giải phóng') }}
                                 </span>
                             @endif
                         </td>
-                        <td class="text-center">
+                        <td class="text-center" id="device-action-col-{{ $device->id }}">
                             @if($device->is_active)
-                                <form action="{{ route('admin.user.device.revoke', [$user->id, $device->id]) }}" method="POST" onsubmit="return confirm('{{ __('Bạn có chắc chắn muốn giải phóng thiết bị này? Thiết bị sẽ bị đăng xuất và slot liên kết sẽ được mở lại.') }}');">
-                                    @csrf
-                                    <button type="submit" class="btn btn-sm btn-outline-danger px-2 py-1 d-inline-flex align-items-center gap-1" title="{{ __('Giải phóng / Hủy liên kết thiết bị này') }}">
-                                        <i class="ti ti-unlink"></i>
-                                        <span>{{ __('Giải phóng') }}</span>
-                                    </button>
-                                </form>
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-danger px-2 py-1 d-inline-flex align-items-center gap-1 btn-revoke-device" 
+                                        data-url="{{ route('admin.user.device.revoke', [$user->id, $device->id]) }}"
+                                        data-device-id="{{ $device->id }}"
+                                        data-device-name="{{ $device->device_name ?: __('Thiết bị di động') }}"
+                                        title="{{ __('Giải phóng / Hủy liên kết thiết bị này') }}">
+                                    <i class="ti ti-unlink"></i>
+                                    <span>{{ __('Giải phóng') }}</span>
+                                </button>
                             @else
                                 <span class="text-muted fs-12 fst-italic">{{ __('Không khả dụng') }}</span>
                             @endif
                         </td>
                     </tr>
                 @empty
-                    <tr>
+                    <tr id="device-empty-row">
                         <td colspan="6" class="text-center py-4 text-muted">
                             <i class="ti ti-device-mobile-off fs-1 d-block mb-2 text-secondary"></i>
                             <span>{{ __('Chưa có thiết bị nào được liên kết với tài khoản này.') }}</span>
