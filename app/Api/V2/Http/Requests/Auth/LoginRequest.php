@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Api\V2\Http\Requests\Auth;
+
+use App\Api\V1\Http\Requests\BaseRequest;
+
+class LoginRequest extends BaseRequest
+{
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    protected function methodPost(): array
+    {
+        return [
+            'email' => 'required|email',
+            'password' => 'required',
+            'device_token' => 'nullable|string',
+            'device_id' => 'nullable|string|max:191',
+            'device_name' => 'nullable|string|max:191',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Email không được để trống.',
+            'email.email' => 'Email không đúng định dạng.',
+            'password.required' => 'Mật khẩu không được để trống.',
+            'device_token.string' => 'Device token phải là chuỗi.',
+            'device_id.string' => 'Device id phải là chuỗi.',
+            'device_id.max' => 'Device id không được quá 191 ký tự.',
+            'device_name.string' => 'Device name phải là chuỗi.',
+            'device_name.max' => 'Device name không được quá 191 ký tự.',
+        ];
+    }
+}

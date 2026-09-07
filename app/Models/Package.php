@@ -35,7 +35,9 @@ class Package extends Model
         /* Giá trị giảm (% hoặc số tiền) */
         'discount_value',
         /* Mã giảm giá / Voucher */
-        'discount_code'
+        'discount_code',
+        /* Số thiết bị đăng nhập tối đa */
+        'max_devices',
     ];
     protected $casts = [
         'price' => 'float',
@@ -43,6 +45,7 @@ class Package extends Model
         'type' => PackageType::class,
         'discount_type' => PackageDiscountType::class,
         'discount_value' => 'float',
+        'max_devices' => 'integer',
     ];
 
     protected $appends = [

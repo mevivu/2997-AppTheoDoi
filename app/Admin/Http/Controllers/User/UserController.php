@@ -174,4 +174,22 @@ class UserController extends Controller
             ]
         );
     }
+
+    public function revokeDevice($userId, $deviceId): RedirectResponse
+    {
+        $result = $this->service->revokeDevice((int) $userId, (int) $deviceId);
+        if ($result) {
+            return back()->with('success', __('Đã giải phóng thiết bị thành công. Khách hàng có thể đăng nhập trên thiết bị mới.'));
+        }
+        return back()->with('error', __('Giải phóng thiết bị thất bại hoặc không tìm thấy thiết bị.'));
+    }
+
+    public function revokeAllDevices($userId): RedirectResponse
+    {
+        $result = $this->service->revokeAllDevices((int) $userId);
+        if ($result) {
+            return back()->with('success', __('Đã giải phóng toàn bộ thiết bị của khách hàng thành công.'));
+        }
+        return back()->with('error', __('Thực hiện thất bại.'));
+    }
 }

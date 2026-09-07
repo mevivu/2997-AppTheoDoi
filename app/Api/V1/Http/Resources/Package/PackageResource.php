@@ -30,6 +30,7 @@ class PackageResource extends JsonResource
             'discount_value' => (float) ($this->discount_value ?? 0),
             'discount_amount' => (float) ($this->discount_amount ?? 0),
             'discount_code' => $this->discount_code,
+            'max_devices' => (int) ($this->max_devices ?? 1),
             'final_price' => (float) $this->final_price,
             'has_discount' => (bool) $this->has_discount,
         ];

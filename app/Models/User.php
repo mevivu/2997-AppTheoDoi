@@ -107,6 +107,47 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(UserPackage::class);
     }
 
+    public function devices(): HasMany
+    {
+        return $this->hasMany(UserDevice::class, 'user_id');
+    }
+
+    public function activeDevices(): HasMany
+    {
+        return $this->hasMany(UserDevice::class, 'user_id')->where('is_active', true);
+    }
+
+    /**
+     * Lấy số lượng thiết bị tối đa được phép đăng nhập theo gói cước hiện tại
+     */
+    public function getMaxDevicesAllowed(): int
+    {
+        // 1. Kiểm tra gói đang hoạt động còn hạn
+        $activeUserPackage = $this->userPackages()
+            ->where('status', \App\Enums\Package\PackageUserStatus::Active)
+            ->where('end_date', '>=', now())
+            ->latest('end_date')
+            ->first();
+
+        if ($activeUserPackage && $activeUserPackage->package) {
+            return (int) ($activeUserPackage->package->max_devices ?? 1);
+        }
+
+        // 2. Nếu không có gói trả phí còn hạn, kiểm tra gói gần nhất
+        $firstPackage = $this->userPackages()->latest()->first();
+        if ($firstPackage && $firstPackage->package) {
+            return (int) ($firstPackage->package->max_devices ?? 1);
+        }
+
+        // 3. Fallback: Gói Free / Cơ Bản mặc định
+        $normalPackage = Package::getNormalPackage();
+        if ($normalPackage) {
+            return (int) ($normalPackage->max_devices ?? 1);
+        }
+
+        return 1;
+    }
+
     public function children(): HasMany
     {
         return $this->hasMany(Child::class, 'user_id');

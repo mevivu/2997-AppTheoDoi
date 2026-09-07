@@ -197,4 +197,57 @@ class UserService implements UserServiceInterface
         }
     }
 
+    public function revokeDevice(int $userId, int $deviceId): bool
+    {
+        try {
+            $device = \App\Models\UserDevice::where('id', $deviceId)
+                ->where('user_id', $userId)
+                ->first();
+
+            if (!$device) {
+                return false;
+            }
+
+            $device->update(['is_active' => false]);
+
+            // Invalidate session liên quan đến thiết bị này
+            $sessions = \App\Models\UserSession::where('user_id', $userId)
+                ->where('status', \App\Enums\DeleteStatus::NotDeleted)
+                ->where(function ($query) use ($device) {
+                    $query->where('device_token', $device->device_id)
+                        ->orWhere('device_token', $device->device_token);
+                })
+                ->get();
+
+            foreach ($sessions as $session) {
+                try {
+                    \Tymon\JWTAuth\Facades\JWTAuth::setToken($session->access_token)->invalidate();
+                } catch (\Exception $e) {
+                    // ignore if already invalid/expired
+                }
+                $session->update(['status' => \App\Enums\DeleteStatus::Deleted]);
+            }
+
+            return true;
+        } catch (Exception $e) {
+            $this->logError('Failed to revoke device:', $e);
+            return false;
+        }
+    }
+
+    public function revokeAllDevices(int $userId): bool
+    {
+        try {
+            // Đánh dấu tất cả thiết bị của user là đã giải phóng
+            \App\Models\UserDevice::where('user_id', $userId)->update(['is_active' => false]);
+
+            // Invalidate toàn bộ session của user
+            $this->userSessionRepository->deleteAllSessionTokens($userId);
+
+            return true;
+        } catch (Exception $e) {
+            $this->logError('Failed to revoke all devices:', $e);
+            return false;
+        }
+    }
 }

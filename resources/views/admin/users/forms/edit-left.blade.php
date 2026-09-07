@@ -59,6 +59,21 @@
                         <span class="badge bg-primary-lt ms-1">{{ $user->children()->count() }}</span>
                     </button>
                 </li>
+
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link"
+                            id="devices-info-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#devicesInfo"
+                            type="button"
+                            role="tab"
+                            aria-controls="devicesInfo"
+                            aria-selected="false">
+                        <i class="ti ti-devices fs-4"></i>
+                        <span>{{ __('Thiết Bị Đang Dùng') }}</span>
+                        <span class="badge bg-azure-lt ms-1">{{ $user->activeDevices()->count() }}/{{ $user->getMaxDevicesAllowed() }}</span>
+                    </button>
+                </li>
             </ul>
         </div>
 
@@ -95,6 +110,14 @@
                      role="tabpanel"
                      aria-labelledby="children-info-tab">
                     @include('admin.users.partials.children-info')
+                </div>
+
+                <!-- Tab 5: Thiết bị đang dùng -->
+                <div class="tab-pane fade"
+                     id="devicesInfo"
+                     role="tabpanel"
+                     aria-labelledby="devices-info-tab">
+                    @include('admin.users.partials.user-devices')
                 </div>
             </div>
         </div>

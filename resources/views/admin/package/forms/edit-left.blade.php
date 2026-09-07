@@ -144,6 +144,22 @@
                 </div>
             </div>
 
+            <!-- max_devices -->
+            <div class="col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('Số thiết bị tối đa') <span class="text-danger">*</span></label>
+                    <x-input name="max_devices"
+                             type="number"
+                             min="1"
+                             :value="old('max_devices', $instance->max_devices ?? 1)"
+                             :required="true"
+                             :placeholder="__('Số thiết bị tối đa cho phép đăng nhập')" />
+                    <small class="text-muted">
+                        <i class="ti ti-info-circle"></i> @lang('Chính sách hệ thống: Gói Free tối đa 01 thiết bị, VIP 1 năm tối đa 05 thiết bị.')
+                    </small>
+                </div>
+            </div>
+
 
             <!-- description -->
             <div class="col-12">

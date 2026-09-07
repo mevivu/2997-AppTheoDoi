@@ -746,6 +746,8 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::group(['middleware' => ['permission:updateUser', 'auth:admin']], function () {
                 Route::put('/sua', 'update')->name('update');
                 Route::post('/clear-normal-tokens', 'clearNormalTokens')->name('clearNormalTokens');
+                Route::post('/{userId}/devices/{deviceId}/revoke', 'revokeDevice')->name('device.revoke');
+                Route::post('/{userId}/devices/revoke-all', 'revokeAllDevices')->name('device.revokeAll');
             });
 
             Route::group(['middleware' => ['permission:deleteUser', 'auth:admin']], function () {
