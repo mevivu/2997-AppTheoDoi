@@ -4,6 +4,7 @@ namespace App\Admin\Http\Requests\Package;
 
 use App\Admin\Http\Requests\BaseRequest;
 use App\Enums\ActiveStatus;
+use App\Enums\Package\PackageDiscountType;
 use App\Enums\Package\PackageType;
 use Illuminate\Validation\Rules\Enum;
 
@@ -24,7 +25,10 @@ class PackageRequest extends BaseRequest
             'price' => ['required', 'string'],
             'days' => ['required', 'numeric'],
             'type' => ['required', new Enum(PackageType::class)],
-            'code' => ['required', 'string']
+            'code' => ['required', 'string'],
+            'discount_type' => ['nullable', new Enum(PackageDiscountType::class)],
+            'discount_value' => ['nullable', 'numeric', 'min:0'],
+            'discount_code' => ['nullable', 'string', 'max:50'],
         ];
     }
 
@@ -38,8 +42,22 @@ class PackageRequest extends BaseRequest
             'days' => ['required', 'numeric'],
             'type' => ['required', new Enum(PackageType::class)],
             'status' => ['required', new Enum(ActiveStatus::class)],
-            'code' => ['required', 'string']
-
+            'code' => ['required', 'string'],
+            'discount_type' => ['nullable', new Enum(PackageDiscountType::class)],
+            'discount_value' => ['nullable', 'numeric', 'min:0'],
+            'discount_code' => ['nullable', 'string', 'max:50'],
         ];
     }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $discountType = $this->input('discount_type');
+            $discountValue = (float) $this->input('discount_value', 0);
+            if ($discountType === PackageDiscountType::Percent->value && $discountValue > 100) {
+                $validator->errors()->add('discount_value', __('Mức giảm theo phần trăm không được vượt quá 100%.'));
+            }
+        });
+    }
 }
+

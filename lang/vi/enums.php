@@ -19,6 +19,7 @@ use App\Enums\Notification\MessageType;
 use App\Enums\Notification\NotificationOption;
 use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
+use App\Enums\Package\PackageDiscountType;
 use App\Enums\Package\PackageStatus;
 use App\Enums\Package\PackageType;
 use App\Enums\Post\PostStatus;
@@ -123,6 +124,11 @@ return [
         PackageType::OneYear->value => '1 năm',
         PackageType::TwoYear->value => '2 năm',
         PackageType::Normal->value => 'Thường',
+    ],
+    PackageDiscountType::class => [
+        PackageDiscountType::None->value => 'Không giảm giá',
+        PackageDiscountType::Percent->value => 'Giảm theo phần trăm (%)',
+        PackageDiscountType::Fixed->value => 'Giảm theo số tiền (VNĐ)',
     ],
     Gender::class => [
         Gender::Male->value => 'Nam',

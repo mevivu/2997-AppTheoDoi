@@ -32,13 +32,36 @@ class PackageService implements PackageServiceInterface
 
 
     /**
+     * Chuẩn hóa dữ liệu trước khi lưu
+     */
+    protected function prepareData(array $data): array
+    {
+        $data['description'] = json_encode($data['description'] ?? []);
+        $discountType = $data['discount_type'] ?? 'none';
+
+        if (empty($discountType) || $discountType === 'none') {
+            $data['discount_type'] = 'none';
+            $data['discount_value'] = 0;
+        } else {
+            $data['discount_value'] = (float) ($data['discount_value'] ?? 0);
+        }
+
+        if (!empty($data['discount_code'])) {
+            $data['discount_code'] = strtoupper(trim($data['discount_code']));
+        } else {
+            $data['discount_code'] = null;
+        }
+
+        return $data;
+    }
+
+    /**
      * @throws Exception
      */
     public function store(Request $request): object|false
     {
-        $data = $request->validated();
+        $data = $this->prepareData($request->validated());
         $data['status'] = PackageStatus::Draft;
-        $data['description'] = json_encode($data['description']);
         return $this->repository->create($data);
     }
 
@@ -47,8 +70,7 @@ class PackageService implements PackageServiceInterface
      */
     public function update(Request $request): object|bool
     {
-        $data = $request->validated();
-        $data['description'] = json_encode($data['description']);
+        $data = $this->prepareData($request->validated());
         return $this->repository->update($data['id'], $data);
     }
 

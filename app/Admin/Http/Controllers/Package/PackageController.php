@@ -7,6 +7,7 @@ use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Package\PackageRequest;
 use App\Admin\Repositories\Package\PackageRepositoryInterface;
 use App\Admin\Services\Package\PackageServiceInterface;
+use App\Enums\Package\PackageDiscountType;
 use App\Enums\Package\PackageStatus;
 use App\Enums\Package\PackageType;
 use App\Traits\ResponseController;
@@ -72,6 +73,7 @@ class PackageController extends Controller
         return view($this->view['create'], [
             'status' => PackageStatus::asSelectArray(),
             'type' => PackageType::asSelectArray(),
+            'discount_types' => PackageDiscountType::asSelectArray(),
             'breadcrumbs' => $this->crums->add(
                 __('package'),
                 route($this->route['index'])
@@ -99,6 +101,7 @@ class PackageController extends Controller
                 'instance' => $instance,
                 'type' => PackageType::asSelectArray(),
                 'status' => PackageStatus::asSelectArray(),
+                'discount_types' => PackageDiscountType::asSelectArray(),
                 'breadcrumbs' => $this->crums->add(
                     __('package'),
                     route($this->route['index'])
