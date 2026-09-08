@@ -323,12 +323,14 @@
             <div class="col-12 col-xl-4">
                 <div class="card chart-card h-100">
                     <div class="card-header border-0 bg-transparent pt-3 pb-2">
-                        <h3 class="card-title font-weight-bold mb-0">
-                            <i class="ti ti-chart-donut text-success me-2"></i>Tỷ trọng sử dụng
-                        </h3>
-                        <div class="text-muted fs-12 mt-1">Cơ cấu phần trăm giữa các chức năng</div>
+                        <div>
+                            <h3 class="card-title font-weight-bold mb-0">
+                                <i class="ti ti-chart-donut text-success me-2"></i>Tỷ trọng sử dụng
+                            </h3>
+                            <div class="text-muted fs-12 mt-1">Cơ cấu phần trăm giữa các chức năng</div>
+                        </div>
                     </div>
-                    <div class="card-body position-relative d-flex flex-column align-items-center justify-content-center">
+                    <div class="card-body position-relative">
                         <div id="chart-donut" style="width: 100%; height: 380px;"></div>
                         <div id="chart-loading-donut" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center d-none" style="background: rgba(255,255,255,0.7); z-index: 10; border-radius: 12px;">
                             <div class="spinner-border text-primary" role="status"></div>
@@ -544,9 +546,22 @@
         donutRoot._logo.dispose();
         donutRoot.setThemes([am5themes_Animated.new(donutRoot)]);
 
+        if (!data || data.length === 0) {
+            donutRoot.container.children.push(am5.Label.new(donutRoot, {
+                text: "Không có dữ liệu trong khoảng thời gian này",
+                fontSize: 13,
+                fill: am5.color(0x94a3b8),
+                centerX: am5.p50,
+                centerY: am5.p50,
+                x: am5.p50,
+                y: am5.p50
+            }));
+            return;
+        }
+
         donutChart = donutRoot.container.children.push(am5percent.PieChart.new(donutRoot, {
             layout: donutRoot.verticalLayout,
-            innerRadius: am5.percent(55)
+            innerRadius: am5.percent(65)
         }));
 
         donutSeries = donutChart.series.push(am5percent.PieSeries.new(donutRoot, {
@@ -555,16 +570,15 @@
             alignLabels: false
         }));
 
-        donutSeries.labels.template.setAll({
-            text: "{category}: {value}",
-            fontSize: 11
-        });
+        // Hide cluttered slice labels and ticks completely to prevent overlapping
+        donutSeries.labels.template.set("forceHidden", true);
+        donutSeries.ticks.template.set("forceHidden", true);
 
         donutSeries.slices.template.setAll({
             templateField: "sliceSettings",
             stroke: am5.color(0xffffff),
             strokeWidth: 2,
-            tooltipText: "{category}: [bold]{value} lượt ({percentage})[/]"
+            tooltipText: "{category}: [bold]{value}[/] lượt ({percentage})"
         });
 
         donutSeries.slices.template.adapters.add("fill", function(fill, target) {
@@ -575,7 +589,41 @@
             return fill;
         });
 
-        donutSeries.data.setAll(data);
+        var total = (data || []).reduce(function(sum, item) { return sum + Number(item.value || 0); }, 0);
+
+        // Center Label in the Donut Hole
+        donutChart.seriesContainer.children.push(am5.Label.new(donutRoot, {
+            textAlign: "center",
+            centerY: am5.percent(50),
+            centerX: am5.percent(50),
+            text: "[#64748b;fontSize:11px;fontWeight:600]TỔNG LƯỢT[/]\n[bold;fontSize:20px;color:#0f172a]" + Number(total).toLocaleString('vi-VN') + "[/]"
+        }));
+
+        // Clean interactive Legend below the Donut
+        var legend = donutChart.children.push(am5.Legend.new(donutRoot, {
+            centerX: am5.percent(50),
+            x: am5.percent(50),
+            marginTop: 15,
+            marginBottom: 5,
+            layout: donutRoot.gridLayout,
+            maxColumns: 2
+        }));
+
+        legend.labels.template.setAll({
+            fontSize: 12,
+            fontWeight: "500",
+            maxWidth: 120,
+            oversizedBehavior: "truncate"
+        });
+
+        legend.valueLabels.template.setAll({
+            fontSize: 12,
+            fontWeight: "bold",
+            text: "{valuePercentTotal.formatNumber('0.0')}%"
+        });
+
+        donutSeries.data.setAll(data || []);
+        legend.data.setAll(donutSeries.dataItems);
         donutChart.appear(800, 100);
     }
 

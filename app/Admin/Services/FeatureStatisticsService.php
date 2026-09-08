@@ -482,12 +482,14 @@ class FeatureStatisticsService
                 ->pluck('child_id')
                 ->toArray();
 
-            $stats['vaccine']['users'] = DB::table('vaccination_schedules')
-                ->whereBetween('created_at', [$startDate, $endDate])
-                ->whereNotNull('user_id')
-                ->distinct()
-                ->pluck('user_id')
-                ->toArray();
+            if (!empty($stats['vaccine']['children'])) {
+                $stats['vaccine']['users'] = DB::table('children')
+                    ->whereIn('id', $stats['vaccine']['children'])
+                    ->whereNotNull('user_id')
+                    ->distinct()
+                    ->pluck('user_id')
+                    ->toArray();
+            }
         }
 
         // 7. Theo dõi thai kỳ - pregnancies
@@ -498,12 +500,21 @@ class FeatureStatisticsService
                 ->first();
             $stats['pregnancy']['count'] += (int) ($pregAgg->total ?? 0);
 
-            $stats['pregnancy']['users'] = DB::table('pregnancies')
+            $stats['pregnancy']['children'] = DB::table('pregnancies')
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->whereNotNull('user_id')
+                ->whereNotNull('child_id')
                 ->distinct()
-                ->pluck('user_id')
+                ->pluck('child_id')
                 ->toArray();
+
+            if (!empty($stats['pregnancy']['children'])) {
+                $stats['pregnancy']['users'] = DB::table('children')
+                    ->whereIn('id', $stats['pregnancy']['children'])
+                    ->whereNotNull('user_id')
+                    ->distinct()
+                    ->pluck('user_id')
+                    ->toArray();
+            }
         }
 
         // 8. Hồ sơ y tế - journals where type = 'prescription'

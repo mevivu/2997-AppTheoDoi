@@ -51,6 +51,8 @@ class FeatureStatisticsController extends Controller
                 'to' => $to,
             ]);
         } catch (\Exception $e) {
+            \Log::error('FeatureStatisticsController error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+
             if ($request->ajax()) {
                 return response()->json([
                     'status' => 'error',
