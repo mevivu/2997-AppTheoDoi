@@ -76,7 +76,7 @@
                                 <option value="{{ $package->id }}"
                                         data-days="{{ $package->days }}"
                                         @if($currentPackage?->package_id == $package->id) selected @endif>
-                                    {{ $package->name }} ({{ $package->days }} {{ __('ngày') }} - {{ number_format($package->price) }} VNĐ)
+                                    {{ $package->name }} ({{ $package->days }} {{ __('ngày') }} - {{ number_format($package->price) }} VNĐ) {{ $package->status == \App\Enums\Package\PackageStatus::Draft ? '- [Bản Nháp]' : '' }}
                                 </option>
                             @endforeach
                         </select>

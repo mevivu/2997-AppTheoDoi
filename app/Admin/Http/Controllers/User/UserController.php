@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 namespace App\Admin\Http\Controllers\User;
 
@@ -103,7 +103,7 @@ class UserController extends Controller
         $instance = $this->repository->findOrFail($id);
         $packages = $this->packageRepository->getByQueryBuilder(
             [
-                'status' => ActiveStatus::Active,
+                ['status', 'IN', [\App\Enums\Package\PackageStatus::Active->value, \App\Enums\Package\PackageStatus::Draft->value]],
             ]
         )->get();
         return view(
