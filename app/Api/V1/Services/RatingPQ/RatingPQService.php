@@ -6,6 +6,7 @@ namespace App\Api\V1\Services\RatingPQ;
 use App\Admin\Repositories\Bmi\BmiRepositoryInterface;
 use App\Admin\Services\File\FileService;
 use App\Api\V1\Http\Resources\RatingPQ\RatingPQMonthResource;
+use App\Api\V1\Http\Resources\RatingPQ\RatingPQResource;
 use App\Api\V1\Repositories\Child\ChildRepositoryInterface;
 use App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface;
 use App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface;
@@ -258,6 +259,55 @@ class RatingPQService implements RatingPQServiceInterface
         );
         return count($validPqComponents) > 0 ? round(array_sum($validPqComponents) / count($validPqComponents), 1) : null;
 
+    }
+
+    /**
+     * Lấy thông tin tổng hợp thể chất cho màn hình Tổng quan (API V2)
+     *
+     * @param Request $request
+     * @return array
+     * @throws Exception
+     */
+    public function getGeneralInfo(Request $request): array
+    {
+        $data = $request->validated();
+        $childId = $data['child_id'];
+        $year = (int)($data['year'] ?? Carbon::now()->year);
+
+        $ratingLasted = $this->repository->getLatestByChildId($childId);
+
+        $overall = null;
+        $latestRecord = null;
+
+        if ($ratingLasted) {
+            $overall = $this->getOverallStats($request, $childId);
+            $latestRecord = new RatingPQResource($ratingLasted);
+        }
+
+        $records = $this->repository->getQueryBuilder()
+            ->where('child_id', $childId)
+            ->whereYear('assessment_date', '=', $year)
+            ->orderBy('assessment_date', 'desc')
+            ->get();
+
+        $groupedRecords = [];
+        foreach ($records as $record) {
+            $date = $record->assessment_date->toDateString();
+            if (!isset($groupedRecords[$date]) || $record->created_at > $groupedRecords[$date]->created_at) {
+                $groupedRecords[$date] = $record;
+            }
+        }
+
+        $statistics = [];
+        foreach ($groupedRecords as $record) {
+            $statistics[] = new RatingPQMonthResource($record);
+        }
+
+        return [
+            'overall' => $overall,
+            'latest_record' => $latestRecord,
+            'statistics' => $statistics,
+        ];
     }
 
     /**

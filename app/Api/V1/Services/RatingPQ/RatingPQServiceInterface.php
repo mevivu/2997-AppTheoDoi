@@ -21,5 +21,5 @@ interface RatingPQServiceInterface
 
     public function getScorePQ($request, $childId): ?float;
 
-
+    public function getGeneralInfo(Request $request): array;
 }
