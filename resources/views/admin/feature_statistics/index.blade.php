@@ -1,6 +1,22 @@
 @extends('admin.layouts.master')
 @php use App\Traits\RouteAdminSystem; @endphp
 
+@push('libs-css')
+    <link rel="stylesheet" href="{{ asset('public/libs/tabler/dist/litepicker/dist/css/litepicker.css') }}"/>
+    <style>
+        .litepicker {
+            font-family: inherit;
+            border-radius: 14px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            z-index: 1050;
+        }
+        .litepicker .container__months .month-item-header {
+            font-weight: 700;
+        }
+    </style>
+@endpush
+
 @section('content')
 <style>
     .page-body {
@@ -147,7 +163,11 @@
                     Theo dõi tần suất và mức độ sử dụng của phụ huynh đối với các chức năng Đánh giá toàn diện & Tiện ích
                 </p>
             </div>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <button type="button" class="btn btn-outline-primary d-flex align-items-center gap-1 font-weight-semibold shadow-sm px-3" data-bs-toggle="modal" data-bs-target="#modal-statistics-logic">
+                    <i class="ti ti-help-circle fs-3"></i>
+                    <span>Giải thích logic thống kê</span>
+                </button>
                 <span class="badge bg-blue-lt px-3 py-2 font-weight-bold" id="badge-date-range" style="font-size: 0.85rem;">
                     <i class="ti ti-calendar me-1"></i>{{ $stats['date_range_label'] }}
                 </span>
@@ -190,14 +210,22 @@
                     </div>
                 </div>
 
-                <!-- Custom Date Range Row (Collapsible) -->
-                <div class="mt-3 pt-3 border-top d-flex align-items-center gap-2 flex-wrap">
-                    <span class="text-muted fs-13 font-weight-medium">Hoặc chọn khoảng ngày:</span>
-                    <input type="date" id="input-from-date" class="form-control form-control-sm" style="width: 150px;" value="{{ $from }}">
-                    <span class="text-muted">đến</span>
-                    <input type="date" id="input-to-date" class="form-control form-control-sm" style="width: 150px;" value="{{ $to }}">
-                    <button type="button" id="btn-apply-custom-date" class="btn btn-sm btn-primary px-3">
-                        <i class="ti ti-filter me-1"></i> Áp dụng
+                <!-- Modern Date Range Selector (Litepicker) -->
+                <div class="mt-3 pt-3 border-top d-flex align-items-center gap-3 flex-wrap">
+                    <span class="text-muted fs-13 font-weight-medium d-flex align-items-center gap-1">
+                        <i class="ti ti-calendar-event text-primary fs-3"></i> Hoặc chọn khoảng ngày tùy chỉnh:
+                    </span>
+                    <div class="input-icon" style="min-width: 270px;">
+                        <span class="input-icon-addon">
+                            <i class="ti ti-calendar text-muted"></i>
+                        </span>
+                        <input type="text" id="datepicker-range" class="form-control form-control-sm bg-white shadow-none rounded-pill" 
+                               placeholder="Chọn khoảng ngày (dd/mm/yyyy - dd/mm/yyyy)" 
+                               value="{{ ($from && $to) ? \Carbon\Carbon::parse($from)->format('d/m/Y') . ' - ' . \Carbon\Carbon::parse($to)->format('d/m/Y') : '' }}" 
+                               readonly style="cursor: pointer; font-size: 0.85rem; font-weight: 500;">
+                    </div>
+                    <button type="button" id="btn-clear-custom-date" class="btn btn-sm btn-ghost-danger rounded-pill px-2 d-flex align-items-center gap-1" style="display: {{ ($from && $to) ? 'inline-flex' : 'none' }}; font-size: 0.8rem;">
+                        <i class="ti ti-x"></i> Xóa lọc ngày
                     </button>
                 </div>
             </div>
@@ -440,12 +468,274 @@
     </div>
 </div>
 
+<!-- Modal: Giải thích Logic Thống Kê & Nguồn Dữ Liệu -->
+<div class="modal modal-blur fade" id="modal-statistics-logic" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header bg-primary text-white border-0 py-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="ti ti-info-circle fs-1"></i>
+                    <div>
+                        <h4 class="modal-title font-weight-bold mb-0 text-white">Giải Thích Logic Tính Toán & Nguồn Dữ Liệu Thống Kê</h4>
+                        <div class="fs-12 text-white-50">Minh bạch cơ chế thu thập và phương pháp tổng hợp số liệu trên hệ thống</div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" style="background: #F8FAFC;">
+                
+                <!-- 1. Mô hình tổng hợp 2 tầng -->
+                <div class="card mb-4 border-0 shadow-sm rounded-3">
+                    <div class="card-body p-4">
+                        <h4 class="font-weight-bold text-dark d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-blue-lt p-2 rounded-circle"><i class="ti ti-layers-intersect fs-3 text-primary"></i></span>
+                            Mô Hình Dữ Liệu Kết Hợp 2 Tầng (Two-Tier Hybrid Architecture)
+                        </h4>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3 border h-100">
+                                    <div class="font-weight-bold text-primary mb-1 d-flex align-items-center gap-1">
+                                        <i class="ti ti-database"></i> Tầng 1: Dữ liệu nghiệp vụ lịch sử (Actual Records)
+                                    </div>
+                                    <p class="text-muted fs-13 mb-0">
+                                        Hệ thống kết nối trực tiếp với các bảng cơ sở dữ liệu đã có từ trước (kết quả bài kiểm tra IQ, EQ, AQ, PQ, điểm học bạ GPA, hồ sơ tiêm chủng, thai kỳ, nhật ký...). 
+                                        Giúp trang thống kê <strong>ngay lập tức có sẵn dữ liệu lịch sử đầy đủ</strong> của hàng chục ngàn lượt đánh giá trước đây mà không bị trống.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3 border h-100">
+                                    <div class="font-weight-bold text-success mb-1 d-flex align-items-center gap-1">
+                                        <i class="ti ti-device-mobile"></i> Tầng 2: Ghi nhận sự kiện thời gian thực (Mobile Event Tracking)
+                                    </div>
+                                    <p class="text-muted fs-13 mb-0">
+                                        Mỗi khi phụ huynh nhấn vào một chức năng trên ứng dụng di động <code>App-User</code>, ứng dụng sẽ gửi ngầm một gói tin tracking qua API <code>/api/v1/tracking/feature-usage</code> lưu vào bảng <code>feature_usages</code>. 
+                                        Quá trình này chạy bất đồng bộ trong nền, hoàn toàn <strong>không gây chậm hay gián đoạn trải nghiệm</strong> của người dùng.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Bảng quy chuẩn nguồn dữ liệu chi tiết -->
+                <div class="card mb-4 border-0 shadow-sm rounded-3">
+                    <div class="card-body p-4">
+                        <h4 class="font-weight-bold text-dark d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-green-lt p-2 rounded-circle"><i class="ti ti-table fs-3 text-success"></i></span>
+                            Nguồn Dữ Liệu & Quy Tắc Tính Toán Theo Từng Chức Năng
+                        </h4>
+                        <div class="table-responsive">
+                            <table class="table table-vcenter table-bordered bg-white fs-13 mb-0">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th class="font-weight-bold" style="width: 220px;">Chức năng</th>
+                                        <th class="font-weight-bold text-center" style="width: 120px;">Nhóm</th>
+                                        <th class="font-weight-bold" style="width: 220px;">Bảng dữ liệu nguồn</th>
+                                        <th class="font-weight-bold">Cách tính Lượt sử dụng</th>
+                                        <th class="font-weight-bold">Quy đổi Phụ huynh & Trẻ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-bulb text-warning me-1"></i>Thông minh (IQ)</div>
+                                            <span class="text-muted fs-11">Mã: <code>iq</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-blue-lt">Đánh giá</span></td>
+                                        <td><code>ratings</code> (type='iq')<br>+ <code>feature_usages</code></td>
+                                        <td>Đếm số lượt nộp bài đánh giá chỉ số IQ hoàn thành trong kỳ.</td>
+                                        <td><code>child_id</code> từ kết quả đánh giá &rarr; tra cứu <code>user_id</code> từ bảng <code>children</code>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-heart-handshake text-danger me-1"></i>Cảm xúc (EQ)</div>
+                                            <span class="text-muted fs-11">Mã: <code>eq</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-blue-lt">Đánh giá</span></td>
+                                        <td><code>ratings</code> (type='eq')<br>+ <code>feature_usages</code></td>
+                                        <td>Đếm số lượt nộp bài đánh giá chỉ số EQ hoàn thành trong kỳ.</td>
+                                        <td><code>child_id</code> từ kết quả đánh giá &rarr; tra cứu <code>user_id</code> từ bảng <code>children</code>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-shield-check text-success me-1"></i>Vượt khó (AQ)</div>
+                                            <span class="text-muted fs-11">Mã: <code>aq</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-blue-lt">Đánh giá</span></td>
+                                        <td><code>ratings</code> (type='aq')<br>+ <code>feature_usages</code></td>
+                                        <td>Đếm số lượt nộp bài đánh giá chỉ số AQ hoàn thành trong kỳ.</td>
+                                        <td><code>child_id</code> từ kết quả đánh giá &rarr; tra cứu <code>user_id</code> từ bảng <code>children</code>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-run text-info me-1"></i>Thể chất (PQ)</div>
+                                            <span class="text-muted fs-11">Mã: <code>pq</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-blue-lt">Đánh giá</span></td>
+                                        <td><code>ratings_pqs</code><br>+ <code>feature_usages</code></td>
+                                        <td>Đếm số bản ghi đo lường chỉ số thể chất của trẻ trong kỳ.</td>
+                                        <td><code>child_id</code> từ kết quả đo &rarr; tra cứu <code>user_id</code> từ bảng <code>children</code>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-school text-purple me-1"></i>Học bạ điện tử (GPA)</div>
+                                            <span class="text-muted fs-11">Mã: <code>gpa</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-blue-lt">Đánh giá</span></td>
+                                        <td><code>class_grades</code><br>+ <code>feature_usages</code></td>
+                                        <td>Đếm số bản ghi điểm số các môn học được lưu trong sổ học bạ.</td>
+                                        <td><code>child_id</code> của học sinh &rarr; tra cứu <code>user_id</code> từ bảng <code>children</code>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-vaccine text-teal me-1"></i>Theo dõi lịch tiêm chủng</div>
+                                            <span class="text-muted fs-11">Mã: <code>vaccine</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-azure-lt">Tiện ích</span></td>
+                                        <td><code>vaccination_schedules</code><br>+ <code>feature_usages</code></td>
+                                        <td>Đếm số mũi tiêm/lịch tiêm chủng được tạo hoặc cập nhật trong kỳ.</td>
+                                        <td><code>child_id</code> của bé &rarr; tra cứu <code>user_id</code> phụ huynh từ bảng <code>children</code>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-woman text-pink me-1"></i>Theo dõi thai kỳ</div>
+                                            <span class="text-muted fs-11">Mã: <code>pregnancy</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-azure-lt">Tiện ích</span></td>
+                                        <td><code>pregnancies</code><br>+ <code>feature_usages</code></td>
+                                        <td>Đếm số lần cập nhật chỉ số thai kỳ (cân nặng, chiều dài, tuần thai).</td>
+                                        <td><code>child_id</code> thai nhi &rarr; tra cứu <code>user_id</code> người mẹ từ bảng <code>children</code>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-file-medical text-red me-1"></i>Hồ sơ y tế / Đơn thuốc</div>
+                                            <span class="text-muted fs-11">Mã: <code>diary_prescription</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-azure-lt">Tiện ích</span></td>
+                                        <td><code>journals</code> (type='prescription')<br>+ <code>feature_usages</code></td>
+                                        <td>Đếm số lần lưu đơn thuốc, toa khám bệnh trong sổ khám y tế của bé.</td>
+                                        <td><code>child_id</code> của bé &rarr; tra cứu <code>user_id</code> phụ huynh từ bảng <code>children</code>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-photo-heart text-orange me-1"></i>Nhật ký khoảnh khắc</div>
+                                            <span class="text-muted fs-11">Mã: <code>diary_moment</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-azure-lt">Tiện ích</span></td>
+                                        <td><code>journals</code> (type='moment')<br>+ <code>feature_usages</code></td>
+                                        <td>Đếm số bài viết khoảnh khắc, hình ảnh nhật ký được phụ huynh chia sẻ.</td>
+                                        <td><code>child_id</code> của bé &rarr; tra cứu <code>user_id</code> phụ huynh từ bảng <code>children</code>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-ruler-measure text-lime me-1"></i>Dự đoán chiều cao</div>
+                                            <span class="text-muted fs-11">Mã: <code>predict_height</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-azure-lt">Tiện ích</span></td>
+                                        <td><code>feature_usages</code> (từ App)</td>
+                                        <td>Đếm số lượt phụ huynh mở công cụ tính toán dự đoán chiều cao tương lai.</td>
+                                        <td>Ghi nhận trực tiếp <code>user_id</code> và <code>child_id</code> lúc mở chức năng trên App.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-timeline text-indigo me-1"></i>Quá trình phát triển</div>
+                                            <span class="text-muted fs-11">Mã: <code>develop</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-azure-lt">Tiện ích</span></td>
+                                        <td><code>feature_usages</code> (từ App)</td>
+                                        <td>Đếm số lượt phụ huynh xem các mốc phát triển theo chuẩn WHO.</td>
+                                        <td>Ghi nhận trực tiếp <code>user_id</code> và <code>child_id</code> lúc mở chức năng trên App.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-shopping-cart text-cyan me-1"></i>Cửa hàng / Sản phẩm</div>
+                                            <span class="text-muted fs-11">Mã: <code>store</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-azure-lt">Tiện ích</span></td>
+                                        <td><code>feature_usages</code> (từ App)</td>
+                                        <td>Đếm số lượt phụ huynh truy cập xem danh mục cửa hàng/sản phẩm chăm con.</td>
+                                        <td>Ghi nhận trực tiếp <code>user_id</code> của tài khoản đăng nhập.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-building-hospital text-secondary me-1"></i>Tìm phòng khám</div>
+                                            <span class="text-muted fs-11">Mã: <code>clinic</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-azure-lt">Tiện ích</span></td>
+                                        <td><code>feature_usages</code> (từ App)</td>
+                                        <td>Đếm số lượt phụ huynh tra cứu bản đồ phòng khám & cơ sở y tế.</td>
+                                        <td>Ghi nhận trực tiếp <code>user_id</code> của tài khoản đăng nhập.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Công thức tính toán các chỉ số KPI -->
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body p-4">
+                        <h4 class="font-weight-bold text-dark d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-purple-lt p-2 rounded-circle"><i class="ti ti-math-function fs-3 text-purple"></i></span>
+                            Phương Pháp Tính Toán Các Chỉ Số KPI & Tăng Trưởng
+                        </h4>
+                        <div class="row g-3">
+                            <div class="col-md-6 col-lg-3">
+                                <div class="p-3 bg-light rounded-3 border h-100">
+                                    <div class="font-weight-bold text-dark fs-14 mb-1">1. Tổng Lượt Sử Dụng</div>
+                                    <div class="text-muted fs-12 mb-2">Đo lường tần suất hoạt động tổng thể</div>
+                                    <span class="badge bg-blue-lt">COUNT(*)</span>
+                                    <div class="fs-12 text-secondary mt-2">Tổng toàn bộ lượt phát sinh từ tất cả chức năng trong khoảng ngày được lọc.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="p-3 bg-light rounded-3 border h-100">
+                                    <div class="font-weight-bold text-dark fs-14 mb-1">2. Tỷ Lệ Tăng Trưởng</div>
+                                    <div class="text-muted fs-12 mb-2">So sánh cùng kỳ trước đó</div>
+                                    <span class="badge bg-green-lt text-wrap">((Kỳ này - Kỳ trước) / Kỳ trước) * 100%</span>
+                                    <div class="fs-12 text-secondary mt-2">Kỳ trước có độ dài ngày bằng kỳ đang chọn (ví dụ: 30 ngày so với 30 ngày liền kề trước đó).</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="p-3 bg-light rounded-3 border h-100">
+                                    <div class="font-weight-bold text-dark fs-14 mb-1">3. Phụ Huynh Tham Gia</div>
+                                    <div class="text-muted fs-12 mb-2">Số người dùng duy nhất</div>
+                                    <span class="badge bg-orange-lt">COUNT(DISTINCT user_id)</span>
+                                    <div class="fs-12 text-secondary mt-2">Một phụ huynh thao tác nhiều lần hay trên nhiều trẻ chỉ tính là 1 phụ huynh tham gia.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="p-3 bg-light rounded-3 border h-100">
+                                    <div class="font-weight-bold text-dark fs-14 mb-1">4. Trẻ Được Đánh Giá</div>
+                                    <div class="text-muted fs-12 mb-2">Số hồ sơ trẻ em duy nhất</div>
+                                    <span class="badge bg-pink-lt">COUNT(DISTINCT child_id)</span>
+                                    <div class="fs-12 text-secondary mt-2">Đếm số lượng hồ sơ trẻ em không trùng lặp có dữ liệu đánh giá/tiện ích trong kỳ.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer bg-white border-top py-2 px-4 d-flex justify-content-between">
+                <span class="text-muted fs-12"><i class="ti ti-shield-check text-success me-1"></i>Hệ thống tự động đồng bộ và bảo mật dữ liệu trẻ em theo tiêu chuẩn ISO</span>
+                <button type="button" class="btn btn-primary px-4 fw-bold" data-bs-dismiss="modal">
+                    <i class="ti ti-check me-1"></i> Đã hiểu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @push('libs-js')
     <!-- amCharts 5 Resources -->
     <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
     <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    <!-- Tabler Litepicker Bundle -->
+    <script src="{{ asset('public/libs/tabler/dist/litepicker/dist/bundle.js') }}"></script>
 @endpush
 
 @push('custom-js')
@@ -725,8 +1015,47 @@
         });
     }
 
+    // Global DateRange Picker reference
+    var dateRangePicker = null;
+
     // Event Listeners
     $(document).ready(function() {
+        // Initialize Litepicker Date Range
+        if (window.Litepicker && document.getElementById('datepicker-range')) {
+            dateRangePicker = new Litepicker({
+                element: document.getElementById('datepicker-range'),
+                singleMode: false,
+                numberOfMonths: 2,
+                numberOfColumns: 2,
+                format: "DD/MM/YYYY",
+                delimiter: " - ",
+                autoApply: true,
+                allowRepick: true,
+                buttonText: {
+                    previousMonth: '<i class="ti ti-chevron-left"></i>',
+                    nextMonth: '<i class="ti ti-chevron-right"></i>'
+                },
+                setup: function(picker) {
+                    picker.on('selected', function(d1, d2) {
+                        if (d1 && d2) {
+                            var from = d1.format('YYYY-MM-DD');
+                            var to = d2.format('YYYY-MM-DD');
+                            currentPeriod = 'custom';
+                            $('.btn-period').removeClass('active');
+                            $('#btn-clear-custom-date').css('display', 'inline-flex');
+
+                            refreshData({
+                                period: 'custom',
+                                category: currentCategory,
+                                from: from,
+                                to: to
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
         // 1. Period Button Click
         $('.btn-period').on('click', function() {
             var btn = $(this);
@@ -735,6 +1064,13 @@
             $('.btn-period').removeClass('active');
             btn.addClass('active');
             currentPeriod = btn.data('period');
+
+            // Reset Litepicker input when preset period is chosen
+            if (dateRangePicker) {
+                dateRangePicker.clearSelection();
+            }
+            $('#datepicker-range').val('');
+            $('#btn-clear-custom-date').hide();
 
             refreshData({
                 period: currentPeriod,
@@ -751,30 +1087,34 @@
             btn.addClass('active');
             currentCategory = btn.data('category');
 
-            refreshData({
+            var params = {
                 period: currentPeriod,
                 category: currentCategory
-            });
-        });
+            };
 
-        // 3. Custom Date Range Apply
-        $('#btn-apply-custom-date').on('click', function() {
-            var from = $('#input-from-date').val();
-            var to = $('#input-to-date').val();
-
-            if (!from || !to) {
-                alert('Vui lòng chọn cả ngày bắt đầu và ngày kết thúc.');
-                return;
+            if (currentPeriod === 'custom' && dateRangePicker && dateRangePicker.getStartDate() && dateRangePicker.getEndDate()) {
+                params.from = dateRangePicker.getStartDate().format('YYYY-MM-DD');
+                params.to = dateRangePicker.getEndDate().format('YYYY-MM-DD');
             }
 
+            refreshData(params);
+        });
+
+        // 3. Clear Custom Date Range Filter
+        $('#btn-clear-custom-date').on('click', function() {
+            if (dateRangePicker) {
+                dateRangePicker.clearSelection();
+            }
+            $('#datepicker-range').val('');
+            $(this).hide();
+
+            currentPeriod = '30d';
             $('.btn-period').removeClass('active');
-            currentPeriod = 'custom';
+            $('.btn-period[data-period="30d"]').addClass('active');
 
             refreshData({
-                period: 'custom',
-                category: currentCategory,
-                from: from,
-                to: to
+                period: '30d',
+                category: currentCategory
             });
         });
     });
