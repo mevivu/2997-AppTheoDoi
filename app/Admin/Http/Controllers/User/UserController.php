@@ -1,4 +1,4 @@
-    <?php
+<?php
 
 namespace App\Admin\Http\Controllers\User;
 
@@ -9,8 +9,6 @@ use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Services\User\UserServiceInterface;
 use App\Admin\DataTables\User\UserDataTable;
 use App\Admin\DataTables\Transaction\TransactionDatable;
-use App\Enums\ActiveStatus;
-use App\Enums\Package\PackageType;
 use App\Traits\ResponseController;
 use Exception;
 use App\Enums\User\{Gender, UserStatus};
