@@ -40,4 +40,10 @@ jobs:
             -e "ssh -p 24700 -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519" \
             ./ app2997@103.72.99.174:$TARGET_DIR/
 
+          # 2. Run post-deploy commands on Server
+          ssh -p 24700 -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 app2997@103.72.99.174 << 'EOF'
+            cd /home/app2997/domains/kids360growth.com/public_html
+            php artisan optimize:clear
+          EOF
+
           echo "✅ Deployment Complete!"

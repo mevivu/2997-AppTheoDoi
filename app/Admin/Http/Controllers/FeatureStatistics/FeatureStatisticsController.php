@@ -26,6 +26,7 @@ class FeatureStatisticsController extends Controller
 
     public function index(Request $request)
     {
+        ini_set('memory_limit', '256M');
         $period = $request->get('period', '30d');
         $category = $request->get('category', 'evaluation');
         $from = $request->get('from');

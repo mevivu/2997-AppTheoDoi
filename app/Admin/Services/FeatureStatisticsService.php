@@ -323,6 +323,7 @@ class FeatureStatisticsService
 
     /**
      * Gather raw counts and unique user/child ids for a specific date range.
+     * Uses lightweight direct DB aggregations to avoid hydrating tens of thousands of Eloquent models.
      */
     protected function gatherRawStats(Carbon $startDate, Carbon $endDate, array $allowedCodes): array
     {
@@ -337,161 +338,279 @@ class FeatureStatisticsService
 
         // 1. Chỉ số cảm xúc (EQ) - ratings where type = 'eq'
         if (in_array('eq', $allowedCodes)) {
-            $eqRecords = Rating::with('child:id,user_id')
-                ->where('type', QuestionType::EQ)
+            $eqAgg = DB::table('ratings')
+                ->where('type', QuestionType::EQ->value ?? 'eq')
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->get(['id', 'child_id', 'created_at']);
+                ->selectRaw('COUNT(*) as total')
+                ->first();
+            $stats['eq']['count'] += (int) ($eqAgg->total ?? 0);
 
-            $stats['eq']['count'] += $eqRecords->count();
-            foreach ($eqRecords as $r) {
-                if ($r->child_id) {
-                    $stats['eq']['children'][$r->child_id] = true;
-                    if ($r->child && $r->child->user_id) {
-                        $stats['eq']['users'][$r->child->user_id] = true;
-                    }
-                }
+            $stats['eq']['children'] = DB::table('ratings')
+                ->where('type', QuestionType::EQ->value ?? 'eq')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('child_id')
+                ->distinct()
+                ->pluck('child_id')
+                ->toArray();
+
+            if (!empty($stats['eq']['children'])) {
+                $stats['eq']['users'] = DB::table('children')
+                    ->whereIn('id', $stats['eq']['children'])
+                    ->whereNotNull('user_id')
+                    ->distinct()
+                    ->pluck('user_id')
+                    ->toArray();
             }
         }
 
         // 2. Chỉ số vượt khó (AQ) - ratings where type = 'aq'
         if (in_array('aq', $allowedCodes)) {
-            $aqRecords = Rating::with('child:id,user_id')
-                ->where('type', QuestionType::AQ)
+            $aqAgg = DB::table('ratings')
+                ->where('type', QuestionType::AQ->value ?? 'aq')
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->get(['id', 'child_id', 'created_at']);
+                ->selectRaw('COUNT(*) as total')
+                ->first();
+            $stats['aq']['count'] += (int) ($aqAgg->total ?? 0);
 
-            $stats['aq']['count'] += $aqRecords->count();
-            foreach ($aqRecords as $r) {
-                if ($r->child_id) {
-                    $stats['aq']['children'][$r->child_id] = true;
-                    if ($r->child && $r->child->user_id) {
-                        $stats['aq']['users'][$r->child->user_id] = true;
-                    }
-                }
+            $stats['aq']['children'] = DB::table('ratings')
+                ->where('type', QuestionType::AQ->value ?? 'aq')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('child_id')
+                ->distinct()
+                ->pluck('child_id')
+                ->toArray();
+
+            if (!empty($stats['aq']['children'])) {
+                $stats['aq']['users'] = DB::table('children')
+                    ->whereIn('id', $stats['aq']['children'])
+                    ->whereNotNull('user_id')
+                    ->distinct()
+                    ->pluck('user_id')
+                    ->toArray();
             }
         }
 
         // 3. Chỉ số thông minh (IQ) - ratings where type = 'iq'
         if (in_array('iq', $allowedCodes)) {
-            $iqRecords = Rating::with('child:id,user_id')
-                ->where('type', QuestionType::IQ)
+            $iqAgg = DB::table('ratings')
+                ->where('type', QuestionType::IQ->value ?? 'iq')
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->get(['id', 'child_id', 'created_at']);
+                ->selectRaw('COUNT(*) as total')
+                ->first();
+            $stats['iq']['count'] += (int) ($iqAgg->total ?? 0);
 
-            $stats['iq']['count'] += $iqRecords->count();
-            foreach ($iqRecords as $r) {
-                if ($r->child_id) {
-                    $stats['iq']['children'][$r->child_id] = true;
-                    if ($r->child && $r->child->user_id) {
-                        $stats['iq']['users'][$r->child->user_id] = true;
-                    }
-                }
+            $stats['iq']['children'] = DB::table('ratings')
+                ->where('type', QuestionType::IQ->value ?? 'iq')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('child_id')
+                ->distinct()
+                ->pluck('child_id')
+                ->toArray();
+
+            if (!empty($stats['iq']['children'])) {
+                $stats['iq']['users'] = DB::table('children')
+                    ->whereIn('id', $stats['iq']['children'])
+                    ->whereNotNull('user_id')
+                    ->distinct()
+                    ->pluck('user_id')
+                    ->toArray();
             }
         }
 
         // 4. Chỉ số thể chất (PQ) - ratings_pqs
         if (in_array('pq', $allowedCodes)) {
-            $pqRecords = RatingPQ::with('child:id,user_id')
+            $pqAgg = DB::table('ratings_pqs')
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->get(['id', 'child_id', 'created_at']);
+                ->selectRaw('COUNT(*) as total')
+                ->first();
+            $stats['pq']['count'] += (int) ($pqAgg->total ?? 0);
 
-            $stats['pq']['count'] += $pqRecords->count();
-            foreach ($pqRecords as $r) {
-                if ($r->child_id) {
-                    $stats['pq']['children'][$r->child_id] = true;
-                    if ($r->child && $r->child->user_id) {
-                        $stats['pq']['users'][$r->child->user_id] = true;
-                    }
-                }
+            $stats['pq']['children'] = DB::table('ratings_pqs')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('child_id')
+                ->distinct()
+                ->pluck('child_id')
+                ->toArray();
+
+            if (!empty($stats['pq']['children'])) {
+                $stats['pq']['users'] = DB::table('children')
+                    ->whereIn('id', $stats['pq']['children'])
+                    ->whereNotNull('user_id')
+                    ->distinct()
+                    ->pluck('user_id')
+                    ->toArray();
             }
         }
 
         // 5. Học bạ điện tử (GPA) - class_grades
         if (in_array('gpa', $allowedCodes)) {
-            $gpaRecords = ClassGrade::with('children:id,user_id')
+            $gpaAgg = DB::table('class_grades')
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->get(['id', 'child_id', 'created_at']);
+                ->selectRaw('COUNT(*) as total')
+                ->first();
+            $stats['gpa']['count'] += (int) ($gpaAgg->total ?? 0);
 
-            $stats['gpa']['count'] += $gpaRecords->count();
-            foreach ($gpaRecords as $r) {
-                if ($r->child_id) {
-                    $stats['gpa']['children'][$r->child_id] = true;
-                    if ($r->children && $r->children->user_id) {
-                        $stats['gpa']['users'][$r->children->user_id] = true;
-                    }
-                }
+            $stats['gpa']['children'] = DB::table('class_grades')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('child_id')
+                ->distinct()
+                ->pluck('child_id')
+                ->toArray();
+
+            if (!empty($stats['gpa']['children'])) {
+                $stats['gpa']['users'] = DB::table('children')
+                    ->whereIn('id', $stats['gpa']['children'])
+                    ->whereNotNull('user_id')
+                    ->distinct()
+                    ->pluck('user_id')
+                    ->toArray();
             }
         }
 
         // 6. Tiêm chủng - vaccination_schedules
         if (in_array('vaccine', $allowedCodes)) {
-            $vacRecords = VaccinationSchedule::whereBetween('created_at', [$startDate, $endDate])
-                ->get(['id', 'child_id', 'user_id', 'created_at']);
+            $vacAgg = DB::table('vaccination_schedules')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->selectRaw('COUNT(*) as total')
+                ->first();
+            $stats['vaccine']['count'] += (int) ($vacAgg->total ?? 0);
 
-            $stats['vaccine']['count'] += $vacRecords->count();
-            foreach ($vacRecords as $r) {
-                if ($r->child_id) $stats['vaccine']['children'][$r->child_id] = true;
-                if ($r->user_id) $stats['vaccine']['users'][$r->user_id] = true;
-            }
+            $stats['vaccine']['children'] = DB::table('vaccination_schedules')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('child_id')
+                ->distinct()
+                ->pluck('child_id')
+                ->toArray();
+
+            $stats['vaccine']['users'] = DB::table('vaccination_schedules')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('user_id')
+                ->distinct()
+                ->pluck('user_id')
+                ->toArray();
         }
 
-        // 7. Thai kỳ - pregnancies
+        // 7. Theo dõi thai kỳ - pregnancies
         if (in_array('pregnancy', $allowedCodes)) {
-            $pregRecords = Pregnancy::whereBetween('created_at', [$startDate, $endDate])
-                ->get(['id', 'user_id', 'created_at']);
+            $pregAgg = DB::table('pregnancies')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->selectRaw('COUNT(*) as total')
+                ->first();
+            $stats['pregnancy']['count'] += (int) ($pregAgg->total ?? 0);
 
-            $stats['pregnancy']['count'] += $pregRecords->count();
-            foreach ($pregRecords as $r) {
-                if ($r->user_id) $stats['pregnancy']['users'][$r->user_id] = true;
-            }
+            $stats['pregnancy']['users'] = DB::table('pregnancies')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('user_id')
+                ->distinct()
+                ->pluck('user_id')
+                ->toArray();
         }
 
-        // 8. Hồ sơ y tế - journals (prescription)
+        // 8. Hồ sơ y tế - journals where type = 'prescription'
         if (in_array('diary_prescription', $allowedCodes)) {
-            $presRecords = Journal::where('type', 'prescription')
+            $presAgg = DB::table('journals')
+                ->whereIn('type', ['prescription', 'precription', 1])
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->get(['id', 'child_id', 'created_at']);
+                ->selectRaw('COUNT(*) as total')
+                ->first();
+            $stats['diary_prescription']['count'] += (int) ($presAgg->total ?? 0);
 
-            $stats['diary_prescription']['count'] += $presRecords->count();
-            foreach ($presRecords as $r) {
-                if ($r->child_id) $stats['diary_prescription']['children'][$r->child_id] = true;
+            $stats['diary_prescription']['children'] = DB::table('journals')
+                ->whereIn('type', ['prescription', 'precription', 1])
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('child_id')
+                ->distinct()
+                ->pluck('child_id')
+                ->toArray();
+
+            if (!empty($stats['diary_prescription']['children'])) {
+                $stats['diary_prescription']['users'] = DB::table('children')
+                    ->whereIn('id', $stats['diary_prescription']['children'])
+                    ->whereNotNull('user_id')
+                    ->distinct()
+                    ->pluck('user_id')
+                    ->toArray();
             }
         }
 
-        // 9. Nhật ký khoảnh khắc - journals (moment)
+        // 9. Nhật ký khoảnh khắc - journals where type = 'moment'
         if (in_array('diary_moment', $allowedCodes)) {
-            $momRecords = Journal::where('type', 'moment')
+            $momAgg = DB::table('journals')
+                ->whereIn('type', ['moment', 0])
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->get(['id', 'child_id', 'created_at']);
+                ->selectRaw('COUNT(*) as total')
+                ->first();
+            $stats['diary_moment']['count'] += (int) ($momAgg->total ?? 0);
 
-            $stats['diary_moment']['count'] += $momRecords->count();
-            foreach ($momRecords as $r) {
-                if ($r->child_id) $stats['diary_moment']['children'][$r->child_id] = true;
+            $stats['diary_moment']['children'] = DB::table('journals')
+                ->whereIn('type', ['moment', 0])
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('child_id')
+                ->distinct()
+                ->pluck('child_id')
+                ->toArray();
+
+            if (!empty($stats['diary_moment']['children'])) {
+                $stats['diary_moment']['users'] = DB::table('children')
+                    ->whereIn('id', $stats['diary_moment']['children'])
+                    ->whereNotNull('user_id')
+                    ->distinct()
+                    ->pluck('user_id')
+                    ->toArray();
             }
         }
 
-        // 10. Tích hợp thêm từ bảng feature_usages (cho các lượt truy cập hoặc tính năng không tạo bảng riêng)
-        $featureUsages = FeatureUsage::whereIn('feature_code', $allowedCodes)
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->get(['id', 'user_id', 'child_id', 'feature_code', 'action']);
+        // 10. Tích hợp từ bảng feature_usages
+        if (\Illuminate\Support\Facades\Schema::hasTable('feature_usages')) {
+            $fuCounts = DB::table('feature_usages')
+                ->whereIn('feature_code', $allowedCodes)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->selectRaw('feature_code, COUNT(*) as total')
+                ->groupBy('feature_code')
+                ->pluck('total', 'feature_code')
+                ->toArray();
 
-        foreach ($featureUsages as $fu) {
-            $code = $fu->feature_code;
-            if (isset($stats[$code])) {
-                // For utilities that don't have separate DB tables (like predict_height, develop, store, clinic)
-                // or if action is 'view', accumulate usage count
-                if (in_array($code, ['predict_height', 'develop', 'store', 'clinic']) || $fu->action === 'view') {
-                    $stats[$code]['count']++;
-                    if ($fu->user_id) $stats[$code]['users'][$fu->user_id] = true;
-                    if ($fu->child_id) $stats[$code]['children'][$fu->child_id] = true;
+            foreach ($fuCounts as $code => $cnt) {
+                if (isset($stats[$code])) {
+                    if (in_array($code, ['predict_height', 'develop', 'store', 'clinic'])) {
+                        $stats[$code]['count'] += (int) $cnt;
+                    }
+                }
+            }
+
+            $fuUsers = DB::table('feature_usages')
+                ->whereIn('feature_code', $allowedCodes)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('user_id')
+                ->select('feature_code', 'user_id')
+                ->distinct()
+                ->get();
+
+            foreach ($fuUsers as $fu) {
+                if (isset($stats[$fu->feature_code])) {
+                    $stats[$fu->feature_code]['users'][] = $fu->user_id;
+                }
+            }
+
+            $fuChildren = DB::table('feature_usages')
+                ->whereIn('feature_code', $allowedCodes)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('child_id')
+                ->select('feature_code', 'child_id')
+                ->distinct()
+                ->get();
+
+            foreach ($fuChildren as $fc) {
+                if (isset($stats[$fc->feature_code])) {
+                    $stats[$fc->feature_code]['children'][] = $fc->child_id;
                 }
             }
         }
 
-        // Convert user and child sets to indexed arrays
+        // Ensure unique arrays
         foreach ($stats as $code => &$val) {
-            $val['users'] = array_keys($val['users']);
-            $val['children'] = array_keys($val['children']);
+            $val['users'] = array_values(array_unique($val['users']));
+            $val['children'] = array_values(array_unique($val['children']));
         }
         unset($val);
 
@@ -499,13 +618,11 @@ class FeatureStatisticsService
     }
 
     /**
-     * Build time series data points for amCharts 5.
+     * Build time series data points for amCharts 5 using single SQL group-by queries.
      */
     protected function buildTrendTimeline(Carbon $startDate, Carbon $endDate, string $period, array $catalog): array
     {
-        $data = [];
         $series = [];
-
         foreach ($catalog as $code => $meta) {
             $series[] = [
                 'field' => $code,
@@ -515,50 +632,125 @@ class FeatureStatisticsService
         }
 
         $days = $startDate->diffInDays($endDate);
+        $isHourly = ($period === '1d' || $period === 'today' || $days <= 1);
+        $format = $isHourly ? '%Y-%m-%d %H:00:00' : '%Y-%m-%d';
 
-        if ($period === '1d' || $period === 'today' || $days <= 1) {
-            // Group by hour (0h -> 23h)
+        // Pre-fetch all daily/hourly counts for all features with single group by queries
+        $featureTimeCounts = [];
+
+        // Ratings (IQ, EQ, AQ)
+        $ratingCounts = DB::table('ratings')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw("type, DATE_FORMAT(created_at, '{$format}') as t_point, COUNT(*) as cnt")
+            ->groupBy('type', 't_point')
+            ->get();
+        foreach ($ratingCounts as $r) {
+            $featureTimeCounts[$r->type][$r->t_point] = (int) $r->cnt;
+        }
+
+        // PQ
+        $pqCounts = DB::table('ratings_pqs')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw("DATE_FORMAT(created_at, '{$format}') as t_point, COUNT(*) as cnt")
+            ->groupBy('t_point')
+            ->pluck('cnt', 't_point')
+            ->toArray();
+        $featureTimeCounts['pq'] = $pqCounts;
+
+        // GPA
+        $gpaCounts = DB::table('class_grades')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw("DATE_FORMAT(created_at, '{$format}') as t_point, COUNT(*) as cnt")
+            ->groupBy('t_point')
+            ->pluck('cnt', 't_point')
+            ->toArray();
+        $featureTimeCounts['gpa'] = $gpaCounts;
+
+        // Vaccine
+        $vacCounts = DB::table('vaccination_schedules')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw("DATE_FORMAT(created_at, '{$format}') as t_point, COUNT(*) as cnt")
+            ->groupBy('t_point')
+            ->pluck('cnt', 't_point')
+            ->toArray();
+        $featureTimeCounts['vaccine'] = $vacCounts;
+
+        // Pregnancy
+        $pregCounts = DB::table('pregnancies')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw("DATE_FORMAT(created_at, '{$format}') as t_point, COUNT(*) as cnt")
+            ->groupBy('t_point')
+            ->pluck('cnt', 't_point')
+            ->toArray();
+        $featureTimeCounts['pregnancy'] = $pregCounts;
+
+        // Prescription & Moment
+        $journalCounts = DB::table('journals')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->selectRaw("type, DATE_FORMAT(created_at, '{$format}') as t_point, COUNT(*) as cnt")
+            ->groupBy('type', 't_point')
+            ->get();
+        foreach ($journalCounts as $j) {
+            $code = in_array($j->type, ['prescription', 'precription', 1]) ? 'diary_prescription' : 'diary_moment';
+            $featureTimeCounts[$code][$j->t_point] = ($featureTimeCounts[$code][$j->t_point] ?? 0) + (int) $j->cnt;
+        }
+
+        // Feature Usages
+        if (\Illuminate\Support\Facades\Schema::hasTable('feature_usages')) {
+            $fuCounts = DB::table('feature_usages')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->selectRaw("feature_code, DATE_FORMAT(created_at, '{$format}') as t_point, COUNT(*) as cnt")
+                ->groupBy('feature_code', 't_point')
+                ->get();
+            foreach ($fuCounts as $fu) {
+                if (in_array($fu->feature_code, ['predict_height', 'develop', 'store', 'clinic'])) {
+                    $featureTimeCounts[$fu->feature_code][$fu->t_point] = ($featureTimeCounts[$fu->feature_code][$fu->t_point] ?? 0) + (int) $fu->cnt;
+                }
+            }
+        }
+
+        $data = [];
+        if ($isHourly) {
             for ($h = 0; $h < 24; $h++) {
-                $pointStart = $startDate->copy()->addHours($h);
-                $pointEnd = $pointStart->copy()->addHour()->subSecond();
-                $pointLabel = sprintf('%02dh', $h);
+                $pointDate = $startDate->copy()->addHours($h);
+                $key = $pointDate->format('Y-m-d H:00:00');
+                $label = sprintf('%02dh', $h);
 
-                $row = ['date' => $pointLabel];
-                $subStats = $this->gatherRawStats($pointStart, $pointEnd, array_keys($catalog));
+                $row = ['date' => $label];
                 foreach ($catalog as $code => $meta) {
-                    $row[$code] = $subStats[$code]['count'] ?? 0;
+                    $row[$code] = $featureTimeCounts[$code][$key] ?? 0;
                 }
                 $data[] = $row;
             }
         } elseif ($days <= 31) {
-            // Group by day (e.g. 01/09, 02/09...)
             for ($i = 0; $i <= $days; $i++) {
                 $pointDate = $startDate->copy()->addDays($i);
-                $pointStart = $pointDate->copy()->startOfDay();
-                $pointEnd = $pointDate->copy()->endOfDay();
-                $pointLabel = $pointDate->format('d/m');
+                $key = $pointDate->format('Y-m-d');
+                $label = $pointDate->format('d/m');
 
-                $row = ['date' => $pointLabel];
-                $subStats = $this->gatherRawStats($pointStart, $pointEnd, array_keys($catalog));
+                $row = ['date' => $label];
                 foreach ($catalog as $code => $meta) {
-                    $row[$code] = $subStats[$code]['count'] ?? 0;
+                    $row[$code] = $featureTimeCounts[$code][$key] ?? 0;
                 }
                 $data[] = $row;
             }
         } else {
-            // Group by week or month for longer durations
+            // Group by week
             $currentCursor = $startDate->copy()->startOfWeek();
             while ($currentCursor->lte($endDate)) {
-                $pointEnd = $currentCursor->copy()->endOfWeek();
-                if ($pointEnd->gt($endDate)) {
-                    $pointEnd = $endDate->copy();
-                }
+                $weekEnd = $currentCursor->copy()->endOfWeek();
+                $label = 'T' . $currentCursor->format('W') . ' (' . $currentCursor->format('d/m') . ')';
 
-                $pointLabel = 'T' . $currentCursor->format('W') . ' (' . $currentCursor->format('d/m') . ')';
-                $row = ['date' => $pointLabel];
-                $subStats = $this->gatherRawStats($currentCursor, $pointEnd, array_keys($catalog));
+                $row = ['date' => $label];
                 foreach ($catalog as $code => $meta) {
-                    $row[$code] = $subStats[$code]['count'] ?? 0;
+                    $sum = 0;
+                    $dayCursor = $currentCursor->copy();
+                    while ($dayCursor->lte($weekEnd) && $dayCursor->lte($endDate)) {
+                        $k = $dayCursor->format('Y-m-d');
+                        $sum += ($featureTimeCounts[$code][$k] ?? 0);
+                        $dayCursor->addDay();
+                    }
+                    $row[$code] = $sum;
                 }
                 $data[] = $row;
                 $currentCursor->addWeek();
