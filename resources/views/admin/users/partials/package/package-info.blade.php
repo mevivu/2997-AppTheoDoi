@@ -34,7 +34,7 @@
                     </div>
                 </div>
 
-                <div>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
                     @if($currentPackage)
                         @if(!$isExpired)
                             <span class="package-badge-status badge-active">
@@ -44,6 +44,15 @@
                             <span class="package-badge-status badge-expired">
                                 <i class="ti ti-alert-triangle me-1"></i> {{ __('Đã hết hạn') }}
                             </span>
+                        @endif
+
+                        @if($currentPackage->package_id)
+                            <a href="{{ route('admin.package.edit', $currentPackage->package_id) }}"
+                               target="_blank"
+                               class="btn btn-sm btn-outline-light rounded-pill px-3 py-1 d-inline-flex align-items-center gap-1 shadow-sm text-decoration-none">
+                                <i class="ti ti-external-link"></i>
+                                <span>{{ __('Xem chi tiết') }}</span>
+                            </a>
                         @endif
                     @else
                         <span class="package-badge-status bg-secondary text-white">
@@ -70,16 +79,26 @@
                             <i class="ti ti-package text-primary me-1"></i>
                             {{ __('Chọn Gói Dịch Vụ') }}:
                         </label>
-                        <select class="form-select" name="package_id" id="packageSelect">
-                            <option value="">{{ __('-- Chọn gói dịch vụ nếu muốn đổi --') }}</option>
-                            @foreach($packages as $package)
-                                <option value="{{ $package->id }}"
-                                        data-days="{{ $package->days }}"
-                                        @if($currentPackage?->package_id == $package->id) selected @endif>
-                                    {{ $package->name }} ({{ $package->days }} {{ __('ngày') }} - {{ number_format($package->price) }} VNĐ) {{ $package->status == \App\Enums\Package\PackageStatus::Draft ? '- [Bản Nháp]' : '' }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="input-group">
+                            <select class="form-select" name="package_id" id="packageSelect">
+                                <option value="">{{ __('-- Chọn gói dịch vụ nếu muốn đổi --') }}</option>
+                                @foreach($packages as $package)
+                                    <option value="{{ $package->id }}"
+                                            data-days="{{ $package->days }}"
+                                            @if($currentPackage?->package_id == $package->id) selected @endif>
+                                        {{ $package->name }} ({{ $package->days }} {{ __('ngày') }} - {{ number_format($package->price) }} VNĐ) {{ $package->status == \App\Enums\Package\PackageStatus::Draft ? '- [Bản Nháp]' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <a href="{{ $currentPackage?->package_id ? route('admin.package.edit', $currentPackage->package_id) : '#' }}"
+                               id="btnViewPackageDetail"
+                               target="_blank"
+                               class="btn btn-outline-primary d-inline-flex align-items-center gap-1 @if(!$currentPackage?->package_id) d-none @endif"
+                               title="{{ __('Xem chi tiết gói dịch vụ này') }}">
+                                <i class="ti ti-external-link"></i>
+                                <span>{{ __('Xem chi tiết') }}</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -90,10 +109,10 @@
                             {{ __('Ngày Bắt Đầu') }}:
                         </label>
                         <input type="date"
-                               class="form-control"
-                               name="start_date"
-                               id="startDate"
-                               value="{{ $currentPackage?->start_date ? Carbon::parse($currentPackage->start_date)->format('Y-m-d') : date('Y-m-d') }}">
+                                class="form-control"
+                                name="start_date"
+                                id="startDate"
+                                value="{{ $currentPackage?->start_date ? Carbon::parse($currentPackage->start_date)->format('Y-m-d') : date('Y-m-d') }}">
                     </div>
                 </div>
 
@@ -104,10 +123,10 @@
                             {{ __('Ngày Kết Thúc') }}:
                         </label>
                         <input type="date"
-                               class="form-control"
-                               name="end_date"
-                               id="endDate"
-                               value="{{ $currentPackage?->end_date ? Carbon::parse($currentPackage->end_date)->format('Y-m-d') : '' }}">
+                                class="form-control"
+                                name="end_date"
+                                id="endDate"
+                                value="{{ $currentPackage?->end_date ? Carbon::parse($currentPackage->end_date)->format('Y-m-d') : '' }}">
                     </div>
                 </div>
             </div>
@@ -120,8 +139,17 @@
         $(document).ready(function() {
             $('#packageSelect').on('change', function() {
                 const selectedOption = $(this).find(':selected');
+                const pkgId = $(this).val();
                 const days = parseInt(selectedOption.data('days'));
                 const startDateVal = $('#startDate').val();
+
+                const btn = $('#btnViewPackageDetail');
+                if (pkgId) {
+                    const editUrl = '{{ route("admin.package.edit", ":id") }}'.replace(':id', pkgId);
+                    btn.attr('href', editUrl).removeClass('d-none');
+                } else {
+                    btn.attr('href', '#').addClass('d-none');
+                }
 
                 if (days && startDateVal) {
                     const start = new Date(startDateVal);

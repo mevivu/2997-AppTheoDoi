@@ -6,8 +6,10 @@ use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Traits\Roles;
 use App\AES\AESHelper;
+use App\Enums\Package\PackageStatus;
 use App\Enums\Package\PackageType;
 use App\Enums\User\UserStatus;
+use App\Models\Package;
 use BenSampo\Enum\Enum;
 use Illuminate\Database\Eloquent\Builder;
 use Throwable;
@@ -43,6 +45,13 @@ class UserDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
+        $packages = Package::where(function ($q) {
+            $q->whereIn('status', [PackageStatus::Active, PackageStatus::Draft])
+                ->orWhereHas('userPackages');
+        })
+        ->orderBy('name')
+        ->pluck('name', 'id')
+        ->toArray();
 
         $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7];
 
@@ -52,10 +61,13 @@ class UserDataTable extends BaseDataTable
                 'data' => UserStatus::asSelectArray()
             ],
             [
+                'column' => 6,
+                'data' => $packages
+            ],
+            [
                 'column' => 7,
                 'data' => PackageType::asSelectArray()
             ],
-
         ];
     }
 
@@ -67,7 +79,12 @@ class UserDataTable extends BaseDataTable
     public function query(): Builder
     {
         return $this->repository->getQueryBuilder()
-            ->with(['roles', 'userPackages.package'])
+            ->with([
+                'roles',
+                'userPackages' => function ($q) {
+                    $q->latest('id')->with('package');
+                }
+            ])
             ->orderByDesc('created_at');
     }
 
@@ -142,13 +159,19 @@ class UserDataTable extends BaseDataTable
 
             'package_type' => function ($query, $keyword) {
                 $query->whereHas('userPackages', function ($subQuery) use ($keyword) {
-                    $subQuery->where('current_type', 'like', '%' . $keyword . '%');
+                    $subQuery->where('current_type', $keyword);
                 });
             },
             'package_name' => function ($query, $keyword) {
-                $query->whereHas('userPackages.package', function ($subQuery) use ($keyword) {
-                    $subQuery->where('name', 'like', '%' . $keyword . '%');
-                });
+                if (is_numeric($keyword)) {
+                    $query->whereHas('userPackages', function ($subQuery) use ($keyword) {
+                        $subQuery->where('package_id', $keyword);
+                    });
+                } else {
+                    $query->whereHas('userPackages.package', function ($subQuery) use ($keyword) {
+                        $subQuery->where('name', 'like', '%' . $keyword . '%');
+                    });
+                }
             },
             'email' => function ($query, $keyword) {
                 try {
