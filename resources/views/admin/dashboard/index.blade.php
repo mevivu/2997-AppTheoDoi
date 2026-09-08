@@ -1,4 +1,5 @@
 @extends('admin.layouts.master')
+@php use App\Traits\RouteAdminSystem; @endphp
 
 @section('content')
     <div class="page-body pt-3 pb-5">
@@ -13,9 +14,15 @@
                         {{ __('Chào mừng bạn trở lại Trung tâm Quản trị Hệ thống Chăm Con. Dưới đây là tổng quan các chỉ số vận hành mới nhất.') }}
                     </p>
                 </div>
-                <div class="d-flex align-items-center gap-2 flex-shrink-0">
-                    @if (Route::has('admin.firebase.report'))
-                        <a href="{{ route('admin.firebase.report') }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm fw-bold px-3 py-2">
+                <div class="d-flex align-items-center gap-2 flex-shrink-0 flex-wrap">
+                    @if (Route::has(RouteAdminSystem::FEATURE_STATISTICS_INDEX))
+                        <a href="{{ route(RouteAdminSystem::FEATURE_STATISTICS_INDEX) }}" class="btn btn-teal d-flex align-items-center gap-2 shadow-sm fw-bold px-3 py-2 text-white">
+                            <i class="ti ti-chart-pie fs-4"></i>
+                            <span>{{ __('Thống kê chức năng') }}</span>
+                        </a>
+                    @endif
+                    @if (Route::has(RouteAdminSystem::FIREBASE_REPORT))
+                        <a href="{{ route(RouteAdminSystem::FIREBASE_REPORT) }}" class="btn btn-primary d-flex align-items-center gap-2 shadow-sm fw-bold px-3 py-2">
                             <i class="ti ti-chart-bar fs-4"></i>
                             <span>{{ __('Báo cáo Firebase') }}</span>
                         </a>

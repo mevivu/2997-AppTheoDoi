@@ -1,9 +1,11 @@
 <?php
 
+use App\Traits\RouteAdminSystem;
+
 return [
     [
         'title' => 'Dashboard',
-        'routeName' => 'admin.dashboard',
+        'routeName' => RouteAdminSystem::ADMIN_DASHBOARD,
         'icon' => '<i class="ti ti-home"></i>',
         'roles' => [],
         'permissions' => ['mevivuDev'],
@@ -11,16 +13,8 @@ return [
     ],
     [
         'title' => 'Thống kê Firebase',
-        'routeName' => 'admin.firebase.report',
+        'routeName' => RouteAdminSystem::FIREBASE_REPORT,
         'icon' => '<i class="ti ti-chart-bar"></i>',
-        'roles' => [],
-        'permissions' => [],
-        'sub' => []
-    ],
-    [
-        'title' => 'Thống kê chức năng',
-        'routeName' => 'admin.feature.statistics.index',
-        'icon' => '<i class="ti ti-chart-pie"></i>',
         'roles' => [],
         'permissions' => [],
         'sub' => []

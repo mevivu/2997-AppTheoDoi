@@ -1,4 +1,5 @@
 @extends('admin.layouts.master')
+@php use App\Traits\RouteAdminSystem; @endphp
 
 @section('content')
 <style>
@@ -150,7 +151,7 @@
                 <span class="badge bg-blue-lt px-3 py-2 font-weight-bold" id="badge-date-range" style="font-size: 0.85rem;">
                     <i class="ti ti-calendar me-1"></i>{{ $stats['date_range_label'] }}
                 </span>
-                <a href="{{ route('admin.feature.statistics.export', ['period' => $currentPeriod, 'category' => $currentCategory]) }}"
+                <a href="{{ route(RouteAdminSystem::FEATURE_STATISTICS_EXPORT, ['period' => $currentPeriod, 'category' => $currentCategory]) }}"
                    id="btn-export-csv" class="btn btn-outline-success font-weight-semibold">
                     <i class="ti ti-download me-1"></i> Xuất Excel / CSV
                 </a>
@@ -584,7 +585,7 @@
         $('.btn-filter-pill, .category-tab-btn').addClass('disabled');
 
         $.ajax({
-            url: "{{ route('admin.feature.statistics.index') }}",
+            url: "{{ route(RouteAdminSystem::FEATURE_STATISTICS_INDEX) }}",
             type: 'GET',
             data: params,
             success: function(response) {
@@ -595,7 +596,7 @@
                     $('#badge-date-range').html('<i class="ti ti-calendar me-1"></i>' + data.date_range_label);
 
                     // 2. Update Export CSV link
-                    var exportUrl = "{{ route('admin.feature.statistics.export') }}?" + $.param(params);
+                    var exportUrl = "{{ route(RouteAdminSystem::FEATURE_STATISTICS_EXPORT) }}?" + $.param(params);
                     $('#btn-export-csv').attr('href', exportUrl);
 
                     // 3. Update KPIs

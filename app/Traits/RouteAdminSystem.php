@@ -24,6 +24,10 @@ class RouteAdminSystem
     /** FIREBASE REPORT */
     const FIREBASE_REPORT = 'admin.firebase.report';
 
+    /** FEATURE STATISTICS */
+    const FEATURE_STATISTICS_INDEX = 'admin.feature.statistics.index';
+    const FEATURE_STATISTICS_EXPORT = 'admin.feature.statistics.export';
+
     /** TRANSACTION */
     const TRANSACTION_INDEX = 'admin.transaction.index';
     const TRANSACTION_CREATE = 'admin.transaction.create';
