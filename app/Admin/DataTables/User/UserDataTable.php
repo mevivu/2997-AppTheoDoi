@@ -44,7 +44,7 @@ class UserDataTable extends BaseDataTable
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4, 5, 6];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7];
 
         $this->columnSearchSelect = [
             [
@@ -52,7 +52,7 @@ class UserDataTable extends BaseDataTable
                 'data' => UserStatus::asSelectArray()
             ],
             [
-                'column' => 6,
+                'column' => 7,
                 'data' => PackageType::asSelectArray()
             ],
 
@@ -104,6 +104,10 @@ class UserDataTable extends BaseDataTable
     {
         $this->customAddColumns = [
             'action' => $this->view['action'],
+            'package_name' => function ($item) {
+                $name = optional($item->userPackages->first()?->package)->name;
+                return $name ? '<span class="badge bg-green-lt">' . $name . '</span>' : '<span class="badge bg-secondary-lt">Chưa có</span>';
+            },
             'package_type' => function ($item) {
                 $type = optional($item->userPackages->first()?->package)->type;
 
@@ -118,7 +122,6 @@ class UserDataTable extends BaseDataTable
         ];
     }
 
-
     protected function setCustomRawColumns(): void
     {
         $this->customRawColumns = [
@@ -128,6 +131,7 @@ class UserDataTable extends BaseDataTable
             'code',
             'email',
             'phone',
+            'package_name',
             'package_type'
         ];
     }
@@ -140,7 +144,11 @@ class UserDataTable extends BaseDataTable
                 $query->whereHas('userPackages', function ($subQuery) use ($keyword) {
                     $subQuery->where('current_type', 'like', '%' . $keyword . '%');
                 });
-
+            },
+            'package_name' => function ($query, $keyword) {
+                $query->whereHas('userPackages.package', function ($subQuery) use ($keyword) {
+                    $subQuery->where('name', 'like', '%' . $keyword . '%');
+                });
             },
             'email' => function ($query, $keyword) {
                 try {
@@ -162,6 +170,10 @@ class UserDataTable extends BaseDataTable
     }
     protected function getExportValue($key, $row)
     {
+        if ($key === 'package_name') {
+            return optional($row->userPackages->first()?->package)->name ?? '';
+        }
+
         if ($key === 'package_type') {
             $package = $row->userPackages->first()?->package;
 
