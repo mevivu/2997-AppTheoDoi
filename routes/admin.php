@@ -25,6 +25,15 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
     Route::get('/thong-ke-firebase', [App\Admin\Http\Controllers\FirebaseReport\FirebaseReportController::class, 'index'])->name('firebase.report');
 
+    // Thống kê chức năng (Đánh giá toàn diện & Tiện ích)
+    Route::controller(\App\Admin\Http\Controllers\FeatureStatistics\FeatureStatisticsController::class)
+        ->prefix('/thong-ke-chuc-nang')
+        ->as('feature.statistics.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/export', 'export')->name('export');
+        });
+
     //WeightHeight
     Route::controller(\App\Admin\Http\Controllers\ProductCatalog\ProductCatalogController::class)
         ->prefix('/product_catalog')

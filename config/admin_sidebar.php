@@ -18,6 +18,14 @@ return [
         'sub' => []
     ],
     [
+        'title' => 'Thống kê chức năng',
+        'routeName' => 'admin.feature.statistics.index',
+        'icon' => '<i class="ti ti-chart-pie"></i>',
+        'roles' => [],
+        'permissions' => [],
+        'sub' => []
+    ],
+    [
         'title' => 'Giao dịch',
         'routeName' => null,
         'icon' => '<i class="ti ti-calendar-dollar"></i>',

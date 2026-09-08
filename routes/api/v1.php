@@ -338,3 +338,12 @@ Route::controller(App\Api\V1\Http\Controllers\AppVersion\AppVersionController::c
     ->group(function () {
         Route::get('/check', 'check');
     });
+
+//***** -- Feature Usage Tracking -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Tracking\TrackingController::class)
+    ->prefix('/tracking')
+    ->as('tracking.')
+    ->group(function () {
+        Route::post('/feature-usage', 'logFeatureUsage');
+    });
+
