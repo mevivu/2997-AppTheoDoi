@@ -86,6 +86,7 @@ class UserService implements UserServiceInterface
         $endDate = $data['end_date'] ?? null;
         if (isset($data['email'])) {
             $data['email'] = AESHelper::encrypt($data['email']);
+            $data['username'] = $data['email'];
         }
         if (isset($data['phone'])) {
             $data['phone'] = !empty($data['phone']) ? AESHelper::encrypt($data['phone']) : null;

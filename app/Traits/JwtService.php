@@ -64,7 +64,9 @@ trait JwtService
         $this->login = $request->validated();
         $emailEncrypted = AESHelper::encrypt($this->login['email']);
 
-        $user = $this->userRepository->findByField('email', $emailEncrypted);
+        $user = User::where('email', $emailEncrypted)
+            ->orWhere('username', $emailEncrypted)
+            ->first();
 
         if ($user && Hash::check($this->login['password'], $user->password)) {
             if ($user->status === UserStatus::Lock) {
@@ -159,7 +161,9 @@ trait JwtService
         $this->login = $request->validated();
         $emailEncrypted = AESHelper::encrypt($this->login['email']);
 
-        $user = $this->userRepository->findByField('email', $emailEncrypted);
+        $user = User::where('email', $emailEncrypted)
+            ->orWhere('username', $emailEncrypted)
+            ->first();
 
         if ($user && Hash::check($this->login['password'], $user->password)) {
             if ($user->status === UserStatus::Lock) {
@@ -200,9 +204,26 @@ trait JwtService
         $data = $request->validated();
         $emailEncrypted = AESHelper::encrypt($data['email']);
 
-        $user = $this->userRepository->findByField('email', $emailEncrypted);
+        $user = User::where('email', $emailEncrypted)
+            ->orWhere('username', $emailEncrypted)
+            ->first();
 
         if ($user) {
+            // Đảm bảo đồng bộ email và username nếu có sự sai lệch
+            $updates = [];
+            if ($user->email !== $emailEncrypted) {
+                $updates['email'] = $emailEncrypted;
+            }
+            if ($user->username !== $emailEncrypted) {
+                $existingUsername = User::where('username', $emailEncrypted)->where('id', '!=', $user->id)->exists();
+                if (!$existingUsername) {
+                    $updates['username'] = $emailEncrypted;
+                }
+            }
+            if (!empty($updates)) {
+                $user->update($updates);
+            }
+
             if ($user->status === UserStatus::Lock) {
                 return response()->json([
                     'status' => 403,
