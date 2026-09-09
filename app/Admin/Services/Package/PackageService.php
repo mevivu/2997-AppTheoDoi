@@ -3,11 +3,15 @@
 namespace App\Admin\Services\Package;
 
 use App\Admin\Repositories\Package\PackageRepositoryInterface;
+use App\Admin\Services\User\UserServiceInterface;
+use App\Admin\Traits\Setup;
 use App\Api\V1\Support\UseLog;
 use App\Enums\Package\PackageStatus;
+use App\Enums\Package\PackageUserStatus;
+use App\Models\UserDevice;
+use App\Models\UserPackage;
 use Exception;
 use Illuminate\Http\Request;
-use App\Admin\Traits\Setup;
 
 class PackageService implements PackageServiceInterface
 {
@@ -21,13 +25,14 @@ class PackageService implements PackageServiceInterface
     protected array $data;
 
     protected PackageRepositoryInterface $repository;
-
+    protected UserServiceInterface $userService;
 
     public function __construct(
         PackageRepositoryInterface $repository,
+        UserServiceInterface $userService,
     ) {
         $this->repository = $repository;
-
+        $this->userService = $userService;
     }
 
 
@@ -71,7 +76,64 @@ class PackageService implements PackageServiceInterface
     public function update(Request $request): object|bool
     {
         $data = $this->prepareData($request->validated());
-        return $this->repository->update($data['id'], $data);
+        $package = $this->repository->findOrFail($data['id']);
+        $oldMaxDevices = (int) ($package->max_devices ?? 1);
+        $newMaxDevices = (int) ($data['max_devices'] ?? 1);
+
+        $result = $this->repository->update($data['id'], $data);
+
+        if ($result && $newMaxDevices < $oldMaxDevices) {
+            $this->enforceDeviceLimitOnPackageDowngrade((int) $data['id'], $newMaxDevices);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Thu hồi các thiết bị vượt quá số lượng cho phép khi giảm giới hạn max_devices của gói cước.
+     * Chỉ giữ lại N thiết bị đầu tiên được liên kết sớm nhất (created_at ASC, id ASC).
+     */
+    protected function enforceDeviceLimitOnPackageDowngrade(int $packageId, int $newMaxDevices): void
+    {
+        try {
+            $processedUserIds = [];
+
+            UserPackage::where('package_id', $packageId)
+                ->where('status', PackageUserStatus::Active)
+                ->where('end_date', '>=', now())
+                ->chunk(100, function ($userPackages) use ($newMaxDevices, &$processedUserIds) {
+                    foreach ($userPackages as $userPackage) {
+                        $user = $userPackage->user;
+                        if (!$user || isset($processedUserIds[$user->id])) {
+                            continue;
+                        }
+                        $processedUserIds[$user->id] = true;
+
+                        // Lấy hạn mức thực tế theo các gói đang kích hoạt của user
+                        $allowed = $user->getMaxDevicesAllowed();
+
+                        // Lấy danh sách thiết bị đang hoạt động, xếp theo thứ tự đăng ký sớm nhất
+                        $activeDevices = UserDevice::where('user_id', $user->id)
+                            ->where('is_active', true)
+                            ->orderBy('created_at', 'asc')
+                            ->orderBy('id', 'asc')
+                            ->get();
+
+                        if ($activeDevices->count() > $allowed) {
+                            // Giữ lại $allowed thiết bị đầu tiên, giải phóng các thiết bị từ vị trí thứ $allowed trở đi
+                            $excessDevices = $activeDevices->slice($allowed);
+                            foreach ($excessDevices as $device) {
+                                $revoked = $this->userService->revokeDevice($user->id, $device->id);
+                                if ($revoked) {
+                                    $this->logInfo("Auto-revoked device ID {$device->id} (Device ID: {$device->device_id}, Name: {$device->device_name}) for User ID {$user->id} due to package limit reduction to {$allowed} devices.");
+                                }
+                            }
+                        }
+                    }
+                });
+        } catch (Exception $e) {
+            $this->logError("Failed to enforce device limits after package downgrade for package {$packageId}:", $e);
+        }
     }
 
     /**

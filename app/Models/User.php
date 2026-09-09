@@ -122,15 +122,20 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getMaxDevicesAllowed(): int
     {
-        // 1. Kiểm tra gói đang hoạt động còn hạn
-        $activeUserPackage = $this->userPackages()
+        // 1. Kiểm tra các gói đang hoạt động còn hạn, lấy số thiết bị lớn nhất
+        $activeUserPackages = $this->userPackages()
             ->where('status', \App\Enums\Package\PackageUserStatus::Active)
             ->where('end_date', '>=', now())
-            ->latest('end_date')
-            ->first();
+            ->with('package')
+            ->get();
 
-        if ($activeUserPackage && $activeUserPackage->package) {
-            return (int) ($activeUserPackage->package->max_devices ?? 1);
+        if ($activeUserPackages->isNotEmpty()) {
+            $maxAllowed = (int) $activeUserPackages->max(function ($up) {
+                return (int) ($up->package->max_devices ?? 1);
+            });
+            if ($maxAllowed > 0) {
+                return $maxAllowed;
+            }
         }
 
         // 2. Nếu không có gói trả phí còn hạn, kiểm tra gói gần nhất
