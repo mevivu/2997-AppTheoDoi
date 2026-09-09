@@ -8,6 +8,7 @@ use App\Api\V1\Repositories\User\UserRepositoryInterface;
 use App\Api\V1\Services\User\UserServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
+use App\Api\V2\Http\Requests\Auth\GoogleLoginRequest;
 use App\Api\V2\Http\Requests\Auth\LoginRequest;
 use App\Traits\JwtService;
 use App\Traits\UseLog;
@@ -40,6 +41,7 @@ class AuthController extends Controller
         $this->middleware('auth:api', [
             'except' => [
                 'login',
+                'loginGoogle',
             ]
         ]);
     }
@@ -56,25 +58,6 @@ class AuthController extends Controller
      * @bodyParam device_id string Mã định danh phần cứng thiết bị (UUID/Android ID/IDFV).
      * @bodyParam device_name string Tên hiển thị của thiết bị (ví dụ: iPhone 14 Pro, Samsung S23).
      *
-     * @response 200 {
-     *     "access_token": "eyJ0eXAi...",
-     *     "refresh_token": "eyJ0eXAi...",
-     *     "status": 1,
-     *     "expires_in": 5184000,
-     *     "package": {...}
-     * }
-     *
-     * @response 403 {
-     *     "status": 403,
-     *     "code": "DEVICE_LIMIT_EXCEEDED",
-     *     "message": "Tài khoản của bạn đã đạt giới hạn tối đa :max thiết bị cho gói hiện tại...",
-     *     "data": {
-     *         "max_devices": 1,
-     *         "current_devices": 1,
-     *         "can_upgrade": true
-     *     }
-     * }
-     *
      * @param LoginRequest $request
      * @return JsonResponse
      */
@@ -84,6 +67,33 @@ class AuthController extends Controller
             return $this->loginUserV2($request);
         } catch (Exception $e) {
             $this->logError("Login V2 failed", $e);
+            return $this->jsonResponseError($e->getMessage());
+        }
+    }
+
+    /**
+     * Đăng nhập / Đăng ký nhanh qua Google V2
+     *
+     * Kiểm tra nếu email đã có tài khoản thì cho đăng nhập bình thường và cấp access_token,
+     * nếu chưa có tài khoản thì tự động tạo User mới với service_type Google và đăng nhập.
+     *
+     * @bodyParam email string required Email người dùng Google.
+     * @bodyParam fullname string Tên đầy đủ từ Google profile.
+     * @bodyParam avatar string Ảnh đại diện từ Google profile.
+     * @bodyParam google_id string ID tài khoản Google.
+     * @bodyParam device_token string Token FCM đại diện cho thiết bị nhận thông báo.
+     * @bodyParam device_id string Mã định danh phần cứng thiết bị.
+     * @bodyParam device_name string Tên hiển thị của thiết bị.
+     *
+     * @param GoogleLoginRequest $request
+     * @return JsonResponse
+     */
+    public function loginGoogle(GoogleLoginRequest $request): JsonResponse
+    {
+        try {
+            return $this->loginGoogleUserV2($request);
+        } catch (Exception $e) {
+            $this->logError("Login Google V2 failed", $e);
             return $this->jsonResponseError($e->getMessage());
         }
     }

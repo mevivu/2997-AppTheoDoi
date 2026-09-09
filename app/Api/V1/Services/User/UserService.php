@@ -12,6 +12,7 @@ use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\OTPEmail;
 use App\Api\V1\Support\UseLog;
 use App\Enums\User\Gender;
+use App\Enums\User\UserServiceType;
 use App\Enums\User\UserStatus;
 use Exception;
 use Illuminate\Http\Request;
@@ -64,6 +65,7 @@ class UserService implements UserServiceInterface
                 $data['phone'] = null;
             }
             $data['status'] = UserStatus::Active;
+            $data['service_type'] = UserServiceType::Email;
             $user = $this->repository->create($data);
 
             DB::commit();

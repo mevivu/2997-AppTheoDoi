@@ -13,7 +13,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use App\Enums\User\{Gender, UserStatus};
+use App\Enums\User\{Gender, UserStatus, UserServiceType};
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -53,6 +53,8 @@ class User extends Authenticatable implements JWTSubject
         'avatar',
         /** ID ngân hàng */
         'status',
+        /** Hình thức đăng ký (Email, Google, Apple) */
+        'service_type',
         /** Token thiết bị */
         'device_token',
         /** Thời gian xác thực email */
@@ -99,7 +101,7 @@ class User extends Authenticatable implements JWTSubject
         'gender' => Gender::class,
         'active' => 'boolean',
         'status' => UserStatus::class,
-
+        'service_type' => UserServiceType::class,
     ];
 
     public function userPackages(): HasMany

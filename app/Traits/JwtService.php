@@ -3,22 +3,26 @@
 namespace App\Traits;
 
 use App\Admin\Services\Notification\NotificationFirebaseServiceInterface;
+use App\Admin\Traits\Setup;
 use App\AES\AESHelper;
 use App\Api\V1\Http\Resources\Package\AuthPackageResource;
 use App\Enums\DeleteStatus;
 use App\Enums\Package\PackageType;
 use App\Models\User;
+use App\Enums\User\UserServiceType;
 use App\Enums\User\UserStatus;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 trait JwtService
 {
+    use Setup;
 
     private static string $GUARD_API = 'api';
     private static string $GUARD_API_STORE = 'store-api';
@@ -173,98 +177,165 @@ trait JwtService
                 ], 403);
             }
 
-            // Xác định định danh thiết bị
-            $deviceId = $this->login['device_id'] ?? $this->login['device_token'] ?? ('web_' . md5($request->ip() . ($request->userAgent() ?? '')));
-            $deviceName = $this->login['device_name'] ?? null;
-            $deviceToken = $this->login['device_token'] ?? null;
-
-            // Kiểm tra thiết bị trong user_devices
-            $userDevice = \App\Models\UserDevice::where('user_id', $user->id)
-                ->where('device_id', $deviceId)
-                ->first();
-
-            if ($userDevice && $userDevice->is_active) {
-                // Thiết bị đã liên kết và đang hoạt động -> Cập nhật thông tin hoạt động
-                $userDevice->update([
-                    'device_name' => $deviceName ?? $userDevice->device_name,
-                    'device_token' => $deviceToken ?? $userDevice->device_token,
-                    'ip_address' => $request->ip(),
-                    'last_active_at' => now(),
-                ]);
-            } else {
-                // Thiết bị mới hoặc thiết bị trước đó đã bị giải phóng -> Kiểm tra hạn mức
-                $activeCount = \App\Models\UserDevice::where('user_id', $user->id)
-                    ->where('is_active', true)
-                    ->count();
-                $maxAllowed = $user->getMaxDevicesAllowed();
-
-                if ($activeCount >= $maxAllowed) {
-                    \Illuminate\Support\Facades\Log::warning('Login blocked: Device limit exceeded', [
-                        'user_id' => $user->id,
-                        'device_id' => $deviceId,
-                        'active_devices' => $activeCount,
-                        'max_allowed' => $maxAllowed,
-                    ]);
-
-                    return response()->json([
-                        'status' => 403,
-                        'code' => 'DEVICE_LIMIT_EXCEEDED',
-                        'message' => __("Tài khoản của bạn đã đạt giới hạn tối đa :max thiết bị cho gói hiện tại. Vui lòng nâng cấp lên gói VIP để sử dụng trên nhiều thiết bị hoặc liên hệ Quản trị viên để đổi thiết bị.", ['max' => $maxAllowed]),
-                        'data' => [
-                            'max_devices' => $maxAllowed,
-                            'current_devices' => $activeCount,
-                            'can_upgrade' => true
-                        ]
-                    ], 403);
-                }
-
-                // Chưa vượt hạn mức -> Cho phép liên kết thiết bị mới
-                if ($userDevice) {
-                    $userDevice->update([
-                        'is_active' => true,
-                        'device_name' => $deviceName ?? $userDevice->device_name,
-                        'device_token' => $deviceToken ?? $userDevice->device_token,
-                        'ip_address' => $request->ip(),
-                        'last_active_at' => now(),
-                    ]);
-                } else {
-                    \App\Models\UserDevice::create([
-                        'user_id' => $user->id,
-                        'device_id' => $deviceId,
-                        'device_name' => $deviceName ?? 'Thiết bị di động',
-                        'device_token' => $deviceToken,
-                        'ip_address' => $request->ip(),
-                        'is_active' => true,
-                        'last_active_at' => now(),
-                    ]);
-                }
-            }
-
-            $token = JWTAuth::fromUser($user);
-            $refreshToken = $this->createRefreshToken($user);
-
-            // Lưu session đăng nhập với định danh thiết bị
-            $this->sessionRepository->create([
-                'user_id' => $user->id,
-                'access_token' => $token,
-                'device_token' => $deviceId,
-                'status' => DeleteStatus::NotDeleted
+            return $this->issueV2UserSession($user, $request, [
+                'device_id' => $this->login['device_id'] ?? null,
+                'device_token' => $this->login['device_token'] ?? null,
+                'device_name' => $this->login['device_name'] ?? null,
             ]);
-
-            // Cập nhật device_token trực tiếp cho user nếu có
-            if (!empty($deviceToken)) {
-                $this->userRepository->update($user->id, [
-                    'device_token' => $deviceToken
-                ]);
-            }
-
-            return $this->respondWithToken($token, $refreshToken, $user);
         }
 
         return response()->json([
             'status' => 401,
             'message' => __('Thông tin đăng nhập chưa chính xác.')
         ], 401);
+    }
+
+    /**
+     * Đăng nhập / Đăng ký bằng Google phiên bản V2
+     *
+     * @throws Exception
+     */
+    public function loginGoogleUserV2(Request $request): JsonResponse
+    {
+        $data = $request->validated();
+        $emailEncrypted = AESHelper::encrypt($data['email']);
+
+        $user = $this->userRepository->findByField('email', $emailEncrypted);
+
+        if ($user) {
+            if ($user->status === UserStatus::Lock) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => __('Tài khoản của bạn đã bị khóa.')
+                ], 403);
+            }
+
+            if ($user->status === UserStatus::Inactive) {
+                $user->update(['status' => UserStatus::Lock]);
+                return response()->json([
+                    'status' => 403,
+                    'message' => __('Tài khoản của bạn đã bị khóa.')
+                ], 403);
+            }
+
+            // Cập nhật avatar nếu người dùng chưa có ảnh đại diện
+            if (empty($user->avatar) && !empty($data['avatar'])) {
+                $user->update(['avatar' => $data['avatar']]);
+            }
+        } else {
+            // Tự động đăng ký người dùng mới qua Google
+            $user = $this->userRepository->create([
+                'code' => $this->createCodeUser(),
+                'username' => $emailEncrypted,
+                'email' => $emailEncrypted,
+                'fullname' => !empty($data['fullname']) ? $data['fullname'] : 'Người dùng Google',
+                'avatar' => $data['avatar'] ?? null,
+                'password' => bcrypt(Str::random(16)),
+                'service_type' => UserServiceType::Google,
+                'status' => UserStatus::Active,
+                'active' => true,
+                'email_verified_at' => now(),
+            ]);
+        }
+
+        return $this->issueV2UserSession($user, $request, [
+            'device_id' => $data['device_id'] ?? null,
+            'device_token' => $data['device_token'] ?? null,
+            'device_name' => $data['device_name'] ?? null,
+        ]);
+    }
+
+    /**
+     * Cấp phát phiên đăng nhập V2, quản lý thiết bị và kiểm tra hạn mức
+     */
+    protected function issueV2UserSession(User $user, Request $request, array $deviceData): JsonResponse
+    {
+        // Xác định định danh thiết bị
+        $deviceId = $deviceData['device_id'] ?? $deviceData['device_token'] ?? ('web_' . md5($request->ip() . ($request->userAgent() ?? '')));
+        $deviceName = $deviceData['device_name'] ?? null;
+        $deviceToken = $deviceData['device_token'] ?? null;
+
+        // Kiểm tra thiết bị trong user_devices
+        $userDevice = \App\Models\UserDevice::where('user_id', $user->id)
+            ->where('device_id', $deviceId)
+            ->first();
+
+        if ($userDevice && $userDevice->is_active) {
+            // Thiết bị đã liên kết và đang hoạt động -> Cập nhật thông tin hoạt động
+            $userDevice->update([
+                'device_name' => $deviceName ?? $userDevice->device_name,
+                'device_token' => $deviceToken ?? $userDevice->device_token,
+                'ip_address' => $request->ip(),
+                'last_active_at' => now(),
+            ]);
+        } else {
+            // Thiết bị mới hoặc thiết bị trước đó đã bị giải phóng -> Kiểm tra hạn mức
+            $activeCount = \App\Models\UserDevice::where('user_id', $user->id)
+                ->where('is_active', true)
+                ->count();
+            $maxAllowed = $user->getMaxDevicesAllowed();
+
+            if ($activeCount >= $maxAllowed) {
+                \Illuminate\Support\Facades\Log::warning('Login blocked: Device limit exceeded', [
+                    'user_id' => $user->id,
+                    'device_id' => $deviceId,
+                    'active_devices' => $activeCount,
+                    'max_allowed' => $maxAllowed,
+                ]);
+
+                return response()->json([
+                    'status' => 403,
+                    'code' => 'DEVICE_LIMIT_EXCEEDED',
+                    'message' => __("Tài khoản của bạn đã đạt giới hạn tối đa :max thiết bị cho gói hiện tại. Vui lòng nâng cấp lên gói VIP để sử dụng trên nhiều thiết bị hoặc liên hệ Quản trị viên để đổi thiết bị.", ['max' => $maxAllowed]),
+                    'data' => [
+                        'max_devices' => $maxAllowed,
+                        'current_devices' => $activeCount,
+                        'can_upgrade' => true
+                    ]
+                ], 403);
+            }
+
+            // Chưa vượt hạn mức -> Cho phép liên kết thiết bị mới
+            if ($userDevice) {
+                $userDevice->update([
+                    'is_active' => true,
+                    'device_name' => $deviceName ?? $userDevice->device_name,
+                    'device_token' => $deviceToken ?? $userDevice->device_token,
+                    'ip_address' => $request->ip(),
+                    'last_active_at' => now(),
+                ]);
+            } else {
+                \App\Models\UserDevice::create([
+                    'user_id' => $user->id,
+                    'device_id' => $deviceId,
+                    'device_name' => $deviceName ?? 'Thiết bị di động',
+                    'device_token' => $deviceToken,
+                    'ip_address' => $request->ip(),
+                    'is_active' => true,
+                    'last_active_at' => now(),
+                ]);
+            }
+        }
+
+        $token = JWTAuth::fromUser($user);
+        $refreshToken = $this->createRefreshToken($user);
+
+        // Lưu session đăng nhập với định danh thiết bị
+        $this->sessionRepository->create([
+            'user_id' => $user->id,
+            'access_token' => $token,
+            'device_token' => $deviceId,
+            'status' => DeleteStatus::NotDeleted
+        ]);
+
+        // Cập nhật device_token trực tiếp cho user nếu có
+        if (!empty($deviceToken)) {
+            $this->userRepository->update($user->id, [
+                'device_token' => $deviceToken
+            ]);
+        }
+
+        return $this->respondWithToken($token, $refreshToken, $user);
     }
 
     public function invalidateToken(string $token): bool
