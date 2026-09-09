@@ -120,10 +120,19 @@ class UserService implements UserServiceInterface
                 'current_type' => $currentType
             ]);
 
-            // If package is downgraded/changed to Normal or Trial, and it's different from the old type,
-            // invalidate all active sessions to enforce single-device limit
-            if (in_array($currentType, [PackageType::Normal, PackageType::Trial]) && $oldType !== $currentType) {
-                $this->userSessionRepository->deleteAllSessionTokens($user->id);
+            // Thu hồi các thiết bị dư thừa nếu số thiết bị đang hoạt động vượt quá hạn mức gói mới
+            $allowed = $user->getMaxDevicesAllowed();
+            $activeDevices = \App\Models\UserDevice::where('user_id', $user->id)
+                ->where('is_active', true)
+                ->orderBy('created_at', 'asc')
+                ->orderBy('id', 'asc')
+                ->get();
+
+            if ($activeDevices->count() > $allowed) {
+                $excessDevices = $activeDevices->slice($allowed);
+                foreach ($excessDevices as $device) {
+                    $this->revokeDevice($user->id, $device->id);
+                }
             }
         }
 
