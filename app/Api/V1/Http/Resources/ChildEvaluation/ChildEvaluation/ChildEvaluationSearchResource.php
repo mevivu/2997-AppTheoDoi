@@ -6,7 +6,6 @@ use App\Api\V1\Http\Resources\ChildEvaluation\CapabilityGrade\CapabilityGradeSho
 use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationSemesterResource;
 use App\Api\V1\Http\Resources\ChildEvaluation\QualitityGrade\QualityGradeShowResource;
 use App\Api\V1\Http\Resources\ChildEvaluation\SubjectGradeResource;
-use App\Api\V1\Support\CheckPackage;
 use App\Models\SubjectGrade;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
@@ -16,7 +15,6 @@ use JsonSerializable;
 
 class ChildEvaluationSearchResource extends JsonResource
 {
-    use CheckPackage;
 
     /**
      * Transform the resource into an array.
