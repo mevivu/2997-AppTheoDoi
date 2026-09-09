@@ -7,7 +7,7 @@ use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Traits\Roles;
 use App\AES\AESHelper;
 use App\Enums\Package\PackageStatus;
-use App\Enums\Package\PackageType;
+use App\Enums\User\UserServiceType;
 use App\Enums\User\UserStatus;
 use App\Models\Package;
 use BenSampo\Enum\Enum;
@@ -36,9 +36,9 @@ class UserDataTable extends BaseDataTable
             'action' => 'admin.users.datatable.action',
             'editlink' => 'admin.users.datatable.editlink',
             'status' => 'admin.users.datatable.status',
+            'service_type' => 'admin.users.datatable.service_type',
             'email' => 'admin.users.datatable.email',
             'phone' => 'admin.users.datatable.phone',
-            'package_type' => 'admin.users.datatable.package_type',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
@@ -66,7 +66,7 @@ class UserDataTable extends BaseDataTable
             ],
             [
                 'column' => 7,
-                'data' => PackageType::asSelectArray()
+                'data' => UserServiceType::asSelectArray()
             ],
         ];
     }
@@ -98,6 +98,7 @@ class UserDataTable extends BaseDataTable
         $this->customEditColumns = [
             'code' => $this->view['editlink'],
             'status' => $this->view['status'],
+            'service_type' => $this->view['service_type'],
             'email' => function ($item) {
                 return view(
                     $this->view['email'],
@@ -125,16 +126,6 @@ class UserDataTable extends BaseDataTable
                 $name = optional($item->userPackages->first()?->package)->name;
                 return $name ? '<span class="badge bg-green-lt">' . $name . '</span>' : '<span class="badge bg-secondary-lt">Chưa có</span>';
             },
-            'package_type' => function ($item) {
-                $type = optional($item->userPackages->first()?->package)->type;
-
-                return view(
-                    $this->view['package_type'],
-                    [
-                        'package_type' => $type ?? null
-                    ]
-                )->render();
-            },
             'checkbox' => $this->view['checkbox'],
         ];
     }
@@ -144,23 +135,20 @@ class UserDataTable extends BaseDataTable
         $this->customRawColumns = [
             'action',
             'status',
+            'service_type',
             'checkbox',
             'code',
             'email',
             'phone',
             'package_name',
-            'package_type'
         ];
     }
 
     public function setCustomFilterColumns(): void
     {
         $this->customFilterColumns = [
-
-            'package_type' => function ($query, $keyword) {
-                $query->whereHas('userPackages', function ($subQuery) use ($keyword) {
-                    $subQuery->where('current_type', $keyword);
-                });
+            'service_type' => function ($query, $keyword) {
+                $query->where('service_type', $keyword);
             },
             'package_name' => function ($query, $keyword) {
                 if (is_numeric($keyword)) {
@@ -197,19 +185,13 @@ class UserDataTable extends BaseDataTable
             return optional($row->userPackages->first()?->package)->name ?? '';
         }
 
-        if ($key === 'package_type') {
-            $package = $row->userPackages->first()?->package;
-
-            // Handle Native Enum (PHP 8.1+)
-            if ($package && $package->type instanceof \BackedEnum && method_exists($package->type, 'description')) {
-                return $package->type->description();
+        if ($key === 'service_type') {
+            if ($row->service_type instanceof UserServiceType) {
+                return $row->service_type->name();
             }
-
-            // Handle BenSampo Enum
-            if ($package && $package->type instanceof Enum) {
-                return $package->type->description;
+            if (is_numeric($row->service_type)) {
+                return UserServiceType::tryFrom((int)$row->service_type)?->name() ?? $row->service_type;
             }
-
             return '';
         }
 

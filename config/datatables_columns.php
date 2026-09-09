@@ -1476,8 +1476,8 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false,
         ],
-        'package_type' => [
-            'title' => '<div class="header-cell-content"><i class="ti ti-package"></i><span>Loại</span></div>',
+        'service_type' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-brand-google"></i><span>Hình thức</span></div>',
             'addClass' => 'text-center align-middle',
             'orderable' => false,
         ],

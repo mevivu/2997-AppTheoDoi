@@ -20,9 +20,18 @@ enum UserServiceType: int
     public function badge(): string
     {
         return match ($this) {
-            self::Email => 'bg-blue',
-            self::Google => 'bg-red',
-            self::Apple => 'bg-black',
+            self::Email => 'bg-blue-lt',
+            self::Google => 'bg-red-lt',
+            self::Apple => 'bg-dark-lt',
+        };
+    }
+
+    public function icon(): string
+    {
+        return match ($this) {
+            self::Email => 'ti ti-mail',
+            self::Google => 'ti ti-brand-google',
+            self::Apple => 'ti ti-brand-apple',
         };
     }
 
