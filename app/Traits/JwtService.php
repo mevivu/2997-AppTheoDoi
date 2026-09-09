@@ -220,6 +220,16 @@ trait JwtService
                     $updates['username'] = $emailEncrypted;
                 }
             }
+            // Luôn cập nhật service_type là Google khi người dùng đăng nhập bằng Google
+            if ($user->service_type !== UserServiceType::Google) {
+                $updates['service_type'] = UserServiceType::Google;
+            }
+
+            // Cập nhật avatar nếu người dùng chưa có ảnh đại diện
+            if (empty($user->avatar) && !empty($data['avatar'])) {
+                $updates['avatar'] = $data['avatar'];
+            }
+
             if (!empty($updates)) {
                 $user->update($updates);
             }
@@ -237,11 +247,6 @@ trait JwtService
                     'status' => 403,
                     'message' => __('Tài khoản của bạn đã bị khóa.')
                 ], 403);
-            }
-
-            // Cập nhật avatar nếu người dùng chưa có ảnh đại diện
-            if (empty($user->avatar) && !empty($data['avatar'])) {
-                $user->update(['avatar' => $data['avatar']]);
             }
         } else {
             // Tự động đăng ký người dùng mới qua Google
