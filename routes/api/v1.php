@@ -170,10 +170,10 @@ Route::controller(\App\Api\V1\Http\Controllers\RatingPQ\RatingPQController::clas
         Route::get('/', 'index');
         Route::get('/endurance-stats', 'getMonthlyEnduranceStats');
         Route::get('/lasted', 'getOverallStats');
-        Route::get('/{id}', 'show');
+        Route::get('/{id}', 'show')->whereNumber('id');
         Route::post('/', 'store');
         Route::put('/', 'update');
-        Route::delete('/{id}', 'delete');
+        Route::delete('/{id}', 'delete')->whereNumber('id');
     });
 
 // ChildEvaluation

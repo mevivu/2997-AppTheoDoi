@@ -24,7 +24,7 @@ Route::prefix('rating-pqs')->controller(RatingPQController::class)
         Route::get('/general-info', 'getGeneralInfo');
     });
 
-// Auth V2: Ghi đè endpoint login để trỏ tới V2 AuthController
+// Auth V2: Ghi đè endpoint login để trỏ tới V2 AuthController (ghi đè lên V1 login ở trên)
 Route::prefix('auth')->controller(AuthController::class)
     ->group(function () {
         Route::post('/login', 'login');
