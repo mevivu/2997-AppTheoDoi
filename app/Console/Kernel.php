@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('package:update-expired')->everyMinute();
         $schedule->command('otp:clean')->daily();
         $schedule->command('notification:send-push')->everyMinute()->withoutOverlapping();
-
+        $schedule->command('session:clean-deleted --days=3')->dailyAt('02:00');
     }
 
     /**

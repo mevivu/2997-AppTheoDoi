@@ -35,23 +35,21 @@ class Authenticate extends Middleware
                             ->where('access_token', $token)
                             ->first();
 
-                        if ($session) {
-                            if ($session->status === DeleteStatus::Deleted || (is_string($session->status) && $session->status === 'deleted')) {
-                                throw new AuthenticationException(__('Phiên đăng nhập đã hết hạn hoặc thiết bị đã bị giải phóng.'));
-                            }
+                        if (!$session || $session->status === DeleteStatus::Deleted || (is_string($session->status) && $session->status === 'deleted')) {
+                            throw new AuthenticationException(__('Phiên đăng nhập đã hết hạn hoặc thiết bị đã bị giải phóng.'));
+                        }
 
-                            if (!empty($session->device_token)) {
-                                $device = UserDevice::where('user_id', $user->id)
-                                    ->where(function ($q) use ($session) {
-                                        $q->where('device_id', $session->device_token)
-                                          ->orWhere('device_token', $session->device_token);
-                                    })
-                                    ->first();
+                        if (!empty($session->device_token)) {
+                            $device = UserDevice::where('user_id', $user->id)
+                                ->where(function ($q) use ($session) {
+                                    $q->where('device_id', $session->device_token)
+                                      ->orWhere('device_token', $session->device_token);
+                                })
+                                ->first();
 
-                                if ($device && !$device->is_active) {
-                                    $session->update(['status' => DeleteStatus::Deleted]);
-                                    throw new AuthenticationException(__('Thiết bị này đã bị giải phóng.'));
-                                }
+                            if ($device && !$device->is_active) {
+                                $session->update(['status' => DeleteStatus::Deleted]);
+                                throw new AuthenticationException(__('Thiết bị này đã bị giải phóng.'));
                             }
                         }
                     }
