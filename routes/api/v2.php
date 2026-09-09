@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Kế thừa toàn bộ các routes từ v1.php trước
+require base_path('routes/api/v1.php');
+
 // Rating PQ V2: Endpoint tổng hợp thông tin đánh giá thể chất (gộp 1 API)
 Route::prefix('rating-pqs')->controller(RatingPQController::class)
     ->group(function () {
@@ -26,6 +29,3 @@ Route::prefix('auth')->controller(AuthController::class)
     ->group(function () {
         Route::post('/login', 'login');
     });
-
-// Kế thừa toàn bộ các routes từ v1.php
-require base_path('routes/api/v1.php');
