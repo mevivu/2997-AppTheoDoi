@@ -174,6 +174,10 @@
         gap: 48px;
         align-items: start;
         padding: 40px 0 60px;
+        transition: all 0.3s ease;
+    }
+    .policy-layout.full-width {
+        grid-template-columns: 1fr;
     }
 
     /* Sticky Sidebar */
@@ -561,15 +565,15 @@
 
         <!-- Tab Switcher -->
         <div class="policy-tabs-nav">
-            <button class="tab-btn {{ $activeTab == 'privacy' ? 'active' : '' }}" onclick="switchTab('privacy')">
+            <button type="button" class="tab-btn {{ $activeTab == 'privacy' ? 'active' : '' }}" data-tab="privacy" onclick="switchTab('privacy', this)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                 <span>Chính Sách Bảo Mật</span>
             </button>
-            <button class="tab-btn {{ $activeTab == 'terms' ? 'active' : '' }}" onclick="switchTab('terms')">
+            <button type="button" class="tab-btn {{ $activeTab == 'terms' ? 'active' : '' }}" data-tab="terms" onclick="switchTab('terms', this)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                 <span>Điều Khoản Sử Dụng</span>
             </button>
-            <button class="tab-btn {{ $activeTab == 'delete' ? 'active' : '' }}" onclick="switchTab('delete')">
+            <button type="button" class="tab-btn {{ $activeTab == 'delete' ? 'active' : '' }}" data-tab="delete" onclick="switchTab('delete', this)">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 <span>Xóa Dữ Liệu</span>
             </button>
@@ -618,9 +622,9 @@
 
 <!-- Main Two-Column Layout -->
 <section>
-    <div class="container policy-layout">
+    <div class="container policy-layout {{ $activeTab != 'privacy' ? 'full-width' : '' }}">
         <!-- Sticky Sidebar (TOC) -->
-        <aside class="policy-sidebar">
+        <aside class="policy-sidebar" style="{{ $activeTab != 'privacy' ? 'display: none;' : '' }}">
             <div class="sidebar-title">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
                 <span>Mục Lục Điều Hướng</span>
@@ -980,40 +984,75 @@
 @push('scripts')
 <script>
     // Tab switching function
-    function switchTab(tabId) {
-        // Update URL parameter without reload
-        const url = new URL(window.location);
-        url.searchParams.set('tab', tabId);
-        window.history.replaceState({}, '', url);
+    function switchTab(tabId, clickedBtn) {
+        if (!tabId) return;
 
-        // Update tab buttons
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        event.currentTarget.classList.add('active');
+        // 1. Update tab buttons active state
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            if (btn.getAttribute('data-tab') === tabId || (clickedBtn && btn === clickedBtn)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
 
-        // Update tab contents
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+        // 2. Update tab contents active state
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
         const target = document.getElementById('tab-' + tabId);
         if (target) {
             target.classList.add('active');
         }
 
-        // Show/hide sidebar TOC depending on tab
+        // 3. Show/hide sidebar TOC depending on tab & adjust layout grid
         const sidebar = document.querySelector('.policy-sidebar');
+        const layout = document.querySelector('.policy-layout');
         if (sidebar) {
             sidebar.style.display = (tabId === 'privacy') ? 'block' : 'none';
+        }
+        if (layout) {
+            if (tabId === 'privacy') {
+                layout.classList.remove('full-width');
+            } else {
+                layout.classList.add('full-width');
+            }
+        }
+
+        // 4. Update URL parameter without reload
+        try {
+            const url = new URL(window.location);
+            url.searchParams.set('tab', tabId);
+            window.history.replaceState({}, '', url);
+        } catch (e) {
+            // Ignore error in unsupported environments
+        }
+
+        // 5. Scroll smoothly to content top if user had scrolled far down
+        const contentBox = document.querySelector('.policy-layout');
+        if (contentBox && window.scrollY > contentBox.offsetTop + 100) {
+            contentBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
 
     // ScrollSpy for TOC highlight
     window.addEventListener('DOMContentLoaded', () => {
-        const sections = document.querySelectorAll('.content-section');
+        // Handle initial URL tab query if needed
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialTab = urlParams.get('tab');
+        if (initialTab && ['privacy', 'terms', 'delete'].includes(initialTab)) {
+            switchTab(initialTab);
+        }
+
+        const sections = document.querySelectorAll('#tab-privacy .content-section');
         const navLinks = document.querySelectorAll('.toc-link');
 
         window.addEventListener('scroll', () => {
             let current = '';
+            const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
             sections.forEach(section => {
-                const sectionTop = section.offsetTop - 130;
-                if (pageYOffset >= sectionTop) {
+                const sectionTop = section.offsetTop - 150;
+                if (scrollPos >= sectionTop) {
                     current = section.getAttribute('id');
                 }
             });
