@@ -1451,6 +1451,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
+        'affiliate_code' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-share"></i><span>Mã giới thiệu</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
         'fullname' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-file-text"></i><span>Họ tên</span></div>',
             'addClass' => 'text-center align-middle',

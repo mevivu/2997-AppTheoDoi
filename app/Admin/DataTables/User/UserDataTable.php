@@ -97,6 +97,9 @@ class UserDataTable extends BaseDataTable
     {
         $this->customEditColumns = [
             'code' => $this->view['editlink'],
+            'affiliate_code' => function ($item) {
+                return $item->affiliate_code ? '<span class="badge bg-purple-lt fw-bold">' . $item->affiliate_code . '</span>' : '<span class="text-muted">-</span>';
+            },
             'status' => $this->view['status'],
             'service_type' => $this->view['service_type'],
             'email' => function ($item) {
@@ -138,6 +141,7 @@ class UserDataTable extends BaseDataTable
             'service_type',
             'checkbox',
             'code',
+            'affiliate_code',
             'email',
             'phone',
             'package_name',
@@ -147,6 +151,9 @@ class UserDataTable extends BaseDataTable
     public function setCustomFilterColumns(): void
     {
         $this->customFilterColumns = [
+            'affiliate_code' => function ($query, $keyword) {
+                $query->where('affiliate_code', 'like', '%' . $keyword . '%');
+            },
             'service_type' => function ($query, $keyword) {
                 $query->where('service_type', $keyword);
             },

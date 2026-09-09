@@ -24,6 +24,7 @@ class AuthResource extends JsonResource
         return [
             'id' => $this->id,
             'code' => $this->code,
+            'affiliate_code' => $this->affiliate_code,
             'username' => $this->username ? AESHelper::decrypt($this->username) : null,
             'fullname' => $this->fullname,
             'slug' => $this->slug,

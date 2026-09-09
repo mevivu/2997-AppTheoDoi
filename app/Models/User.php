@@ -33,6 +33,8 @@ class User extends Authenticatable implements JWTSubject
         'username',
         /** Mã người dùng */
         'code',
+        /** Mã chia sẻ affiliate */
+        'affiliate_code',
         /** Đường dẫn tĩnh */
         'slug',
         /** Họ và tên */
@@ -200,6 +202,13 @@ class User extends Authenticatable implements JWTSubject
 
     protected static function booted(): void
     {
+        // Tự động sinh mã affiliate CC001, CC002... khi tạo người dùng mới
+        static::creating(function ($user) {
+            if (empty($user->affiliate_code)) {
+                $user->affiliate_code = static::generateAffiliateCode();
+            }
+        });
+
         // Tao package trial
         static::created(function ($user) {
             $trialPackage = Package::getTrialPackage();
@@ -213,4 +222,27 @@ class User extends Authenticatable implements JWTSubject
         });
     }
 
+    /**
+     * Tự động sinh mã chia sẻ affiliate định dạng CC001, CC002...
+     */
+    public static function generateAffiliateCode(): string
+    {
+        $maxCode = static::where('affiliate_code', 'LIKE', 'CC%')
+            ->orderByRaw('CAST(SUBSTRING(affiliate_code, 3) AS UNSIGNED) DESC')
+            ->value('affiliate_code');
+
+        $nextNumber = 1;
+        if ($maxCode && preg_match('/^CC(\d+)$/', $maxCode, $matches)) {
+            $nextNumber = (int) $matches[1] + 1;
+        }
+
+        $code = sprintf('CC%03d', $nextNumber);
+
+        while (static::where('affiliate_code', $code)->exists()) {
+            $nextNumber++;
+            $code = sprintf('CC%03d', $nextNumber);
+        }
+
+        return $code;
+    }
 }
