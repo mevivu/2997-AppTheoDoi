@@ -35,7 +35,7 @@ return new class extends Migration
         DB::table('users')
             ->whereNull('affiliate_code')
             ->orderBy('id', 'asc')
-            ->chunk(200, function ($users) use (&$counter) {
+            ->chunkById(200, function ($users) use (&$counter) {
                 foreach ($users as $user) {
                     $code = sprintf('CC%03d', $counter++);
                     DB::table('users')->where('id', $user->id)->update([
