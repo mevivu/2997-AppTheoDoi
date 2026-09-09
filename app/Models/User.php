@@ -55,6 +55,8 @@ class User extends Authenticatable implements JWTSubject
         'status',
         /** Hình thức đăng ký (Email, Google, Apple) */
         'service_type',
+        /** Apple ID */
+        'apple_id',
         /** Token thiết bị */
         'device_token',
         /** Thời gian xác thực email */

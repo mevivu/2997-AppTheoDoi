@@ -24,9 +24,10 @@ Route::prefix('rating-pqs')->controller(RatingPQController::class)
         Route::get('/general-info', 'getGeneralInfo');
     });
 
-// Auth V2: Ghi đè endpoint login và bổ sung login-google
+// Auth V2: Ghi đè endpoint login và bổ sung login-google, login-apple
 Route::prefix('auth')->controller(AuthController::class)
     ->group(function () {
         Route::post('/login', 'login');
         Route::post('/login-google', 'loginGoogle');
+        Route::post('/login-apple', 'loginApple');
     });

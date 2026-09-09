@@ -267,6 +267,102 @@ trait JwtService
     }
 
     /**
+     * Đăng nhập hoặc đăng ký tài khoản qua Apple ID V2
+     *
+     * @throws Exception
+     */
+    public function loginAppleUserV2(Request $request): JsonResponse
+    {
+        $data = $request->validated();
+        $appleId = $data['apple_id'];
+        $email = $data['email'] ?? null;
+        $identityToken = $data['identity_token'] ?? null;
+
+        // Nếu client không gửi email, thử giải mã payload từ Apple Identity Token (JWT)
+        if (empty($email) && !empty($identityToken)) {
+            $parts = explode('.', $identityToken);
+            if (count($parts) >= 2) {
+                $payloadBase64 = strtr($parts[1], '-_', '+/');
+                $payloadJson = base64_decode(str_pad($payloadBase64, strlen($payloadBase64) % 4, '=', STR_PAD_RIGHT));
+                $payload = json_decode($payloadJson, true);
+                if (!empty($payload['email'])) {
+                    $email = $payload['email'];
+                }
+            }
+        }
+
+        $emailEncrypted = !empty($email) ? AESHelper::encrypt($email) : null;
+
+        // 1. Tìm người dùng theo apple_id trước
+        $user = User::where('apple_id', $appleId)->first();
+
+        // 2. Nếu chưa liên kết apple_id nhưng có email, tìm theo email/username để liên kết tài khoản cũ
+        if (!$user && $emailEncrypted) {
+            $user = User::where('email', $emailEncrypted)
+                ->orWhere('username', $emailEncrypted)
+                ->first();
+
+            if ($user) {
+                $user->update([
+                    'apple_id' => $appleId,
+                    'service_type' => UserServiceType::Apple,
+                ]);
+            }
+        }
+
+        if ($user) {
+            // Đảm bảo apple_id được lưu
+            if (empty($user->apple_id)) {
+                $user->update(['apple_id' => $appleId]);
+            }
+
+            // Kiểm tra trạng thái tài khoản bị khóa
+            if ($user->status === UserStatus::Lock) {
+                return response()->json([
+                    'status' => 403,
+                    'message' => __('Tài khoản của bạn đã bị khóa.')
+                ], 403);
+            }
+
+            if ($user->status === UserStatus::Inactive) {
+                $user->update(['status' => UserStatus::Lock]);
+                return response()->json([
+                    'status' => 403,
+                    'message' => __('Tài khoản của bạn đã bị khóa.')
+                ], 403);
+            }
+
+            // Cập nhật họ tên nếu người dùng chưa có tên cụ thể
+            if (!empty($data['fullname']) && ($user->fullname === 'Người dùng Apple' || empty($user->fullname))) {
+                $user->update(['fullname' => $data['fullname']]);
+            }
+        } else {
+            // Tự động đăng ký người dùng mới qua Apple ID
+            $userEmail = $emailEncrypted ?: AESHelper::encrypt("apple_{$appleId}@privaterelay.appleid.com");
+            $userUsername = $emailEncrypted ?: AESHelper::encrypt("apple_{$appleId}");
+
+            $user = $this->userRepository->create([
+                'code' => $this->createCodeUser(),
+                'username' => $userUsername,
+                'email' => $userEmail,
+                'fullname' => !empty($data['fullname']) ? $data['fullname'] : 'Người dùng Apple',
+                'password' => bcrypt(Str::random(16)),
+                'service_type' => UserServiceType::Apple,
+                'apple_id' => $appleId,
+                'status' => UserStatus::Active,
+                'active' => true,
+                'email_verified_at' => now(),
+            ]);
+        }
+
+        return $this->issueV2UserSession($user, $request, [
+            'device_id' => $data['device_id'] ?? null,
+            'device_token' => $data['device_token'] ?? null,
+            'device_name' => $data['device_name'] ?? null,
+        ]);
+    }
+
+    /**
      * Cấp phát phiên đăng nhập V2, quản lý thiết bị và kiểm tra hạn mức
      */
     protected function issueV2UserSession(User $user, Request $request, array $deviceData): JsonResponse

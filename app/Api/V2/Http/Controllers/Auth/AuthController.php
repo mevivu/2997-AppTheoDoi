@@ -8,6 +8,7 @@ use App\Api\V1\Repositories\User\UserRepositoryInterface;
 use App\Api\V1\Services\User\UserServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
+use App\Api\V2\Http\Requests\Auth\AppleLoginRequest;
 use App\Api\V2\Http\Requests\Auth\GoogleLoginRequest;
 use App\Api\V2\Http\Requests\Auth\LoginRequest;
 use App\Traits\JwtService;
@@ -42,6 +43,7 @@ class AuthController extends Controller
             'except' => [
                 'login',
                 'loginGoogle',
+                'loginApple',
             ]
         ]);
     }
@@ -94,6 +96,34 @@ class AuthController extends Controller
             return $this->loginGoogleUserV2($request);
         } catch (Exception $e) {
             $this->logError("Login Google V2 failed", $e);
+            return $this->jsonResponseError($e->getMessage());
+        }
+    }
+
+    /**
+     * Đăng nhập hoặc đăng ký nhanh bằng Apple ID (V2)
+     *
+     * Xác thực thông tin Apple ID nhận từ ứng dụng iOS,
+     * nếu tài khoản đã tồn tại (theo apple_id hoặc email) thì đăng nhập và liên kết;
+     * nếu chưa có tài khoản thì tự động tạo User mới với service_type Apple và đăng nhập.
+     *
+     * @bodyParam apple_id string required Mã định danh tài khoản Apple (userIdentifier).
+     * @bodyParam email string Email người dùng Apple (nếu có hoặc relay email).
+     * @bodyParam fullname string Tên đầy đủ từ Apple profile.
+     * @bodyParam identity_token string JWT token từ Apple.
+     * @bodyParam device_token string Token FCM đại diện cho thiết bị nhận thông báo.
+     * @bodyParam device_id string Mã định danh phần cứng thiết bị.
+     * @bodyParam device_name string Tên hiển thị của thiết bị.
+     *
+     * @param AppleLoginRequest $request
+     * @return JsonResponse
+     */
+    public function loginApple(AppleLoginRequest $request): JsonResponse
+    {
+        try {
+            return $this->loginAppleUserV2($request);
+        } catch (Exception $e) {
+            $this->logError("Login Apple V2 failed", $e);
             return $this->jsonResponseError($e->getMessage());
         }
     }
