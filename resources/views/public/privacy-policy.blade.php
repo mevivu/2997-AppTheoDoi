@@ -419,35 +419,56 @@
         gap: 14px;
     }
     .download-store-btn {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        color: #fff;
-        padding: 10px 18px;
-        border-radius: 12px;
-        display: flex;
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 2px solid #FFFFFF;
+        border-radius: 14px;
+        padding: 10px 20px;
+        display: inline-flex;
         align-items: center;
-        gap: 12px;
-        text-decoration: none;
-        transition: all 0.2s;
+        gap: 14px;
+        text-decoration: none !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        min-width: 195px;
+        box-sizing: border-box;
     }
     .download-store-btn:hover {
-        background: #fff;
-        color: var(--primary-dark) !important;
-        transform: translateY(-2px);
+        background: #F8FAFC !important;
+        transform: translateY(-3px);
+        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.28);
+        border-color: #E2E8F0;
+        color: #0F172A !important;
     }
-    .download-store-btn svg {
+    .download-store-btn .store-icon-wrap {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         flex-shrink: 0;
     }
-    .store-text-small {
+    .download-store-btn .store-text-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+    .download-store-btn .store-text-small {
+        color: #64748B !important;
         font-size: 11px;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        opacity: 0.85;
+        line-height: 1.2;
+        margin-bottom: 2px;
     }
-    .store-text-large {
-        font-size: 15px;
-        font-weight: 700;
+    .download-store-btn .store-text-large {
+        color: #0F172A !important;
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 1.2;
+        letter-spacing: -0.2px;
     }
     .promo-qr-wrap {
         display: flex;
@@ -908,30 +929,49 @@
             </p>
 
             <div class="download-buttons">
-                <a href="https://play.google.com/store/apps" target="_blank" class="download-store-btn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5V3.5C3 2.91 3.34 2.39 3.84 2.15L13.69 12L3.84 21.85C3.34 21.6 3 21.09 3 20.5ZM16.81 15.12L15.11 13.42L18.3 10.23C18.77 10.7 18.77 11.45 18.3 11.92L16.81 15.12ZM14.41 12.71L4.71 22.41C4.89 22.47 5.09 22.5 5.3 22.5C5.7 22.5 6.09 22.33 6.38 22.04L14.41 14L14.41 12.71ZM14.41 11.29L6.38 3.26C6.09 2.97 5.7 2.8 5.3 2.8C5.09 2.8 4.89 2.83 4.71 2.89L14.41 11.29Z"/></svg>
-                    <div>
-                        <div class="store-text-small">Tải về trên</div>
-                        <div class="store-text-large">Google Play</div>
+                <!-- Google Play Button -->
+                <a href="https://play.google.com/store/apps/details?id=com.mevivu.theodoi" target="_blank" rel="noopener noreferrer" class="download-store-btn">
+                    <div class="store-icon-wrap">
+                        <svg viewBox="0 0 512 512" width="28" height="28">
+                            <path fill="#4CAF50" d="M380.9 220.8l-80.1-46.3-57.9 57.9 66.8 66.8 71.2-41.2c16.3-9.5 16.3-27.7 0-37.2z"/>
+                            <path fill="#1E88E5" d="M38.8 19.3c-5.5 6.1-8.8 15.1-8.8 26.3v420.8c0 11.2 3.3 20.2 8.8 26.3l213-213-213-260.4z"/>
+                            <path fill="#FDD835" d="M300.8 174.5l-57.9 57.9-204.1-213.1c4.5-1.9 9.6-3 15-3 8.3 0 16.6 2.6 23.8 6.7l223.2 151.5z"/>
+                            <path fill="#E53935" d="M242.9 279.6l57.9 57.9-223.2 151.5c-7.2 4.1-15.5 6.7-23.8 6.7-5.4 0-10.5-1.1-15-3l204.1-213.1z"/>
+                        </svg>
+                    </div>
+                    <div class="store-text-group">
+                        <span class="store-text-small">Tải về trên</span>
+                        <span class="store-text-large">Google Play</span>
                     </div>
                 </a>
 
-                <a href="https://www.apple.com/app-store/" target="_blank" class="download-store-btn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.09 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 17 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM15.97 4.54C16.65 3.71 17.11 2.56 16.98 1.41C15.98 1.45 14.77 2.08 14.05 2.91C13.41 3.65 12.85 4.82 13.01 5.95C14.12 6.04 15.29 5.37 15.97 4.54Z"/></svg>
-                    <div>
-                        <div class="store-text-small">Tải về trên</div>
-                        <div class="store-text-large">App Store</div>
+                <!-- Apple App Store Button -->
+                <a href="https://apps.apple.com/vn/app/ch%C4%83m-con-360/id6753282605?l=vi" target="_blank" rel="noopener noreferrer" class="download-store-btn">
+                    <div class="store-icon-wrap">
+                        <svg viewBox="0 0 24 24" width="28" height="28" fill="#000000">
+                            <path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.09 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 17 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM15.97 4.54C16.65 3.71 17.11 2.56 16.98 1.41C15.98 1.45 14.77 2.08 14.05 2.91C13.41 3.65 12.85 4.82 13.01 5.95C14.12 6.04 15.29 5.37 15.97 4.54Z"/>
+                        </svg>
+                    </div>
+                    <div class="store-text-group">
+                        <span class="store-text-small">Tải về trên</span>
+                        <span class="store-text-large">App Store</span>
                     </div>
                 </a>
             </div>
         </div>
 
-        <div class="promo-qr-wrap">
-            <div style="width: 140px; height: 140px; background: #fff; border-radius: 12px; padding: 10px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">
-                <img src="{{ asset($settings['site_logo'] ?? 'public/assets/images/logo.png') }}" 
-                     alt="Chăm Con 360" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+        <div class="promo-qr-wrap" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+            <div style="width: 155px; height: 155px; background: #fff; border-radius: 18px; padding: 10px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.25);">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.mevivu.theodoi&color=0A4346" 
+                     alt="Quét mã tải ứng dụng Chăm Con 360" 
+                     style="width: 100%; height: 100%; object-fit: contain; border-radius: 8px;"
+                     onerror="this.src='{{ asset($settings['site_logo'] ?? 'public/assets/images/logo.png') }}'">
             </div>
-            <span style="font-size: 13px; font-weight: 600;">Quét mã tải ứng dụng</span>
+            <span style="font-size: 14px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; gap: 6px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path></svg>
+                Quét mã tải ứng dụng
+            </span>
+            <span style="font-size: 12px; color: #99F6E4; margin-top: 2px;">Kids360 Ecosystem</span>
         </div>
     </div>
 </section>

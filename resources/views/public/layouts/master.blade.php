@@ -190,6 +190,66 @@
             box-shadow: 0 6px 16px rgba(19, 122, 127, 0.35);
         }
 
+        /* App Store Download Badges - High Contrast & Crisp */
+        .download-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+        .download-store-btn {
+            background: #FFFFFF !important;
+            color: #0F172A !important;
+            border: 2px solid #FFFFFF;
+            border-radius: 14px;
+            padding: 10px 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            text-decoration: none !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 195px;
+            box-sizing: border-box;
+        }
+        .download-store-btn:hover {
+            background: #F8FAFC !important;
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.28);
+            border-color: #E2E8F0;
+            color: #0F172A !important;
+        }
+        .download-store-btn .store-icon-wrap {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .download-store-btn .store-text-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+        .download-store-btn .store-text-small {
+            color: #64748B !important;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+        .download-store-btn .store-text-large {
+            color: #0F172A !important;
+            font-size: 16px;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -0.2px;
+        }
+
         /* Footer */
         .site-footer {
             background: #0B132B;
