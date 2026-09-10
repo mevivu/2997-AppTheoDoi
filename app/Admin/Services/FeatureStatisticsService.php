@@ -306,6 +306,10 @@ class FeatureStatisticsService
             'period' => $period,
             'category' => $category,
             'date_range_label' => $dates['start']->format('d/m/Y') . ' - ' . $dates['end']->format('d/m/Y'),
+            'start_date' => $dates['start']->format('Y-m-d'),
+            'end_date' => $dates['end']->format('Y-m-d'),
+            'start_date_formatted' => $dates['start']->format('d/m/Y'),
+            'end_date_formatted' => $dates['end']->format('d/m/Y'),
             'kpis' => [
                 'total_usages' => $totalUsages,
                 'prev_total_usages' => $prevTotalUsages,

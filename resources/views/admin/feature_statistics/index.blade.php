@@ -221,10 +221,10 @@
                         </span>
                         <input type="text" id="datepicker-range" class="form-control form-control-sm bg-white shadow-none rounded-pill" 
                                placeholder="Chọn khoảng ngày (dd/mm/yyyy - dd/mm/yyyy)" 
-                               value="{{ ($from && $to) ? \Carbon\Carbon::parse($from)->format('d/m/Y') . ' - ' . \Carbon\Carbon::parse($to)->format('d/m/Y') : '' }}" 
+                               value="{{ $stats['date_range_label'] ?? '' }}" 
                                readonly style="cursor: pointer; font-size: 0.85rem; font-weight: 500;">
                     </div>
-                    <button type="button" id="btn-clear-custom-date" class="btn btn-sm btn-ghost-danger rounded-pill px-2 d-flex align-items-center gap-1" style="display: {{ ($from && $to) ? 'inline-flex' : 'none' }}; font-size: 0.8rem;">
+                    <button type="button" id="btn-clear-custom-date" class="btn btn-sm btn-ghost-danger rounded-pill px-2 d-flex align-items-center gap-1" style="display: {{ ($currentPeriod === 'custom' && $from && $to) ? 'inline-flex' : 'none' }}; font-size: 0.8rem;">
                         <i class="ti ti-x"></i> Xóa lọc ngày
                     </button>
                 </div>
@@ -933,6 +933,19 @@
                     // 1. Update Date range label
                     $('#badge-date-range').html('<i class="ti ti-calendar me-1"></i>' + data.date_range_label);
 
+                    // Sync datepicker input & calendar selection
+                    if (data.date_range_label) {
+                        $('#datepicker-range').val(data.date_range_label);
+                    }
+                    if (dateRangePicker && data.start_date_formatted && data.end_date_formatted) {
+                        isProgrammaticDateChange = true;
+                        dateRangePicker.setDateRange(data.start_date_formatted, data.end_date_formatted);
+                        if (dateRangePicker.getStartDate()) {
+                            dateRangePicker.gotoDate(dateRangePicker.getStartDate());
+                        }
+                        isProgrammaticDateChange = false;
+                    }
+
                     // 2. Update Export CSV link
                     var exportUrl = "{{ route(RouteAdminSystem::FEATURE_STATISTICS_EXPORT) }}?" + $.param(params);
                     $('#btn-export-csv').attr('href', exportUrl);
@@ -1017,11 +1030,13 @@
 
     // Global DateRange Picker reference
     var dateRangePicker = null;
+    var isProgrammaticDateChange = false;
 
     // Event Listeners
     $(document).ready(function() {
         // Initialize Litepicker Date Range
         if (window.Litepicker && document.getElementById('datepicker-range')) {
+            isProgrammaticDateChange = true;
             dateRangePicker = new Litepicker({
                 element: document.getElementById('datepicker-range'),
                 singleMode: false,
@@ -1031,12 +1046,15 @@
                 delimiter: " - ",
                 autoApply: true,
                 allowRepick: true,
+                startDate: "{{ $stats['start_date_formatted'] ?? '' }}",
+                endDate: "{{ $stats['end_date_formatted'] ?? '' }}",
                 buttonText: {
                     previousMonth: '<i class="ti ti-chevron-left"></i>',
                     nextMonth: '<i class="ti ti-chevron-right"></i>'
                 },
                 setup: function(picker) {
                     picker.on('selected', function(d1, d2) {
+                        if (isProgrammaticDateChange) return;
                         if (d1 && d2) {
                             var from = d1.format('YYYY-MM-DD');
                             var to = d2.format('YYYY-MM-DD');
@@ -1054,6 +1072,14 @@
                     });
                 }
             });
+
+            @if(!empty($stats['start_date_formatted']) && !empty($stats['end_date_formatted']))
+                dateRangePicker.setDateRange("{{ $stats['start_date_formatted'] }}", "{{ $stats['end_date_formatted'] }}");
+                if (dateRangePicker.getStartDate()) {
+                    dateRangePicker.gotoDate(dateRangePicker.getStartDate());
+                }
+            @endif
+            isProgrammaticDateChange = false;
         }
 
         // 1. Period Button Click
@@ -1065,11 +1091,7 @@
             btn.addClass('active');
             currentPeriod = btn.data('period');
 
-            // Reset Litepicker input when preset period is chosen
-            if (dateRangePicker) {
-                dateRangePicker.clearSelection();
-            }
-            $('#datepicker-range').val('');
+            // Hide clear button when preset period is chosen
             $('#btn-clear-custom-date').hide();
 
             refreshData({
@@ -1102,10 +1124,6 @@
 
         // 3. Clear Custom Date Range Filter
         $('#btn-clear-custom-date').on('click', function() {
-            if (dateRangePicker) {
-                dateRangePicker.clearSelection();
-            }
-            $('#datepicker-range').val('');
             $(this).hide();
 
             currentPeriod = '30d';
