@@ -39,6 +39,6 @@
     font-feature-settings: "cv03", "cv04", "cv11";
     }
 </style>
-<link href="{{ asset('public/admin/assets/css/style.css') }}?v=1.0.4" rel="stylesheet">
+<link href="{{ asset('public/admin/assets/css/style.css') }}?v=1.0.5" rel="stylesheet">
 @stack('libs-css')
 @stack('custom-css')

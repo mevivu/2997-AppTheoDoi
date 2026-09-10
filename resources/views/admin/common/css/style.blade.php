@@ -659,7 +659,7 @@
 
     .table-responsive.datatable-grid-active table.dataTable > tbody {
         display: grid !important;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
         gap: 16px !important;
         padding: 8px 0 !important;
         border: none !important;
