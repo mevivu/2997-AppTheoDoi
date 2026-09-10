@@ -1488,6 +1488,7 @@ return [
         ],
         'action' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'width' => '130px',
             'orderable' => false,
             'exportable' => false,
             'printable' => false,

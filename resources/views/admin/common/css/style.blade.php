@@ -399,7 +399,10 @@
         align-items: center;
         justify-content: center;
         gap: 6px;
+        white-space: nowrap;
+        flex-wrap: nowrap;
     }
+
 
     .dt-action-btn {
         display: inline-flex;
