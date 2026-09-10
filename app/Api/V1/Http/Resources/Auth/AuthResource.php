@@ -45,6 +45,12 @@ class AuthResource extends JsonResource
             'mother_height' => $this->mother_height,
             'mother_birthday' => $this->mother_birthday,
             'status' => $this->status,
+            'referrals_count' => $this->referrals()->count(),
+            'referrer' => $this->referrer ? [
+                'id' => $this->referrer->id,
+                'fullname' => $this->referrer->fullname,
+                'affiliate_code' => $this->referrer->affiliate_code,
+            ] : null,
             'created_at' => format_date($this->created_at),
             'package' => new AuthPackageResource($this->userPackages->first())
         ];

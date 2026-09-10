@@ -36,6 +36,7 @@ Route::prefix('users')->controller(UserController::class)
     ->group(function () {
         Route::post('/register', 'register');
         Route::post('/update', 'update');
+        Route::get('/check-referral-code', 'checkReferralCode');
     });
 
 //notification

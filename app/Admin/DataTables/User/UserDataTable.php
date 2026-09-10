@@ -81,10 +81,12 @@ class UserDataTable extends BaseDataTable
         return $this->repository->getQueryBuilder()
             ->with([
                 'roles',
+                'referrer',
                 'userPackages' => function ($q) {
                     $q->latest('id')->with('package');
                 }
             ])
+            ->withCount('referrals')
             ->orderByDesc('created_at');
     }
 
@@ -98,7 +100,27 @@ class UserDataTable extends BaseDataTable
         $this->customEditColumns = [
             'code' => $this->view['editlink'],
             'affiliate_code' => function ($item) {
-                return $item->affiliate_code ? '<span class="badge bg-purple-lt fw-bold">' . $item->affiliate_code . '</span>' : '<span class="text-muted">-</span>';
+                $html = '';
+                if ($item->affiliate_code) {
+                    $html .= '<span class="badge bg-purple-lt fw-bold">' . $item->affiliate_code . '</span>';
+                } else {
+                    $html .= '<span class="text-muted">-</span>';
+                }
+
+                if ($item->referrer) {
+                    $refName = $item->referrer->fullname ? ' (' . e($item->referrer->fullname) . ')' : '';
+                    $html .= '<div class="small text-muted mt-1" title="Người giới thiệu: ' . e($item->referrer->fullname ?? '') . '">';
+                    $html .= '<i class="ti ti-arrow-back-up text-primary"></i> <span class="fw-semibold text-dark">' . e($item->referrer->affiliate_code ?? 'ID:' . $item->referrer->id) . '</span>' . $refName;
+                    $html .= '</div>';
+                }
+
+                if ($item->referrals_count > 0) {
+                    $html .= '<div class="small text-green mt-1">';
+                    $html .= '<i class="ti ti-users"></i> ' . $item->referrals_count . ' đã GT';
+                    $html .= '</div>';
+                }
+
+                return $html;
             },
             'status' => $this->view['status'],
             'service_type' => $this->view['service_type'],

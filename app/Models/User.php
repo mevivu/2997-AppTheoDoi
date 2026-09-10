@@ -6,6 +6,7 @@ use App\Admin\Support\Eloquent\Sluggable;
 use App\Enums\Package\PackageStatus;
 use App\Enums\Package\PackageType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -35,6 +36,8 @@ class User extends Authenticatable implements JWTSubject
         'code',
         /** Mã chia sẻ affiliate */
         'affiliate_code',
+        /** ID người giới thiệu */
+        'referrer_id',
         /** Đường dẫn tĩnh */
         'slug',
         /** Họ và tên */
@@ -121,6 +124,22 @@ class User extends Authenticatable implements JWTSubject
     public function activeDevices(): HasMany
     {
         return $this->hasMany(UserDevice::class, 'user_id')->where('is_active', true);
+    }
+
+    /**
+     * Người dùng đã giới thiệu tài khoản này
+     */
+    public function referrer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'referrer_id');
+    }
+
+    /**
+     * Danh sách những người dùng do tài khoản này giới thiệu
+     */
+    public function referrals(): HasMany
+    {
+        return $this->hasMany(User::class, 'referrer_id');
     }
 
     /**

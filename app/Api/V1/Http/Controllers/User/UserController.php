@@ -16,6 +16,9 @@ use Throwable;
 use App\Api\V1\Support\AuthServiceApi;
 
 
+use App\Models\User;
+use Illuminate\Http\Request;
+
 /**
  * @group Khách hàng
  */
@@ -31,7 +34,7 @@ class UserController extends Controller
     ) {
         $this->service = $service;
         $this->repository = $repository;
-        $this->middleware('auth:api', ['except' => ['register']]);
+        $this->middleware('auth:api', ['except' => ['register', 'checkReferralCode']]);
     }
 
 
@@ -157,6 +160,33 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Kiểm tra tính hợp lệ của mã giới thiệu
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function checkReferralCode(Request $request): JsonResponse
+    {
+        try {
+            $code = trim((string) $request->input('code', ''));
+            if (empty($code)) {
+                return $this->jsonResponseError('Vui lòng nhập mã giới thiệu.', 400);
+            }
 
+            $referrer = User::where('affiliate_code', $code)->first();
+            if (!$referrer) {
+                return $this->jsonResponseError('Mã giới thiệu không tồn tại trong hệ thống.', 404);
+            }
 
+            return $this->jsonResponseSuccess([
+                'valid' => true,
+                'affiliate_code' => $referrer->affiliate_code,
+                'referrer_name' => $referrer->fullname,
+            ], 'Mã giới thiệu hợp lệ.');
+        } catch (Throwable $e) {
+            $this->logError('Check referral code failed', $e);
+            return $this->jsonResponseError($e->getMessage(), 500);
+        }
+    }
 }

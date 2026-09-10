@@ -250,6 +250,11 @@ trait JwtService
             }
         } else {
             // Tự động đăng ký người dùng mới qua Google
+            $referrerId = null;
+            if (!empty($data['referral_code'])) {
+                $referrerId = User::where('affiliate_code', trim($data['referral_code']))->value('id');
+            }
+
             $user = $this->userRepository->create([
                 'code' => $this->createCodeUser(),
                 'username' => $emailEncrypted,
@@ -258,6 +263,7 @@ trait JwtService
                 'avatar' => $data['avatar'] ?? null,
                 'password' => bcrypt(Str::random(16)),
                 'service_type' => UserServiceType::Google,
+                'referrer_id' => $referrerId,
                 'status' => UserStatus::Active,
                 'active' => true,
                 'email_verified_at' => now(),
@@ -346,6 +352,11 @@ trait JwtService
             $userEmail = $emailEncrypted ?: AESHelper::encrypt("apple_{$appleId}@privaterelay.appleid.com");
             $userUsername = $emailEncrypted ?: AESHelper::encrypt("apple_{$appleId}");
 
+            $referrerId = null;
+            if (!empty($data['referral_code'])) {
+                $referrerId = User::where('affiliate_code', trim($data['referral_code']))->value('id');
+            }
+
             $user = $this->userRepository->create([
                 'code' => $this->createCodeUser(),
                 'username' => $userUsername,
@@ -354,6 +365,7 @@ trait JwtService
                 'password' => bcrypt(Str::random(16)),
                 'service_type' => UserServiceType::Apple,
                 'apple_id' => $appleId,
+                'referrer_id' => $referrerId,
                 'status' => UserStatus::Active,
                 'active' => true,
                 'email_verified_at' => now(),

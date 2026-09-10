@@ -74,6 +74,24 @@
                         <span class="badge bg-azure-lt ms-1">{{ $user->activeDevices()->count() }}/{{ $user->getMaxDevicesAllowed() }}</span>
                     </button>
                 </li>
+
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link"
+                            id="referral-info-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#referralInfo"
+                            type="button"
+                            role="tab"
+                            aria-controls="referralInfo"
+                            aria-selected="false">
+                        <i class="ti ti-share fs-4"></i>
+                        <span>{{ __('Giới Thiệu (Affiliate)') }}</span>
+                        @php $refCount = $user->referrals()->count(); @endphp
+                        @if($refCount > 0)
+                            <span class="badge bg-green-lt ms-1">{{ $refCount }}</span>
+                        @endif
+                    </button>
+                </li>
             </ul>
         </div>
 
@@ -118,6 +136,14 @@
                      role="tabpanel"
                      aria-labelledby="devices-info-tab">
                     @include('admin.users.partials.user-devices')
+                </div>
+
+                <!-- Tab 6: Thông tin giới thiệu (Affiliate) -->
+                <div class="tab-pane fade"
+                     id="referralInfo"
+                     role="tabpanel"
+                     aria-labelledby="referral-info-tab">
+                    @include('admin.users.partials.referral-info')
                 </div>
             </div>
         </div>

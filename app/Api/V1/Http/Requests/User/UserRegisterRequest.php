@@ -39,6 +39,19 @@ class UserRegisterRequest extends BaseRequest
                     }
                 }
             ],
+            'referral_code' => [
+                'nullable',
+                'string',
+                'max:50',
+                function ($attribute, $value, $fail) {
+                    if (!empty($value)) {
+                        $referrer = User::where('affiliate_code', trim($value))->first();
+                        if (!$referrer) {
+                            $fail('Mã giới thiệu không tồn tại trong hệ thống.');
+                        }
+                    }
+                }
+            ],
         ];
     }
 

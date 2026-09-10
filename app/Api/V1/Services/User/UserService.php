@@ -14,6 +14,7 @@ use App\Api\V1\Support\UseLog;
 use App\Enums\User\Gender;
 use App\Enums\User\UserServiceType;
 use App\Enums\User\UserStatus;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use App\Admin\Traits\Setup;
@@ -66,6 +67,15 @@ class UserService implements UserServiceInterface
             }
             $data['status'] = UserStatus::Active;
             $data['service_type'] = UserServiceType::Email;
+
+            // Xử lý mã giới thiệu
+            if (!empty($data['referral_code'])) {
+                $referrer = User::where('affiliate_code', trim($data['referral_code']))->first();
+                if ($referrer) {
+                    $data['referrer_id'] = $referrer->id;
+                }
+            }
+
             $user = $this->repository->create($data);
 
             DB::commit();
