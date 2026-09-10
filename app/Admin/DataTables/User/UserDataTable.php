@@ -53,19 +53,21 @@ class UserDataTable extends BaseDataTable
         ->pluck('name', 'id')
         ->toArray();
 
-        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7];
+        // Thứ tự cột: 0:checkbox (ẩn), 1:code, 2:fullname, 3:email, 4:phone, 5:wallet_balance, 6:status, 7:package_name, 8:service_type, 9:action
+        // Bật tìm kiếm cho các cột có dữ liệu tìm kiếm (Cột 5 Ví và 9 Thao tác để trống ô tìm kiếm)
+        $this->columnAllSearch = [1, 2, 3, 4, 6, 7, 8];
 
         $this->columnSearchSelect = [
             [
-                'column' => 5,
+                'column' => 6,
                 'data' => UserStatus::asSelectArray()
             ],
             [
-                'column' => 6,
+                'column' => 7,
                 'data' => $packages
             ],
             [
-                'column' => 7,
+                'column' => 8,
                 'data' => UserServiceType::asSelectArray()
             ],
         ];
@@ -99,6 +101,14 @@ class UserDataTable extends BaseDataTable
     {
         $this->customEditColumns = [
             'code' => $this->view['editlink'],
+            // Định dạng hiển thị số dư ví thưởng / hoa hồng Affiliate
+            'wallet_balance' => function ($item) {
+                $balance = (float) ($item->wallet_balance ?? 0);
+                if ($balance > 0) {
+                    return '<span class="badge bg-green-lt fw-bold font-monospace fs-4">' . number_format($balance, 0, ',', '.') . ' đ</span>';
+                }
+                return '<span class="text-muted font-monospace">0 đ</span>';
+            },
             'status' => $this->view['status'],
             'service_type' => $this->view['service_type'],
             'email' => function ($item) {
@@ -140,6 +150,7 @@ class UserDataTable extends BaseDataTable
             'service_type',
             'checkbox',
             'code',
+            'wallet_balance',
             'email',
             'phone',
             'package_name',
@@ -186,6 +197,10 @@ class UserDataTable extends BaseDataTable
     }
     protected function getExportValue($key, $row)
     {
+        if ($key === 'wallet_balance') {
+            return number_format($row->wallet_balance ?? 0, 0, ',', '.') . ' đ';
+        }
+
         if ($key === 'package_name') {
             return optional($row->userPackages->first()?->package)->name ?? '';
         }

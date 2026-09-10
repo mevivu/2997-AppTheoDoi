@@ -1466,6 +1466,11 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false,
         ],
+        'wallet_balance' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-wallet"></i><span>Ví</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
         'status' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
             'addClass' => 'text-center align-middle',
