@@ -37,6 +37,7 @@ Route::prefix('users')->controller(UserController::class)
         Route::post('/register', 'register');
         Route::post('/update', 'update');
         Route::get('/check-referral-code', 'checkReferralCode');
+        Route::post('/apply-referral-code', 'applyReferralCode');
     });
 
 //notification

@@ -23,4 +23,6 @@ interface UserServiceInterface
 
     public function updateEmail(Request $request): bool|object;
 
+    public function applyReferralCode(Request $request): array;
+
 }

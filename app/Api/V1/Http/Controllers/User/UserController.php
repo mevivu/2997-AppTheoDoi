@@ -3,6 +3,8 @@
 namespace App\Api\V1\Http\Controllers\User;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Api\V1\Exception\BadRequestException;
+use App\Api\V1\Http\Requests\User\ApplyReferralCodeRequest;
 use App\Api\V1\Http\Requests\User\UserRegisterRequest;
 use App\Api\V1\Http\Requests\User\UserUpdateRequest;
 use App\Api\V1\Http\Resources\Auth\AuthResource;
@@ -186,6 +188,26 @@ class UserController extends Controller
             ], 'Mã giới thiệu hợp lệ.');
         } catch (Throwable $e) {
             $this->logError('Check referral code failed', $e);
+            return $this->jsonResponseError($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Áp dụng mã giới thiệu sau khi đăng nhập / đăng ký Social Login
+     *
+     * @authenticated
+     * @param ApplyReferralCodeRequest $request
+     * @return JsonResponse
+     */
+    public function applyReferralCode(ApplyReferralCodeRequest $request): JsonResponse
+    {
+        try {
+            $data = $this->service->applyReferralCode($request);
+            return $this->jsonResponseSuccess($data, 'Áp dụng mã giới thiệu thành công!');
+        } catch (BadRequestException $e) {
+            return $this->jsonResponseError($e->getMessage(), 400);
+        } catch (Throwable $e) {
+            $this->logError('Lỗi khi áp dụng mã giới thiệu', $e);
             return $this->jsonResponseError($e->getMessage(), 500);
         }
     }

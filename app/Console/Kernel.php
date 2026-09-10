@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('otp:clean')->daily();
         $schedule->command('notification:send-push')->everyMinute()->withoutOverlapping();
         $schedule->command('session:clean-deleted --days=0')->everyMinute();
+        $schedule->command('notification:clean-old --days=7')->dailyAt('02:00')->withoutOverlapping()->runInBackground();
     }
 
     /**

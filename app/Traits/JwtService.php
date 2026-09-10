@@ -27,7 +27,7 @@ trait JwtService
     private static string $GUARD_API = 'api';
     private static string $GUARD_API_STORE = 'store-api';
 
-    protected function respondWithToken($token, $refreshToken, $user): JsonResponse
+    protected function respondWithToken($token, $refreshToken, $user, bool $isNewUser = false): JsonResponse
     {
         $ttl = config('jwt.ttl');
         return response()->json([
@@ -37,6 +37,7 @@ trait JwtService
             'role' => $user->roles->pluck('name'),
             'permissions' => $user->getAllPermissions()->pluck('name'),
             'expires_in' => $ttl * 60,
+            'is_new_user' => (bool) $isNewUser,
             'package' => new AuthPackageResource($user->userPackages->first())
         ]);
     }
@@ -208,6 +209,7 @@ trait JwtService
             ->orWhere('username', $emailEncrypted)
             ->first();
 
+        $isNewUser = false;
         if ($user) {
             // Đảm bảo đồng bộ email và username nếu có sự sai lệch
             $updates = [];
@@ -249,6 +251,7 @@ trait JwtService
                 ], 403);
             }
         } else {
+            $isNewUser = true;
             // Tự động đăng ký người dùng mới qua Google
             $referrerId = null;
             if (!empty($data['referral_code'])) {
@@ -268,13 +271,31 @@ trait JwtService
                 'active' => true,
                 'email_verified_at' => now(),
             ]);
+
+            // Kích hoạt thưởng hoa hồng nếu đăng ký có mã giới thiệu
+            if ($user && !empty($user->referrer_id)) {
+                try {
+                    app(\App\Services\Affiliate\AffiliateServiceInterface::class)->processRegistrationReward($user);
+                } catch (\Throwable $e) {
+                    $this->logError("Lỗi xử lý thưởng hoa hồng khi đăng ký Google: " . $e->getMessage(), $e);
+                }
+            }
+
+            // Gửi thông báo chào mừng thành viên mới (In-app)
+            if ($user) {
+                try {
+                    app(\App\Api\V1\Services\Notification\NotificationServiceInterface::class)->sendWelcomeNotification($user);
+                } catch (\Throwable $e) {
+                    $this->logError("Lỗi gửi thông báo chào mừng Google: " . $e->getMessage(), $e);
+                }
+            }
         }
 
         return $this->issueV2UserSession($user, $request, [
             'device_id' => $data['device_id'] ?? null,
             'device_token' => $data['device_token'] ?? null,
             'device_name' => $data['device_name'] ?? null,
-        ]);
+        ], $isNewUser);
     }
 
     /**
@@ -321,6 +342,7 @@ trait JwtService
             }
         }
 
+        $isNewUser = false;
         if ($user) {
             // Đảm bảo apple_id được lưu
             if (empty($user->apple_id)) {
@@ -348,6 +370,7 @@ trait JwtService
                 $user->update(['fullname' => $data['fullname']]);
             }
         } else {
+            $isNewUser = true;
             // Tự động đăng ký người dùng mới qua Apple ID
             $userEmail = $emailEncrypted ?: AESHelper::encrypt("apple_{$appleId}@privaterelay.appleid.com");
             $userUsername = $emailEncrypted ?: AESHelper::encrypt("apple_{$appleId}");
@@ -370,19 +393,37 @@ trait JwtService
                 'active' => true,
                 'email_verified_at' => now(),
             ]);
+
+            // Kích hoạt thưởng hoa hồng nếu đăng ký có mã giới thiệu
+            if ($user && !empty($user->referrer_id)) {
+                try {
+                    app(\App\Services\Affiliate\AffiliateServiceInterface::class)->processRegistrationReward($user);
+                } catch (\Throwable $e) {
+                    $this->logError("Lỗi xử lý thưởng hoa hồng khi đăng ký Apple: " . $e->getMessage(), $e);
+                }
+            }
+
+            // Gửi thông báo chào mừng thành viên mới (In-app)
+            if ($user) {
+                try {
+                    app(\App\Api\V1\Services\Notification\NotificationServiceInterface::class)->sendWelcomeNotification($user);
+                } catch (\Throwable $e) {
+                    $this->logError("Lỗi gửi thông báo chào mừng Apple: " . $e->getMessage(), $e);
+                }
+            }
         }
 
         return $this->issueV2UserSession($user, $request, [
             'device_id' => $data['device_id'] ?? null,
             'device_token' => $data['device_token'] ?? null,
             'device_name' => $data['device_name'] ?? null,
-        ]);
+        ], $isNewUser);
     }
 
     /**
      * Cấp phát phiên đăng nhập V2, quản lý thiết bị và kiểm tra hạn mức
      */
-    protected function issueV2UserSession(User $user, Request $request, array $deviceData): JsonResponse
+    protected function issueV2UserSession(User $user, Request $request, array $deviceData, bool $isNewUser = false): JsonResponse
     {
         // Xác định định danh thiết bị
         $deviceId = $deviceData['device_id'] ?? $deviceData['device_token'] ?? ('web_' . md5($request->ip() . ($request->userAgent() ?? '')));
@@ -469,7 +510,7 @@ trait JwtService
             ]);
         }
 
-        return $this->respondWithToken($token, $refreshToken, $user);
+        return $this->respondWithToken($token, $refreshToken, $user, $isNewUser);
     }
 
     public function invalidateToken(string $token): bool

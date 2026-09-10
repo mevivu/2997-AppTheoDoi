@@ -274,4 +274,50 @@ class UserService implements UserServiceInterface
 
         return $this->repository->update($user->id, $data);
     }
+
+    /**
+     * Áp dụng mã người giới thiệu sau khi đã tạo tài khoản (dành cho Social Login hoặc bổ sung sau)
+     *
+     * @param Request $request
+     * @return array
+     * @throws BadRequestException|Throwable
+     */
+    public function applyReferralCode(Request $request): array
+    {
+        $data = $request->validated();
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            throw new BadRequestException('Không tìm thấy thông tin tài khoản.');
+        }
+
+        $referralCode = trim($data['referral_code']);
+        $referrer = User::where('affiliate_code', $referralCode)->first();
+        if (!$referrer) {
+            throw new BadRequestException('Mã giới thiệu không tồn tại hoặc không hợp lệ.');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Cập nhật người giới thiệu cho tài khoản
+            $user->referrer_id = $referrer->id;
+            $user->save();
+
+            // Kích hoạt tính hoa hồng cho người giới thiệu và thưởng chào mừng nếu có
+            $this->affiliateService->processRegistrationReward($user);
+
+            DB::commit();
+
+            return [
+                'referrer' => [
+                    'id' => $referrer->id,
+                    'fullname' => $referrer->fullname,
+                    'affiliate_code' => $referrer->affiliate_code,
+                ]
+            ];
+        } catch (Throwable $e) {
+            DB::rollback();
+            $this->logError('Lỗi khi áp dụng mã giới thiệu: ' . $e->getMessage(), $e);
+            throw new BadRequestException('Đã xảy ra lỗi khi áp dụng mã giới thiệu. Vui lòng thử lại sau.');
+        }
+    }
 }

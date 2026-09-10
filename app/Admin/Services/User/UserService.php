@@ -9,13 +9,21 @@ use App\Admin\Services\Notification\NotificationFirebaseServiceInterface;
 use App\Admin\Traits\Roles;
 use App\AES\AESHelper;
 use App\Api\V1\Support\UseLog;
+use App\Enums\DeleteStatus;
 use App\Enums\Package\PackageUserStatus;
 use App\Enums\Package\PackageType;
 use App\Enums\User\UserStatus;
+use App\Models\FeatureUsage;
+use App\Models\Notification;
+use App\Models\User;
+use App\Models\UserDevice;
+use App\Models\UserPackage;
+use App\Models\UserSession;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Admin\Traits\Setup;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserService implements UserServiceInterface
 {
@@ -124,7 +132,7 @@ class UserService implements UserServiceInterface
 
             // Thu hồi các thiết bị dư thừa nếu số thiết bị đang hoạt động vượt quá hạn mức gói mới
             $allowed = $user->getMaxDevicesAllowed();
-            $activeDevices = \App\Models\UserDevice::where('user_id', $user->id)
+            $activeDevices = UserDevice::where('user_id', $user->id)
                 ->where('is_active', true)
                 ->orderBy('created_at', 'asc')
                 ->orderBy('id', 'asc')
@@ -160,11 +168,11 @@ class UserService implements UserServiceInterface
 
         DB::transaction(function () use ($user) {
             // 1. Gỡ người giới thiệu nếu tài khoản này là người giới thiệu của tài khoản khác
-            \App\Models\User::where('referrer_id', $user->id)->update(['referrer_id' => null]);
+            User::where('referrer_id', $user->id)->update(['referrer_id' => null]);
 
             // 2. Xóa các phiên đăng nhập và thiết bị
-            \App\Models\UserSession::where('user_id', $user->id)->delete();
-            \App\Models\UserDevice::where('user_id', $user->id)->delete();
+            UserSession::where('user_id', $user->id)->delete();
+            UserDevice::where('user_id', $user->id)->delete();
 
             // 3. Thu hồi Sanctum tokens nếu có
             if (method_exists($user, 'tokens')) {
@@ -180,8 +188,8 @@ class UserService implements UserServiceInterface
             }
 
             // 5. Xóa dữ liệu sử dụng tính năng và thông báo
-            \App\Models\FeatureUsage::where('user_id', $user->id)->delete();
-            \App\Models\Notification::where('user_id', $user->id)
+            FeatureUsage::where('user_id', $user->id)->delete();
+            Notification::where('user_id', $user->id)
                 ->orWhere('user_id_attribute', $user->id)
                 ->delete();
 
@@ -266,7 +274,7 @@ class UserService implements UserServiceInterface
     public function clearNormalTokens(): bool
     {
         try {
-            $userPackages = \App\Models\UserPackage::where('status', PackageUserStatus::Active)
+            $userPackages = UserPackage::where('status', PackageUserStatus::Active)
                 ->whereIn('current_type', [PackageType::Normal, PackageType::Trial])
                 ->get();
 
@@ -283,7 +291,7 @@ class UserService implements UserServiceInterface
     public function revokeDevice(int $userId, int $deviceId): bool
     {
         try {
-            $device = \App\Models\UserDevice::where('id', $deviceId)
+            $device = UserDevice::where('id', $deviceId)
                 ->where('user_id', $userId)
                 ->first();
 
@@ -294,8 +302,8 @@ class UserService implements UserServiceInterface
             $device->update(['is_active' => false]);
 
             // Invalidate session liên quan đến thiết bị này
-            $sessions = \App\Models\UserSession::where('user_id', $userId)
-                ->where('status', \App\Enums\DeleteStatus::NotDeleted)
+            $sessions = UserSession::where('user_id', $userId)
+                ->where('status', DeleteStatus::NotDeleted)
                 ->where(function ($query) use ($device) {
                     $query->where('device_token', $device->device_id)
                         ->orWhere('device_token', $device->device_token);
@@ -304,11 +312,11 @@ class UserService implements UserServiceInterface
 
             foreach ($sessions as $session) {
                 try {
-                    \Tymon\JWTAuth\Facades\JWTAuth::setToken($session->access_token)->invalidate();
+                    JWTAuth::setToken($session->access_token)->invalidate();
                 } catch (\Exception $e) {
                     // ignore if already invalid/expired
                 }
-                $session->update(['status' => \App\Enums\DeleteStatus::Deleted]);
+                $session->update(['status' => DeleteStatus::Deleted]);
             }
 
             return true;
@@ -322,7 +330,7 @@ class UserService implements UserServiceInterface
     {
         try {
             // Đánh dấu tất cả thiết bị của user là đã giải phóng
-            \App\Models\UserDevice::where('user_id', $userId)->update(['is_active' => false]);
+            UserDevice::where('user_id', $userId)->update(['is_active' => false]);
 
             // Invalidate toàn bộ session của user
             $this->userSessionRepository->deleteAllSessionTokens($userId);
