@@ -46,6 +46,9 @@ class AuthResource extends JsonResource
             'mother_birthday' => $this->mother_birthday,
             'status' => $this->status,
             'wallet_balance' => (float) ($this->wallet_balance ?? 0),
+            'affiliate_rank' => $this->affiliate_rank?->value ?? 1,
+            'affiliate_rank_name' => $this->affiliate_rank?->name() ?? 'Mẹ Đồng',
+            'affiliate_total_sales' => (float) ($this->affiliate_total_sales ?? 0),
             'referrals_count' => $this->referrals()->count(),
             'referrer' => $this->referrer ? [
                 'id' => $this->referrer->id,

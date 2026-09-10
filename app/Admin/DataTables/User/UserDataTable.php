@@ -7,6 +7,7 @@ use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Admin\Traits\Roles;
 use App\AES\AESHelper;
 use App\Enums\Package\PackageStatus;
+use App\Enums\User\AffiliateRank;
 use App\Enums\User\UserServiceType;
 use App\Enums\User\UserStatus;
 use App\Models\Package;
@@ -53,21 +54,25 @@ class UserDataTable extends BaseDataTable
         ->pluck('name', 'id')
         ->toArray();
 
-        // Thứ tự cột: 0:checkbox (ẩn), 1:code, 2:fullname, 3:email, 4:phone, 5:wallet_balance, 6:status, 7:package_name, 8:service_type, 9:action
-        // Bật tìm kiếm cho các cột có dữ liệu tìm kiếm (Cột 5 Ví và 9 Thao tác để trống ô tìm kiếm)
-        $this->columnAllSearch = [1, 2, 3, 4, 6, 7, 8];
+        // Thứ tự cột: 0:checkbox (ẩn), 1:code, 2:fullname, 3:email, 4:phone, 5:wallet_balance, 6:affiliate_rank, 7:status, 8:package_name, 9:service_type, 10:action
+        // Bật tìm kiếm cho các cột có dữ liệu tìm kiếm (Cột 5 Ví và 10 Thao tác để trống ô tìm kiếm)
+        $this->columnAllSearch = [1, 2, 3, 4, 6, 7, 8, 9];
 
         $this->columnSearchSelect = [
             [
                 'column' => 6,
-                'data' => UserStatus::asSelectArray()
+                'data' => AffiliateRank::asSelectArray()
             ],
             [
                 'column' => 7,
-                'data' => $packages
+                'data' => UserStatus::asSelectArray()
             ],
             [
                 'column' => 8,
+                'data' => $packages
+            ],
+            [
+                'column' => 9,
                 'data' => UserServiceType::asSelectArray()
             ],
         ];
@@ -108,6 +113,11 @@ class UserDataTable extends BaseDataTable
                     return '<span class="badge bg-green-lt fw-bold font-monospace fs-4">' . number_format($balance, 0, ',', '.') . ' đ</span>';
                 }
                 return '<span class="text-muted font-monospace">0 đ</span>';
+            },
+            // Định dạng hiển thị Cấp bậc mẹ giới thiệu
+            'affiliate_rank' => function ($item) {
+                $rank = $item->affiliate_rank ?? AffiliateRank::Bronze;
+                return '<span class="badge ' . $rank->badge() . '"><i class="' . $rank->icon() . ' me-1"></i>' . $rank->name() . '</span>';
             },
             'status' => $this->view['status'],
             'service_type' => $this->view['service_type'],
@@ -151,6 +161,7 @@ class UserDataTable extends BaseDataTable
             'checkbox',
             'code',
             'wallet_balance',
+            'affiliate_rank',
             'email',
             'phone',
             'package_name',
@@ -160,6 +171,9 @@ class UserDataTable extends BaseDataTable
     public function setCustomFilterColumns(): void
     {
         $this->customFilterColumns = [
+            'affiliate_rank' => function ($query, $keyword) {
+                $query->where('affiliate_rank', $keyword);
+            },
             'status' => function ($query, $keyword) {
                 $query->where('status', $keyword);
             },
@@ -199,6 +213,11 @@ class UserDataTable extends BaseDataTable
     {
         if ($key === 'wallet_balance') {
             return number_format($row->wallet_balance ?? 0, 0, ',', '.') . ' đ';
+        }
+
+        if ($key === 'affiliate_rank') {
+            $rank = $row->affiliate_rank ?? AffiliateRank::Bronze;
+            return $rank instanceof AffiliateRank ? $rank->name() : 'Mẹ Đồng';
         }
 
         if ($key === 'package_name') {

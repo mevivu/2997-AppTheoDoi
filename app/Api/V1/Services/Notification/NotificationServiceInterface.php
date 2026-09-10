@@ -40,4 +40,14 @@ interface NotificationServiceInterface
      * @return void
      */
     public function sendWelcomeNotification(User $user): void;
+
+    /**
+     * Gửi thông báo chúc mừng thăng cấp bậc mẹ giới thiệu (In-app & Push FCM)
+     *
+     * @param User $referrer Người giới thiệu được thăng cấp
+     * @param string $newRankName Tên cấp bậc mới
+     * @param float $totalSales Tổng doanh số tích lũy hiện tại (VNĐ)
+     * @return void
+     */
+    public function sendAffiliateRankUpgradeNotification(User $referrer, string $newRankName, float $totalSales): void;
 }

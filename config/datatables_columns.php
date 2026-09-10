@@ -1471,6 +1471,11 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => true,
         ],
+        'affiliate_rank' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-medal"></i><span>Cấp bậc</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
         'status' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
             'addClass' => 'text-center align-middle',

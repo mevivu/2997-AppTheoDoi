@@ -242,6 +242,57 @@ class NotificationService implements NotificationServiceInterface
         }
     }
 
+    /**
+     * Gửi thông báo chúc mừng thăng cấp bậc mẹ giới thiệu (In-app & Push FCM)
+     *
+     * @param User $referrer Người giới thiệu được thăng cấp
+     * @param string $newRankName Tên cấp bậc mới (ví dụ: Mẹ Bạc, Mẹ Vàng, Mẹ Kim Cương)
+     * @param float $totalSales Tổng doanh số tích lũy hiện tại (VNĐ)
+     * @return void
+     */
+    public function sendAffiliateRankUpgradeNotification(User $referrer, string $newRankName, float $totalSales): void
+    {
+        try {
+            $displayName = $referrer->fullname ?: 'Mẹ';
+            $formattedSales = number_format($totalSales, 0, ',', '.') . 'đ';
+            $title = "🎉 Chúc mừng bạn đã thăng cấp {$newRankName}!";
+            $body = "Xin chúc mừng {$displayName}! Với tổng doanh số giới thiệu tích lũy đạt {$formattedSales}, bạn đã chính thức đạt danh hiệu {$newRankName} của CHĂM CON 360 với nhiều quyền lợi ưu đãi hấp dẫn.";
+
+            $deviceTokens = collect([$referrer->device_token])
+                ->merge(UserDevice::where('user_id', $referrer->id)->where('is_active', true)->pluck('device_token'))
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+
+            $notification = $this->repository->create([
+                'user_id' => $referrer->id,
+                'title' => $title,
+                'message' => $body,
+                'status' => NotificationStatus::NOT_READ,
+                'type' => MessageType::AFFILIATE,
+                'is_pushed' => !empty($deviceTokens),
+            ]);
+
+            if (!empty($deviceTokens)) {
+                $this->sendFirebaseNotification(
+                    $deviceTokens,
+                    null,
+                    $title,
+                    $body,
+                    $notification->id,
+                    [
+                        'type' => 'affiliate_rank_upgrade',
+                        'screen' => '/referral',
+                        'new_rank' => $newRankName,
+                        'total_sales' => (string) $totalSales,
+                    ]
+                );
+            }
+        } catch (Throwable $e) {
+            $this->logError("Không thể gửi thông báo thăng cấp bậc affiliate: " . $e->getMessage(), $e);
+        }
+    }
 }
 
 

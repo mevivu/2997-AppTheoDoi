@@ -14,7 +14,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use App\Enums\User\{Gender, UserStatus, UserServiceType};
+use App\Enums\User\{Gender, UserStatus, UserServiceType, AffiliateRank};
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -38,6 +38,10 @@ class User extends Authenticatable implements JWTSubject
         'affiliate_code',
         /** ID người giới thiệu */
         'referrer_id',
+        /** Cấp bậc mẹ giới thiệu (1: Mẹ Đồng, 2: Mẹ Bạc, 3: Mẹ Vàng, 4: Mẹ Kim Cương) */
+        'affiliate_rank',
+        /** Tổng doanh số giới thiệu tích lũy (VNĐ) */
+        'affiliate_total_sales',
         /** Số dư ví hoa hồng / thưởng Affiliate (VNĐ) */
         'wallet_balance',
         /** Đường dẫn tĩnh */
@@ -111,6 +115,8 @@ class User extends Authenticatable implements JWTSubject
         'active' => 'boolean',
         'status' => UserStatus::class,
         'service_type' => UserServiceType::class,
+        'affiliate_rank' => AffiliateRank::class,
+        'affiliate_total_sales' => 'decimal:0',
         'wallet_balance' => 'decimal:0',
     ];
 
@@ -274,5 +280,21 @@ class User extends Authenticatable implements JWTSubject
         }
 
         return $code;
+    }
+
+    /**
+     * Lấy tên hiển thị cấp bậc mẹ giới thiệu
+     */
+    public function getAffiliateRankName(): string
+    {
+        return $this->affiliate_rank?->name() ?? 'Mẹ Đồng';
+    }
+
+    /**
+     * Lấy class badge hiển thị cấp bậc mẹ giới thiệu trên Admin
+     */
+    public function getAffiliateRankBadge(): string
+    {
+        return $this->affiliate_rank?->badge() ?? 'bg-orange-lt';
     }
 }

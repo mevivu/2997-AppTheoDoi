@@ -6,6 +6,7 @@ use App\Admin\Repositories\AffiliateHistory\AffiliateHistoryRepositoryInterface;
 use App\Admin\Repositories\Setting\SettingRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Api\V1\Services\Notification\NotificationServiceInterface;
+use App\Enums\User\AffiliateRank;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -163,6 +164,121 @@ class AffiliateService implements AffiliateServiceInterface
             Log::error("Lỗi khi xử lý thưởng hoa hồng đăng ký affiliate: " . $e->getMessage(), [
                 'user_id' => $newUser->id,
                 'referrer_id' => $newUser->referrer_id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Lấy danh sách các mốc doanh số cấu hình của 4 cấp bậc mẹ giới thiệu từ CSDL (VNĐ)
+     *
+     * @return array [ 'bronze' => float, 'silver' => float, 'gold' => float, 'diamond' => float ]
+     */
+    public function getRankSalesThresholds(): array
+    {
+        $silverSetting = $this->settingRepository->findByField('setting_key', 'affiliate_sales_silver');
+        $goldSetting = $this->settingRepository->findByField('setting_key', 'affiliate_sales_gold');
+        $diamondSetting = $this->settingRepository->findByField('setting_key', 'affiliate_sales_diamond');
+        $bronzeSetting = $this->settingRepository->findByField('setting_key', 'affiliate_sales_bronze');
+
+        return [
+            'bronze' => $bronzeSetting ? (float) $bronzeSetting->plain_value : 0,
+            'silver' => $silverSetting ? (float) $silverSetting->plain_value : 2000000,
+            'gold' => $goldSetting ? (float) $goldSetting->plain_value : 10000000,
+            'diamond' => $diamondSetting ? (float) $diamondSetting->plain_value : 30000000,
+        ];
+    }
+
+    /**
+     * Xác định Cấp bậc mẹ giới thiệu tương ứng với mức doanh số tích lũy dựa theo cấu hình
+     *
+     * @param float $sales Doanh số F1 tích lũy
+     * @return AffiliateRank
+     */
+    public function calculateRankForSales(float $sales): AffiliateRank
+    {
+        $thresholds = $this->getRankSalesThresholds();
+
+        if ($sales >= $thresholds['diamond']) {
+            return AffiliateRank::Diamond;
+        }
+
+        if ($sales >= $thresholds['gold']) {
+            return AffiliateRank::Gold;
+        }
+
+        if ($sales >= $thresholds['silver']) {
+            return AffiliateRank::Silver;
+        }
+
+        return AffiliateRank::Bronze;
+    }
+
+    /**
+     * Ghi nhận doanh số từ giao dịch mua gói của F1 và tự động kiểm tra nâng hạng cho Người giới thiệu
+     *
+     * @param User $payingUser Người dùng F1 thanh toán mua gói
+     * @param float $amount Số tiền thanh toán thành công (VNĐ)
+     * @return bool
+     */
+    public function recordSalesAndCheckRankUpgrade(User $payingUser, float $amount): bool
+    {
+        if (empty($payingUser->referrer_id) || $amount <= 0) {
+            return true;
+        }
+
+        try {
+            return DB::transaction(function () use ($payingUser, $amount) {
+                $referrer = User::where('id', $payingUser->referrer_id)->lockForUpdate()->first();
+                if (!$referrer) {
+                    return true;
+                }
+
+                // 1. Cộng dồn doanh số giới thiệu tích lũy
+                $oldSales = (float) ($referrer->affiliate_total_sales ?? 0);
+                $newSales = $oldSales + $amount;
+                $referrer->affiliate_total_sales = $newSales;
+
+                // 2. Tính toán cấp bậc tương ứng với doanh số mới
+                $currentRank = $referrer->affiliate_rank ?? AffiliateRank::Bronze;
+                $targetRank = $this->calculateRankForSales($newSales);
+
+                // 3. Nếu đạt cấp bậc mới cao hơn cấp hiện tại -> Thăng hạng
+                $isUpgraded = false;
+                if ($targetRank->value > $currentRank->value) {
+                    $referrer->affiliate_rank = $targetRank;
+                    $isUpgraded = true;
+
+                    // Lưu lịch sử thăng hạng
+                    $this->historyRepository->createHistory([
+                        'user_id' => $referrer->id,
+                        'source_user_id' => $payingUser->id,
+                        'amount' => 0,
+                        'balance_after' => $referrer->wallet_balance ?? 0,
+                        'type' => 'rank_upgrade',
+                        'description' => "Thăng cấp lên {$targetRank->name()} (Doanh số tích lũy đạt " . number_format($newSales, 0, ',', '.') . "đ)",
+                    ]);
+                }
+
+                $referrer->save();
+
+                // 4. Bắn thông báo chúc mừng thăng hạng cho người mẹ nếu có thăng cấp
+                if ($isUpgraded) {
+                    $this->notificationService->sendAffiliateRankUpgradeNotification(
+                        $referrer,
+                        $targetRank->name(),
+                        $newSales
+                    );
+                }
+
+                return true;
+            });
+        } catch (Throwable $e) {
+            Log::error("Lỗi khi ghi nhận doanh số và nâng cấp bậc affiliate: " . $e->getMessage(), [
+                'paying_user_id' => $payingUser->id,
+                'referrer_id' => $payingUser->referrer_id,
+                'amount' => $amount,
                 'trace' => $e->getTraceAsString(),
             ]);
             return false;
