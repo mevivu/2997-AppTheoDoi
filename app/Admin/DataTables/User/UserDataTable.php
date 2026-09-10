@@ -53,19 +53,19 @@ class UserDataTable extends BaseDataTable
         ->pluck('name', 'id')
         ->toArray();
 
-        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7, 8];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7];
 
         $this->columnSearchSelect = [
             [
-                'column' => 6,
+                'column' => 5,
                 'data' => UserStatus::asSelectArray()
             ],
             [
-                'column' => 7,
+                'column' => 6,
                 'data' => $packages
             ],
             [
-                'column' => 8,
+                'column' => 7,
                 'data' => UserServiceType::asSelectArray()
             ],
         ];
@@ -99,29 +99,6 @@ class UserDataTable extends BaseDataTable
     {
         $this->customEditColumns = [
             'code' => $this->view['editlink'],
-            'affiliate_code' => function ($item) {
-                $html = '';
-                if ($item->affiliate_code) {
-                    $html .= '<span class="badge bg-purple-lt fw-bold">' . $item->affiliate_code . '</span>';
-                } else {
-                    $html .= '<span class="text-muted">-</span>';
-                }
-
-                if ($item->referrer) {
-                    $refName = $item->referrer->fullname ? ' (' . e($item->referrer->fullname) . ')' : '';
-                    $html .= '<div class="small text-muted mt-1" title="Người giới thiệu: ' . e($item->referrer->fullname ?? '') . '">';
-                    $html .= '<i class="ti ti-arrow-back-up text-primary"></i> <span class="fw-semibold text-dark">' . e($item->referrer->affiliate_code ?? 'ID:' . $item->referrer->id) . '</span>' . $refName;
-                    $html .= '</div>';
-                }
-
-                if ($item->referrals_count > 0) {
-                    $html .= '<div class="small text-green mt-1">';
-                    $html .= '<i class="ti ti-users"></i> ' . $item->referrals_count . ' đã GT';
-                    $html .= '</div>';
-                }
-
-                return $html;
-            },
             'status' => $this->view['status'],
             'service_type' => $this->view['service_type'],
             'email' => function ($item) {
@@ -163,7 +140,6 @@ class UserDataTable extends BaseDataTable
             'service_type',
             'checkbox',
             'code',
-            'affiliate_code',
             'email',
             'phone',
             'package_name',
@@ -173,9 +149,6 @@ class UserDataTable extends BaseDataTable
     public function setCustomFilterColumns(): void
     {
         $this->customFilterColumns = [
-            'affiliate_code' => function ($query, $keyword) {
-                $query->where('affiliate_code', 'like', '%' . $keyword . '%');
-            },
             'status' => function ($query, $keyword) {
                 $query->where('status', $keyword);
             },

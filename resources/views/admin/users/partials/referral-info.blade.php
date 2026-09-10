@@ -2,9 +2,73 @@
     use App\AES\AESHelper;
     $referrer = $user->referrer;
     $referrals = $user->referrals()->with(['userPackages.package'])->latest()->get();
+    $histories = $user->affiliateHistories()->with(['sourceUser'])->latest()->take(50)->get();
 @endphp
 
 <div class="row g-4">
+    <!-- Stat Overview: Số dư ví hoa hồng & Thống kê affiliate -->
+    <div class="col-12">
+        <div class="row g-3">
+            <div class="col-sm-6 col-lg-4">
+                <div class="card card-sm border border-light-subtle rounded-3 shadow-none bg-primary-lt">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <span class="bg-primary text-white avatar rounded-3">
+                                    <i class="ti ti-wallet fs-2"></i>
+                                </span>
+                            </div>
+                            <div class="col">
+                                <div class="text-muted small fw-medium">{{ __('Số dư ví hoa hồng') }}</div>
+                                <div class="fs-2 fw-bold text-primary">
+                                    {{ number_format($user->wallet_balance ?? 0, 0, ',', '.') }} đ
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <div class="card card-sm border border-light-subtle rounded-3 shadow-none bg-green-lt">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <span class="bg-success text-white avatar rounded-3">
+                                    <i class="ti ti-users fs-2"></i>
+                                </span>
+                            </div>
+                            <div class="col">
+                                <div class="text-muted small fw-medium">{{ __('Thành viên đã giới thiệu') }}</div>
+                                <div class="fs-2 fw-bold text-success">
+                                    {{ $referrals->count() }} <span class="fs-4 text-muted fw-normal">thành viên</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-lg-4">
+                <div class="card card-sm border border-light-subtle rounded-3 shadow-none bg-purple-lt">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <span class="bg-purple text-white avatar rounded-3">
+                                    <i class="ti ti-share fs-2"></i>
+                                </span>
+                            </div>
+                            <div class="col">
+                                <div class="text-muted small fw-medium">{{ __('Mã Affiliate cá nhân') }}</div>
+                                <div class="fs-2 fw-bold text-purple">
+                                    {{ $user->affiliate_code ?? '-' }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Card 1: Người giới thiệu tài khoản này -->
     <div class="col-12">
         <div class="card border border-light-subtle rounded-3 shadow-none">
@@ -138,6 +202,77 @@
                     <div class="text-center py-5 text-muted">
                         <i class="ti ti-users-minus fs-1 text-secondary opacity-50 mb-2 d-block"></i>
                         <span class="fw-medium">{{ __('Tài khoản này chưa giới thiệu thành viên nào.') }}</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 3: Lịch sử nhận thưởng hoa hồng Affiliate -->
+    <div class="col-12">
+        <div class="card border border-light-subtle rounded-3 shadow-none">
+            <div class="card-header bg-light-subtle py-3 d-flex justify-content-between align-items-center">
+                <h6 class="card-title m-0 fw-bold d-flex align-items-center">
+                    <i class="ti ti-receipt text-warning me-2 fs-3"></i>
+                    {{ __('Lịch sử nhận thưởng Affiliate') }}
+                    <span class="badge bg-warning ms-2">{{ $histories->count() }}</span>
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                @if($histories->isNotEmpty())
+                    <div class="table-responsive">
+                        <table class="table table-vcenter table-hover table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="w-1 text-center">#</th>
+                                    <th>{{ __('Thời gian') }}</th>
+                                    <th>{{ __('Loại thưởng') }}</th>
+                                    <th>{{ __('Thành viên kích hoạt') }}</th>
+                                    <th>{{ __('Diễn giải') }}</th>
+                                    <th class="text-end">{{ __('Số tiền') }}</th>
+                                    <th class="text-end">{{ __('Số dư sau') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($histories as $hIndex => $history)
+                                    <tr>
+                                        <td class="text-center text-muted">{{ $hIndex + 1 }}</td>
+                                        <td class="small">{{ format_date($history->created_at, 'd/m/Y H:i:s') }}</td>
+                                        <td>
+                                            @if($history->type === 'referral_register')
+                                                <span class="badge bg-green-lt">{{ __('Thưởng giới thiệu F1') }}</span>
+                                            @elseif($history->type === 'welcome_register')
+                                                <span class="badge bg-blue-lt">{{ __('Thưởng chào mừng F1') }}</span>
+                                            @else
+                                                <span class="badge bg-secondary-lt">{{ $history->type }}</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($history->sourceUser)
+                                                <a href="{{ route('admin.user.edit', $history->sourceUser->id) }}" class="fw-medium text-dark text-decoration-none">
+                                                    {{ $history->sourceUser->fullname }}
+                                                </a>
+                                                <div class="small text-muted">ID: #{{ $history->sourceUser->id }}</div>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
+                                        <td class="small text-muted">{{ $history->description }}</td>
+                                        <td class="text-end fw-bold text-success">
+                                            +{{ number_format($history->amount, 0, ',', '.') }} đ
+                                        </td>
+                                        <td class="text-end fw-semibold text-dark">
+                                            {{ number_format($history->balance_after, 0, ',', '.') }} đ
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <div class="text-center py-4 text-muted">
+                        <i class="ti ti-receipt-off fs-1 text-secondary opacity-50 mb-2 d-block"></i>
+                        <span class="fw-medium">{{ __('Chưa có lịch sử nhận thưởng hoa hồng nào.') }}</span>
                     </div>
                 @endif
             </div>

@@ -38,6 +38,8 @@ class User extends Authenticatable implements JWTSubject
         'affiliate_code',
         /** ID người giới thiệu */
         'referrer_id',
+        /** Số dư ví hoa hồng / thưởng Affiliate (VNĐ) */
+        'wallet_balance',
         /** Đường dẫn tĩnh */
         'slug',
         /** Họ và tên */
@@ -109,6 +111,7 @@ class User extends Authenticatable implements JWTSubject
         'active' => 'boolean',
         'status' => UserStatus::class,
         'service_type' => UserServiceType::class,
+        'wallet_balance' => 'decimal:0',
     ];
 
     public function userPackages(): HasMany
@@ -140,6 +143,14 @@ class User extends Authenticatable implements JWTSubject
     public function referrals(): HasMany
     {
         return $this->hasMany(User::class, 'referrer_id');
+    }
+
+    /**
+     * Lịch sử nhận hoa hồng / thưởng affiliate của tài khoản
+     */
+    public function affiliateHistories(): HasMany
+    {
+        return $this->hasMany(AffiliateHistory::class, 'user_id');
     }
 
     /**

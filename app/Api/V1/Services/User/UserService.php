@@ -15,6 +15,7 @@ use App\Enums\User\Gender;
 use App\Enums\User\UserServiceType;
 use App\Enums\User\UserStatus;
 use App\Models\User;
+use App\Services\Affiliate\AffiliateServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
 use App\Admin\Traits\Setup;
@@ -37,17 +38,19 @@ class UserService implements UserServiceInterface
     protected UserRepositoryInterface $repository;
     protected OtpRepositoryInterface $otpRepository;
     protected FileService $fileService;
-
+    protected AffiliateServiceInterface $affiliateService;
 
     public function __construct(
         UserRepositoryInterface $repository,
         OtpRepositoryInterface  $otpRepository,
         FileService             $fileService,
+        AffiliateServiceInterface $affiliateService
     )
     {
         $this->repository = $repository;
         $this->fileService = $fileService;
         $this->otpRepository = $otpRepository;
+        $this->affiliateService = $affiliateService;
     }
 
     public function store(Request $request)
@@ -68,7 +71,7 @@ class UserService implements UserServiceInterface
             $data['status'] = UserStatus::Active;
             $data['service_type'] = UserServiceType::Email;
 
-            // Xử lý mã giới thiệu
+            // Xử lý kiểm tra và liên kết mã giới thiệu khi đăng ký
             if (!empty($data['referral_code'])) {
                 $referrer = User::where('affiliate_code', trim($data['referral_code']))->first();
                 if ($referrer) {
@@ -77,6 +80,12 @@ class UserService implements UserServiceInterface
             }
 
             $user = $this->repository->create($data);
+
+            // Xử lý cộng tiền thưởng hoa hồng Affiliate:
+            // Nghiệp vụ này chỉ thực hiện trong phương thức đăng ký khi tài khoản có nhập mã giới thiệu hợp lệ
+            if ($user && !empty($user->referrer_id)) {
+                $this->affiliateService->processRegistrationReward($user);
+            }
 
             DB::commit();
             return $user;

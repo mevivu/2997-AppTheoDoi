@@ -44,6 +44,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\Brand\BrandRepositoryInterface' => 'App\Api\V1\Repositories\Brand\BrandRepository',
         'App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface' => 'App\Api\V1\Repositories\WeightHeightWho\WhoRepository',
         'App\Api\V1\Repositories\Transaction\TransactionRepositoryInterface' => 'App\Api\V1\Repositories\Transaction\TransactionRepository',
+        'App\Api\V1\Repositories\AffiliateHistory\AffiliateHistoryRepositoryInterface' => 'App\Api\V1\Repositories\AffiliateHistory\AffiliateHistoryRepository',
         'App\Api\V1\Repositories\AppVersion\AppVersionRepositoryInterface' => 'App\Api\V1\Repositories\AppVersion\AppVersionRepository',
 
 

@@ -47,6 +47,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Capability\CapabilityRepositoryInterface' => 'App\Admin\Repositories\Capability\CapabilityRepository',
         'App\Admin\Repositories\Support\SupportRepositoryInterface' => 'App\Admin\Repositories\Support\SupportRepository',
         'App\Admin\Repositories\Transaction\TransactionRepositoryInterface' => 'App\Admin\Repositories\Transaction\TransactionRepository',
+        'App\Admin\Repositories\AffiliateHistory\AffiliateHistoryRepositoryInterface' => 'App\Admin\Repositories\AffiliateHistory\AffiliateHistoryRepository',
         'App\Admin\Repositories\Classes\ClassesRepositoryInterface' => 'App\Admin\Repositories\Classes\ClassesRepository',
         'App\Admin\Repositories\Quality\QualityRepositoryInterface' => 'App\Admin\Repositories\Quality\QualityRepository',
         'App\Admin\Repositories\ClassGrade\ClassGradeRepositoryInterface' => 'App\Admin\Repositories\ClassGrade\ClassGradeRepository',

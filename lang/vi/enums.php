@@ -214,6 +214,7 @@ return [
         SettingGroup::General => 'Chung',
         SettingGroup::UserDiscount => 'Chiết khấu mua hàng theo cấp TV',
         SettingGroup::UserUpgrade => 'SL SP nâng cấp TV',
+        SettingGroup::Affiliate => 'Affiliate',
     ],
     ModuleStatus::class => [
         ModuleStatus::ChuaXong => 'Chưa xong',

@@ -23,4 +23,5 @@ final class SettingGroup extends Enum implements LocalizedEnum
     const C_Intercity = 8;
     const Cost = 9;
     const C_Multi = 10;
+    const Affiliate = 11;
 }

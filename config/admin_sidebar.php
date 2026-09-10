@@ -794,7 +794,13 @@ return [
                 'icon' => '<i class="ti ti-server-cog"></i>',
                 'permissions' => ['settingGeneral'],
             ],
-
+            [
+                'title' => 'Affiliate',
+                'routeName' => 'admin.setting.affiliate',
+                'icon' => '<i class="ti ti-affiliate"></i>',
+                'roles' => [],
+                'permissions' => ['settingGeneral'],
+            ],
         ]
     ],
     [

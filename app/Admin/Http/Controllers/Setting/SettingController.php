@@ -31,6 +31,7 @@ class SettingController extends Controller
         return [
             'general' => 'admin.settings.general',
             'system' => 'admin.settings.system',
+            'affiliate' => 'admin.settings.affiliate',
         ];
     }
 
@@ -46,6 +47,14 @@ class SettingController extends Controller
     {
         $settings = $this->repository->getByGroup([SettingGroup::System]);
         return view($this->view['system'], [
+            'settings' => $settings
+        ]);
+    }
+
+    public function affiliate(): Factory|View|Application
+    {
+        $settings = $this->repository->getByGroup([SettingGroup::Affiliate]);
+        return view($this->view['affiliate'], [
             'settings' => $settings
         ]);
     }

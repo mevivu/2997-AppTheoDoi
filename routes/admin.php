@@ -731,6 +731,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::group(['middleware' => ['permission:settingGeneral', 'auth:admin']], function () {
                 Route::get('/general', 'general')->name('general');
                 Route::get('/systems', 'system')->name('system');
+                Route::get('/affiliate', 'affiliate')->name('affiliate');
             });
 
             Route::get('/user-shopping', 'userShopping')->name('user_shopping');
