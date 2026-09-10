@@ -50,4 +50,16 @@ interface NotificationServiceInterface
      * @return void
      */
     public function sendAffiliateRankUpgradeNotification(User $referrer, string $newRankName, float $totalSales): void;
+
+    /**
+     * Gửi thông báo nhận hoa hồng khi F1 mua gói dịch vụ (In-app & Push FCM)
+     *
+     * @param User $referrer Người giới thiệu nhận hoa hồng
+     * @param float $commissionAmount Số tiền hoa hồng nhận được (VNĐ)
+     * @param float $percent Tỷ lệ % hoa hồng theo cấp bậc
+     * @param string $f1Name Tên người dùng F1 mua gói
+     * @param string $packageName Tên gói dịch vụ
+     * @return void
+     */
+    public function sendAffiliatePackageCommissionNotification(User $referrer, float $commissionAmount, float $percent, string $f1Name, string $packageName): void;
 }

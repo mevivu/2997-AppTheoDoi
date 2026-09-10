@@ -68,15 +68,19 @@ class SyncAffiliateRanksCommand extends Command
         $updatedCount = 0;
         $upgradedCount = 0;
 
-        $thresholds = $this->affiliateService->getRankSalesThresholds();
+        $thresholds = $this->affiliateService->getRankThresholds();
+        $salesTh = $thresholds['sales'];
+        $usersTh = $thresholds['users'];
         $this->line('');
-        $this->line("Ngưỡng doanh số hiện tại: Đồng: " . number_format($thresholds['bronze']) . "đ | Bạc: " . number_format($thresholds['silver']) . "đ | Vàng: " . number_format($thresholds['gold']) . "đ | Kim Cương: " . number_format($thresholds['diamond']) . "đ");
+        $this->line("Ngưỡng Doanh số (VNĐ) : Đồng: " . number_format($salesTh['bronze']) . "đ | Bạc: " . number_format($salesTh['silver']) . "đ | Vàng: " . number_format($salesTh['gold']) . "đ | Kim Cương: " . number_format($salesTh['diamond']) . "đ");
+        $this->line("Ngưỡng User F1 (người): Đồng: " . number_format($usersTh['bronze']) . " | Bạc: " . number_format($usersTh['silver']) . " | Vàng: " . number_format($usersTh['gold']) . " | Kim Cương: " . number_format($usersTh['diamond']));
 
         $query->chunk(100, function ($users) use (&$updatedCount, &$upgradedCount, $bar) {
             foreach ($users as $user) {
                 try {
                     // 1. Lấy danh sách ID các F1 được user giới thiệu
                     $referralUserIds = $user->referrals()->pluck('id')->toArray();
+                    $totalUsersCount = count($referralUserIds);
 
                     // 2. Tính tổng doanh số mua gói thành công từ các F1
                     $calculatedSales = 0;
@@ -86,8 +90,8 @@ class SyncAffiliateRanksCommand extends Command
                             ->sum('amount');
                     }
 
-                    // 3. Xác định cấp bậc tương ứng với doanh số này
-                    $newRank = $this->affiliateService->calculateRankForSales($calculatedSales);
+                    // 3. Xác định cấp bậc tương ứng với doanh số HOẶC số lượng user F1 này
+                    $newRank = $this->affiliateService->calculateRank($calculatedSales, $totalUsersCount);
                     $oldRank = $user->affiliate_rank;
 
                     // 4. Cập nhật vào DB nếu có sự thay đổi

@@ -255,8 +255,18 @@ class NotificationService implements NotificationServiceInterface
         try {
             $displayName = $referrer->fullname ?: 'Mẹ';
             $formattedSales = number_format($totalSales, 0, ',', '.') . 'đ';
-            $title = "🎉 Chúc mừng bạn đã thăng cấp {$newRankName}!";
-            $body = "Xin chúc mừng {$displayName}! Với tổng doanh số giới thiệu tích lũy đạt {$formattedSales}, bạn đã chính thức đạt danh hiệu {$newRankName} của CHĂM CON 360 với nhiều quyền lợi ưu đãi hấp dẫn.";
+
+            $titleTemplate = config('notifications.affiliate_rank_upgrade.title', '🎉 Chúc mừng bạn đã thăng cấp {rank_name}!');
+            $messageTemplate = config('notifications.affiliate_rank_upgrade.message', 'Xin chúc mừng {fullname}! Với tổng doanh số giới thiệu tích lũy đạt {total_sales}, bạn đã chính thức đạt danh hiệu {rank_name} của CHĂM CON 360 với nhiều quyền lợi ưu đãi hấp dẫn.');
+
+            $replace = [
+                '{fullname}' => $displayName,
+                '{rank_name}' => $newRankName,
+                '{total_sales}' => $formattedSales,
+            ];
+
+            $title = strtr($titleTemplate, $replace);
+            $body = strtr($messageTemplate, $replace);
 
             $deviceTokens = collect([$referrer->device_token])
                 ->merge(UserDevice::where('user_id', $referrer->id)->where('is_active', true)->pluck('device_token'))
@@ -291,6 +301,70 @@ class NotificationService implements NotificationServiceInterface
             }
         } catch (Throwable $e) {
             $this->logError("Không thể gửi thông báo thăng cấp bậc affiliate: " . $e->getMessage(), $e);
+        }
+    }
+
+    /**
+     * Gửi thông báo nhận hoa hồng khi F1 mua gói dịch vụ (In-app & Push FCM)
+     *
+     * @param User $referrer Người giới thiệu nhận hoa hồng
+     * @param float $commissionAmount Số tiền hoa hồng nhận được (VNĐ)
+     * @param float $percent Tỷ lệ % hoa hồng theo cấp bậc
+     * @param string $f1Name Tên người dùng F1 mua gói
+     * @param string $packageName Tên gói dịch vụ
+     * @return void
+     */
+    public function sendAffiliatePackageCommissionNotification(User $referrer, float $commissionAmount, float $percent, string $f1Name, string $packageName): void
+    {
+        try {
+            $formattedAmount = number_format($commissionAmount, 0, ',', '.') . 'đ';
+
+            $titleTemplate = config('notifications.affiliate_package_commission.title', '💰 Bạn nhận được {amount} hoa hồng mua gói!');
+            $messageTemplate = config('notifications.affiliate_package_commission.message', 'Chúc mừng bạn! Thành viên {f1_name} vừa thanh toán thành công gói "{package_name}". Bạn được cộng {amount} ({percent}%) vào ví hoa hồng.');
+
+            $replace = [
+                '{amount}' => $formattedAmount,
+                '{f1_name}' => $f1Name,
+                '{package_name}' => $packageName,
+                '{percent}' => (string) $percent,
+            ];
+
+            $title = strtr($titleTemplate, $replace);
+            $body = strtr($messageTemplate, $replace);
+
+            $deviceTokens = collect([$referrer->device_token])
+                ->merge(UserDevice::where('user_id', $referrer->id)->where('is_active', true)->pluck('device_token'))
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+
+            $notification = $this->repository->create([
+                'user_id' => $referrer->id,
+                'title' => $title,
+                'message' => $body,
+                'status' => NotificationStatus::NOT_READ,
+                'type' => MessageType::AFFILIATE,
+                'is_pushed' => !empty($deviceTokens),
+            ]);
+
+            if (!empty($deviceTokens)) {
+                $this->sendFirebaseNotification(
+                    $deviceTokens,
+                    null,
+                    $title,
+                    $body,
+                    $notification->id,
+                    [
+                        'type' => 'affiliate_package_commission',
+                        'screen' => '/referral',
+                        'amount' => (string) $commissionAmount,
+                        'percent' => (string) $percent,
+                    ]
+                );
+            }
+        } catch (Throwable $e) {
+            $this->logError("Không thể gửi thông báo hoa hồng mua gói affiliate: " . $e->getMessage(), $e);
         }
     }
 }

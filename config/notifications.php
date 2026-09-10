@@ -41,6 +41,14 @@ return [
         'title' => 'Bạn nhận được {amount} hoa hồng giới thiệu!',
         'message' => 'Chúc mừng bạn! {new_user_name} vừa đăng ký tài khoản thành công qua mã giới thiệu của bạn. Số tiền {amount} đã được cộng vào ví.',
     ],
+    'affiliate_package_commission' => [
+        'title' => '💰 Bạn nhận được {amount} hoa hồng mua gói!',
+        'message' => 'Chúc mừng bạn! Thành viên {f1_name} vừa thanh toán thành công gói "{package_name}". Bạn được cộng {amount} ({percent}%) vào ví hoa hồng.',
+    ],
+    'affiliate_rank_upgrade' => [
+        'title' => '🎉 Chúc mừng bạn đã thăng cấp {rank_name}!',
+        'message' => 'Xin chúc mừng {fullname}! Với tổng doanh số giới thiệu tích lũy đạt {total_sales}, bạn đã chính thức đạt danh hiệu {rank_name} của CHĂM CON 360 với nhiều quyền lợi ưu đãi hấp dẫn.',
+    ],
     'affiliate_new_referral' => [
         'title' => 'Bạn có thành viên giới thiệu mới!',
         'message' => 'Chúc mừng bạn! {new_user_name} vừa tạo tài khoản thành công qua mã giới thiệu của bạn.',

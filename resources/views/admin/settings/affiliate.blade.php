@@ -28,7 +28,7 @@
             <x-form :action="route('admin.setting.update')" type="put" :validate="true">
                 <div class="row g-4 justify-content-center">
                     <div class="col-12 col-lg-8 col-xl-9">
-                        @include('admin.settings.forms.edit-left')
+                        @include('admin.settings.forms.affiliate-left')
                     </div>
                     @include('admin.settings.forms.edit-right')
                 </div>

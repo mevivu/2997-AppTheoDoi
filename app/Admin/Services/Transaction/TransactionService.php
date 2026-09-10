@@ -58,7 +58,8 @@ class TransactionService implements TransactionServiceInterface
         try {
             app(AffiliateServiceInterface::class)->recordSalesAndCheckRankUpgrade(
                 $user,
-                (float) $data['amount']
+                (float) $data['amount'],
+                $package->name ?? null
             );
         } catch (Throwable $e) {
             $this->logError('Lỗi cập nhật doanh số affiliate khi mua gói: ' . $e->getMessage(), $e);
