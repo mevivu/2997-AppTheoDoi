@@ -34,6 +34,16 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::get('/export', 'export')->name('export');
         });
 
+    // Thống kê Doanh thu Đối tác (Affiliate Leaderboard & Charts)
+    Route::controller(\App\Admin\Http\Controllers\Affiliate\AffiliateStatisticsController::class)
+        ->prefix('/thong-ke-doi-tac')
+        ->as('affiliate.statistics.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/partner-details/{id}', 'partnerDetails')->name('partner.details');
+            Route::post('/sync-ranks', 'syncRanks')->name('sync');
+        });
+
     //WeightHeight
     Route::controller(\App\Admin\Http\Controllers\ProductCatalog\ProductCatalogController::class)
         ->prefix('/product_catalog')

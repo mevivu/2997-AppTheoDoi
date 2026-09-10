@@ -28,6 +28,11 @@ class RouteAdminSystem
     const FEATURE_STATISTICS_INDEX = 'admin.feature.statistics.index';
     const FEATURE_STATISTICS_EXPORT = 'admin.feature.statistics.export';
 
+    /** AFFILIATE STATISTICS */
+    const AFFILIATE_STATISTICS_INDEX = 'admin.affiliate.statistics.index';
+    const AFFILIATE_STATISTICS_PARTNER_DETAILS = 'admin.affiliate.statistics.partner.details';
+    const AFFILIATE_STATISTICS_SYNC = 'admin.affiliate.statistics.sync';
+
     /** TRANSACTION */
     const TRANSACTION_INDEX = 'admin.transaction.index';
     const TRANSACTION_CREATE = 'admin.transaction.create';

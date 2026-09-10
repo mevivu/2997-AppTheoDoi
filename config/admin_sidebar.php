@@ -20,6 +20,14 @@ return [
         'sub' => []
     ],
     [
+        'title' => 'Thống kê Đối tác',
+        'routeName' => RouteAdminSystem::AFFILIATE_STATISTICS_INDEX,
+        'icon' => '<i class="ti ti-award"></i>',
+        'roles' => [],
+         'permissions' => ['mevivuDev'],
+        'sub' => []
+    ],
+    [
         'title' => 'Giao dịch',
         'routeName' => null,
         'icon' => '<i class="ti ti-calendar-dollar"></i>',
