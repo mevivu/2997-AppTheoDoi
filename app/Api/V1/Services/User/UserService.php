@@ -16,6 +16,7 @@ use App\Enums\User\UserServiceType;
 use App\Enums\User\UserStatus;
 use App\Models\User;
 use App\Services\Affiliate\AffiliateServiceInterface;
+use App\Api\V1\Services\Notification\NotificationServiceInterface;
 use Exception;
 use Illuminate\Http\Request;
 use App\Admin\Traits\Setup;
@@ -39,18 +40,21 @@ class UserService implements UserServiceInterface
     protected OtpRepositoryInterface $otpRepository;
     protected FileService $fileService;
     protected AffiliateServiceInterface $affiliateService;
+    protected NotificationServiceInterface $notificationService;
 
     public function __construct(
         UserRepositoryInterface $repository,
         OtpRepositoryInterface  $otpRepository,
         FileService             $fileService,
-        AffiliateServiceInterface $affiliateService
+        AffiliateServiceInterface $affiliateService,
+        NotificationServiceInterface $notificationService
     )
     {
         $this->repository = $repository;
         $this->fileService = $fileService;
         $this->otpRepository = $otpRepository;
         $this->affiliateService = $affiliateService;
+        $this->notificationService = $notificationService;
     }
 
     public function store(Request $request)
@@ -85,6 +89,11 @@ class UserService implements UserServiceInterface
             // Nghiệp vụ này chỉ thực hiện trong phương thức đăng ký khi tài khoản có nhập mã giới thiệu hợp lệ
             if ($user && !empty($user->referrer_id)) {
                 $this->affiliateService->processRegistrationReward($user);
+            }
+
+            // Gửi thông báo chào mừng thành viên mới (In-app notification)
+            if ($user) {
+                $this->notificationService->sendWelcomeNotification($user);
             }
 
             DB::commit();

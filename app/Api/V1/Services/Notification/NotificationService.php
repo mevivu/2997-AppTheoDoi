@@ -11,10 +11,12 @@ use App\Api\V1\Support\AuthServiceApi;
 use App\Enums\Notification\MessageType;
 use App\Enums\Notification\NotificationStatus;
 use App\Models\User;
+use App\Models\UserDevice;
 use App\Traits\NotifiesViaFirebase;
 use App\Api\V1\Support\UseLog;
 use Illuminate\Http\Request;
 use Exception;
+use Throwable;
 
 
 class NotificationService implements NotificationServiceInterface
@@ -144,6 +146,100 @@ class NotificationService implements NotificationServiceInterface
         ];
 
         $this->sendFirebaseNotificationToUser($user, $title, $body, MessageType::PAYMENT, $data);
+    }
+
+    /**
+     * Gửi thông báo hoa hồng giới thiệu (In-app & Push FCM) đến người giới thiệu
+     *
+     * @param User $referrer Người giới thiệu nhận hoa hồng
+     * @param float $amount Số tiền hoa hồng nhận được (VNĐ)
+     * @param string $newUserName Tên người dùng mới đăng ký
+     * @return void
+     */
+    public function sendAffiliateRewardNotification(User $referrer, float $amount, string $newUserName): void
+    {
+        try {
+            if ($amount > 0) {
+                $formattedAmount = number_format($amount, 0, ',', '.') . 'đ';
+                $titleTemplate = config('notifications.affiliate_reward_referrer.title');
+                $bodyTemplate = config('notifications.affiliate_reward_referrer.message');
+
+                $title = str_replace('{amount}', $formattedAmount, $titleTemplate);
+                $body = str_replace(
+                    ['{new_user_name}', '{amount}'],
+                    [$newUserName, $formattedAmount],
+                    $bodyTemplate
+                );
+            } else {
+                $title = config('notifications.affiliate_new_referral.title');
+                $bodyTemplate = config('notifications.affiliate_new_referral.message');
+                $body = str_replace('{new_user_name}', $newUserName, $bodyTemplate);
+            }
+
+            // Thu thập toàn bộ device tokens của người giới thiệu
+            $deviceTokens = collect([$referrer->device_token])
+                ->merge(UserDevice::where('user_id', $referrer->id)->where('is_active', true)->pluck('device_token'))
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+
+            // 1. Tạo bản ghi thông báo trong ứng dụng (In-app notification) thông qua repository
+            $notification = $this->repository->create([
+                'user_id' => $referrer->id,
+                'title' => $title,
+                'message' => $body,
+                'status' => NotificationStatus::NOT_READ,
+                'type' => MessageType::AFFILIATE,
+                'is_pushed' => !empty($deviceTokens),
+            ]);
+
+            // 2. Gửi Push Notification qua Firebase nếu tài khoản có device_token
+            if (!empty($deviceTokens)) {
+                $this->sendFirebaseNotification(
+                    $deviceTokens,
+                    null,
+                    $title,
+                    $body,
+                    $notification->id,
+                    [
+                        'type' => 'affiliate',
+                        'screen' => '/referral',
+                        'amount' => (string) $amount,
+                    ]
+                );
+            }
+        } catch (Throwable $e) {
+            $this->logError("Không thể gửi thông báo hoa hồng affiliate: " . $e->getMessage(), $e);
+        }
+    }
+
+    /**
+     * Gửi thông báo chào mừng thành viên mới khi đăng ký tài khoản (chỉ lưu in-app notification, không gửi FCM)
+     *
+     * @param User $user Người dùng vừa đăng ký
+     * @return void
+     */
+    public function sendWelcomeNotification(User $user): void
+    {
+        try {
+            $displayName = $user->fullname ?: 'Bạn';
+            $title = config('notifications.welcome_user.title');
+            $messageTemplate = config('notifications.welcome_user.message');
+
+            $message = str_replace('{fullname}', $displayName, $messageTemplate);
+
+            $this->repository->create([
+                'user_id' => $user->id,
+                'title' => $title,
+                'message' => $message,
+                'status' => NotificationStatus::NOT_READ,
+                'type' => MessageType::UNCLASSIFIED,
+                'is_pushed' => false,
+            ]);
+        } catch (Throwable $e) {
+            $this->logError("Không thể tạo thông báo chào mừng thành viên mới: " . $e->getMessage(), $e);
+        }
     }
 
 }

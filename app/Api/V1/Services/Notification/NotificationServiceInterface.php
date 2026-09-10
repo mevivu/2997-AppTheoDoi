@@ -23,5 +23,21 @@ interface NotificationServiceInterface
     public function sendNotificationsPaymentToAdmins($user, $image, $packageId);
     public function sendPaymentSuccessNotification(User $user, string $packageName): void;
 
+    /**
+     * Gửi thông báo hoa hồng giới thiệu (In-app & Push FCM) đến người giới thiệu
+     *
+     * @param User $referrer Người giới thiệu nhận hoa hồng
+     * @param float $amount Số tiền hoa hồng nhận được (VNĐ)
+     * @param string $newUserName Tên người dùng mới đăng ký
+     * @return void
+     */
+    public function sendAffiliateRewardNotification(User $referrer, float $amount, string $newUserName): void;
 
+    /**
+     * Gửi thông báo chào mừng thành viên mới (In-app notification, không gửi FCM)
+     *
+     * @param User $user Người dùng vừa đăng ký
+     * @return void
+     */
+    public function sendWelcomeNotification(User $user): void;
 }

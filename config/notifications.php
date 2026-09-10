@@ -37,4 +37,16 @@ return [
         'title' => 'Tài khoản của bạn hiện đang được đăng nhập trên một thiết bị khác.',
         'message' => "Nếu bạn muốn sử dụng tài khoản đồng thời trên nhiều thiết bị để cùng vợ hoặc chồng chia sẻ hành trình chăm sóc con với ứng dụng CHĂM CON 360, hãy nâng cấp lên \"Gói VIP 1 năm\".\n\nĐể đăng ký, vui lòng vào Tài khoản → Gói thành viên → Gói VIP 1 năm."
     ],
+    'affiliate_reward_referrer' => [
+        'title' => 'Bạn nhận được {amount} hoa hồng giới thiệu!',
+        'message' => 'Chúc mừng bạn! {new_user_name} vừa đăng ký tài khoản thành công qua mã giới thiệu của bạn. Số tiền {amount} đã được cộng vào ví.',
+    ],
+    'affiliate_new_referral' => [
+        'title' => 'Bạn có thành viên giới thiệu mới!',
+        'message' => 'Chúc mừng bạn! {new_user_name} vừa tạo tài khoản thành công qua mã giới thiệu của bạn.',
+    ],
+    'welcome_user' => [
+        'title' => 'Chào mừng bạn đến với CHĂM CON 360!',
+        'message' => "Xin chào {fullname}!\n\nChúc mừng bạn đã gia nhập đại gia đình CHĂM CON 360 – người bạn đồng hành tin cậy trên hành trình nuôi dưỡng và chăm sóc bé yêu phát triển toàn diện.\n\nTại đây, bạn có thể dễ dàng theo dõi các chỉ số tăng trưởng, lịch tiêm chủng, cẩm nang sức khỏe và nhận nhiều ưu đãi hấp dẫn. Chúc bạn và bé yêu luôn có những trải nghiệm thật tuyệt vời cùng CHĂM CON 360!",
+    ],
 ];

@@ -5,10 +5,8 @@ namespace App\Services\Affiliate;
 use App\Admin\Repositories\AffiliateHistory\AffiliateHistoryRepositoryInterface;
 use App\Admin\Repositories\Setting\SettingRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
-use App\Enums\Notification\NotificationStatus;
-use App\Models\Notification;
+use App\Api\V1\Services\Notification\NotificationServiceInterface;
 use App\Models\User;
-use App\Traits\NotifiesViaFirebase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -43,20 +41,30 @@ class AffiliateService implements AffiliateServiceInterface
     protected SettingRepositoryInterface $settingRepository;
 
     /**
-     * Khởi tạo Service với các Repository phụ thuộc
+     * Service xử lý gửi thông báo (in-app và Push notification Firebase)
+     *
+     * @var NotificationServiceInterface
+     */
+    protected NotificationServiceInterface $notificationService;
+
+    /**
+     * Khởi tạo Service với các Repository và Service phụ thuộc
      *
      * @param AffiliateHistoryRepositoryInterface $historyRepository
      * @param UserRepositoryInterface $userRepository
      * @param SettingRepositoryInterface $settingRepository
+     * @param NotificationServiceInterface $notificationService
      */
     public function __construct(
         AffiliateHistoryRepositoryInterface $historyRepository,
         UserRepositoryInterface $userRepository,
-        SettingRepositoryInterface $settingRepository
+        SettingRepositoryInterface $settingRepository,
+        NotificationServiceInterface $notificationService
     ) {
         $this->historyRepository = $historyRepository;
         $this->userRepository = $userRepository;
         $this->settingRepository = $settingRepository;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -101,17 +109,17 @@ class AffiliateService implements AffiliateServiceInterface
 
             // Thực hiện cộng tiền và ghi nhận lịch sử trong một Database Transaction an toàn
             return DB::transaction(function () use ($newUser, $rewardReferrer, $rewardReferee) {
-                // 1. Thưởng hoa hồng cho Người giới thiệu (Referrer)
-                if ($rewardReferrer > 0) {
-                    $referrer = User::where('id', $newUser->referrer_id)->lockForUpdate()->first();
-                    if ($referrer) {
+                // 1. Thưởng hoa hồng và gửi thông báo cho Người giới thiệu (Referrer)
+                $referrer = User::where('id', $newUser->referrer_id)->lockForUpdate()->first();
+                if ($referrer) {
+                    // Lấy thông tin hiển thị của người đăng ký mới
+                    $newUserName = $newUser->fullname ?: 'Thành viên mới';
+                    $userCode = $newUser->affiliate_code ?: ($newUser->code ?: 'ID:' . $newUser->id);
+
+                    if ($rewardReferrer > 0) {
                         // Cộng tiền vào ví hoa hồng của người giới thiệu
                         $referrer->wallet_balance = ($referrer->wallet_balance ?? 0) + $rewardReferrer;
                         $referrer->save();
-
-                        // Lấy thông tin hiển thị của người đăng ký mới
-                        $newUserName = $newUser->fullname ?: 'Thành viên mới';
-                        $userCode = $newUser->affiliate_code ?: ($newUser->code ?: 'ID:' . $newUser->id);
 
                         // Lưu bản ghi lịch sử hoa hồng thông qua tầng Repository
                         $this->historyRepository->createHistory([
@@ -122,10 +130,10 @@ class AffiliateService implements AffiliateServiceInterface
                             'type' => 'referral_register',
                             'description' => "Thưởng giới thiệu thành viên {$newUserName} ({$userCode})",
                         ]);
-
-                        // Gửi thông báo (In-app và Push FCM) cho người giới thiệu
-                        $this->sendRewardNotification($referrer, $rewardReferrer, $newUserName);
                     }
+
+                    // Gửi thông báo (In-app và Push FCM) cho người giới thiệu qua NotificationService
+                    $this->notificationService->sendAffiliateRewardNotification($referrer, $rewardReferrer, $newUserName);
                 }
 
                 // 2. Thưởng chào mừng cho Người mới đăng ký (Referee) nếu Admin cấu hình > 0
@@ -158,50 +166,6 @@ class AffiliateService implements AffiliateServiceInterface
                 'trace' => $e->getTraceAsString(),
             ]);
             return false;
-        }
-    }
-
-    /**
-     * Gửi thông báo trong ứng dụng (In-app) và thông báo đẩy (FCM) đến người giới thiệu
-     *
-     * @param User $referrer Người giới thiệu nhận hoa hồng
-     * @param float $amount Số tiền hoa hồng nhận được (VNĐ)
-     * @param string $newUserName Tên người dùng mới được giới thiệu
-     * @return void
-     */
-    protected function sendRewardNotification(User $referrer, float $amount, string $newUserName): void
-    {
-        try {
-            $formattedAmount = number_format($amount, 0, ',', '.') . 'đ';
-            $title = "Bạn nhận được {$formattedAmount} hoa hồng giới thiệu!";
-            $body = "Chúc mừng bạn! {$newUserName} vừa tạo tài khoản thành công qua mã giới thiệu của bạn. Số tiền {$formattedAmount} đã được cộng vào ví.";
-
-            // 1. Tạo bản ghi thông báo trong ứng dụng (In-app notification)
-            Notification::create([
-                'user_id' => $referrer->id,
-                'title' => $title,
-                'message' => $body,
-                'status' => NotificationStatus::NOT_READ,
-                'type' => 'affiliate',
-            ]);
-
-            // 2. Gửi Push Notification qua Firebase nếu tài khoản có device_token
-            if (!empty($referrer->device_token)) {
-                $notifier = new class {
-                    use NotifiesViaFirebase;
-                };
-
-                $notifier->sendFirebaseNotification(
-                    [$referrer->device_token],
-                    null,
-                    $title,
-                    $body,
-                    null,
-                    ['type' => 'affiliate']
-                );
-            }
-        } catch (Throwable $e) {
-            Log::warning("Không thể gửi thông báo đẩy hoa hồng affiliate: " . $e->getMessage());
         }
     }
 }
