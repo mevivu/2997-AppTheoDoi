@@ -52,8 +52,17 @@
                 <i class="ti ti-device-mobile-off fs-4"></i>
                 <span>{{ __('Đăng xuất thiết bị') }}</span>
             </button>
+
+            <button type="button" class="btn btn-outline-danger open-modal-force-delete d-flex align-items-center justify-content-center gap-2 py-2"
+                    data-route="{{ route('admin.user.forceDelete', $user->id) }}"
+                    data-bs-toggle="modal" data-bs-target="#modalForceDelete"
+                    title="{{ __('Xóa vĩnh viễn tài khoản này') }}">
+                <i class="ti ti-trash-x fs-4"></i>
+                <span>{{ __('Xóa tài khoản vĩnh viễn') }}</span>
+            </button>
         </div>
     </div>
+
 
     {{-- Floating Form Actions --}}
     <x-admin.form-actions

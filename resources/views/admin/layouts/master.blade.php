@@ -18,7 +18,9 @@
         @include('admin.layouts.footer')
         @include('admin.layouts.modal.modal-logout')
         @include('admin.layouts.modal.modal-delete')
+        @include('admin.layouts.modal.modal-force-delete')
     </div>
+
 </div>
 
 <!-- Back to top button -->

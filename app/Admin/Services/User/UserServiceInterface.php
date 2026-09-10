@@ -19,4 +19,7 @@ interface UserServiceInterface
     public function revokeDevice(int $userId, int $deviceId): bool;
 
     public function revokeAllDevices(int $userId): bool;
+
+    public function forceDelete($id): bool;
 }
+

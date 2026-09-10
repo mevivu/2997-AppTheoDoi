@@ -448,6 +448,20 @@
         box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
     }
 
+    .dt-action-btn.dt-action-force-delete {
+        background: #fff1f2;
+        color: #e11d48;
+        border-color: #fecdd3;
+    }
+    .dt-action-btn.dt-action-force-delete:hover {
+        background: #e11d48;
+        color: #ffffff;
+        border-color: #e11d48;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+    }
+
+
     .dt-action-btn.dt-action-view {
         background: #f0fdf4;
         color: #16a34a;

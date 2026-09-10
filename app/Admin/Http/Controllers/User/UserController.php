@@ -18,6 +18,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 
 class UserController extends Controller
@@ -57,9 +58,11 @@ class UserController extends Controller
             'create' => 'admin.user.create',
             'edit' => 'admin.user.edit',
             'delete' => 'admin.user.delete',
+            'forceDelete' => 'admin.user.forceDelete',
             'history' => 'admin.users.history',
         ];
     }
+
 
     public function index(UserDataTable $dataTable)
     {
@@ -134,14 +137,38 @@ class UserController extends Controller
         });
     }
 
+    /**
+     * Xóa vĩnh viễn tài khoản và toàn bộ dữ liệu liên quan
+     * @throws Exception
+     */
+    public function forceDelete($id): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+            $result = $this->service->forceDelete($id);
+            if ($result) {
+                DB::commit();
+                return to_route($this->route['index'])->with('success', __('Xóa tài khoản vĩnh viễn thành công.'));
+            }
+            DB::rollback();
+            return back()->with('error', __('notifyFail'));
+        } catch (Exception $e) {
+            DB::rollback();
+            $this->logError("Error during forceDelete operation", $e);
+            return back()->with('error', $e->getMessage() ?: __('notifyFail'));
+        }
+    }
+
     protected function getActionMultiple(): array
     {
         return [
             'active' => UserStatus::Active->description(),
             'inactive' => UserStatus::Inactive->description(),
-            'lock' => UserStatus::Lock->description()
+            'lock' => UserStatus::Lock->description(),
+            'delete' => __('Xóa vĩnh viễn các tài khoản đã chọn'),
         ];
     }
+
 
     public function actionMultipleRecode(Request $request): RedirectResponse
     {

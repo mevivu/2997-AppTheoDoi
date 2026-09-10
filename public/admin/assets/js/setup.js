@@ -426,6 +426,12 @@ $(document).on('click', '.open-modal-delete', function () {
     form.attr('action', action);
 });
 
+$(document).on('click', '.open-modal-force-delete', function () {
+    var form = $("#modalFormForceDelete"), action = $(this).data('route');
+    form.attr('action', action);
+});
+
+
 $(document).on('click', '.open-modal-confirm', function () {
     const form = $("#modalFormConfirm"), action = $(this).data('route');
     form.attr('action', action);

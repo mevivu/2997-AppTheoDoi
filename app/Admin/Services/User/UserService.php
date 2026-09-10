@@ -14,6 +14,7 @@ use App\Enums\Package\PackageType;
 use App\Enums\User\UserStatus;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Admin\Traits\Setup;
 
 class UserService implements UserServiceInterface
@@ -149,6 +150,72 @@ class UserService implements UserServiceInterface
 
     }
 
+    /**
+     * Xóa vĩnh viễn tài khoản người dùng và toàn bộ dữ liệu liên quan
+     * @throws Exception
+     */
+    public function forceDelete($id): bool
+    {
+        $user = $this->repository->findOrFail($id);
+
+        DB::transaction(function () use ($user) {
+            // 1. Gỡ người giới thiệu nếu tài khoản này là người giới thiệu của tài khoản khác
+            \App\Models\User::where('referrer_id', $user->id)->update(['referrer_id' => null]);
+
+            // 2. Xóa các phiên đăng nhập và thiết bị
+            \App\Models\UserSession::where('user_id', $user->id)->delete();
+            \App\Models\UserDevice::where('user_id', $user->id)->delete();
+
+            // 3. Thu hồi Sanctum tokens nếu có
+            if (method_exists($user, 'tokens')) {
+                $user->tokens()->delete();
+            }
+
+            // 4. Gỡ bỏ quyền và vai trò
+            if (method_exists($user, 'roles')) {
+                $user->roles()->detach();
+            }
+            if (method_exists($user, 'permissions')) {
+                $user->permissions()->detach();
+            }
+
+            // 5. Xóa dữ liệu sử dụng tính năng và thông báo
+            \App\Models\FeatureUsage::where('user_id', $user->id)->delete();
+            \App\Models\Notification::where('user_id', $user->id)
+                ->orWhere('user_id_attribute', $user->id)
+                ->delete();
+
+            // 6. Xóa các gói dịch vụ và lịch sử giao dịch
+            $user->userPackages()->delete();
+            $user->transactions()->delete();
+
+            // 7. Xóa dữ liệu hồ sơ trẻ em và các file ảnh đính kèm
+            foreach ($user->children as $child) {
+                if ($child->journals) {
+                    foreach ($child->journals as $journal) {
+                        if ($journal->image && !str_starts_with($journal->image, 'http') && file_exists(public_path($journal->image))) {
+                            @unlink(public_path($journal->image));
+                        }
+                    }
+                }
+                if ($child->avatar && !str_starts_with($child->avatar, 'http') && file_exists(public_path($child->avatar))) {
+                    @unlink(public_path($child->avatar));
+                }
+                $child->delete();
+            }
+
+            // 8. Xóa ảnh đại diện của người dùng nếu có
+            if ($user->avatar && !str_starts_with($user->avatar, 'http') && file_exists(public_path($user->avatar))) {
+                @unlink(public_path($user->avatar));
+            }
+
+            // 9. Xóa người dùng vĩnh viễn khỏi database
+            $user->delete();
+        });
+
+        return true;
+    }
+
     public function actionMultipleRecode(Request $request): bool
     {
         $this->data = $request->all();
@@ -184,11 +251,17 @@ class UserService implements UserServiceInterface
                     }
                 }
                 return true;
+            case 'delete':
+                foreach ($this->data['id'] as $value) {
+                    $this->forceDelete($value);
+                }
+                return true;
 
             default:
                 return false;
         }
     }
+
 
     public function clearNormalTokens(): bool
     {

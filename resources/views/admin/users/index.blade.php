@@ -40,4 +40,11 @@
         'id_table' => $dataTable->getTableAttribute('id'),
     ])
     @include('admin.common.copy')
+    <script>
+        $(document).on('click', '.open-modal-force-delete', function () {
+            var form = $("#modalFormForceDelete"), action = $(this).data('route');
+            form.attr('action', action);
+        });
+    </script>
 @endpush
+

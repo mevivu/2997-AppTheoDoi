@@ -761,6 +761,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
             Route::group(['middleware' => ['permission:deleteUser', 'auth:admin']], function () {
                 Route::delete('/xoa/{id}', 'delete')->name('delete');
+                Route::delete('/xoa-vinh-vien/{id}', 'forceDelete')->name('forceDelete');
             });
         });
     });
