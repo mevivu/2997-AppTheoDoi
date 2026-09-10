@@ -53,19 +53,19 @@ class UserDataTable extends BaseDataTable
         ->pluck('name', 'id')
         ->toArray();
 
-        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6, 7, 8];
 
         $this->columnSearchSelect = [
             [
-                'column' => 5,
+                'column' => 6,
                 'data' => UserStatus::asSelectArray()
             ],
             [
-                'column' => 6,
+                'column' => 7,
                 'data' => $packages
             ],
             [
-                'column' => 7,
+                'column' => 8,
                 'data' => UserServiceType::asSelectArray()
             ],
         ];
@@ -153,6 +153,9 @@ class UserDataTable extends BaseDataTable
         $this->customFilterColumns = [
             'affiliate_code' => function ($query, $keyword) {
                 $query->where('affiliate_code', 'like', '%' . $keyword . '%');
+            },
+            'status' => function ($query, $keyword) {
+                $query->where('status', $keyword);
             },
             'service_type' => function ($query, $keyword) {
                 $query->where('service_type', $keyword);
