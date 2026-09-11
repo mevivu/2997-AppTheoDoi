@@ -2,11 +2,12 @@
 
 namespace App\Services\Withdraw;
 
+use App\Admin\Repositories\AffiliateHistory\AffiliateHistoryRepositoryInterface;
+use App\Admin\Repositories\Transaction\TransactionRepositoryInterface;
+use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Enums\Notification\MessageType;
-use App\Enums\Transaction\TransactionEnumService;
 use App\Enums\Transaction\TransactionStatus;
 use App\Enums\Transaction\TransactionType;
-use App\Models\AffiliateHistory;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Traits\NotifiesViaFirebase;
@@ -20,6 +21,20 @@ use Throwable;
 class WithdrawService
 {
     use NotifiesViaFirebase;
+
+    protected TransactionRepositoryInterface $transactionRepository;
+    protected AffiliateHistoryRepositoryInterface $affiliateHistoryRepository;
+    protected UserRepositoryInterface $userRepository;
+
+    public function __construct(
+        TransactionRepositoryInterface $transactionRepository,
+        AffiliateHistoryRepositoryInterface $affiliateHistoryRepository,
+        UserRepositoryInterface $userRepository
+    ) {
+        $this->transactionRepository = $transactionRepository;
+        $this->affiliateHistoryRepository = $affiliateHistoryRepository;
+        $this->userRepository = $userRepository;
+    }
 
     /**
      * Lấy toàn bộ cấu hình rút tiền từ bảng settings
@@ -76,10 +91,11 @@ class WithdrawService
     {
         $config = $this->getWithdrawSettings();
 
-        // Lấy thông tin tài khoản ngân hàng từ giao dịch rút tiền gần nhất trong bảng transactions
-        $lastWithdraw = Transaction::where('user_id', $user->id)
+        // Lấy thông tin tài khoản ngân hàng từ giao dịch rút tiền gần nhất qua repository
+        $lastWithdraw = $this->transactionRepository
+            ->getQueryBuilderOrderBy('id', 'desc')
+            ->where('user_id', $user->id)
             ->where('type', TransactionType::Withdraw)
-            ->latest('id')
             ->first();
 
         $currentBalance = (float) ($user->wallet_balance ?? 0);
@@ -163,8 +179,8 @@ class WithdrawService
             $lockedUser->wallet_balance = $currentBalance - $amount;
             $lockedUser->save();
 
-            // Ghi nhận biến động ví vào affiliate_histories
-            AffiliateHistory::create([
+            // Ghi nhận biến động ví vào affiliate_histories qua repository
+            $this->affiliateHistoryRepository->create([
                 'user_id' => $lockedUser->id,
                 'source_user_id' => null,
                 'amount' => -$amount,
@@ -173,18 +189,14 @@ class WithdrawService
                 'description' => "Yêu cầu rút tiền [{$code}] về {$data['bank_name']} (STK: {$data['bank_account_number']}) - Dự kiến chi trả: {$config['next_payout_text']}",
             ]);
 
-            // Tạo giao dịch trực tiếp trong bảng transactions
-            return Transaction::create([
+            // Tạo giao dịch rút tiền trực tiếp qua hàm riêng của repository
+            return $this->transactionRepository->createWithdrawTransaction([
                 'code' => $code,
                 'user_id' => $lockedUser->id,
-                'package_id' => null,
                 'amount' => $amount,
-                'type' => TransactionType::Withdraw,
-                'status' => TransactionStatus::Pending,
-                'service' => TransactionEnumService::NORMAL,
-                'bank_name' => trim($data['bank_name']),
-                'bank_account_number' => trim($data['bank_account_number']),
-                'bank_account_name' => strtoupper(trim($data['bank_account_name'])),
+                'bank_name' => $data['bank_name'],
+                'bank_account_number' => $data['bank_account_number'],
+                'bank_account_name' => $data['bank_account_name'],
                 'scheduled_payout_date' => $config['next_payout_date'],
                 'admin_note' => $data['user_note'] ?? null,
             ]);
@@ -203,15 +215,18 @@ class WithdrawService
                 throw new Exception('Giao dịch không hợp lệ hoặc đã được xử lý.');
             }
 
-            $transaction->status = TransactionStatus::Confirmed;
-            $transaction->processed_at = now();
-            $transaction->processed_by = $adminUser->id ?? null;
+            $updateData = [
+                'status' => TransactionStatus::Confirmed,
+                'processed_at' => now(),
+                'processed_by' => $adminUser->id ?? null,
+            ];
             if ($note) {
-                $transaction->admin_note = $note;
+                $updateData['admin_note'] = $note;
             }
-            $transaction->save();
 
-            return $transaction;
+            $this->transactionRepository->update($transaction->id, $updateData);
+
+            return $transaction->fresh();
         });
 
         // Gửi thông báo đẩy Firebase đến tài khoản đối tác
@@ -232,29 +247,32 @@ class WithdrawService
                 throw new Exception('Giao dịch không hợp lệ hoặc đã được xử lý.');
             }
 
-            $transaction->status = TransactionStatus::Refunded;
-            $transaction->admin_note = $reason;
-            $transaction->processed_at = now();
-            $transaction->processed_by = $adminUser->id ?? null;
-            $transaction->save();
+            // Cập nhật trạng thái giao dịch qua repository
+            $this->transactionRepository->update($transaction->id, [
+                'status' => TransactionStatus::Refunded,
+                'admin_note' => $reason,
+                'processed_at' => now(),
+                'processed_by' => $adminUser->id ?? null,
+            ]);
 
             // Hoàn lại tiền cho ví đối tác
             $user = User::where('id', $transaction->user_id)->lockForUpdate()->first();
             if ($user) {
-                $user->wallet_balance = ($user->wallet_balance ?? 0) + $transaction->amount;
-                $user->save();
+                $newBalance = ($user->wallet_balance ?? 0) + $transaction->amount;
+                $this->userRepository->update($user->id, ['wallet_balance' => $newBalance]);
 
-                AffiliateHistory::create([
+                // Ghi nhận hoàn tiền ví vào affiliate_histories qua repository
+                $this->affiliateHistoryRepository->create([
                     'user_id' => $user->id,
                     'source_user_id' => null,
                     'amount' => $transaction->amount,
-                    'balance_after' => $user->wallet_balance,
+                    'balance_after' => $newBalance,
                     'type' => 'withdraw_refund',
                     'description' => "Hoàn tiền lệnh rút [{$transaction->code}] do bị từ chối: {$reason}",
                 ]);
             }
 
-            return $transaction;
+            return $transaction->fresh();
         });
 
         // Gửi thông báo đẩy Firebase đến tài khoản đối tác
