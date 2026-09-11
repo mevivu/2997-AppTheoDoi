@@ -13,9 +13,13 @@ class KycUpdateRequest extends BaseRequest
      */
     protected function methodPost(): array
     {
+        $user = auth('api')->user();
+        $hasFront = !empty($user?->id_card_front);
+        $hasBack = !empty($user?->id_card_back);
+
         return [
-            'id_card_front' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
-            'id_card_back' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
+            'id_card_front' => [$hasFront ? 'nullable' : 'required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
+            'id_card_back' => [$hasBack ? 'nullable' : 'required', 'image', 'mimes:jpg,jpeg,png', 'max:5120'],
             'tax_code' => ['required', 'string', 'max:20', 'regex:/^[0-9\-]+$/'],
         ];
     }

@@ -3,12 +3,12 @@
 namespace App\Api\V1\Http\Controllers\User;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Admin\Services\File\FileService;
 use App\Api\V1\Http\Requests\User\KycUpdateRequest;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 /**
@@ -18,9 +18,37 @@ class KycController extends Controller
 {
     use Response, UseLog;
 
-    public function __construct()
+    protected FileService $fileService;
+
+    public function __construct(FileService $fileService)
     {
         $this->middleware('auth:api');
+        $this->fileService = $fileService;
+    }
+
+    /**
+     * Định dạng URL ảnh CCCD đảm bảo trả về đường dẫn đầy đủ hợp lệ
+     */
+    protected function formatIdCardUrl(?string $path): ?string
+    {
+        if (empty($path)) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        if (str_starts_with($path, 'public/')) {
+            return asset($path);
+        }
+
+        if (str_starts_with($path, 'storage/')) {
+            return asset($path);
+        }
+
+        // Tương thích ngược với các ảnh cũ đã lưu dạng kyc/{userId}/...
+        return asset('storage/' . $path);
     }
 
     /**
@@ -46,8 +74,8 @@ class KycController extends Controller
 
             return $this->jsonResponseSuccess([
                 'kyc_completed' => $user->hasCompletedKyc(),
-                'id_card_front' => $user->id_card_front ? asset('storage/' . $user->id_card_front) : null,
-                'id_card_back' => $user->id_card_back ? asset('storage/' . $user->id_card_back) : null,
+                'id_card_front' => $this->formatIdCardUrl($user->id_card_front),
+                'id_card_back' => $this->formatIdCardUrl($user->id_card_back),
                 'tax_code' => $user->tax_code,
                 'kyc_verified_at' => $user->kyc_verified_at?->toIso8601String(),
             ]);
@@ -59,10 +87,11 @@ class KycController extends Controller
 
     /**
      * Cập nhật thông tin KYC: Upload ảnh CCCD mặt trước/sau + Mã số thuế (MST)
+     * Sử dụng FileService để quản lý lưu trữ và tự động xóa ảnh cũ tương tự như avatar
      *
      * @authenticated
-     * @bodyParam id_card_front file required Ảnh CCCD mặt trước (JPG/PNG, tối đa 5MB).
-     * @bodyParam id_card_back file required Ảnh CCCD mặt sau (JPG/PNG, tối đa 5MB).
+     * @bodyParam id_card_front file Ảnh CCCD mặt trước (JPG/PNG, tối đa 5MB).
+     * @bodyParam id_card_back file Ảnh CCCD mặt sau (JPG/PNG, tối đa 5MB).
      * @bodyParam tax_code string required Mã số thuế cá nhân. Example: 8601234567
      *
      * @response 200 {
@@ -70,8 +99,8 @@ class KycController extends Controller
      *   "message": "Cập nhật thông tin xác minh thành công!",
      *   "data": {
      *       "kyc_completed": true,
-     *       "id_card_front": "http://domain.com/storage/kyc/1/front.jpg",
-     *       "id_card_back": "http://domain.com/storage/kyc/1/back.jpg",
+     *       "id_card_front": "http://domain.com/public/uploads/images/kyc/front.jpg",
+     *       "id_card_back": "http://domain.com/public/uploads/images/kyc/back.jpg",
      *       "tax_code": "8601234567"
      *   }
      * }
@@ -82,35 +111,17 @@ class KycController extends Controller
             $user = $request->user();
             $data = $request->validated();
 
-            $storagePath = "kyc/{$user->id}";
+            // Sử dụng hàm uploadImages có sẵn của FileService để upload các ảnh và tự động xóa ảnh cũ
+            $data = $this->fileService->uploadImages('images/kyc', $data, ['id_card_front', 'id_card_back'], $user);
 
-            // Upload ảnh CCCD mặt trước
-            if ($request->hasFile('id_card_front')) {
-                // Xóa ảnh cũ nếu có
-                if (!empty($user->id_card_front)) {
-                    Storage::disk('public')->delete($user->id_card_front);
-                }
-                $frontPath = $request->file('id_card_front')->store($storagePath, 'public');
-                $user->id_card_front = $frontPath;
-            }
-
-            // Upload ảnh CCCD mặt sau
-            if ($request->hasFile('id_card_back')) {
-                if (!empty($user->id_card_back)) {
-                    Storage::disk('public')->delete($user->id_card_back);
-                }
-                $backPath = $request->file('id_card_back')->store($storagePath, 'public');
-                $user->id_card_back = $backPath;
-            }
-
-            // Lưu Mã số thuế
-            $user->tax_code = $data['tax_code'];
-            $user->save();
+            // Cập nhật thông tin vào user (lọc bỏ các giá trị null nếu không gửi ảnh mới)
+            $user->update(array_filter($data, fn($val) => !is_null($val)));
+            $user->refresh();
 
             return $this->jsonResponseSuccess([
                 'kyc_completed' => $user->hasCompletedKyc(),
-                'id_card_front' => $user->id_card_front ? asset('storage/' . $user->id_card_front) : null,
-                'id_card_back' => $user->id_card_back ? asset('storage/' . $user->id_card_back) : null,
+                'id_card_front' => $this->formatIdCardUrl($user->id_card_front),
+                'id_card_back' => $this->formatIdCardUrl($user->id_card_back),
                 'tax_code' => $user->tax_code,
             ], 'Cập nhật thông tin xác minh thành công!');
         } catch (Throwable $e) {
