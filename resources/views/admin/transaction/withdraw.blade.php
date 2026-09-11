@@ -2,6 +2,121 @@
 
 @push('libs-css')
     @include('admin.common.css.style')
+    <style>
+        /* ===================================================
+           MODERN WITHDRAW DATATABLE ACTION BUTTONS (SOFT-UI)
+           =================================================== */
+        .dt-action-withdraw-group {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+        }
+
+        .btn-action-withdraw {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none !important;
+            line-height: 1.25;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            white-space: nowrap;
+        }
+
+        .btn-action-withdraw i {
+            font-size: 14px;
+            line-height: 1;
+            transition: transform 0.2s ease;
+        }
+
+        /* Duyệt chi (Soft Emerald) */
+        .btn-action-withdraw.btn-action-approve {
+            background: #ecfdf5;
+            color: #059669;
+            border-color: #a7f3d0;
+        }
+
+        .btn-action-withdraw.btn-action-approve:hover {
+            background: #059669;
+            color: #ffffff;
+            border-color: #059669;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn-action-withdraw.btn-action-approve:hover i {
+            transform: scale(1.15);
+        }
+
+        .btn-action-withdraw.btn-action-approve:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+        }
+
+        /* Từ chối (Soft Rose/Red) */
+        .btn-action-withdraw.btn-action-reject {
+            background: #fff1f2;
+            color: #e11d48;
+            border-color: #fecdd3;
+        }
+
+        .btn-action-withdraw.btn-action-reject:hover {
+            background: #e11d48;
+            color: #ffffff;
+            border-color: #e11d48;
+            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn-action-withdraw.btn-action-reject:hover i {
+            transform: scale(1.15);
+        }
+
+        .btn-action-withdraw.btn-action-reject:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(225, 29, 72, 0.2);
+        }
+
+        /* Quick reason chips in reject modal */
+        .reject-reason-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            font-size: 11.5px;
+            font-weight: 500;
+            color: #475569;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+
+        .reject-reason-chip:hover {
+            background: #fee2e2;
+            color: #dc2626;
+            border-color: #fca5a5;
+            transform: translateY(-1px);
+        }
+
+        .reject-reason-chip.active {
+            background: #dc2626;
+            color: #ffffff;
+            border-color: #dc2626;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -28,10 +143,10 @@
     {{-- Modal Xác Nhận Duyệt Chi Trả Rút Tiền --}}
     <div class="modal fade" id="modalApproveWithdraw" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-success text-white py-2.5">
-                    <h5 class="modal-title d-flex align-items-center">
-                        <i class="ti ti-check-circle fs-3 me-2"></i>
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 14px; overflow: hidden;">
+                <div class="modal-header text-white py-3 px-3.5" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%);">
+                    <h5 class="modal-title d-flex align-items-center mb-0 fw-bold fs-16">
+                        <i class="ti ti-circle-check fs-2 me-2"></i>
                         {{ __('Xác nhận Duyệt Chi Trả Hoa Hồng') }}
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -39,32 +154,37 @@
                 <form id="formApproveWithdraw">
                     <input type="hidden" id="approveWithdrawId" name="id">
                     <div class="modal-body p-3.5">
-                        <div class="p-3 bg-light rounded-3 mb-3 border">
-                            <div class="row g-2 fs-13">
-                                <div class="col-5 text-muted">{{ __('Mã giao dịch') }}:</div>
-                                <div class="col-7 fw-bold text-dark font-monospace" id="approveCode">-</div>
-
-                                <div class="col-5 text-muted">{{ __('Đối tác nhận') }}:</div>
-                                <div class="col-7 fw-bold text-primary" id="approveUser">-</div>
-
-                                <div class="col-5 text-muted">{{ __('Số tiền chi trả') }}:</div>
-                                <div class="col-7 fw-extrabold text-success fs-14" id="approveAmount">-</div>
-
-                                <div class="col-5 text-muted">{{ __('Tài khoản nhận') }}:</div>
-                                <div class="col-7 fw-semibold text-dark" id="approveBank">-</div>
+                        <div class="p-3 bg-light rounded-3 mb-3 border border-1">
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                <span class="text-muted fs-12">{{ __('Mã yêu cầu') }}</span>
+                                <span class="fw-bold font-monospace text-dark fs-13 px-2 py-0.5 bg-white border rounded" id="approveCode">-</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                <span class="text-muted fs-12">{{ __('Đối tác nhận') }}</span>
+                                <span class="fw-bold text-primary fs-13" id="approveUser">-</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                <span class="text-muted fs-12">{{ __('Số tiền chi trả') }}</span>
+                                <span class="fw-extrabold text-success fs-16 font-monospace" id="approveAmount">-</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="text-muted fs-12 mt-0.5">{{ __('Tài khoản nhận') }}</span>
+                                <span class="fw-semibold text-dark text-end fs-12" id="approveBank" style="max-width: 65%;">-</span>
                             </div>
                         </div>
 
                         <div class="mb-2">
-                            <label for="approveNote" class="form-label fw-semibold fs-13">{{ __('Mã giao dịch ngân hàng / Ghi chú (tùy chọn)') }}</label>
-                            <input type="text" class="form-control" id="approveNote" name="note" placeholder="{{ __('VD: FT2609110001, đã chuyển khoản qua Vietcombank...') }}">
-                            <small class="text-muted fs-12">{{ __('Thông tin này sẽ được lưu trữ làm biên lai đối soát.') }}</small>
+                            <label for="approveNote" class="form-label fw-semibold fs-13 text-dark">
+                                <i class="ti ti-receipt me-1 text-success"></i>{{ __('Mã giao dịch ngân hàng / Ghi chú đối soát (tùy chọn)') }}
+                            </label>
+                            <input type="text" class="form-control fs-13" id="approveNote" name="note" placeholder="{{ __('VD: FT2609110001, đã chuyển khoản qua Vietcombank...') }}">
+                            <small class="text-muted fs-11 mt-1 d-block"><i class="ti ti-info-circle me-0.5"></i>{{ __('Thông tin này sẽ được lưu trữ làm biên lai đối soát và gửi đến đối tác.') }}</small>
                         </div>
                     </div>
-                    <div class="modal-footer py-2 bg-light">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Đóng') }}</button>
-                        <button type="submit" class="btn btn-success fw-bold" id="btnSubmitApprove">
-                            <span class="spinner-border spinner-border-sm me-1 d-none" role="status"></span>
+                    <div class="modal-footer py-2.5 px-3.5 bg-light border-top d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal">{{ __('Hủy') }}</button>
+                        <button type="submit" class="btn btn-success fw-bold px-3 d-flex align-items-center" id="btnSubmitApprove">
+                            <span class="spinner-border spinner-border-sm me-1.5 d-none" role="status"></span>
                             <i class="ti ti-check me-1"></i>{{ __('Xác nhận Đã Chuyển Tiền') }}
                         </button>
                     </div>
@@ -76,10 +196,10 @@
     {{-- Modal Từ Chối Lệnh Rút Tiền --}}
     <div class="modal fade" id="modalRejectWithdraw" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
-                <div class="modal-header bg-danger text-white py-2.5">
-                    <h5 class="modal-title d-flex align-items-center">
-                        <i class="ti ti-alert-triangle fs-3 me-2"></i>
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 14px; overflow: hidden;">
+                <div class="modal-header text-white py-3 px-3.5" style="background: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%);">
+                    <h5 class="modal-title d-flex align-items-center mb-0 fw-bold fs-16">
+                        <i class="ti ti-alert-triangle fs-2 me-2"></i>
                         {{ __('Từ Chối Lệnh Rút Tiền') }}
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -87,32 +207,52 @@
                 <form id="formRejectWithdraw">
                     <input type="hidden" id="rejectWithdrawId" name="id">
                     <div class="modal-body p-3.5">
-                        <div class="alert alert-warning py-2 px-3 mb-3 fs-13 border-warning-subtle" role="alert">
-                            <i class="ti ti-info-circle me-1"></i>
-                            {{ __('Lưu ý: Khi từ chối, số tiền rút sẽ được hệ thống ') }}
-                            <strong>{{ __('TỰ ĐỘNG HOÀN LẠI VÀO VÍ') }}</strong>
-                            {{ __(' của đối tác ngay lập tức.') }}
+                        <div class="alert alert-warning py-2.5 px-3 mb-3 fs-12 border-warning-subtle d-flex align-items-center gap-2 rounded-2" role="alert">
+                            <i class="ti ti-alert-circle fs-3 text-warning flex-shrink-0"></i>
+                            <div>
+                                {{ __('Khi từ chối, số tiền rút sẽ được hệ thống ') }}
+                                <strong>{{ __('TỰ ĐỘNG HOÀN LẠI VÀO VÍ') }}</strong>
+                                {{ __(' của đối tác ngay lập tức.') }}
+                            </div>
                         </div>
 
-                        <div class="p-2.5 bg-light rounded-2 mb-3 border fs-13">
-                            <div>{{ __('Mã giao dịch') }}: <strong class="text-dark font-monospace" id="rejectCode">-</strong></div>
-                            <div>{{ __('Số tiền hoàn lại') }}: <strong class="text-danger" id="rejectAmount">-</strong></div>
-                            <div>{{ __('Đối tác') }}: <strong class="text-primary" id="rejectUser">-</strong></div>
+                        <div class="p-2.5 bg-light rounded-2 mb-3 border fs-12">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted">{{ __('Mã yêu cầu') }}:</span>
+                                <strong class="text-dark font-monospace" id="rejectCode">-</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted">{{ __('Đối tác') }}:</span>
+                                <strong class="text-primary" id="rejectUser">-</strong>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">{{ __('Số tiền hoàn lại') }}:</span>
+                                <strong class="text-danger fs-13 font-monospace" id="rejectAmount">-</strong>
+                            </div>
                         </div>
 
                         <div class="mb-2">
-                            <label for="rejectReason" class="form-label fw-semibold fs-13">
-                                {{ __('Lý do từ chối') }} <span class="text-danger">*</span>
+                            <label for="rejectReason" class="form-label fw-semibold fs-13 text-dark">
+                                <i class="ti ti-pencil me-1 text-danger"></i>{{ __('Lý do từ chối') }} <span class="text-danger">*</span>
                             </label>
-                            <textarea class="form-control" id="rejectReason" name="reason" rows="3" required placeholder="{{ __('VD: Số tài khoản ngân hàng không chính xác, tên chủ tài khoản không khớp...') }}"></textarea>
-                            <small class="text-muted fs-12">{{ __('Lý do từ chối sẽ được lưu lại và gửi thông báo đến đối tác để kiểm tra.') }}</small>
+
+                            {{-- Gợi ý lý do từ chối nhanh --}}
+                            <div class="d-flex flex-wrap gap-1.5 mb-2">
+                                <span class="reject-reason-chip" data-reason="Số tài khoản ngân hàng không chính xác">Số tài khoản sai</span>
+                                <span class="reject-reason-chip" data-reason="Tên chủ tài khoản không khớp với hồ sơ đăng ký">Tên chủ thẻ không khớp</span>
+                                <span class="reject-reason-chip" data-reason="Ngân hàng thụ hưởng tạm ngưng nhận tiền hoặc tài khoản bị khóa">TK ngân hàng bị khóa</span>
+                                <span class="reject-reason-chip" data-reason="Giao dịch cần xác minh thêm thông tin đối soát">Cần đối soát lại</span>
+                            </div>
+
+                            <textarea class="form-control fs-13" id="rejectReason" name="reason" rows="3" required placeholder="{{ __('Chọn gợi ý phía trên hoặc nhập lý do từ chối chi tiết...') }}"></textarea>
+                            <small class="text-muted fs-11 mt-1 d-block"><i class="ti ti-info-circle me-0.5"></i>{{ __('Lý do từ chối sẽ được thông báo ngay đến ứng dụng của đối tác.') }}</small>
                         </div>
                     </div>
-                    <div class="modal-footer py-2 bg-light">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Hủy bỏ') }}</button>
-                        <button type="submit" class="btn btn-danger fw-bold" id="btnSubmitReject">
-                            <span class="spinner-border spinner-border-sm me-1 d-none" role="status"></span>
-                            <i class="ti ti-arrow-back-up me-1"></i>{{ __('Từ chối & Hoàn tiền vào ví') }}
+                    <div class="modal-footer py-2.5 px-3.5 bg-light border-top d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal">{{ __('Hủy') }}</button>
+                        <button type="submit" class="btn btn-danger fw-bold px-3 d-flex align-items-center" id="btnSubmitReject">
+                            <span class="spinner-border spinner-border-sm me-1.5 d-none" role="status"></span>
+                            <i class="ti ti-arrow-back-up me-1"></i>{{ __('Từ chối & Hoàn tiền') }}
                         </button>
                     </div>
                 </form>
@@ -137,6 +277,26 @@
     <script>
         $(document).ready(function () {
             const tableId = '{{ $dataTable->getTableAttribute("id") }}';
+
+            // Kích hoạt Bootstrap tooltips mỗi khi DataTable vẽ lại
+            function initTooltips() {
+                $('[data-bs-toggle="tooltip"]').tooltip({
+                    trigger: 'hover'
+                });
+            }
+
+            initTooltips();
+            $(document).on('draw.dt', function () {
+                initTooltips();
+            });
+
+            // Chọn chip lý do từ chối nhanh
+            $(document).on('click', '.reject-reason-chip', function () {
+                const reason = $(this).data('reason');
+                $('#rejectReason').val(reason);
+                $('.reject-reason-chip').removeClass('active');
+                $(this).addClass('active');
+            });
 
             // 1. Mở Modal Duyệt Chi Trả
             $(document).on('click', '.btn-approve-withdraw', function () {
@@ -209,6 +369,7 @@
                 $('#rejectAmount').text(amount);
                 $('#rejectUser').text(user);
                 $('#rejectReason').val('');
+                $('.reject-reason-chip').removeClass('active');
 
                 $('#modalRejectWithdraw').modal('show');
             });

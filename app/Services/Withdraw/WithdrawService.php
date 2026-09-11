@@ -2,11 +2,14 @@
 
 namespace App\Services\Withdraw;
 
+use App\Admin\Repositories\Admin\AdminRepositoryInterface;
 use App\Admin\Repositories\AffiliateHistory\AffiliateHistoryRepositoryInterface;
 use App\Admin\Repositories\Bank\BankRepositoryInterface;
+use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
 use App\Admin\Repositories\Transaction\TransactionRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Enums\Notification\MessageType;
+use App\Enums\Notification\NotificationStatus;
 use App\Enums\Transaction\TransactionStatus;
 use App\Enums\Transaction\TransactionType;
 use App\Models\Transaction;
@@ -224,6 +227,11 @@ class WithdrawService
                 'admin_note' => $data['user_note'] ?? null,
             ]);
         });
+
+        // Gửi thông báo đẩy Firebase và lưu thông báo hệ thống cho các Admin
+        $this->notifyAdminsNewWithdrawRequest($transaction, $user);
+
+        return $transaction;
     }
 
     /**
@@ -385,6 +393,59 @@ class WithdrawService
         } catch (Throwable $e) {
             Log::error('Lỗi gửi Firebase notification khi từ chối rút tiền: ' . $e->getMessage(), [
                 'transaction_id' => $transaction->id,
+            ]);
+        }
+    }
+
+    /**
+     * Gửi thông báo đẩy và lưu thông báo hệ thống cho các Admin khi có yêu cầu rút tiền mới
+     */
+    protected function notifyAdminsNewWithdrawRequest(Transaction $transaction, User $user): void
+    {
+        try {
+            $amountFmt = number_format((float) $transaction->amount, 0, ',', '.') . 'đ';
+            $title = config('notifications.affiliate_withdraw_requested_admin.title', 'Yêu cầu rút tiền hoa hồng mới');
+            $messageTemplate = config(
+                'notifications.affiliate_withdraw_requested_admin.message',
+                'Đối tác {fullname} vừa tạo yêu cầu rút tiền hoa hồng {amount} về {bank_name} (STK: {bank_account_number}). Mã GD: {code}.'
+            );
+
+            $body = str_replace(
+                ['{fullname}', '{amount}', '{bank_name}', '{bank_account_number}', '{code}'],
+                [$user->fullname ?? 'Đối tác', $amountFmt, $transaction->bank_name ?? '', $transaction->bank_account_number ?? '', $transaction->code],
+                $messageTemplate
+            );
+
+            $adminRepository = app(AdminRepositoryInterface::class);
+            $notificationRepository = app(NotificationRepositoryInterface::class);
+
+            $admins = $adminRepository->getAll();
+            $deviceTokens = $admins->pluck('device_token')->filter()->all();
+
+            $fcmData = [
+                'type' => 'withdraw_requested',
+                'code' => $transaction->code,
+                'transaction_id' => (string) $transaction->id,
+            ];
+
+            if (!empty($deviceTokens)) {
+                $this->sendFirebaseNotification($deviceTokens, null, $title, $body, null, $fcmData);
+            }
+
+            foreach ($admins as $admin) {
+                $notificationRepository->create([
+                    'admin_id' => $admin->id,
+                    'user_id_attribute' => $user->id,
+                    'title' => $title,
+                    'message' => $body,
+                    'type' => MessageType::AFFILIATE,
+                    'status' => NotificationStatus::NOT_READ,
+                ]);
+            }
+        } catch (Throwable $e) {
+            Log::error('Lỗi gửi thông báo cho Admin khi tạo yêu cầu rút tiền: ' . $e->getMessage(), [
+                'transaction_id' => $transaction->id,
+                'error' => $e->getMessage(),
             ]);
         }
     }

@@ -30,6 +30,7 @@ class TransactionWithdrawDatatable extends BaseDataTable
             'status' => 'admin.transaction.datatable.status',
             'user' => 'admin.transaction.datatable.user',
             'code' => 'admin.transaction.datatable.code',
+            'action' => 'admin.transaction.datatable.action',
         ];
     }
 
@@ -99,40 +100,9 @@ class TransactionWithdrawDatatable extends BaseDataTable
                 return '<span class="badge bg-success-lt text-success px-2 py-1 fs-11 fw-semibold text-nowrap"><i class="ti ti-calendar-event me-1"></i>Thứ 5 (' . format_date($transaction->scheduled_payout_date) . ')</span>';
             },
             'action' => function ($transaction) {
-                if ($transaction->status === TransactionStatus::Pending) {
-                    $amountFmt = number_format((float) $transaction->amount, 0, ',', '.') . 'đ';
-                    $userFullname = e($transaction->user?->fullname ?? 'Đối tác #' . $transaction->user_id);
-                    $bankInfo = e(($transaction->bank_name ?? '') . ' - ' . ($transaction->bank_account_number ?? '') . ' (' . ($transaction->bank_account_name ?? '') . ')');
-                    
-                    return '<div class="d-flex align-items-center justify-content-center gap-1.5">' .
-                        '<button type="button" class="btn btn-sm btn-success px-2 py-1 btn-approve-withdraw" ' .
-                            'data-id="' . $transaction->id . '" ' .
-                            'data-code="' . e($transaction->code) . '" ' .
-                            'data-amount="' . $amountFmt . '" ' .
-                            'data-user="' . $userFullname . '" ' .
-                            'data-bank="' . $bankInfo . '" ' .
-                            'title="Duyệt chi trả chuyển khoản">' .
-                            '<i class="ti ti-check me-1"></i>Duyệt chi' .
-                        '</button>' .
-                        '<button type="button" class="btn btn-sm btn-outline-danger px-2 py-1 btn-reject-withdraw" ' .
-                            'data-id="' . $transaction->id . '" ' .
-                            'data-code="' . e($transaction->code) . '" ' .
-                            'data-amount="' . $amountFmt . '" ' .
-                            'data-user="' . $userFullname . '" ' .
-                            'title="Từ chối lệnh rút và hoàn lại ví">' .
-                            '<i class="ti ti-x me-1"></i>Từ chối' .
-                        '</button>' .
-                    '</div>';
-                }
-                if ($transaction->status === TransactionStatus::Confirmed) {
-                    $note = e($transaction->admin_note ?? 'Đã chi trả thành công');
-                    return '<span class="badge bg-success-lt text-success px-2 py-1" title="' . $note . '"><i class="ti ti-check-double me-1"></i>Đã chi trả</span>';
-                }
-                if ($transaction->status === TransactionStatus::Refunded) {
-                    $reason = e($transaction->admin_note ?? 'Đã hoàn ví');
-                    return '<span class="badge bg-danger-lt text-danger px-2 py-1" title="' . $reason . '"><i class="ti ti-arrow-back-up me-1"></i>Đã hoàn ví</span>';
-                }
-                return '<span class="text-muted fs-12">-</span>';
+                return view($this->view['action'], [
+                    'transaction' => $transaction,
+                ])->render();
             },
         ];
     }

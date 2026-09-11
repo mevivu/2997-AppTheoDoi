@@ -18,6 +18,9 @@ use App\Enums\Notification\NotificationStatus;
 use App\Enums\Notification\NotificationType;
 use App\Admin\Exel\Notification\NotificationTemplateExport;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Enums\Transaction\TransactionStatus;
+use App\Enums\Transaction\TransactionType;
+use App\Models\Transaction;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
@@ -171,13 +174,19 @@ class NotificationController extends Controller
     {
         $notifications = $this->service->getNotifications($request);
 
+        $pendingWithdrawCount = Transaction::where('type', TransactionType::Withdraw)
+            ->where('status', TransactionStatus::Pending)
+            ->count();
+
         if ($notifications) {
             return response()->json([
-                'notifications' => $notifications
+                'notifications' => $notifications,
+                'pending_withdraw_count' => $pendingWithdrawCount,
             ]);
         }
         return response()->json([
             'notifications' => [],
+            'pending_withdraw_count' => $pendingWithdrawCount,
             'errors' => ['Specific condition is not met']
         ], 422);
     }

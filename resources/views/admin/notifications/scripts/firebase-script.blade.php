@@ -231,12 +231,35 @@
                 type: 'GET',
                 success: function(data) {
                     renderNotifications(data.notifications);
+                    updateSidebarBadge('.withdraw-badge-counter', '.withdraw-mini-dot', data.pending_withdraw_count);
                 },
                 error: function(error) {
                     handleAjaxError(error)
                     console.error('Error fetching notifications:', error);
                 }
             });
+        }
+
+        function updateSidebarBadge(selector, miniDotSelector, count) {
+            if (typeof count === 'undefined') return;
+            const $badge = $(selector);
+            const $miniDot = miniDotSelector ? $(miniDotSelector) : null;
+
+            if (count > 0) {
+                if ($badge.length) {
+                    $badge.text(count > 99 ? '99+' : count).removeClass('d-none').show();
+                }
+                if ($miniDot && $miniDot.length) {
+                    $miniDot.removeClass('d-none');
+                }
+            } else {
+                if ($badge.length) {
+                    $badge.addClass('d-none').hide();
+                }
+                if ($miniDot && $miniDot.length) {
+                    $miniDot.addClass('d-none');
+                }
+            }
         }
 
         $('#message-box').on('hide.bs.dropdown', function() {

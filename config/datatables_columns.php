@@ -168,6 +168,7 @@ return [
             'title' => '<div class="header-cell-content"><i class="ti ti-code"></i><span>Mã yêu cầu</span></div>',
             'addClass' => 'text-center align-middle',
             'orderable' => false,
+            'width' => '130px',
         ],
         'user_id' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-user"></i><span>Đối tác</span></div>',
@@ -176,7 +177,7 @@ return [
         ],
         'amount' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-currency-dollar"></i><span>Số tiền rút</span></div>',
-            'width' => '150px',
+            'width' => '120px',
             'addClass' => 'text-center align-middle',
             'orderable' => false,
         ],
@@ -189,15 +190,17 @@ return [
             'title' => '<div class="header-cell-content"><i class="ti ti-calendar-event"></i><span>Đợt chi trả Thứ 5</span></div>',
             'addClass' => 'text-center align-middle',
             'orderable' => false,
+            'width' => '135px',
         ],
         'status' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-info-small"></i><span>Trạng thái</span></div>',
             'orderable' => false,
             'addClass' => 'text-center align-middle',
+            'width' => '110px',
         ],
         'created_at' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Ngày yêu cầu</span></div>',
-            'width' => '150px',
+            'width' => '140px',
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
@@ -207,6 +210,7 @@ return [
             'exportable' => false,
             'printable' => false,
             'addClass' => 'text-center align-middle text-nowrap',
+            'width' => '170px',
         ],
     ],
     'eq' => [

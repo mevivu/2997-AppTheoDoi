@@ -65,4 +65,8 @@ return [
         'title' => 'Yêu cầu rút tiền bị từ chối',
         'message' => 'Lệnh rút tiền {code} ({amount}) đã bị từ chối. Lý do: {reason}. Số tiền {amount} đã được tự động hoàn lại vào ví hoa hồng của bạn.',
     ],
+    'affiliate_withdraw_requested_admin' => [
+        'title' => 'Yêu cầu rút tiền hoa hồng mới',
+        'message' => 'Đối tác {fullname} vừa tạo yêu cầu rút tiền hoa hồng {amount} về {bank_name} (STK: {bank_account_number}). Mã GD: {code}.',
+    ],
 ];

@@ -101,15 +101,28 @@
                             } else {
                                 $parentHref = $item['routeName'] ? $routeName($item['routeName'], $item['param'] ?? []) : '#';
                             }
+                            $isTransactionParent = ($item['title'] === 'Giao dịch') || (isset($item['sub']) && collect($item['sub'])->contains('routeName', RouteAdminSystem::TRANSACTION_WITHDRAW));
                         @endphp
 
                         <x-admin-item-link-sidebar-left class="menu-link" :href="$parentHref" :dropdown="false">
                             <span class="menu-icon position-relative">
                                 {!! __($item['icon']) !!}
+                                @if ($isTransactionParent)
+                                    <span class="mini-badge-dot withdraw-mini-dot {{ (!empty($pendingWithdrawCount) && $pendingWithdrawCount > 0) ? '' : 'd-none' }}"></span>
+                                @endif
                             </span>
                             <span class="menu-title">{{ __($displayTitle) }}</span>
 
                             <div class="menu-right-actions ms-auto d-flex align-items-center">
+                                @if ($isTransactionParent)
+                                    <span
+                                        class="badge bg-danger rounded-pill px-2 py-1 fs-11 fw-bold sidebar-badge-counter withdraw-badge-counter shadow-sm {{ (!empty($pendingWithdrawCount) && $pendingWithdrawCount > 0) ? '' : 'd-none' }}"
+                                        title="{{ __('Có :count yêu cầu rút tiền chờ duyệt', ['count' => $pendingWithdrawCount ?? 0]) }}"
+                                        style="{{ (!empty($pendingWithdrawCount) && $pendingWithdrawCount > 0) ? '' : 'display: none !important;' }}">
+                                        {{ (!empty($pendingWithdrawCount) && $pendingWithdrawCount > 99) ? '99+' : ($pendingWithdrawCount ?? 0) }}
+                                    </span>
+                                @endif
+
                                 <span class="arrow-slot text-end">
                                     @if ($hasSub)
                                         <i class="ti ti-chevron-right submenu-arrow"></i>
@@ -132,6 +145,14 @@
                                                     </span>
                                                     <span
                                                         class="submenu-text me-auto">{{ __($subItem['title']) }}</span>
+                                                    @if (isset($subItem['routeName']) && $subItem['routeName'] === RouteAdminSystem::TRANSACTION_WITHDRAW)
+                                                        <span
+                                                            class="badge bg-danger rounded-pill px-2 py-1 fs-11 fw-bold sidebar-badge-counter withdraw-badge-counter shadow-sm ms-3 {{ (!empty($pendingWithdrawCount) && $pendingWithdrawCount > 0) ? '' : 'd-none' }}"
+                                                            title="{{ __('Có :count yêu cầu rút tiền chờ duyệt', ['count' => $pendingWithdrawCount ?? 0]) }}"
+                                                            style="{{ (!empty($pendingWithdrawCount) && $pendingWithdrawCount > 0) ? '' : 'display: none !important;' }}">
+                                                            {{ (!empty($pendingWithdrawCount) && $pendingWithdrawCount > 99) ? '99+' : ($pendingWithdrawCount ?? 0) }}
+                                                        </span>
+                                                    @endif
                                                 </x-admin-item-link-sidebar-left>
                                             </li>
                                         @endif
@@ -183,6 +204,28 @@
         justify-content: flex-end;
         flex-shrink: 0;
         margin-left: auto;
+    }
+
+    .sidebar-badge-counter,
+    .sidebar .badge.bg-danger {
+        background: #ef4444 !important;
+        color: #ffffff !important;
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        min-width: 20px !important;
+        height: 20px !important;
+        padding: 0 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 10px !important;
+        box-shadow: 0 2px 5px rgba(239, 68, 68, 0.3) !important;
+        line-height: 1 !important;
+        margin: 0 !important;
+        flex-shrink: 0 !important;
+    }
+    .sidebar-badge-counter.d-none {
+        display: none !important;
     }
 
     .sidebar {
@@ -458,7 +501,29 @@
     body.sidebar-mini .menu-title,
     body.sidebar-mini .submenu-arrow,
     body.sidebar-mini .menu-right-actions,
+    body.sidebar-mini .sidebar-badge-counter,
     body.sidebar-mini .sidebar-heading {
+        display: none !important;
+    }
+
+    /* Smart Notification Dot for Mini Mode */
+    .mini-badge-dot {
+        display: none;
+    }
+    body.sidebar-mini .mini-badge-dot {
+        display: block !important;
+        position: absolute;
+        top: -1px;
+        right: -1px;
+        width: 8px;
+        height: 8px;
+        background-color: #ef4444;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.4);
+        z-index: 5;
+    }
+    body.sidebar-mini .mini-badge-dot.d-none {
         display: none !important;
     }
 
