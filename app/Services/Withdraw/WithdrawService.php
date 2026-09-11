@@ -2,19 +2,25 @@
 
 namespace App\Services\Withdraw;
 
+use App\Enums\Notification\MessageType;
 use App\Enums\Transaction\TransactionEnumService;
 use App\Enums\Transaction\TransactionStatus;
 use App\Enums\Transaction\TransactionType;
 use App\Models\AffiliateHistory;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Traits\NotifiesViaFirebase;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Throwable;
 
 class WithdrawService
 {
+    use NotifiesViaFirebase;
+
     /**
      * Lấy toàn bộ cấu hình rút tiền từ bảng settings
      */
@@ -186,23 +192,15 @@ class WithdrawService
     }
 
     /**
-     * Admin Duyệt chi trả giao dịch rút tiền (Chuyển sang Confirmed)
+     * Admin Duyệt chi trả giao dịch rút tiền (Chuyển sang Confirmed) và gửi thông báo đẩy
      */
     public function approveWithdraw(int $transactionId, $adminUser, ?string $note = null): Transaction
     {
-        return DB::transaction(function () use ($transactionId, $adminUser, $note) {
+        $transaction = DB::transaction(function () use ($transactionId, $adminUser, $note) {
             $transaction = Transaction::where('id', $transactionId)->lockForUpdate()->first();
 
-            if (!$transaction) {
-                throw new Exception('Không tìm thấy giao dịch.');
-            }
-
-            if ($transaction->type !== TransactionType::Withdraw) {
-                throw new Exception('Giao dịch này không phải là lệnh rút tiền.');
-            }
-
-            if ($transaction->status !== TransactionStatus::Pending) {
-                throw new Exception('Giao dịch này đã được xử lý trước đó (Trạng thái: ' . $transaction->status->label() . ').');
+            if (!$transaction || $transaction->status !== TransactionStatus::Pending) {
+                throw new Exception('Giao dịch không hợp lệ hoặc đã được xử lý.');
             }
 
             $transaction->status = TransactionStatus::Confirmed;
@@ -215,26 +213,23 @@ class WithdrawService
 
             return $transaction;
         });
+
+        // Gửi thông báo đẩy Firebase đến tài khoản đối tác
+        $this->notifyUserWithdrawApproved($transaction, $note);
+
+        return $transaction;
     }
 
     /**
-     * Admin Từ chối giao dịch rút tiền (Chuyển sang Refunded và hoàn trả tiền vào ví đối tác)
+     * Admin Từ chối giao dịch rút tiền (Chuyển sang Refunded, hoàn tiền vào ví) và gửi thông báo đẩy
      */
     public function rejectWithdraw(int $transactionId, $adminUser, string $reason): Transaction
     {
-        return DB::transaction(function () use ($transactionId, $adminUser, $reason) {
+        $transaction = DB::transaction(function () use ($transactionId, $adminUser, $reason) {
             $transaction = Transaction::where('id', $transactionId)->lockForUpdate()->first();
 
-            if (!$transaction) {
-                throw new Exception('Không tìm thấy giao dịch.');
-            }
-
-            if ($transaction->type !== TransactionType::Withdraw) {
-                throw new Exception('Giao dịch này không phải là lệnh rút tiền.');
-            }
-
-            if ($transaction->status !== TransactionStatus::Pending) {
-                throw new Exception('Giao dịch này đã được xử lý trước đó (Trạng thái: ' . $transaction->status->label() . ').');
+            if (!$transaction || $transaction->status !== TransactionStatus::Pending) {
+                throw new Exception('Giao dịch không hợp lệ hoặc đã được xử lý.');
             }
 
             $transaction->status = TransactionStatus::Refunded;
@@ -261,5 +256,95 @@ class WithdrawService
 
             return $transaction;
         });
+
+        // Gửi thông báo đẩy Firebase đến tài khoản đối tác
+        $this->notifyUserWithdrawRejected($transaction, $reason);
+
+        return $transaction;
+    }
+
+    /**
+     * Gửi thông báo đẩy khi lệnh rút tiền được duyệt chi trả
+     */
+    protected function notifyUserWithdrawApproved(Transaction $transaction, ?string $note = null): void
+    {
+        try {
+            $user = $transaction->user ?: User::find($transaction->user_id);
+            if (!$user) {
+                return;
+            }
+
+            $amountFmt = number_format((float) $transaction->amount, 0, ',', '.') . 'đ';
+            $title = config('notifications.affiliate_withdraw_approved.title', 'Chi trả hoa hồng thành công');
+            $messageTemplate = config(
+                'notifications.affiliate_withdraw_approved.message',
+                'Lệnh rút tiền {code} ({amount}) của bạn đã được chuyển khoản thành công vào tài khoản {bank_name} ({bank_account_number}).{note}'
+            );
+
+            $noteText = !empty($note) ? " Ghi chú/Biên lai: {$note}" : "";
+            $body = str_replace(
+                ['{code}', '{amount}', '{bank_name}', '{bank_account_number}', '{note}'],
+                [$transaction->code, $amountFmt, $transaction->bank_name ?? '', $transaction->bank_account_number ?? '', $noteText],
+                $messageTemplate
+            );
+
+            $this->sendFirebaseNotificationToUser(
+                $user,
+                $title,
+                $body,
+                MessageType::AFFILIATE,
+                [
+                    'type' => 'withdraw_approved',
+                    'transaction_id' => (string) $transaction->id,
+                    'code' => $transaction->code,
+                ]
+            );
+        } catch (Throwable $e) {
+            Log::error('Lỗi gửi Firebase notification khi duyệt rút tiền: ' . $e->getMessage(), [
+                'transaction_id' => $transaction->id,
+            ]);
+        }
+    }
+
+    /**
+     * Gửi thông báo đẩy khi lệnh rút tiền bị từ chối
+     */
+    protected function notifyUserWithdrawRejected(Transaction $transaction, string $reason): void
+    {
+        try {
+            $user = $transaction->user ?: User::find($transaction->user_id);
+            if (!$user) {
+                return;
+            }
+
+            $amountFmt = number_format((float) $transaction->amount, 0, ',', '.') . 'đ';
+            $title = config('notifications.affiliate_withdraw_rejected.title', 'Yêu cầu rút tiền bị từ chối');
+            $messageTemplate = config(
+                'notifications.affiliate_withdraw_rejected.message',
+                'Lệnh rút tiền {code} ({amount}) đã bị từ chối. Lý do: {reason}. Số tiền {amount} đã được tự động hoàn lại vào ví hoa hồng của bạn.'
+            );
+
+            $body = str_replace(
+                ['{code}', '{amount}', '{reason}'],
+                [$transaction->code, $amountFmt, $reason],
+                $messageTemplate
+            );
+
+            $this->sendFirebaseNotificationToUser(
+                $user,
+                $title,
+                $body,
+                MessageType::AFFILIATE,
+                [
+                    'type' => 'withdraw_rejected',
+                    'transaction_id' => (string) $transaction->id,
+                    'code' => $transaction->code,
+                ]
+            );
+        } catch (Throwable $e) {
+            Log::error('Lỗi gửi Firebase notification khi từ chối rút tiền: ' . $e->getMessage(), [
+                'transaction_id' => $transaction->id,
+            ]);
+        }
     }
 }

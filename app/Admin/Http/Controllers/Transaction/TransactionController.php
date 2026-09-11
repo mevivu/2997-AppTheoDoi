@@ -9,11 +9,12 @@ use App\Admin\Repositories\Transaction\TransactionRepositoryInterface;
 use App\Admin\Services\Transaction\TransactionServiceInterface;
 use App\Services\Withdraw\WithdrawService;
 use App\Traits\ResponseController;
+use App\Admin\Http\Requests\Transaction\ApproveWithdrawRequest;
+use App\Admin\Http\Requests\Transaction\RejectWithdrawRequest;
+use App\Traits\RouteAdminSystem;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
-use App\Traits\RouteAdminSystem;
 
 class TransactionController extends Controller
 {
@@ -81,7 +82,7 @@ class TransactionController extends Controller
     /**
      * Admin Duyệt chi trả giao dịch rút tiền hoa hồng
      */
-    public function approveWithdraw(Request $request, int $id): JsonResponse
+    public function approveWithdraw(ApproveWithdrawRequest $request, int $id): JsonResponse
     {
         try {
             $note = $request->input('note');
@@ -103,15 +104,9 @@ class TransactionController extends Controller
     /**
      * Admin Từ chối giao dịch rút tiền và hoàn tiền vào ví đối tác
      */
-    public function rejectWithdraw(Request $request, int $id): JsonResponse
+    public function rejectWithdraw(RejectWithdrawRequest $request, int $id): JsonResponse
     {
         try {
-            $request->validate([
-                'reason' => 'required|string|max:500',
-            ], [
-                'reason.required' => 'Vui lòng nhập lý do từ chối để đối tác nắm thông tin.',
-            ]);
-
             $reason = $request->input('reason');
             $admin = auth('admin')->user();
             $transaction = $this->withdrawService->rejectWithdraw($id, $admin, $reason);

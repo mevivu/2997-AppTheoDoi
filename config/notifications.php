@@ -57,4 +57,12 @@ return [
         'title' => 'Chào mừng bạn đến với CHĂM CON 360!',
         'message' => "Xin chào {fullname}!\n\nChúc mừng bạn đã gia nhập đại gia đình CHĂM CON 360 – người bạn đồng hành tin cậy trên hành trình nuôi dưỡng và chăm sóc bé yêu phát triển toàn diện.\n\nTại đây, bạn có thể dễ dàng theo dõi các chỉ số tăng trưởng, lịch tiêm chủng, cẩm nang sức khỏe và nhận nhiều ưu đãi hấp dẫn. Chúc bạn và bé yêu luôn có những trải nghiệm thật tuyệt vời cùng CHĂM CON 360!",
     ],
+    'affiliate_withdraw_approved' => [
+        'title' => 'Chi trả hoa hồng thành công',
+        'message' => 'Lệnh rút tiền {code} ({amount}) của bạn đã được chuyển khoản thành công vào tài khoản {bank_name} ({bank_account_number}).{note}',
+    ],
+    'affiliate_withdraw_rejected' => [
+        'title' => 'Yêu cầu rút tiền bị từ chối',
+        'message' => 'Lệnh rút tiền {code} ({amount}) đã bị từ chối. Lý do: {reason}. Số tiền {amount} đã được tự động hoàn lại vào ví hoa hồng của bạn.',
+    ],
 ];
