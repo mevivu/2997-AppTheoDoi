@@ -62,8 +62,18 @@ class User extends Authenticatable implements JWTSubject
         'active',
         /** Ảnh đại diện */
         'avatar',
-        /** ID ngân hàng */
+        /** Trạng thái */
         'status',
+        /** ID ngân hàng liên kết */
+        'bank_id',
+        /** Mã ngân hàng (VCB, MB, TCB...) */
+        'bank_code',
+        /** Tên ngân hàng */
+        'bank_name',
+        /** Số tài khoản ngân hàng */
+        'bank_account_number',
+        /** Tên chủ tài khoản */
+        'bank_account_name',
         /** Hình thức đăng ký (Email, Google, Apple) */
         'service_type',
         /** Apple ID */
@@ -203,6 +213,11 @@ class User extends Authenticatable implements JWTSubject
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'user_id');
+    }
+
+    public function bank(): BelongsTo
+    {
+        return $this->belongsTo(Bank::class, 'bank_id');
     }
 
 

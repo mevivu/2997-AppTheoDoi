@@ -95,12 +95,36 @@ class WithdrawService
     {
         $config = $this->getWithdrawSettings();
 
-        // Lấy thông tin tài khoản ngân hàng từ giao dịch rút tiền gần nhất qua repository
-        $lastWithdraw = $this->transactionRepository
-            ->getQueryBuilderOrderBy('id', 'desc')
-            ->where('user_id', $user->id)
-            ->where('type', TransactionType::Withdraw)
-            ->first();
+        // Ưu tiên 1: Lấy thông tin ngân hàng đã cấu hình sẵn trong hồ sơ User
+        $savedBank = null;
+        if (!empty($user->bank_account_number)) {
+            $savedBank = [
+                'bank_id' => $user->bank_id,
+                'bank_code' => $user->bank_code,
+                'bank_name' => $user->bank_name,
+                'bank_account_number' => $user->bank_account_number,
+                'bank_account_name' => $user->bank_account_name,
+                'bank_logo' => $user->bank?->logo,
+            ];
+        } else {
+            // Ưu tiên 2: Fallback lấy thông tin tài khoản ngân hàng từ giao dịch rút tiền gần nhất
+            $lastWithdraw = $this->transactionRepository
+                ->getQueryBuilderOrderBy('id', 'desc')
+                ->where('user_id', $user->id)
+                ->where('type', TransactionType::Withdraw)
+                ->first();
+
+            if ($lastWithdraw) {
+                $savedBank = [
+                    'bank_id' => null,
+                    'bank_code' => null,
+                    'bank_name' => $lastWithdraw->bank_name,
+                    'bank_account_number' => $lastWithdraw->bank_account_number,
+                    'bank_account_name' => $lastWithdraw->bank_account_name,
+                    'bank_logo' => null,
+                ];
+            }
+        }
 
         $currentBalance = (float) ($user->wallet_balance ?? 0);
         $isEligible = $currentBalance >= $config['min_balance'];
@@ -117,11 +141,7 @@ class WithdrawService
             'max_withdrawable' => $maxWithdrawable,
             'max_withdrawable_formatted' => number_format($maxWithdrawable, 0, ',', '.') . 'đ',
             'banks' => $this->bankRepository->getAllBanks(),
-            'saved_bank' => $lastWithdraw ? [
-                'bank_name' => $lastWithdraw->bank_name,
-                'bank_account_number' => $lastWithdraw->bank_account_number,
-                'bank_account_name' => $lastWithdraw->bank_account_name,
-            ] : null,
+            'saved_bank' => $savedBank,
         ]);
     }
 
@@ -156,11 +176,23 @@ class WithdrawService
             // Sinh mã giao dịch duy nhất
             $code = 'WD' . date('Ymd') . strtoupper(Str::random(5));
 
-            // Trừ tiền khỏi ví khả dụng của đối tác qua repository
+            // Trừ tiền khỏi ví khả dụng của đối tác qua repository và lưu thông tin ngân hàng nếu user chưa cấu hình
             $newBalance = $currentBalance - $amount;
-            $this->userRepository->update($lockedUser->id, [
+            $userUpdateData = [
                 'wallet_balance' => $newBalance,
-            ]);
+            ];
+            if (empty($lockedUser->bank_account_number)) {
+                $userUpdateData['bank_name'] = $data['bank_name'] ?? null;
+                $userUpdateData['bank_account_number'] = $data['bank_account_number'] ?? null;
+                $userUpdateData['bank_account_name'] = $data['bank_account_name'] ?? null;
+                if (!empty($data['bank_id'])) {
+                    $userUpdateData['bank_id'] = $data['bank_id'];
+                }
+                if (!empty($data['bank_code'])) {
+                    $userUpdateData['bank_code'] = $data['bank_code'];
+                }
+            }
+            $this->userRepository->update($lockedUser->id, $userUpdateData);
 
             // Ghi nhận biến động ví vào affiliate_histories qua repository
             $this->affiliateHistoryRepository->create([

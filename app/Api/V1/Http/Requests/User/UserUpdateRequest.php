@@ -57,6 +57,11 @@ class UserUpdateRequest extends BaseRequest
             'mother_name' => ['nullable', 'string'],
             'mother_height' => ['nullable', 'integer', 'min:0'],
             'mother_birthday' => ['nullable', 'date_format:Y-m-d'],
+            'bank_id' => ['nullable', 'integer', 'exists:banks,id'],
+            'bank_code' => ['nullable', 'string', 'max:50'],
+            'bank_name' => ['nullable', 'string', 'max:150'],
+            'bank_account_number' => ['nullable', 'string', 'max:50'],
+            'bank_account_name' => ['nullable', 'string', 'max:150'],
 
         ];
     }
