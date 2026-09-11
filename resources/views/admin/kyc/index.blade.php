@@ -460,28 +460,82 @@
             document.getElementById('previewImageTarget').style.transform = `rotate(${currentRotation}deg)`;
         }
 
-        // Mở modal Duyệt CCCD
-        function openApproveKycModal(userId, partnerName, taxCode, bankHolder) {
+        // Mở modal Duyệt CCCD (hỗ trợ cả inline onclick(this) và function call)
+        window.openApproveKycModal = function (target, partnerName, taxCode, bankHolder) {
+            var userId = target;
+            if (typeof target === 'object' && target !== null) {
+                var $el = $(target);
+                userId = $el.data('id');
+                partnerName = $el.data('fullname');
+                taxCode = $el.data('tax');
+                bankHolder = $el.data('bank');
+            }
+
             document.getElementById('approveUserId').value = userId;
-            document.getElementById('approvePartnerName').textContent = partnerName;
-            document.getElementById('approveTaxCode').textContent = taxCode;
-            document.getElementById('approveBankHolder').textContent = bankHolder;
+            document.getElementById('approvePartnerName').textContent = partnerName || '-';
+            document.getElementById('approveTaxCode').textContent = taxCode || '-';
+            document.getElementById('approveBankHolder').textContent = bankHolder || '-';
 
-            const modal = new bootstrap.Modal(document.getElementById('modalApproveKyc'));
-            modal.show();
-        }
+            var modalEl = document.getElementById('modalApproveKyc');
+            if (modalEl) {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.show();
+                } else if (typeof $(modalEl).modal === 'function') {
+                    $(modalEl).modal('show');
+                }
+            }
+        };
 
-        // Mở modal Từ chối CCCD
-        function openRejectKycModal(userId, partnerName) {
+        // Mở modal Từ chối CCCD (hỗ trợ cả inline onclick(this) và function call)
+        window.openRejectKycModal = function (target, partnerName) {
+            var userId = target;
+            if (typeof target === 'object' && target !== null) {
+                var $el = $(target);
+                userId = $el.data('id');
+                partnerName = $el.data('fullname');
+            }
+
             document.getElementById('rejectUserId').value = userId;
-            document.getElementById('rejectPartnerName').textContent = partnerName;
+            document.getElementById('rejectPartnerName').textContent = partnerName || '-';
             document.getElementById('rejectReason').value = '';
 
             // Reset chips
             document.querySelectorAll('.reject-reason-chip').forEach(c => c.classList.remove('active'));
 
-            const modal = new bootstrap.Modal(document.getElementById('modalRejectKyc'));
-            modal.show();
+            var modalEl = document.getElementById('modalRejectKyc');
+            if (modalEl) {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.show();
+                } else if (typeof $(modalEl).modal === 'function') {
+                    $(modalEl).modal('show');
+                }
+            }
+        };
+
+        function hideApproveKycModal() {
+            var modalEl = document.getElementById('modalApproveKyc');
+            if (modalEl) {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                } else if (typeof $(modalEl).modal === 'function') {
+                    $(modalEl).modal('hide');
+                }
+            }
+        }
+
+        function hideRejectKycModal() {
+            var modalEl = document.getElementById('modalRejectKyc');
+            if (modalEl) {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                } else if (typeof $(modalEl).modal === 'function') {
+                    $(modalEl).modal('hide');
+                }
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -499,6 +553,14 @@
                 });
             });
 
+            // Sự kiện click mở modal Duyệt CCCD (dự phòng)
+            $(document).on('click', '.btn-approve-kyc, .btn-action-approve', function (e) {
+                if (!$(this).attr('onclick')) {
+                    e.preventDefault();
+                    window.openApproveKycModal(this);
+                }
+            });
+
             // Submit Phê Duyệt CCCD via AJAX
             document.getElementById('formApproveKyc').addEventListener('submit', function (e) {
                 e.preventDefault();
@@ -513,7 +575,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="X-TOKEN"]')?.getAttribute('content') || '{{ csrf_token() }}'
                     }
                 })
                 .then(res => res.json())
@@ -522,9 +584,17 @@
                     spinner.classList.add('d-none');
 
                     if (data.status === 200 || data.success) {
-                        bootstrap.Modal.getInstance(document.getElementById('modalApproveKyc'))?.hide();
+                        hideApproveKycModal();
                         if (typeof msgSuccess === 'function') {
-                            msgSuccess(data.message || 'Phê duyệt thành công!');
+                            msgSuccess(data.message || '{{ __("Phê duyệt thành công!") }}');
+                        } else if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '{{ __("Thành công") }}',
+                                text: data.message || '{{ __("Phê duyệt thành công!") }}',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
                         } else {
                             alert(data.message || 'Phê duyệt thành công!');
                         }
@@ -535,14 +605,33 @@
                             location.reload();
                         }
                     } else {
-                        alert(data.message || 'Có lỗi xảy ra.');
+                        var errMsg = data.message || '{{ __("Có lỗi xảy ra.") }}';
+                        if (typeof msgError === 'function') {
+                            msgError(errMsg);
+                        } else if (typeof Swal !== 'undefined') {
+                            Swal.fire({ icon: 'error', title: '{{ __("Lỗi") }}', text: errMsg });
+                        } else {
+                            alert(errMsg);
+                        }
                     }
                 })
                 .catch(err => {
                     btn.disabled = false;
                     spinner.classList.add('d-none');
-                    alert('Lỗi kết nối máy chủ.');
+                    if (typeof msgError === 'function') {
+                        msgError('{{ __("Lỗi kết nối máy chủ.") }}');
+                    } else {
+                        alert('Lỗi kết nối máy chủ.');
+                    }
                 });
+            });
+
+            // Sự kiện click mở modal Từ chối CCCD (dự phòng)
+            $(document).on('click', '.btn-reject-kyc, .btn-action-reject', function (e) {
+                if (!$(this).attr('onclick')) {
+                    e.preventDefault();
+                    window.openRejectKycModal(this);
+                }
             });
 
             // Submit Từ Chối CCCD via AJAX
@@ -554,7 +643,13 @@
                 const spinner = btn.querySelector('.spinner-border');
 
                 if (!reason) {
-                    alert('Vui lòng nhập lý do từ chối.');
+                    if (typeof msgError === 'function') {
+                        msgError('{{ __("Vui lòng nhập lý do từ chối.") }}');
+                    } else if (typeof Swal !== 'undefined') {
+                        Swal.fire({ icon: 'warning', title: '{{ __("Chú ý") }}', text: '{{ __("Vui lòng nhập lý do từ chối.") }}' });
+                    } else {
+                        alert('Vui lòng nhập lý do từ chối.');
+                    }
                     return;
                 }
 
@@ -565,7 +660,7 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="X-TOKEN"]')?.getAttribute('content') || '{{ csrf_token() }}'
                     },
                     body: JSON.stringify({ reason: reason })
                 })
@@ -575,9 +670,17 @@
                     spinner.classList.add('d-none');
 
                     if (data.status === 200 || data.success) {
-                        bootstrap.Modal.getInstance(document.getElementById('modalRejectKyc'))?.hide();
+                        hideRejectKycModal();
                         if (typeof msgSuccess === 'function') {
-                            msgSuccess(data.message || 'Từ chối hồ sơ thành công!');
+                            msgSuccess(data.message || '{{ __("Từ chối hồ sơ thành công!") }}');
+                        } else if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '{{ __("Thành công") }}',
+                                text: data.message || '{{ __("Từ chối hồ sơ thành công!") }}',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
                         } else {
                             alert(data.message || 'Từ chối hồ sơ thành công!');
                         }
@@ -588,13 +691,24 @@
                             location.reload();
                         }
                     } else {
-                        alert(data.message || 'Có lỗi xảy ra.');
+                        var errMsg = data.message || '{{ __("Có lỗi xảy ra.") }}';
+                        if (typeof msgError === 'function') {
+                            msgError(errMsg);
+                        } else if (typeof Swal !== 'undefined') {
+                            Swal.fire({ icon: 'error', title: '{{ __("Lỗi") }}', text: errMsg });
+                        } else {
+                            alert(errMsg);
+                        }
                     }
                 })
                 .catch(err => {
                     btn.disabled = false;
                     spinner.classList.add('d-none');
-                    alert('Lỗi kết nối máy chủ.');
+                    if (typeof msgError === 'function') {
+                        msgError('{{ __("Lỗi kết nối máy chủ.") }}');
+                    } else {
+                        alert('Lỗi kết nối máy chủ.');
+                    }
                 });
             });
         });

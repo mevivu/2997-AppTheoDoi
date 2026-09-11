@@ -8,8 +8,12 @@
     {{-- Nút Duyệt CCCD --}}
     @if ($status !== KycStatus::APPROVED && $hasCards)
         <button type="button" 
-                class="btn-action-kyc btn-action-approve"
-                onclick="openApproveKycModal('{{ $user->id }}', '{{ addslashes($user->fullname ?? '#' . $user->id) }}', '{{ $user->tax_code ?? '-' }}', '{{ addslashes($user->bank_account_name ?? '-') }}')"
+                class="btn-action-kyc btn-action-approve btn-approve-kyc"
+                data-id="{{ $user->id }}"
+                data-fullname="{{ $user->fullname ?? '#' . $user->id }}"
+                data-tax="{{ $user->tax_code ?? '-' }}"
+                data-bank="{{ $user->bank_account_name ?? '-' }}"
+                onclick="openApproveKycModal(this)"
                 title="{{ __('Phê duyệt xác minh CCCD') }}">
             <i class="ti ti-check"></i>
             <span>{{ __('Duyệt') }}</span>
@@ -23,8 +27,10 @@
     {{-- Nút Từ chối CCCD --}}
     @if ($status !== KycStatus::REJECTED && $hasCards)
         <button type="button" 
-                class="btn-action-kyc btn-action-reject"
-                onclick="openRejectKycModal('{{ $user->id }}', '{{ addslashes($user->fullname ?? '#' . $user->id) }}')"
+                class="btn-action-kyc btn-action-reject btn-reject-kyc"
+                data-id="{{ $user->id }}"
+                data-fullname="{{ $user->fullname ?? '#' . $user->id }}"
+                onclick="openRejectKycModal(this)"
                 title="{{ __('Từ chối hồ sơ CCCD') }}">
             <i class="ti ti-x"></i>
             <span>{{ __('Từ chối') }}</span>
