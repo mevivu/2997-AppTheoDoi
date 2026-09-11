@@ -219,7 +219,7 @@
                     <span>Thống Kê Doanh Thu Đối Tác</span>
                 </h1>
                 <p class="text-muted mb-0 font-weight-medium">
-                    Theo dõi và xếp hạng các tài khoản mẹ giới thiệu có doanh thu tốt nhất từ người dùng F1 mua gói dịch vụ
+                    Theo dõi và xếp hạng các tài khoản mẹ giới thiệu có doanh thu tốt nhất từ người dùng mua gói dịch vụ
                 </p>
             </div>
             <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -308,7 +308,7 @@
 
         <!-- 4 Khối Thẻ Chỉ Số KPI -->
         <div class="row g-3 mb-4">
-            <!-- KPI 1: Tổng Doanh Thu F1 -->
+            <!-- KPI 1: Tổng Doanh Thu Giới Thiệu -->
             <div class="col-12 col-sm-6 col-xl-3">
                 <div class="card card-kpi h-100 p-3 d-flex flex-column justify-content-between">
                     <div>
@@ -364,7 +364,7 @@
                 <div class="card card-kpi h-100 p-3 d-flex flex-column justify-content-between">
                     <div>
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="kpi-label">ĐƠN MUA GÓI (F1)</span>
+                            <span class="kpi-label">ĐƠN MUA GÓI</span>
                             <div class="kpi-icon-box bg-indigo-lt text-indigo">
                                 <i class="ti ti-shopping-cart"></i>
                             </div>
@@ -410,7 +410,7 @@
                             <h3 class="card-title font-weight-bold mb-0">
                                 <i class="ti ti-chart-line text-primary me-2"></i>Xu hướng Doanh thu Affiliate
                             </h3>
-                            <div class="text-muted fs-12 mt-1">Doanh thu phát sinh và số lượng đơn mua gói F1 theo các mốc thời gian</div>
+                            <div class="text-muted fs-12 mt-1">Doanh thu phát sinh và số lượng đơn mua gói theo các mốc thời gian</div>
                         </div>
                     </div>
                     <div class="card-body position-relative">
@@ -450,7 +450,7 @@
                     <h3 class="card-title font-weight-bold mb-0">
                         <i class="ti ti-chart-bar text-warning me-2"></i>Top 10 Đối Tác Dẫn Đầu Doanh Thu
                     </h3>
-                    <div class="text-muted fs-12 mt-1">Các đối tác mang lại doanh số F1 cao nhất trong kỳ</div>
+                    <div class="text-muted fs-12 mt-1">Các đối tác mang lại doanh số cao nhất trong kỳ</div>
                 </div>
             </div>
             <div class="card-body position-relative">
@@ -481,7 +481,7 @@
                             <th class="w-1 text-center font-weight-bold"># Hạng</th>
                             <th class="font-weight-bold" style="min-width: 200px;">Đối tác</th>
                             <th class="font-weight-bold text-center">Cấp bậc</th>
-                            <th class="text-center font-weight-bold">Số F1 (Kỳ / Tổng)</th>
+                            <th class="text-center font-weight-bold">Giới thiệu (Kỳ / Tổng)</th>
                             <th class="text-center font-weight-bold">Đơn mua gói</th>
                             <th class="text-end font-weight-bold" style="min-width: 150px;">Doanh thu trong kỳ</th>
                             <th class="text-end font-weight-bold" style="min-width: 150px;">Doanh số tích lũy</th>
@@ -549,7 +549,7 @@
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-outline-primary btn-view-f1 rounded-pill px-2.5" 
                                             data-partner-id="{{ $item['id'] }}" 
-                                            title="Xem danh sách F1 & Đơn hàng">
+                                            title="Xem chi tiết đơn hàng & thành viên giới thiệu">
                                         <i class="ti ti-eye"></i>
                                     </button>
                                 </td>
@@ -570,14 +570,14 @@
     </div>
 </div>
 
-<!-- Modal Xem Chi Tiết F1 Của Đối Tác -->
+<!-- Modal Xem Chi Tiết Đối Tác -->
 <div class="modal modal-blur fade" id="modal-partner-details" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <div class="modal-header border-bottom bg-light">
                 <h5 class="modal-title font-weight-bold d-flex align-items-center gap-2">
                     <i class="ti ti-user-check text-primary"></i>
-                    <span>Chi Tiết Đơn Hàng F1 Của Đối Tác</span>
+                    <span>Chi Tiết Đơn Hàng Của Đối Tác</span>
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -674,7 +674,7 @@
 
         // Chuỗi 1: Cột Doanh số (Columns)
         trendSeriesSales = trendChart.series.push(am5xy.ColumnSeries.new(trendRoot, {
-            name: "Doanh thu F1 (VNĐ)",
+            name: "Doanh thu (VNĐ)",
             xAxis: trendXAxis,
             yAxis: trendYAxis,
             valueYField: "sales",
@@ -986,7 +986,7 @@
                 '<td class="text-end text-muted font-weight-medium">' + Number(item.total_sales).toLocaleString('vi-VN') + 'đ</td>' +
                 '<td class="text-end font-weight-bold text-teal">' + Number(item.wallet_balance).toLocaleString('vi-VN') + 'đ</td>' +
                 '<td class="text-center">' +
-                    '<button type="button" class="btn btn-sm btn-outline-primary btn-view-f1 rounded-pill px-2.5" data-partner-id="' + item.id + '" title="Xem danh sách F1 & Đơn hàng">' +
+                    '<button type="button" class="btn btn-sm btn-outline-primary btn-view-f1 rounded-pill px-2.5" data-partner-id="' + item.id + '" title="Xem chi tiết đơn hàng & thành viên giới thiệu">' +
                         '<i class="ti ti-eye"></i>' +
                     '</button>' +
                 '</td>' +
@@ -1073,7 +1073,7 @@
             refreshData();
         });
 
-        // Event Xem Chi Tiết F1 Modal
+        // Event Xem Chi Tiết Đối Tác Modal
         $(document).on('click', '.btn-view-f1', function() {
             var partnerId = $(this).data('partner-id');
             var modal = $('#modal-partner-details');
@@ -1093,56 +1093,142 @@
                 success: function(res) {
                     if (res.status === 'success') {
                         var p = res.data.partner;
-                        var orders = res.data.orders;
-                        var periodSalesFormatted = res.data.period_sales_formatted;
+                        var orders = res.data.orders || [];
+                        var referrals = res.data.referrals || [];
+                        var periodSalesFormatted = res.data.period_sales_formatted || '0đ';
+                        var dateRangeLabel = res.data.date_range_label || 'Kỳ đang chọn';
+                        var totalReferrals = p.total_referrals_count !== undefined ? p.total_referrals_count : (p.total_f1_count || referrals.length);
 
+                        // Card thông tin đối tác & Chỉ số doanh thu
                         var html = '<div class="card p-3 bg-light border mb-4">' +
-                            '<div class="d-flex align-items-center justify-content-between flex-wrap gap-2">' +
-                                '<div>' +
-                                    '<h4 class="mb-1 font-weight-bold text-dark">' + p.fullname + ' <span class="badge bg-secondary-lt font-monospace ms-1">' + p.affiliate_code + '</span></h4>' +
-                                    '<div class="text-muted fs-13 d-flex align-items-center gap-3">' +
-                                        '<span><i class="ti ti-phone"></i> ' + p.phone + '</span>' +
-                                        '<span><i class="ti ti-mail"></i> ' + p.email + '</span>' +
-                                        '<span><i class="ti ti-users"></i> Tổng ' + p.total_f1_count + ' F1</span>' +
+                            '<div class="row align-items-center g-3">' +
+                                '<div class="col-12 col-md-7">' +
+                                    '<div class="d-flex align-items-center gap-2 mb-1 flex-wrap">' +
+                                        '<h4 class="mb-0 font-weight-bold text-dark">' + p.fullname + '</h4>' +
+                                        '<span class="badge bg-secondary-lt font-monospace">' + p.affiliate_code + '</span>' +
+                                        '<span class="badge ' + p.rank_badge + ' font-weight-bold">' + p.rank_name + '</span>' +
+                                    '</div>' +
+                                    '<div class="text-muted fs-13 d-flex align-items-center flex-wrap gap-3 mt-1">' +
+                                        '<span><i class="ti ti-phone text-muted me-1"></i>' + p.phone + '</span>' +
+                                        '<span><i class="ti ti-mail text-muted me-1"></i>' + p.email + '</span>' +
+                                        '<span><i class="ti ti-users text-muted me-1"></i>Tổng ' + totalReferrals + ' thành viên</span>' +
                                     '</div>' +
                                 '</div>' +
-                                '<div class="text-end">' +
-                                    '<span class="badge ' + p.rank_badge + ' fs-13 px-2.5 py-1.5 font-weight-bold mb-1 d-inline-block">' + p.rank_name + '</span>' +
-                                    '<div class="fs-12 text-muted">Doanh số trong kỳ: <strong class="text-success">' + periodSalesFormatted + '</strong></div>' +
+                                '<div class="col-12 col-md-5">' +
+                                    '<div class="row g-2 text-center">' +
+                                        '<div class="col-6">' +
+                                            '<div class="bg-white border rounded p-2">' +
+                                                '<div class="text-muted fs-11 text-uppercase font-weight-bold">Trong kỳ</div>' +
+                                                '<div class="font-weight-bold text-success fs-14 mt-1">' + periodSalesFormatted + '</div>' +
+                                            '</div>' +
+                                        '</div>' +
+                                        '<div class="col-6">' +
+                                            '<div class="bg-white border rounded p-2">' +
+                                                '<div class="text-muted fs-11 text-uppercase font-weight-bold">Tổng tích lũy</div>' +
+                                                '<div class="font-weight-bold text-primary fs-14 mt-1">' + p.total_sales_formatted + '</div>' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>' +
                                 '</div>' +
                             '</div>' +
                         '</div>';
 
-                        html += '<h5 class="font-weight-bold mb-3 d-flex align-items-center gap-2"><i class="ti ti-shopping-cart text-primary"></i> Danh Sách Giao Dịch Mua Gói Của F1 (' + orders.length + ' đơn)</h5>';
+                        // Tabs Navigation
+                        html += '<ul class="nav nav-tabs nav-fill mb-3" role="tablist">' +
+                            '<li class="nav-item" role="presentation">' +
+                                '<a class="nav-link active font-weight-bold" data-bs-toggle="tab" href="#tab-modal-orders" role="tab">' +
+                                    '<i class="ti ti-shopping-cart me-1"></i>Đơn hàng mua gói <span class="badge bg-blue-lt ms-1">' + orders.length + '</span>' +
+                                '</a>' +
+                            '</li>' +
+                            '<li class="nav-item" role="presentation">' +
+                                '<a class="nav-link font-weight-bold" data-bs-toggle="tab" href="#tab-modal-referrals" role="tab">' +
+                                    '<i class="ti ti-users me-1"></i>Thành viên giới thiệu <span class="badge bg-secondary-lt ms-1">' + referrals.length + '</span>' +
+                                '</a>' +
+                            '</li>' +
+                        '</ul>';
 
+                        html += '<div class="tab-content">';
+
+                        // TAB 1: DANH SÁCH ĐƠN HÀNG
+                        html += '<div class="tab-pane fade show active" id="tab-modal-orders" role="tabpanel">';
                         if (orders.length === 0) {
-                            html += '<div class="alert alert-info border-0 rounded-3 text-center py-4"><i class="ti ti-info-circle fs-2 d-block mb-1"></i>Chưa có giao dịch mua gói nào của F1 trong khoảng thời gian này.</div>';
+                            html += '<div class="alert alert-info border-0 rounded-3 text-center py-4">' +
+                                '<i class="ti ti-info-circle fs-2 d-block mb-1"></i>Chưa có giao dịch mua gói nào từ các thành viên được đối tác này giới thiệu.' +
+                            '</div>';
                         } else {
                             html += '<div class="table-responsive border rounded-3"><table class="table table-vcenter table-hover mb-0"><thead class="bg-light">' +
                                 '<tr>' +
-                                    '<th class="font-weight-bold">F1 (Người mua)</th>' +
+                                    '<th class="font-weight-bold">Người mua gói</th>' +
                                     '<th class="font-weight-bold">Gói dịch vụ</th>' +
                                     '<th class="font-weight-bold text-end">Số tiền</th>' +
-                                    '<th class="font-weight-bold text-center">Hình thức</th>' +
+                                    '<th class="font-weight-bold text-center">Cổng</th>' +
+                                    '<th class="font-weight-bold text-center">Kỳ lọc</th>' +
                                     '<th class="font-weight-bold text-end">Thời gian mua</th>' +
                                 '</tr>' +
                             '</thead><tbody>';
 
                             orders.forEach(function(o) {
+                                var buyerName = o.buyer_name || o.f1_name || 'Khách hàng';
+                                var buyerPhone = o.buyer_phone || o.f1_phone || '-';
+                                var periodBadge = o.is_in_period 
+                                    ? '<span class="badge bg-success-lt font-weight-bold">Trong kỳ</span>' 
+                                    : '<span class="badge bg-secondary-lt">Kỳ khác</span>';
+
                                 html += '<tr>' +
                                     '<td>' +
-                                        '<div class="font-weight-bold text-dark fs-13">' + o.f1_name + '</div>' +
-                                        '<div class="text-muted fs-11">' + o.f1_phone + '</div>' +
+                                        '<div class="font-weight-bold text-dark fs-13">' + buyerName + '</div>' +
+                                        '<div class="text-muted fs-11">' + buyerPhone + '</div>' +
                                     '</td>' +
                                     '<td><span class="badge bg-blue-lt font-weight-bold">' + o.package_name + '</span></td>' +
                                     '<td class="text-end font-weight-bold text-success">' + o.amount_formatted + '</td>' +
                                     '<td class="text-center"><span class="badge bg-secondary-lt">' + o.service + '</span></td>' +
+                                    '<td class="text-center">' + periodBadge + '</td>' +
                                     '<td class="text-end text-muted fs-12">' + o.created_at + '</td>' +
                                 '</tr>';
                             });
 
                             html += '</tbody></table></div>';
                         }
+                        html += '</div>';
+
+                        // TAB 2: DANH SÁCH THÀNH VIÊN GIỚI THIỆU
+                        html += '<div class="tab-pane fade" id="tab-modal-referrals" role="tabpanel">';
+                        if (referrals.length === 0) {
+                            html += '<div class="alert alert-info border-0 rounded-3 text-center py-4">' +
+                                '<i class="ti ti-info-circle fs-2 d-block mb-1"></i>Chưa có thành viên nào đăng ký qua mã giới thiệu của đối tác này.' +
+                            '</div>';
+                        } else {
+                            html += '<div class="table-responsive border rounded-3"><table class="table table-vcenter table-hover mb-0"><thead class="bg-light">' +
+                                '<tr>' +
+                                    '<th class="font-weight-bold">Thành viên</th>' +
+                                    '<th class="font-weight-bold">Số điện thoại</th>' +
+                                    '<th class="font-weight-bold">Email</th>' +
+                                    '<th class="font-weight-bold text-end">Ngày đăng ký</th>' +
+                                '</tr>' +
+                            '</thead><tbody>';
+
+                            referrals.forEach(function(r) {
+                                var avatarHtml = r.avatar 
+                                    ? '<img src="' + r.avatar + '" alt="' + r.fullname + '" class="avatar-partner" style="width: 32px; height: 32px;">'
+                                    : '<div class="avatar-fallback" style="width: 32px; height: 32px; font-size: 12px;">' + (r.fullname ? r.fullname.charAt(0).toUpperCase() : 'K') + '</div>';
+
+                                html += '<tr>' +
+                                    '<td>' +
+                                        '<div class="d-flex align-items-center gap-2">' +
+                                            avatarHtml +
+                                            '<span class="font-weight-bold text-dark fs-13">' + r.fullname + '</span>' +
+                                        '</div>' +
+                                    '</td>' +
+                                    '<td class="fs-13 text-muted">' + r.phone + '</td>' +
+                                    '<td class="fs-13 text-muted">' + r.email + '</td>' +
+                                    '<td class="text-end text-muted fs-12">' + r.created_at + '</td>' +
+                                '</tr>';
+                            });
+
+                            html += '</tbody></table></div>';
+                        }
+                        html += '</div>'; // End Tab 2
+                        html += '</div>'; // End tab-content
 
                         container.html(html);
                     }

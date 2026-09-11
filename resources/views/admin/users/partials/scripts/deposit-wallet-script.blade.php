@@ -86,6 +86,12 @@
             $('.quick-reason-chip').removeClass('btn-primary text-white border-primary').addClass('btn-outline-secondary');
             $('#btnClearDepositAmount').addClass('d-none');
 
+            // Reset nút submit về trạng thái ban đầu
+            var submitBtn = $('#btnSubmitDeposit');
+            submitBtn.prop('disabled', false);
+            submitBtn.find('.button-text').text('{{ __("Xác nhận nạp tiền") }}');
+            submitBtn.find('.spinner-border').addClass('d-none');
+
             updateDepositPreview();
 
             var modal = new bootstrap.Modal(document.getElementById('depositModal'));
@@ -129,27 +135,35 @@
             syncQuickReasonActiveState($(this).val().trim());
         });
 
-        // Submit form nạp tiền bằng AJAX
-        $('#formDepositWallet').on('submit', function (e) {
+        // Xử lý sự kiện CLICK nạp tiền
+        $(document).on('click', '#btnSubmitDeposit', function (e) {
             e.preventDefault();
 
-            var form = $(this);
+            var form = $('#formDepositWallet');
             var amount = parseMoney($('#depositAmountInput').val());
             var note = $.trim($('#depositAdminNote').val());
             var errorAlert = $('#depositErrorAlert');
-            var submitBtn = $('#btnSubmitDeposit');
+            var submitBtn = $(this);
             var btnText = submitBtn.find('.button-text');
             var spinner = submitBtn.find('.spinner-border');
 
             errorAlert.addClass('d-none').text('');
 
+            function resetBtn() {
+                submitBtn.prop('disabled', false);
+                btnText.text('{{ __("Xác nhận nạp tiền") }}');
+                spinner.addClass('d-none');
+            }
+
             if (amount < 1000) {
+                resetBtn();
                 errorAlert.removeClass('d-none').text('{{ __("Số tiền nạp tối thiểu là 1.000đ.") }}');
                 $('#depositAmountInput').focus();
                 return;
             }
 
             if (!note || note.length < 3) {
+                resetBtn();
                 errorAlert.removeClass('d-none').text('{{ __("Vui lòng nhập lý do nạp tiền (tối thiểu 3 ký tự).") }}');
                 $('#depositAdminNote').focus();
                 return;
@@ -172,9 +186,7 @@
                 },
                 dataType: 'json',
                 success: function (res) {
-                    submitBtn.prop('disabled', false);
-                    btnText.text('{{ __("Xác nhận nạp tiền") }}');
-                    spinner.addClass('d-none');
+                    resetBtn();
 
                     // Đóng modal
                     var modalEl = document.getElementById('depositModal');
@@ -210,9 +222,7 @@
                     }
                 },
                 error: function (xhr) {
-                    submitBtn.prop('disabled', false);
-                    btnText.text('{{ __("Xác nhận nạp tiền") }}');
-                    spinner.addClass('d-none');
+                    resetBtn();
 
                     var errMsg = '{{ __("Có lỗi xảy ra khi nạp tiền vào ví. Vui lòng thử lại.") }}';
                     if (xhr.responseJSON) {
@@ -228,6 +238,12 @@
                     errorAlert.removeClass('d-none').text(errMsg);
                 }
             });
+        });
+
+        // Ngăn chặn submit form thông thường nếu user gõ enter
+        $('#formDepositWallet').on('submit', function (e) {
+            e.preventDefault();
+            $('#btnSubmitDeposit').trigger('click');
         });
     });
 </script>

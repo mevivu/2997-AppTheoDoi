@@ -112,6 +112,12 @@
             $('.quick-withdraw-reason-chip').removeClass('btn-primary text-white border-primary').addClass('btn-outline-secondary');
             $('#btnClearWithdrawAmount').addClass('d-none');
 
+            // Reset nút submit về trạng thái ban đầu
+            var submitBtn = $('#btnSubmitWithdraw');
+            submitBtn.prop('disabled', false);
+            submitBtn.find('.button-text').text('{{ __("Xác nhận rút tiền") }}');
+            submitBtn.find('.spinner-border').addClass('d-none');
+
             updateWithdrawPreview();
 
             var modal = new bootstrap.Modal(document.getElementById('withdrawModal'));
@@ -163,33 +169,42 @@
             syncQuickWithdrawReasonActiveState($(this).val().trim());
         });
 
-        // Submit form rút tiền bằng AJAX
-        $('#formWithdrawWallet').on('submit', function (e) {
+        // Xử lý sự kiện CLICK rút tiền
+        $(document).on('click', '#btnSubmitWithdraw', function (e) {
             e.preventDefault();
 
-            var form = $(this);
+            var form = $('#formWithdrawWallet');
             var amount = parseMoney($('#withdrawAmountInput').val());
             var note = $.trim($('#withdrawAdminNote').val());
             var errorAlert = $('#withdrawErrorAlert');
-            var submitBtn = $('#btnSubmitWithdraw');
+            var submitBtn = $(this);
             var btnText = submitBtn.find('.button-text');
             var spinner = submitBtn.find('.spinner-border');
 
             errorAlert.addClass('d-none').text('');
 
+            function resetBtn() {
+                submitBtn.prop('disabled', false);
+                btnText.text('{{ __("Xác nhận rút tiền") }}');
+                spinner.addClass('d-none');
+            }
+
             if (amount < 1000) {
+                resetBtn();
                 errorAlert.removeClass('d-none').text('{{ __("Số tiền rút tối thiểu là 1.000đ.") }}');
                 $('#withdrawAmountInput').focus();
                 return;
             }
 
             if (amount > withdrawCurrentBalance) {
+                resetBtn();
                 errorAlert.removeClass('d-none').text('{{ __("Số tiền rút vượt quá số dư hiện tại của thành viên.") }}');
                 $('#withdrawAmountInput').focus();
                 return;
             }
 
             if (!note || note.length < 3) {
+                resetBtn();
                 errorAlert.removeClass('d-none').text('{{ __("Vui lòng nhập lý do rút tiền (tối thiểu 3 ký tự).") }}');
                 $('#withdrawAdminNote').focus();
                 return;
@@ -212,9 +227,7 @@
                 },
                 dataType: 'json',
                 success: function (res) {
-                    submitBtn.prop('disabled', false);
-                    btnText.text('{{ __("Xác nhận rút tiền") }}');
-                    spinner.addClass('d-none');
+                    resetBtn();
 
                     // Đóng modal
                     var modalEl = document.getElementById('withdrawModal');
@@ -250,9 +263,7 @@
                     }
                 },
                 error: function (xhr) {
-                    submitBtn.prop('disabled', false);
-                    btnText.text('{{ __("Xác nhận rút tiền") }}');
-                    spinner.addClass('d-none');
+                    resetBtn();
 
                     var errMsg = '{{ __("Có lỗi xảy ra khi rút tiền từ ví. Vui lòng thử lại.") }}';
                     if (xhr.responseJSON) {
@@ -268,6 +279,12 @@
                     errorAlert.removeClass('d-none').text(errMsg);
                 }
             });
+        });
+
+        // Ngăn chặn submit form mặc định nếu user gõ enter
+        $('#formWithdrawWallet').on('submit', function (e) {
+            e.preventDefault();
+            $('#btnSubmitWithdraw').trigger('click');
         });
     });
 </script>

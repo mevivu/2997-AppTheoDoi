@@ -2,6 +2,7 @@
 
 namespace App\Admin\Services\Affiliate;
 
+use App\AES\AESHelper;
 use App\Enums\Transaction\TransactionStatus;
 use App\Enums\Transaction\TransactionType;
 use App\Enums\User\AffiliateRank;
@@ -14,6 +15,23 @@ use Illuminate\Support\Facades\DB;
 
 class AffiliateStatisticsService
 {
+    /**
+     * Giải mã an toàn chuỗi mã hóa AES, fallback về chuỗi gốc nếu không giải mã được
+     */
+    protected function decryptSafe(?string $value): ?string
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        try {
+            $decrypted = AESHelper::decrypt($value);
+            return ($decrypted !== false && !empty($decrypted)) ? $decrypted : $value;
+        } catch (\Throwable $e) {
+            return $value;
+        }
+    }
+
     /**
      * Lấy toàn bộ dữ liệu thống kê đối tác: KPI, Trend Chart, Donut Chart, Top 10 Bar Chart, Bảng xếp hạng
      *
@@ -30,10 +48,11 @@ class AffiliateStatisticsService
         [$startDate, $endDate, $dateRangeLabel, $groupBy] = $this->resolveDateRange($period, $from, $to);
         [$prevStartDate, $prevEndDate] = $this->resolvePreviousDateRange($startDate, $endDate);
 
-        // 2. Thống kê Doanh số F1 theo từng Đối tác trong kỳ
+        // 2. Thống kê Doanh số thành viên theo từng Đối tác trong kỳ
         $partnerSalesQuery = DB::table('transactions as t')
             ->join('users as u', 't.user_id', '=', 'u.id')
             ->whereNotNull('u.referrer_id')
+            ->where('t.type', TransactionType::Payment->value)
             ->where('t.status', TransactionStatus::Confirmed->value);
 
         if ($startDate && $endDate) {
@@ -51,12 +70,13 @@ class AffiliateStatisticsService
             ->get()
             ->keyBy('partner_id');
 
-        // 3. Thống kê Doanh số F1 kỳ trước để tính tăng trưởng KPI
+        // 3. Thống kê Doanh số kỳ trước để tính tăng trưởng KPI
         $prevTotalRevenue = 0;
         if ($prevStartDate && $prevEndDate) {
             $prevTotalRevenue = (float) DB::table('transactions as t')
                 ->join('users as u', 't.user_id', '=', 'u.id')
                 ->whereNotNull('u.referrer_id')
+                ->where('t.type', TransactionType::Payment->value)
                 ->where('t.status', TransactionStatus::Confirmed->value)
                 ->whereBetween('t.created_at', [$prevStartDate, $prevEndDate])
                 ->sum('t.amount');
@@ -67,14 +87,23 @@ class AffiliateStatisticsService
 
         if (!empty($search)) {
             $cleanSearch = trim($search);
-            $usersQuery->where(function ($q) use ($cleanSearch) {
+            try {
+                $encSearch = AESHelper::encrypt($cleanSearch);
+            } catch (\Throwable $e) {
+                $encSearch = null;
+            }
+
+            $usersQuery->where(function ($q) use ($cleanSearch, $encSearch) {
                 $q->where('fullname', 'like', "%{$cleanSearch}%")
-                  ->orWhere('phone', 'like', "%{$cleanSearch}%")
-                  ->orWhere('email', 'like', "%{$cleanSearch}%")
-                  ->orWhere('affiliate_code', 'like', "%{$cleanSearch}%");
+                  ->orWhere('affiliate_code', 'like', "%{$cleanSearch}%")
+                  ->orWhere('code', 'like', "%{$cleanSearch}%");
+                if ($encSearch) {
+                    $q->orWhere('phone', $encSearch)
+                      ->orWhere('email', $encSearch);
+                }
             });
         } else {
-            // Mặc định lấy các đối tác có phát sinh hoạt động: Có doanh số, có F1 hoặc có số dư ví
+            // Mặc định lấy các đối tác có phát sinh hoạt động: Có doanh số, có thành viên giới thiệu hoặc có số dư ví
             $usersQuery->where(function ($q) {
                 $q->where('affiliate_total_sales', '>', 0)
                   ->orWhere('wallet_balance', '>', 0)
@@ -93,7 +122,7 @@ class AffiliateStatisticsService
 
         $allPartners = $usersQuery->limit(200)->get();
 
-        // Đếm số lượng F1 của từng đối tác (Tổng & trong kỳ)
+        // Đếm số lượng thành viên giới thiệu của từng đối tác (Tổng & trong kỳ)
         $f1StatsQuery = DB::table('users')
             ->whereNotNull('referrer_id');
         
@@ -138,8 +167,8 @@ class AffiliateStatisticsService
             $ranking[] = [
                 'id' => $partner->id,
                 'fullname' => $partner->fullname ?: 'Khách hàng #' . $partner->id,
-                'phone' => $partner->phone ?: 'Chưa cập nhật',
-                'email' => $partner->email ?: '',
+                'phone' => $this->decryptSafe($partner->phone) ?: 'Chưa cập nhật',
+                'email' => $this->decryptSafe($partner->email) ?: '',
                 'avatar' => $partner->avatar,
                 'affiliate_code' => $partner->affiliate_code ?: ('CC' . str_pad($partner->id, 5, '0', STR_PAD_LEFT)),
                 'rank_id' => $rankEnum->value,
@@ -206,7 +235,7 @@ class AffiliateStatisticsService
     }
 
     /**
-     * Lấy chi tiết đơn hàng F1 của một đối tác cụ thể (dành cho Ajax Modal)
+     * Lấy chi tiết đơn hàng và danh sách thành viên giới thiệu của một đối tác cụ thể (dành cho Ajax Modal)
      *
      * @param int $partnerId
      * @param string $period
@@ -217,30 +246,38 @@ class AffiliateStatisticsService
     public function getPartnerF1Details(int $partnerId, string $period = '30d', ?string $from = null, ?string $to = null): array
     {
         $partner = User::findOrFail($partnerId);
-        [$startDate, $endDate] = $this->resolveDateRange($period, $from, $to);
+        [$startDate, $endDate, $dateRangeLabel] = $this->resolveDateRange($period, $from, $to);
 
         $rankEnum = $partner->affiliate_rank instanceof AffiliateRank
             ? $partner->affiliate_rank
             : AffiliateRank::tryFrom((int)$partner->affiliate_rank) ?? AffiliateRank::Bronze;
 
-        // Danh sách toàn bộ F1
-        $f1Users = User::where('referrer_id', $partnerId)
+        // Danh sách toàn bộ thành viên được đối tác giới thiệu
+        $referredUsers = User::where('referrer_id', $partnerId)
             ->select('id', 'fullname', 'phone', 'email', 'avatar', 'created_at')
-            ->get()
-            ->keyBy('id');
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        // Giao dịch mua gói của F1
-        $transactionsQuery = Transaction::query()
-            ->whereIn('user_id', $f1Users->keys())
-            ->where('type', TransactionType::Payment->value)
-            ->where('status', TransactionStatus::Confirmed->value)
-            ->with(['user:id,fullname,phone,email,avatar']);
-
-        if ($startDate && $endDate) {
-            $transactionsQuery->whereBetween('created_at', [$startDate, $endDate]);
+        $referralList = [];
+        foreach ($referredUsers as $ref) {
+            $referralList[] = [
+                'id' => $ref->id,
+                'fullname' => $ref->fullname ?: 'Khách hàng #' . $ref->id,
+                'phone' => $this->decryptSafe($ref->phone) ?: '-',
+                'email' => $this->decryptSafe($ref->email) ?: '-',
+                'avatar' => $ref->avatar ? asset($ref->avatar) : null,
+                'created_at' => $ref->created_at ? $ref->created_at->format('d/m/Y H:i') : '',
+            ];
         }
 
-        $transactions = $transactionsQuery->orderBy('created_at', 'desc')->get();
+        // Toàn bộ giao dịch mua gói của các thành viên được giới thiệu
+        $transactions = Transaction::query()
+            ->whereIn('user_id', $referredUsers->pluck('id'))
+            ->where('type', TransactionType::Payment->value)
+            ->where('status', TransactionStatus::Confirmed->value)
+            ->with(['user:id,fullname,phone,email,avatar'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         // Lấy tên gói dịch vụ
         $packageIds = $transactions->pluck('package_id')->unique()->filter();
@@ -248,44 +285,77 @@ class AffiliateStatisticsService
 
         $orderList = [];
         $periodTotalSales = 0;
+        $periodOrdersCount = 0;
+        $allTotalSales = 0;
 
         foreach ($transactions as $tx) {
-            $periodTotalSales += (float) $tx->amount;
-            $f1 = $tx->user;
+            $amount = (float) $tx->amount;
+            $allTotalSales += $amount;
+
+            $isInPeriod = true;
+            if ($startDate && $endDate) {
+                $isInPeriod = ($tx->created_at >= $startDate && $tx->created_at <= $endDate);
+            }
+
+            if ($isInPeriod) {
+                $periodTotalSales += $amount;
+                $periodOrdersCount++;
+            }
+
+            $buyer = $tx->user;
+            $buyerPhone = $buyer ? ($this->decryptSafe($buyer->phone) ?: '-') : '-';
+            $buyerEmail = $buyer ? ($this->decryptSafe($buyer->email) ?: '-') : '-';
+            $buyerName = $buyer ? ($buyer->fullname ?: 'Khách hàng #' . $buyer->id) : 'Không rõ';
+
             $orderList[] = [
                 'id' => $tx->id,
                 'code' => $tx->code,
                 'order_id' => $tx->google_order_id ?: $tx->code,
-                'f1_name' => $f1 ? ($f1->fullname ?: 'Khách hàng #' . $f1->id) : 'Không rõ',
-                'f1_phone' => $f1 ? ($f1->phone ?: '-') : '-',
+                'buyer_name' => $buyerName,
+                'buyer_phone' => $buyerPhone,
+                'buyer_email' => $buyerEmail,
+                // Backward compatibility keys
+                'f1_name' => $buyerName,
+                'f1_phone' => $buyerPhone,
                 'package_name' => $packages->get($tx->package_id, 'Gói dịch vụ VIP'),
-                'amount' => (float) $tx->amount,
-                'amount_formatted' => number_format($tx->amount, 0, ',', '.') . 'đ',
+                'amount' => $amount,
+                'amount_formatted' => number_format($amount, 0, ',', '.') . 'đ',
                 'service' => $tx->service?->value ?? 'Google/Apple',
                 'created_at' => $tx->created_at ? $tx->created_at->format('d/m/Y H:i') : '',
+                'is_in_period' => $isInPeriod,
             ];
         }
+
+        // Doanh số tích lũy: ưu tiên field trong users, nếu 0 thì lấy tổng số tiền các giao dịch thực tế
+        $totalSalesAccumulated = max((float) ($partner->affiliate_total_sales ?? 0), $allTotalSales);
 
         return [
             'partner' => [
                 'id' => $partner->id,
                 'fullname' => $partner->fullname ?: 'Khách hàng #' . $partner->id,
-                'phone' => $partner->phone ?: '-',
-                'email' => $partner->email ?: '-',
-                'affiliate_code' => $partner->affiliate_code,
+                'phone' => $this->decryptSafe($partner->phone) ?: '-',
+                'email' => $this->decryptSafe($partner->email) ?: '-',
+                'affiliate_code' => $partner->affiliate_code ?: ('CC' . str_pad($partner->id, 5, '0', STR_PAD_LEFT)),
                 'rank_name' => $rankEnum->name(),
                 'rank_badge' => $rankEnum->badge(),
                 'rank_color' => $rankEnum->colorHex(),
-                'total_sales' => (float) ($partner->affiliate_total_sales ?? 0),
-                'total_sales_formatted' => number_format($partner->affiliate_total_sales ?? 0, 0, ',', '.') . 'đ',
+                'total_sales' => $totalSalesAccumulated,
+                'total_sales_formatted' => number_format($totalSalesAccumulated, 0, ',', '.') . 'đ',
                 'wallet_balance' => (float) ($partner->wallet_balance ?? 0),
                 'wallet_balance_formatted' => number_format($partner->wallet_balance ?? 0, 0, ',', '.') . 'đ',
-                'total_f1_count' => $f1Users->count(),
+                'total_referrals_count' => $referredUsers->count(),
+                // Backward compatibility key
+                'total_f1_count' => $referredUsers->count(),
             ],
+            'date_range_label' => $dateRangeLabel,
             'period_sales' => $periodTotalSales,
             'period_sales_formatted' => number_format($periodTotalSales, 0, ',', '.') . 'đ',
+            'period_orders_count' => $periodOrdersCount,
+            'all_orders_count' => count($orderList),
             'orders' => $orderList,
             'total_orders' => count($orderList),
+            'referrals' => $referralList,
+            'total_referrals' => count($referralList),
         ];
     }
 
@@ -309,6 +379,7 @@ class AffiliateStatisticsService
         $rawStats = DB::table('transactions as t')
             ->join('users as u', 't.user_id', '=', 'u.id')
             ->whereNotNull('u.referrer_id')
+            ->where('t.type', TransactionType::Payment->value)
             ->where('t.status', TransactionStatus::Confirmed->value)
             ->whereBetween('t.created_at', [$startDate, $endDate])
             ->select(
@@ -321,6 +392,7 @@ class AffiliateStatisticsService
         $rawOrders = DB::table('transactions as t')
             ->join('users as u', 't.user_id', '=', 'u.id')
             ->whereNotNull('u.referrer_id')
+            ->where('t.type', TransactionType::Payment->value)
             ->where('t.status', TransactionStatus::Confirmed->value)
             ->whereBetween('t.created_at', [$startDate, $endDate])
             ->select(

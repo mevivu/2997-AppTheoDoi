@@ -206,7 +206,7 @@
                         <i class="ti ti-x fs-4"></i>
                         <span>{{ __('Đóng') }}</span>
                     </button>
-                    <button type="submit" class="btn btn-danger px-4 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm" id="btnSubmitWithdraw">
+                    <button type="button" class="btn btn-danger px-4 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm" id="btnSubmitWithdraw">
                         <i class="ti ti-check fs-3"></i>
                         <span class="button-text">{{ __('Xác nhận rút tiền') }}</span>
                         <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
