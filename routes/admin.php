@@ -412,6 +412,9 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->group(function () {
             Route::group(['middleware' => ['permission:viewTransaction', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
+                Route::get('/rut-tien', 'withdraw')->name('withdraw');
+                Route::post('/approve-withdraw/{id}', 'approveWithdraw')->name('approveWithdraw');
+                Route::post('/reject-withdraw/{id}', 'rejectWithdraw')->name('rejectWithdraw');
             });
         });
     //Quiz (IQ)

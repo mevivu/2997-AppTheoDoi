@@ -35,6 +35,9 @@ class RouteAdminSystem
 
     /** TRANSACTION */
     const TRANSACTION_INDEX = 'admin.transaction.index';
+    const TRANSACTION_WITHDRAW = 'admin.transaction.withdraw';
+    const TRANSACTION_APPROVE_WITHDRAW = 'admin.transaction.approveWithdraw';
+    const TRANSACTION_REJECT_WITHDRAW = 'admin.transaction.rejectWithdraw';
     const TRANSACTION_CREATE = 'admin.transaction.create';
     const TRANSACTION_EDIT = 'admin.transaction.edit';
     const TRANSACTION_STORE = 'admin.transaction.store';
@@ -167,6 +170,14 @@ class RouteAdminSystem
     const WHO_UPDATE = 'admin.weight-height-who.update';
     const WHO_DELETE = 'admin.weight-height-who.delete';
 
+    /** EXPECTED */
+    const EXPECTED_INDEX = 'admin.expected.index';
+    const EXPECTED_CREATE = 'admin.expected.create';
+    const EXPECTED_EDIT = 'admin.expected.edit';
+    const EXPECTED_STORE = 'admin.expected.store';
+    const EXPECTED_UPDATE = 'admin.expected.update';
+    const EXPECTED_DELETE = 'admin.expected.delete';
+
     /** PRODUCT & BRAND & CATEGORY */
     const PRODUCT_INDEX = 'admin.product.index';
     const PRODUCT_CREATE = 'admin.product.create';
@@ -218,6 +229,7 @@ class RouteAdminSystem
     const CHILDREN_DELETE = 'admin.children.delete';
 
     /** VACCINATION */
+    const VACCINATION_CREATE = 'admin.vaccination.create';
     const VACCINATION_ADMIN = 'admin.vaccination.admin';
     const VACCINATION_USER = 'admin.vaccination.user';
     const VACCINATION_SCHEDULE_INDEX = 'admin.vaccinationSchedule.index';
@@ -265,6 +277,8 @@ class RouteAdminSystem
 
     const EXERCISE_INDEX = 'admin.exercise.index';
     const EXERCISE_CREATE = 'admin.exercise.create';
+    const EXERCISE_PHYSICAL = 'admin.exercise.physical';
+    const EXERCISE_POWER = 'admin.exercise.power';
     const EXERCISE_EDIT = 'admin.exercise.edit';
     const EXERCISE_STORE = 'admin.exercise.store';
     const EXERCISE_UPDATE = 'admin.exercise.update';
@@ -313,6 +327,7 @@ class RouteAdminSystem
     const MODULE_STORE = 'admin.module.store';
     const MODULE_UPDATE = 'admin.module.update';
     const MODULE_DELETE = 'admin.module.delete';
+    const MODULE_SUMMARY = 'admin.module.summary';
 
     /** SUPPORT */
     const SUPPORT_INDEX = 'admin.support.index';
@@ -327,6 +342,7 @@ class RouteAdminSystem
     /** SETTING & APP VERSION */
     const SETTING_GENERAL = 'admin.setting.general';
     const SETTING_SYSTEM = 'admin.setting.system';
+    const SETTING_AFFILIATE = 'admin.setting.affiliate';
     const SETTING_UPDATE = 'admin.setting.update';
     const APP_VERSION_INDEX = 'admin.app-version.index';
     const APP_VERSION_CREATE = 'admin.app-version.create';

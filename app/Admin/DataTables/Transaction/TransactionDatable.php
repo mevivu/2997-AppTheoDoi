@@ -37,7 +37,7 @@ class TransactionDatable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [0, 1, 3, 4, 5, 6];
+        $this->columnAllSearch = [0, 1, 2, 3, 4, 5, 6];
         $this->columnSearchDate = [6];
         $this->columnSearchSelect = [
             [
@@ -59,6 +59,9 @@ class TransactionDatable extends BaseDataTable
     public function query(): Builder
     {
         $query = $this->repository->getQueryBuilderOrderBy();
+
+        // Chỉ lấy các giao dịch THANH TOÁN MUA GÓI
+        $query->where('type', \App\Enums\Transaction\TransactionType::Payment);
 
         $userId = request()->route('id') ?: request('user_id');
         if ($userId) {
@@ -90,7 +93,7 @@ class TransactionDatable extends BaseDataTable
                 return view($this->view['package'], [
                     'package' => $transaction->package,
                 ])->render();
-            }
+            },
         ];
     }
 

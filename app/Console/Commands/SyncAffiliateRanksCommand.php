@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Enums\Transaction\TransactionStatus;
+use App\Enums\Transaction\TransactionType;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Services\Affiliate\AffiliateServiceInterface;
@@ -86,6 +87,7 @@ class SyncAffiliateRanksCommand extends Command
                     $calculatedSales = 0;
                     if (!empty($referralUserIds)) {
                         $calculatedSales = (float) Transaction::whereIn('user_id', $referralUserIds)
+                            ->where('type', TransactionType::Payment)
                             ->where('status', TransactionStatus::Confirmed)
                             ->sum('amount');
                     }

@@ -147,7 +147,7 @@ return [
             'orderable' => false,
         ],
         'service' => [
-            'title' => '<div class="header-cell-content"><i class="ti ti-layout-grid"></i><span>Cổng dịch vụ</span></div>',
+            'title' => '<div class="header-cell-content"><i class="ti ti-layout-grid"></i><span>Cổng thanh toán</span></div>',
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
@@ -161,6 +161,52 @@ return [
             'width' => '150px',
             'orderable' => false,
             'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'transaction_withdraw' => [
+        'code' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-code"></i><span>Mã yêu cầu</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'user_id' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-user"></i><span>Đối tác</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'amount' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-currency-dollar"></i><span>Số tiền rút</span></div>',
+            'width' => '150px',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'bank_info' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-building-bank"></i><span>Tài khoản nhận tiền</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'scheduled_payout_date' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar-event"></i><span>Đợt chi trả Thứ 5</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-small"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'created_at' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Ngày yêu cầu</span></div>',
+            'width' => '150px',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle text-nowrap',
         ],
     ],
     'eq' => [

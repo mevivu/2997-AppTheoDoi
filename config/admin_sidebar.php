@@ -36,9 +36,16 @@ return [
         'sub' => [
 
             [
-                'title' => 'DS giao dịch',
-                'routeName' => 'admin.transaction.index',
-                'icon' => '<i class="ti ti-list"></i>',
+                'title' => 'Thanh toán mua gói',
+                'routeName' => RouteAdminSystem::TRANSACTION_INDEX,
+                'icon' => '<i class="ti ti-receipt"></i>',
+                'roles' => [],
+                'permissions' => ['viewTransaction'],
+            ],
+            [
+                'title' => 'Yêu cầu rút tiền',
+                'routeName' => RouteAdminSystem::TRANSACTION_WITHDRAW,
+                'icon' => '<i class="ti ti-wallet"></i>',
                 'roles' => [],
                 'permissions' => ['viewTransaction'],
             ],
@@ -55,14 +62,14 @@ return [
         'sub' => [
             [
                 'title' => 'Thêm Quá trình',
-                'routeName' => 'admin.develop.create',
+                'routeName' => RouteAdminSystem::DEVELOP_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createDevelopGuide'],
             ],
             [
                 'title' => 'DS Bài phát triển',
-                'routeName' => 'admin.develop.index',
+                'routeName' => RouteAdminSystem::DEVELOP_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewDevelopGuide'],
@@ -79,7 +86,7 @@ return [
         'sub' => [
             [
                 'title' => 'DS Đánh giá',
-                'routeName' => 'admin.gpa.index',
+                'routeName' => RouteAdminSystem::GPA_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewGPA'],
@@ -95,14 +102,14 @@ return [
         'sub' => [
             [
                 'title' => 'DS Đánh giá',
-                'routeName' => 'admin.ratingPQ.index',
+                'routeName' => RouteAdminSystem::RATING_PQ_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewPQ'],
             ],
             [
                 'title' => 'DS Hướng dẫn',
-                'routeName' => 'admin.guide.index',
+                'routeName' => RouteAdminSystem::GUIDE_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewGuide'],
@@ -118,21 +125,21 @@ return [
         'sub' => [
             [
                 'title' => 'DS Đánh giá EQ',
-                'routeName' => 'admin.rating.eq',
+                'routeName' => RouteAdminSystem::RATING_EQ,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewEQ'],
             ],
             [
                 'title' => 'DS Đánh giá IQ',
-                'routeName' => 'admin.rating.iq',
+                'routeName' => RouteAdminSystem::RATING_IQ,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewIQ'],
             ],
             [
                 'title' => 'DS Đánh giá AQ',
-                'routeName' => 'admin.rating.aq',
+                'routeName' => RouteAdminSystem::RATING_AQ,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewAQ'],
@@ -148,21 +155,21 @@ return [
         'sub' => [
             [
                 'title' => 'Thêm Nhật ký',
-                'routeName' => 'admin.journal.create',
+                'routeName' => RouteAdminSystem::JOURNAL_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createJournal'],
             ],
             [
                 'title' => 'Hồ sơ y tế',
-                'routeName' => 'admin.journal.prescription',
+                'routeName' => RouteAdminSystem::JOURNAL_PRESCRIPTION,
                 'icon' => '<i class="ti ti-pill"></i>',
                 'roles' => [],
                 'permissions' => ['viewJournal'],
             ],
             [
                 'title' => 'Nhật ký Khoảng khắc',
-                'routeName' => 'admin.journal.moment',
+                'routeName' => RouteAdminSystem::JOURNAL_MOMENT,
                 'icon' => '<i class="ti ti-comet"></i>',
                 'roles' => [],
                 'permissions' => ['viewJournal'],
@@ -179,14 +186,14 @@ return [
         'sub' => [
             [
                 'title' => 'Thêm Thai kì',
-                'routeName' => 'admin.pregnancy.create',
+                'routeName' => RouteAdminSystem::PREGNANCY_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createPregnancy'],
             ],
             [
                 'title' => 'DS Thai kì',
-                'routeName' => 'admin.pregnancy.index',
+                'routeName' => RouteAdminSystem::PREGNANCY_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewPregnancy'],
@@ -204,14 +211,14 @@ return [
         'sub' => [
             [
                 'title' => 'Thêm thông báo',
-                'routeName' => 'admin.notification.create',
+                'routeName' => RouteAdminSystem::NOTIFICATION_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createNotification'],
             ],
             [
                 'title' => 'Thông báo ADMIN',
-                'routeName' => 'admin.notification.index',
+                'routeName' => RouteAdminSystem::NOTIFICATION_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewNotification'],
@@ -219,7 +226,7 @@ return [
 
             [
                 'title' => 'Thông báo Khách hàng',
-                'routeName' => 'admin.notification.user',
+                'routeName' => RouteAdminSystem::NOTIFICATION_USER,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewNotification'],
@@ -227,7 +234,7 @@ return [
 
             [
                 'title' => 'Yêu cầu xác nhận',
-                'routeName' => 'admin.notification.package',
+                'routeName' => RouteAdminSystem::NOTIFICATION_PACKAGE,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewNotification'],
@@ -243,14 +250,14 @@ return [
         'sub' => [
             [
                 'title' => 'Thêm Sliders',
-                'routeName' => 'admin.slider.create',
+                'routeName' => RouteAdminSystem::SLIDER_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createSlider'],
             ],
             [
                 'title' => 'DS Sliders',
-                'routeName' => 'admin.slider.index',
+                'routeName' => RouteAdminSystem::SLIDER_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewSlider'],
@@ -266,14 +273,14 @@ return [
         'sub' => [
             [
                 'title' => 'Thêm gói',
-                'routeName' => 'admin.package.create',
+                'routeName' => RouteAdminSystem::PACKAGE_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createPackage'],
             ],
             [
                 'title' => 'DS thông tin gói',
-                'routeName' => 'admin.package.index',
+                'routeName' => RouteAdminSystem::PACKAGE_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewPackage'],
@@ -289,21 +296,21 @@ return [
 //        'sub' => [
 //            [
 //                'title' => 'Thêm Bài tập',
-//                'routeName' => 'admin.exercise.create',
+//                'routeName' => RouteAdminSystem::EXERCISE_CREATE,
 //                'icon' => '<i class="ti ti-plus"></i>',
 //                'roles' => [],
 //                'permissions' => ['createExercise'],
 //            ],
 //            [
 //                'title' => 'Bài tập thể chất',
-//                'routeName' => 'admin.exercise.physical',
+//                'routeName' => RouteAdminSystem::EXERCISE_PHYSICAL,
 //                'icon' => '<i class="ti ti-swimming"></i>',
 //                'roles' => [],
 //                'permissions' => ['viewExercise'],
 //            ],
 //            [
 //                'title' => 'Bài tập sức mạnh',
-//                'routeName' => 'admin.exercise.power',
+//                'routeName' => RouteAdminSystem::EXERCISE_POWER,
 //                'icon' => '<i class="ti ti-barbell"></i>',
 //                'roles' => [],
 //                'permissions' => ['viewExercise'],
@@ -328,21 +335,21 @@ return [
         'sub' => [
             [
                 'title' => 'Thêm bài viết',
-                'routeName' => 'admin.post.create',
+                'routeName' => RouteAdminSystem::POST_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createPost'],
             ],
             [
                 'title' => 'DS bài viết',
-                'routeName' => 'admin.post.index',
+                'routeName' => RouteAdminSystem::POST_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewPost'],
             ],
             [
                 'title' => 'DS chuyên mục',
-                'routeName' => 'admin.post_category.index',
+                'routeName' => RouteAdminSystem::POST_CATEGORY_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewPostCategory'],
@@ -358,14 +365,14 @@ return [
         'sub' => [
             [
                 'title' => 'Thêm thông tin BMI',
-                'routeName' => 'admin.bmi.create',
+                'routeName' => RouteAdminSystem::BMI_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createBMI'],
             ],
             [
                 'title' => 'DS thông tin BMI',
-                'routeName' => 'admin.bmi.index',
+                'routeName' => RouteAdminSystem::BMI_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewBMI'],
@@ -374,21 +381,21 @@ return [
     ],
     [
         'title' => 'Thông tin Who',
-        'routeName' => 'admin.module.summary',
+        'routeName' => RouteAdminSystem::MODULE_SUMMARY,
         'icon' => '<i class="ti ti-woman"></i>',
         'roles' => [],
         'permissions' => ['createHeightWeight', 'viewHeightWeight', 'updateHeightWeight', 'deleteHeightWeight'],
         'sub' => [
             [
                 'title' => 'Thêm',
-                'routeName' => 'admin.weight-height-who.create',
+                'routeName' => RouteAdminSystem::WHO_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createHeightWeight'],
             ],
             [
                 'title' => 'DS Thông tin',
-                'routeName' => 'admin.weight-height-who.index',
+                'routeName' => RouteAdminSystem::WHO_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewHeightWeight'],
@@ -397,21 +404,21 @@ return [
     ],
 //    [
 //        'title' => 'Thông tin dự kiến',
-//        'routeName' => 'admin.expected.index',
+//        'routeName' => RouteAdminSystem::EXPECTED_INDEX,
 //        'icon' => '<i class="ti ti-award"></i>',
 //        'roles' => [],
 //        'permissions' => ['createExpected', 'viewExpected', 'updateExpected', 'deleteExpected'],
 //        'sub' => [
 //            [
 //                'title' => 'Thêm',
-//                'routeName' => 'admin.expected.create',
+//                'routeName' => RouteAdminSystem::EXPECTED_CREATE,
 //                'icon' => '<i class="ti ti-plus"></i>',
 //                'roles' => [],
 //                'permissions' => ['createExpected'],
 //            ],
 //            [
 //                'title' => 'DS Thông tin',
-//                'routeName' => 'admin.expected.index',
+//                'routeName' => RouteAdminSystem::EXPECTED_INDEX,
 //                'icon' => '<i class="ti ti-list"></i>',
 //                'roles' => [],
 //                'permissions' => ['viewExpected'],
@@ -421,7 +428,7 @@ return [
 
     [
         'title' => 'product',
-        'routeName' => 'admin.expected.index',
+        'routeName' => RouteAdminSystem::EXPECTED_INDEX,
         'icon' => '<i class="ti ti-brand-producthunt"></i>',
         'roles' => [],
         'permissions' => [
@@ -441,28 +448,28 @@ return [
         'sub' => [
             [
                 'title' => 'Tạo sản phẩm',
-                'routeName' => 'admin.product.create',
+                'routeName' => RouteAdminSystem::PRODUCT_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createProduct'],
             ],
             [
                 'title' => 'DS sản phẩm',
-                'routeName' => 'admin.product.index',
+                'routeName' => RouteAdminSystem::PRODUCT_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewProduct'],
             ],
             [
                 'title' => 'DS thông tin thương hiệu',
-                'routeName' => 'admin.brand.index',
+                'routeName' => RouteAdminSystem::BRAND_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewBrand'],
             ],
             [
                 'title' => 'Danh mục sản phẩm',
-                'routeName' => 'admin.category.index',
+                'routeName' => RouteAdminSystem::CATEGORY_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewProductCatalog'],
@@ -484,28 +491,28 @@ return [
         'sub' => [
             [
                 'title' => 'Nhóm câu hỏi',
-                'routeName' => 'admin.question-group.index',
+                'routeName' => RouteAdminSystem::QUESTION_GROUP_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewExpected'],
             ],
             [
                 'title' => 'Câu hỏi IQ',
-                'routeName' => 'admin.question.iq',
+                'routeName' => RouteAdminSystem::QUESTION_IQ,
                 'icon' => '<i class="ti ti-brain"></i>',
                 'roles' => [],
                 'permissions' => ['viewQuestionGroup'],
             ],
             [
                 'title' => 'Câu hỏi EQ',
-                'routeName' => 'admin.question.eq',
+                'routeName' => RouteAdminSystem::QUESTION_EQ,
                 'icon' => '<i class="ti ti-heart"></i>',
                 'roles' => [],
                 'permissions' => ['viewQuestionGroup'],
             ],
             [
                 'title' => 'Câu hỏi AQ',
-                'routeName' => 'admin.question.aq',
+                'routeName' => RouteAdminSystem::QUESTION_AQ,
                 'icon' => '<i class="ti ti-leaf"></i>',
                 'roles' => [],
                 'permissions' => ['viewQuestionGroup'],
@@ -514,7 +521,7 @@ return [
     ],
     [
         'title' => 'Bài kiểm tra IQ',
-        'routeName' => 'admin.quiz.iq',
+        'routeName' => RouteAdminSystem::QUIZ_IQ,
         'icon' => '<i class="ti ti-brain"></i>',
         'roles' => [],
         'permissions' => ['createQuiz', 'viewQuiz', 'updateQuiz', 'deleteQuiz'],
@@ -529,14 +536,14 @@ return [
         'sub' => [
             [
                 'title' => 'add',
-                'routeName' => 'admin.user.create',
+                'routeName' => RouteAdminSystem::USER_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createUser'],
             ],
             [
                 'title' => 'list',
-                'routeName' => 'admin.user.index',
+                'routeName' => RouteAdminSystem::USER_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewUser'],
@@ -561,28 +568,28 @@ return [
         'sub' => [
 //            [
 //                'title' => 'add',
-//                'routeName' => 'admin.vaccination.create',
+//                'routeName' => RouteAdminSystem::VACCINATION_CREATE,
 //                'icon' => '<i class="ti ti-plus"></i>',
 //                'roles' => [],
 //                'permissions' => ['createVaccinationSchedule'],
 //            ],
             [
                 'title' => 'Quản trị viên',
-                'routeName' => 'admin.vaccination.admin',
+                'routeName' => RouteAdminSystem::VACCINATION_ADMIN,
                 'icon' => '<i class="ti ti-ad"></i>',
                 'roles' => [],
                 'permissions' => ['viewVaccinationSchedule'],
             ],
             [
                 'title' => 'Người dùng',
-                'routeName' => 'admin.vaccination.user',
+                'routeName' => RouteAdminSystem::VACCINATION_USER,
                 'icon' => '<i class="ti ti-user"></i>',
                 'roles' => [],
                 'permissions' => ['viewVaccinationSchedule'],
             ],
             [
                 'title' => 'DS loại Tiêm chủng',
-                'routeName' => 'admin.vaccinationType.index',
+                'routeName' => RouteAdminSystem::VACCINATION_TYPE_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewTypeVaccination'],
@@ -598,14 +605,14 @@ return [
         'sub' => [
             [
                 'title' => 'add',
-                'routeName' => 'admin.children.create',
+                'routeName' => RouteAdminSystem::CHILDREN_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createChildren'],
             ],
             [
                 'title' => 'list',
-                'routeName' => 'admin.children.index',
+                'routeName' => RouteAdminSystem::CHILDREN_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewChildren'],
@@ -639,28 +646,28 @@ return [
         'sub' => [
             [
                 'title' => 'DS phẩm chất',
-                'routeName' => 'admin.quality.index',
+                'routeName' => RouteAdminSystem::QUALITY_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewQuality'],
             ],
             [
                 'title' => 'DS năng lực',
-                'routeName' => 'admin.capability.index',
+                'routeName' => RouteAdminSystem::CAPABILITY_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewCapability'],
             ],
             [
                 'title' => 'DS lớp',
-                'routeName' => 'admin.classes.index',
+                'routeName' => RouteAdminSystem::CLASSES_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewClasses'],
             ],
             [
                 'title' => 'DS môn học',
-                'routeName' => 'admin.subject.index',
+                'routeName' => RouteAdminSystem::SUBJECT_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewSubject'],
@@ -685,21 +692,21 @@ return [
         'sub' => [
             [
                 'title' => 'Thêm phòng khám',
-                'routeName' => 'admin.clinic.create',
+                'routeName' => RouteAdminSystem::CLINIC_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createClinic'],
             ],
             [
                 'title' => 'DS  phòng khám',
-                'routeName' => 'admin.clinic.index',
+                'routeName' => RouteAdminSystem::CLINIC_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewClinic'],
             ],
             [
                 'title' => 'DS loại phòng khám',
-                'routeName' => 'admin.clinicType.index',
+                'routeName' => RouteAdminSystem::CLINIC_TYPE_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewClinicType'],
@@ -715,14 +722,14 @@ return [
         'sub' => [
             [
                 'title' => 'Thêm Vai trò',
-                'routeName' => 'admin.role.create',
+                'routeName' => RouteAdminSystem::ROLE_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createRole'],
             ],
             [
                 'title' => 'DS Vai trò',
-                'routeName' => 'admin.role.index',
+                'routeName' => RouteAdminSystem::ROLE_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewRole'],
@@ -738,21 +745,21 @@ return [
         'sub' => [
             [
                 'title' => 'Thêm mới',
-                'routeName' => 'admin.support.create',
+                'routeName' => RouteAdminSystem::SUPPORT_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['viewSupport'],
             ],
             [
                 'title' => 'Câu hỏi thường gặp',
-                'routeName' => 'admin.support.help-center',
+                'routeName' => RouteAdminSystem::SUPPORT_HELP_CENTER,
                 'icon' => '<i class="ti ti-help-square-rounded"></i>',
                 'roles' => [],
                 'permissions' => ['viewSupport'],
             ],
             [
                 'title' => 'Hướng dẫn sử dụng',
-                'routeName' => 'admin.support.guide',
+                'routeName' => RouteAdminSystem::SUPPORT_GUIDE,
                 'icon' => '<i class="ti ti-help-square-rounded"></i>',
                 'roles' => [],
                 'permissions' => ['viewSupport'],
@@ -768,14 +775,14 @@ return [
         'sub' => [
             [
                 'title' => 'Thêm Admin',
-                'routeName' => 'admin.admin.create',
+                'routeName' => RouteAdminSystem::ADMIN_CREATE,
                 'icon' => '<i class="ti ti-plus"></i>',
                 'roles' => [],
                 'permissions' => ['createAdmin'],
             ],
             [
                 'title' => 'DS Admin',
-                'routeName' => 'admin.admin.index',
+                'routeName' => RouteAdminSystem::ADMIN_INDEX,
                 'icon' => '<i class="ti ti-list"></i>',
                 'roles' => [],
                 'permissions' => ['viewAdmin'],
@@ -791,20 +798,20 @@ return [
         'sub' => [
             [
                 'title' => 'Chung',
-                'routeName' => 'admin.setting.general',
+                'routeName' => RouteAdminSystem::SETTING_GENERAL,
                 'icon' => '<i class="ti ti-tool"></i>',
                 'roles' => [],
                 'permissions' => ['settingGeneral'],
             ],
             [
                 'title' => 'system_revenue',
-                'routeName' => 'admin.setting.system',
+                'routeName' => RouteAdminSystem::SETTING_SYSTEM,
                 'icon' => '<i class="ti ti-server-cog"></i>',
                 'permissions' => ['settingGeneral'],
             ],
             [
                 'title' => 'Affiliate',
-                'routeName' => 'admin.setting.affiliate',
+                'routeName' => RouteAdminSystem::SETTING_AFFILIATE,
                 'icon' => '<i class="ti ti-affiliate"></i>',
                 'roles' => [],
                 'permissions' => ['settingGeneral'],
@@ -813,7 +820,7 @@ return [
     ],
     [
         'title' => 'Quản lý Phiên bản',
-        'routeName' => 'admin.app-version.index',
+        'routeName' => RouteAdminSystem::APP_VERSION_INDEX,
         'icon' => '<i class="ti ti-versions"></i>',
         'roles' => [],
         'permissions' => ['mevivuDev'],
@@ -828,14 +835,14 @@ return [
 //        'sub' => [
 //            [
 //                'title' => 'Thêm Quyền',
-//                'routeName' => 'admin.permission.create',
+//                'routeName' => RouteAdminSystem::PERMISSION_CREATE,
 //                'icon' => '<i class="ti ti-plus"></i>',
 //                'roles' => [],
 //                'permissions' => ['mevivuDev'],
 //            ],
 //            [
 //                'title' => 'DS Quyền',
-//                'routeName' => 'admin.permission.index',
+//                'routeName' => RouteAdminSystem::PERMISSION_INDEX,
 //                'icon' => '<i class="ti ti-list"></i>',
 //                'roles' => [],
 //                'permissions' => ['mevivuDev'],
@@ -851,14 +858,14 @@ return [
 //        'sub' => [
 //            [
 //                'title' => 'Thêm Module',
-//                'routeName' => 'admin.module.create',
+//                'routeName' => RouteAdminSystem::MODULE_CREATE,
 //                'icon' => '<i class="ti ti-plus"></i>',
 //                'roles' => [],
 //                'permissions' => ['mevivuDev'],
 //            ],
 //            [
 //                'title' => 'DS Module',
-//                'routeName' => 'admin.module.index',
+//                'routeName' => RouteAdminSystem::MODULE_INDEX,
 //                'icon' => '<i class="ti ti-list"></i>',
 //                'roles' => [],
 //                'permissions' => ['mevivuDev'],
@@ -867,7 +874,7 @@ return [
 //    ],
 //    [
 //        'title' => 'Dev: Nghiệm thu',
-//        'routeName' => 'admin.module.summary',
+//        'routeName' => RouteAdminSystem::MODULE_SUMMARY,
 //        'icon' => '<i class="ti ti-code"></i>',
 //        'roles' => [],
 //        'permissions' => ['mevivuDev'],

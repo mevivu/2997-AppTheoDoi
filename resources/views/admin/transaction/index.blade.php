@@ -10,8 +10,8 @@
             <div class="card custom-shadow border-0">
                 <x-admin.page-header
                     icon="receipt"
-                    :title="__('Danh sách Giao dịch')"
-                    :subtitle="__('Theo dõi và quản lý lịch sử giao dịch, đăng ký gói dịch vụ')"
+                    :title="__('Giao dịch Thanh toán Mua gói')"
+                    :subtitle="__('Theo dõi và quản lý lịch sử giao dịch nạp tiền mua gói dịch vụ từ người dùng')"
                 />
                 
                 <div class="card-body p-3">
@@ -39,4 +39,3 @@
     ])
     @include('admin.common.copy')
 @endpush
-

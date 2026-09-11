@@ -3,6 +3,7 @@
 namespace App\Admin\Services\Affiliate;
 
 use App\Enums\Transaction\TransactionStatus;
+use App\Enums\Transaction\TransactionType;
 use App\Enums\User\AffiliateRank;
 use App\Models\Package;
 use App\Models\Transaction;
@@ -231,6 +232,7 @@ class AffiliateStatisticsService
         // Giao dịch mua gói của F1
         $transactionsQuery = Transaction::query()
             ->whereIn('user_id', $f1Users->keys())
+            ->where('type', TransactionType::Payment->value)
             ->where('status', TransactionStatus::Confirmed->value)
             ->with(['user:id,fullname,phone,email,avatar']);
 
