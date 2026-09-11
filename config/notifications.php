@@ -69,4 +69,8 @@ return [
         'title' => 'Yêu cầu rút tiền hoa hồng mới',
         'message' => 'Đối tác {fullname} vừa tạo yêu cầu rút tiền hoa hồng {amount} về {bank_name} (STK: {bank_account_number}). Mã GD: {code}.',
     ],
+    'admin_deposit_wallet' => [
+        'title' => 'Biến động số dư ví',
+        'message' => 'Ví của bạn vừa được cộng +{amount} từ Ban Quản Trị. Lý do: {reason}. Số dư hiện tại: {balance}.',
+    ],
 ];

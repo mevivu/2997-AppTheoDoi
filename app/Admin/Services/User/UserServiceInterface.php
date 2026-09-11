@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Admin\Services\User;
+use App\Admin\Http\Requests\User\DepositWalletRequest;
 use Illuminate\Http\Request;
 
 interface UserServiceInterface
@@ -21,5 +22,7 @@ interface UserServiceInterface
     public function revokeAllDevices(int $userId): bool;
 
     public function forceDelete($id): bool;
+
+    public function depositWallet(DepositWalletRequest $request, $adminUser): array;
 }
 

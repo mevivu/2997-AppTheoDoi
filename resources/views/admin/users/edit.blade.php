@@ -121,6 +121,7 @@
             </x-form>
         </div>
     </div>
+    @include('admin.users.partials.modal.modal-deposit')
 @endsection
 
 @push('libs-js')
@@ -136,4 +137,5 @@
     @include('admin.layouts.modal.modal-pick-address')
     @include('admin.scripts.google-map-input')
     @include('admin.users.partials.user-devices-script')
+    @include('admin.users.partials.scripts.deposit-wallet-script')
 @endpush

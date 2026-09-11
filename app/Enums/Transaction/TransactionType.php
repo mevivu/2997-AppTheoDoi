@@ -11,12 +11,14 @@ enum TransactionType: string
 
     case Payment = 'payment';
     case Withdraw = 'withdraw';
+    case Deposit = 'deposit';
 
     public function badge(): string
     {
         return match ($this) {
             TransactionType::Payment => 'bg-blue',
             TransactionType::Withdraw => 'bg-purple',
+            TransactionType::Deposit => 'bg-green',
         };
     }
 
@@ -25,6 +27,7 @@ enum TransactionType: string
         return match ($this) {
             TransactionType::Payment => 'Mua gói dịch vụ',
             TransactionType::Withdraw => 'Rút tiền hoa hồng',
+            TransactionType::Deposit => 'Nạp tiền vào ví',
         };
     }
 }

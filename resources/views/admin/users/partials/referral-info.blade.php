@@ -20,7 +20,7 @@
                             </div>
                             <div class="col">
                                 <div class="text-muted small fw-medium">{{ __('Số dư ví hoa hồng') }}</div>
-                                <div class="fs-2 fw-bold text-primary">
+                                <div class="fs-2 fw-bold text-primary user-wallet-balance-display">
                                     {{ number_format($user->wallet_balance ?? 0, 0, ',', '.') }} đ
                                 </div>
                             </div>

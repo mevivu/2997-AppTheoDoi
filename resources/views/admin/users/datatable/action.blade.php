@@ -1,6 +1,17 @@
+@php use App\Traits\RouteAdminSystem; @endphp
+
 <x-admin.datatable.action-group>
-    <x-admin.datatable.action-edit :href="route('admin.user.edit', $id)" />
-    <x-admin.datatable.action-delete :route="route('admin.user.delete', $id)" />
-    <x-admin.datatable.action-force-delete :route="route('admin.user.forceDelete', $id)" />
+    <button type="button"
+            class="dt-action-btn text-success open-modal-deposit"
+            data-id="{{ $id }}"
+            data-fullname="{{ $fullname ?? '' }}"
+            data-code="{{ $code ?? '' }}"
+            data-balance="{{ (float)($wallet_balance ?? 0) }}"
+            title="{{ __('Nạp tiền vào ví') }}">
+        <i class="ti ti-wallet"></i>
+    </button>
+    <x-admin.datatable.action-edit :href="route(RouteAdminSystem::USER_EDIT, $id)" />
+    <x-admin.datatable.action-delete :route="route(RouteAdminSystem::USER_DELETE, $id)" />
+    <x-admin.datatable.action-force-delete :route="route(RouteAdminSystem::USER_FORCE_DELETE, $id)" />
 </x-admin.datatable.action-group>
 

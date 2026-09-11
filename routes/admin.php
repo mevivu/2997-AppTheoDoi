@@ -771,6 +771,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::post('/clear-normal-tokens', 'clearNormalTokens')->name('clearNormalTokens');
                 Route::post('/{userId}/devices/{deviceId}/revoke', 'revokeDevice')->name('device.revoke');
                 Route::post('/{userId}/devices/revoke-all', 'revokeAllDevices')->name('device.revokeAll');
+                Route::post('/nap-tien', 'deposit')->name('deposit');
             });
 
             Route::group(['middleware' => ['permission:deleteUser', 'auth:admin']], function () {

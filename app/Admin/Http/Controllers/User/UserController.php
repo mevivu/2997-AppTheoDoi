@@ -3,6 +3,7 @@
 namespace App\Admin\Http\Controllers\User;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Admin\Http\Requests\User\DepositWalletRequest;
 use App\Admin\Http\Requests\User\UserRequest;
 use App\Admin\Repositories\Package\PackageRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
@@ -263,5 +264,41 @@ class UserController extends Controller
             return back()->with('success', __('Đã giải phóng toàn bộ thiết bị của khách hàng thành công.'));
         }
         return back()->with('error', __('Thực hiện thất bại.'));
+    }
+
+    /**
+     * Nạp tiền vào ví của thành viên
+     */
+    public function deposit(DepositWalletRequest $request): JsonResponse|RedirectResponse
+    {
+        try {
+            $adminUser = auth('admin')->user();
+            $result = $this->service->depositWallet($request, $adminUser);
+
+            $msg = "Nạp thành công {$result['amount_formatted']} vào ví của thành viên {$result['fullname']} (Mã: {$result['code']})!";
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 200,
+                    'success' => true,
+                    'message' => $msg,
+                    'data' => $result,
+                ]);
+            }
+
+            return back()->with('success', $msg);
+        } catch (Exception $e) {
+            $this->logError('Nạp tiền vào ví user thất bại:', $e);
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 400,
+                    'success' => false,
+                    'message' => $e->getMessage() ?: 'Có lỗi xảy ra khi nạp tiền vào ví. Vui lòng thử lại.',
+                ], 400);
+            }
+
+            return back()->with('error', $e->getMessage() ?: 'Có lỗi xảy ra khi nạp tiền vào ví. Vui lòng thử lại.');
+        }
     }
 }

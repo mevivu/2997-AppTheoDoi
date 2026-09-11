@@ -42,6 +42,16 @@
             </h5>
         </div>
         <div class="card-body p-3 d-flex flex-column gap-2">
+            <button type="button" class="btn btn-outline-success open-modal-deposit d-flex align-items-center justify-content-center gap-2 py-2"
+                    data-id="{{ $user->id }}"
+                    data-fullname="{{ $user->fullname ?? '' }}"
+                    data-code="{{ $user->code ?? ('#' . $user->id) }}"
+                    data-balance="{{ (float)($user->wallet_balance ?? 0) }}"
+                    title="{{ __('Nạp tiền vào ví thành viên') }}">
+                <i class="ti ti-wallet fs-4"></i>
+                <span>{{ __('Nạp tiền vào ví') }}</span>
+            </button>
+
             <a href="{{ route('admin.user.history', $user->id) }}" class="btn btn-outline-primary d-flex align-items-center justify-content-center gap-2 py-2">
                 <i class="ti ti-receipt fs-4"></i>
                 <span>{{ __('Lịch sử giao dịch') }}</span>
@@ -54,7 +64,7 @@
             </button>
 
             <button type="button" class="btn btn-outline-danger open-modal-force-delete d-flex align-items-center justify-content-center gap-2 py-2"
-                    data-route="{{ route('admin.user.forceDelete', $user->id) }}"
+                    data-route="{{ route(RouteAdminSystem::USER_FORCE_DELETE, $user->id) }}"
                     data-bs-toggle="modal" data-bs-target="#modalForceDelete"
                     title="{{ __('Xóa vĩnh viễn tài khoản này') }}">
                 <i class="ti ti-trash-x fs-4"></i>

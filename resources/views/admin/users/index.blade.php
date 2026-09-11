@@ -26,6 +26,7 @@
             </div>
         </div>
     </div>
+    @include('admin.users.partials.modal.modal-deposit')
 @endsection
 
 @push('libs-js')
@@ -40,6 +41,7 @@
         'id_table' => $dataTable->getTableAttribute('id'),
     ])
     @include('admin.common.copy')
+    @include('admin.users.partials.scripts.deposit-wallet-script')
     <script>
         $(document).on('click', '.open-modal-force-delete', function () {
             var form = $("#modalFormForceDelete"), action = $(this).data('route');
