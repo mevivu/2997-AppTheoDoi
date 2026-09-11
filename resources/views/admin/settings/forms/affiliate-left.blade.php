@@ -140,9 +140,9 @@
                 <div class="row g-4">
                     {{-- Khối 1: Chính sách quyền lợi --}}
                     <div class="col-12 col-md-6">
-                        <div class="card h-100 border shadow-none bg-light-lt">
-                            <div class="card-header bg-white py-2">
-                                <h4 class="card-title mb-0 text-dark">
+                        <div class="card h-100 affiliate-tier-card">
+                            <div class="card-header py-2">
+                                <h4 class="card-title mb-0">
                                     <i class="ti ti-gift text-primary me-1"></i> {{ __('🎁 Chính Sách Trả Thưởng & Hoa Hồng') }}
                                 </h4>
                             </div>
@@ -164,9 +164,9 @@
 
                     {{-- Khối 2: Điều kiện nâng hạng --}}
                     <div class="col-12 col-md-6">
-                        <div class="card h-100 border shadow-none bg-light-lt">
-                            <div class="card-header bg-white py-2">
-                                <h4 class="card-title mb-0 text-dark">
+                        <div class="card h-100 affiliate-tier-card">
+                            <div class="card-header py-2">
+                                <h4 class="card-title mb-0">
                                     <i class="ti ti-target text-success me-1"></i> {{ __('🎯 Điều Kiện Đạt Cấp (HOẶC)') }}
                                 </h4>
                             </div>
@@ -213,9 +213,9 @@
                 <div class="row g-4">
                     {{-- Khối 1: Chính sách quyền lợi --}}
                     <div class="col-12 col-md-6">
-                        <div class="card h-100 border shadow-none bg-light-lt">
-                            <div class="card-header bg-white py-2">
-                                <h4 class="card-title mb-0 text-dark">
+                        <div class="card h-100 affiliate-tier-card">
+                            <div class="card-header py-2">
+                                <h4 class="card-title mb-0">
                                     <i class="ti ti-gift text-primary me-1"></i> {{ __('🎁 Chính Sách Trả Thưởng & Hoa Hồng') }}
                                 </h4>
                             </div>
@@ -237,9 +237,9 @@
 
                     {{-- Khối 2: Điều kiện nâng hạng --}}
                     <div class="col-12 col-md-6">
-                        <div class="card h-100 border shadow-none bg-light-lt">
-                            <div class="card-header bg-white py-2">
-                                <h4 class="card-title mb-0 text-dark">
+                        <div class="card h-100 affiliate-tier-card">
+                            <div class="card-header py-2">
+                                <h4 class="card-title mb-0">
                                     <i class="ti ti-target text-success me-1"></i> {{ __('🎯 Điều Kiện Nâng Hạng (Quy tắc HOẶC)') }}
                                 </h4>
                             </div>
@@ -250,7 +250,9 @@
                                     'hint' => __('Nhánh 1: Giới thiệu đủ mốc user này sẽ được thăng cấp (Khuyến nghị: 6.000 user).')
                                 ])
 
-                                <div class="text-center fw-bold text-muted my-1">— HOẶC —</div>
+                                <div class="affiliate-or-divider">
+                                    <span class="affiliate-or-badge">{{ __('HOẶC') }}</span>
+                                </div>
 
                                 @include('admin.settings.forms.partials.setting-field', [
                                     'setting' => $settingsByKey->get('affiliate_sales_silver'),
@@ -288,9 +290,9 @@
                 <div class="row g-4">
                     {{-- Khối 1: Chính sách quyền lợi --}}
                     <div class="col-12 col-md-6">
-                        <div class="card h-100 border shadow-none bg-light-lt">
-                            <div class="card-header bg-white py-2">
-                                <h4 class="card-title mb-0 text-dark">
+                        <div class="card h-100 affiliate-tier-card">
+                            <div class="card-header py-2">
+                                <h4 class="card-title mb-0">
                                     <i class="ti ti-gift text-primary me-1"></i> {{ __('🎁 Chính Sách Trả Thưởng & Hoa Hồng') }}
                                 </h4>
                             </div>
@@ -312,9 +314,9 @@
 
                     {{-- Khối 2: Điều kiện nâng hạng --}}
                     <div class="col-12 col-md-6">
-                        <div class="card h-100 border shadow-none bg-light-lt">
-                            <div class="card-header bg-white py-2">
-                                <h4 class="card-title mb-0 text-dark">
+                        <div class="card h-100 affiliate-tier-card">
+                            <div class="card-header py-2">
+                                <h4 class="card-title mb-0">
                                     <i class="ti ti-target text-success me-1"></i> {{ __('🎯 Điều Kiện Nâng Hạng (Quy tắc HOẶC)') }}
                                 </h4>
                             </div>
@@ -325,7 +327,9 @@
                                     'hint' => __('Nhánh 1: Giới thiệu đủ mốc user này sẽ được thăng cấp (Khuyến nghị: 8.000 user).')
                                 ])
 
-                                <div class="text-center fw-bold text-muted my-1">— HOẶC —</div>
+                                <div class="affiliate-or-divider">
+                                    <span class="affiliate-or-badge">{{ __('HOẶC') }}</span>
+                                </div>
 
                                 @include('admin.settings.forms.partials.setting-field', [
                                     'setting' => $settingsByKey->get('affiliate_sales_gold'),
@@ -363,9 +367,9 @@
                 <div class="row g-4">
                     {{-- Khối 1: Chính sách quyền lợi --}}
                     <div class="col-12 col-md-6">
-                        <div class="card h-100 border shadow-none bg-light-lt">
-                            <div class="card-header bg-white py-2">
-                                <h4 class="card-title mb-0 text-dark">
+                        <div class="card h-100 affiliate-tier-card">
+                            <div class="card-header py-2">
+                                <h4 class="card-title mb-0">
                                     <i class="ti ti-gift text-primary me-1"></i> {{ __('🎁 Chính Sách Trả Thưởng & Hoa Hồng') }}
                                 </h4>
                             </div>
@@ -387,9 +391,9 @@
 
                     {{-- Khối 2: Điều kiện nâng hạng --}}
                     <div class="col-12 col-md-6">
-                        <div class="card h-100 border shadow-none bg-light-lt">
-                            <div class="card-header bg-white py-2">
-                                <h4 class="card-title mb-0 text-dark">
+                        <div class="card h-100 affiliate-tier-card">
+                            <div class="card-header py-2">
+                                <h4 class="card-title mb-0">
                                     <i class="ti ti-target text-success me-1"></i> {{ __('🎯 Điều Kiện Nâng Hạng (Quy tắc HOẶC)') }}
                                 </h4>
                             </div>
@@ -400,7 +404,9 @@
                                     'hint' => __('Nhánh 1: Giới thiệu đủ mốc user này sẽ được thăng cấp (Khuyến nghị: 10.000 user).')
                                 ])
 
-                                <div class="text-center fw-bold text-muted my-1">— HOẶC —</div>
+                                <div class="affiliate-or-divider">
+                                    <span class="affiliate-or-badge">{{ __('HOẶC') }}</span>
+                                </div>
 
                                 @include('admin.settings.forms.partials.setting-field', [
                                     'setting' => $settingsByKey->get('affiliate_sales_diamond'),

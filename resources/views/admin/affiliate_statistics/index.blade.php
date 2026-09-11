@@ -48,28 +48,35 @@
     }
 
     .kpi-icon-box {
-        width: 52px;
-        height: 52px;
-        border-radius: 14px;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 1.35rem;
+        flex-shrink: 0;
     }
 
     .kpi-value {
-        font-size: 1.65rem;
+        font-size: 1.75rem;
         font-weight: 800;
         color: #0f172a;
         line-height: 1.2;
+        letter-spacing: -0.02em;
     }
 
     .kpi-label {
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         font-weight: 700;
         color: #64748b;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
+    }
+
+    .kpi-footer {
+        min-height: 26px;
+        line-height: 1.4;
     }
 
     .chart-card {
@@ -303,28 +310,30 @@
         <div class="row g-3 mb-4">
             <!-- KPI 1: Tổng Doanh Thu F1 -->
             <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card card-kpi p-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="kpi-label">DOANH THU TRONG KỲ</div>
-                            <div class="kpi-value mt-1 text-success" id="kpi-total-revenue">
-                                {{ $stats['kpis']['total_revenue_formatted'] }}
-                            </div>
-                            <div class="mt-2 fs-12" id="kpi-growth-container">
-                                @if($stats['kpis']['growth'] >= 0)
-                                    <span class="text-success font-weight-bold">
-                                        <i class="ti ti-arrow-up-right"></i> +{{ $stats['kpis']['growth'] }}%
-                                    </span>
-                                @else
-                                    <span class="text-danger font-weight-bold">
-                                        <i class="ti ti-arrow-down-right"></i> {{ $stats['kpis']['growth'] }}%
-                                    </span>
-                                @endif
-                                <span class="text-muted ms-1">so với kỳ trước</span>
+                <div class="card card-kpi h-100 p-3 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="kpi-label">DOANH THU TRONG KỲ</span>
+                            <div class="kpi-icon-box bg-green-lt text-green">
+                                <i class="ti ti-wallet"></i>
                             </div>
                         </div>
-                        <div class="kpi-icon-box bg-green-lt text-green">
-                            <i class="ti ti-wallet"></i>
+                        <div class="kpi-value text-success" id="kpi-total-revenue">
+                            {{ $stats['kpis']['total_revenue_formatted'] }}
+                        </div>
+                    </div>
+                    <div class="kpi-footer mt-3 pt-2 border-top border-light d-flex align-items-center fs-12">
+                        <div id="kpi-growth-container" class="d-flex align-items-center flex-wrap">
+                            @if($stats['kpis']['growth'] >= 0)
+                                <span class="text-success font-weight-bold d-inline-flex align-items-center">
+                                    <i class="ti ti-arrow-up-right me-0.5"></i>+{{ $stats['kpis']['growth'] }}%
+                                </span>
+                            @else
+                                <span class="text-danger font-weight-bold d-inline-flex align-items-center">
+                                    <i class="ti ti-arrow-down-right me-0.5"></i>{{ $stats['kpis']['growth'] }}%
+                                </span>
+                            @endif
+                            <span class="text-muted ms-1">so với kỳ trước</span>
                         </div>
                     </div>
                 </div>
@@ -332,60 +341,60 @@
 
             <!-- KPI 2: Đối Tác Có Doanh Thu -->
             <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card card-kpi p-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="kpi-label">ĐỐI TÁC CÓ DOANH THU</div>
-                            <div class="kpi-value mt-1 text-primary" id="kpi-active-partners">
-                                {{ number_format($stats['kpis']['active_partners']) }}
-                            </div>
-                            <div class="mt-2 fs-12 text-muted">
-                                Trên tổng số <strong id="kpi-total-partners">{{ number_format($stats['total_partners']) }}</strong> đối tác
+                <div class="card card-kpi h-100 p-3 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="kpi-label">ĐỐI TÁC CÓ DOANH THU</span>
+                            <div class="kpi-icon-box bg-blue-lt text-blue">
+                                <i class="ti ti-users"></i>
                             </div>
                         </div>
-                        <div class="kpi-icon-box bg-blue-lt text-blue">
-                            <i class="ti ti-users"></i>
+                        <div class="kpi-value text-primary" id="kpi-active-partners">
+                            {{ number_format($stats['kpis']['active_partners']) }}
                         </div>
+                    </div>
+                    <div class="kpi-footer mt-3 pt-2 border-top border-light d-flex align-items-center fs-12 text-muted">
+                        <span>Trên tổng số <strong id="kpi-total-partners" class="text-dark">{{ number_format($stats['total_partners']) }}</strong> đối tác</span>
                     </div>
                 </div>
             </div>
 
             <!-- KPI 3: Đơn Mua Gói Thành Công -->
             <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card card-kpi p-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="kpi-label">ĐƠN MUA GÓI (F1)</div>
-                            <div class="kpi-value mt-1 text-indigo" id="kpi-total-orders">
-                                {{ number_format($stats['kpis']['total_orders']) }}
-                            </div>
-                            <div class="mt-2 fs-12 text-muted">
-                                Giao dịch thanh toán thành công
+                <div class="card card-kpi h-100 p-3 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="kpi-label">ĐƠN MUA GÓI (F1)</span>
+                            <div class="kpi-icon-box bg-indigo-lt text-indigo">
+                                <i class="ti ti-shopping-cart"></i>
                             </div>
                         </div>
-                        <div class="kpi-icon-box bg-indigo-lt text-indigo">
-                            <i class="ti ti-shopping-cart"></i>
+                        <div class="kpi-value text-indigo" id="kpi-total-orders">
+                            {{ number_format($stats['kpis']['total_orders']) }}
                         </div>
+                    </div>
+                    <div class="kpi-footer mt-3 pt-2 border-top border-light d-flex align-items-center fs-12 text-muted">
+                        <span>Giao dịch thanh toán thành công</span>
                     </div>
                 </div>
             </div>
 
             <!-- KPI 4: Giá Trị Đơn Trung Bình (AOV) -->
             <div class="col-12 col-sm-6 col-xl-3">
-                <div class="card card-kpi p-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="kpi-label">GIÁ TRỊ ĐƠN TRUNG BÌNH</div>
-                            <div class="kpi-value mt-1 text-warning" id="kpi-aov">
-                                {{ $stats['kpis']['aov_formatted'] }}
-                            </div>
-                            <div class="mt-2 fs-12 text-muted">
-                                Doanh thu trung bình / mỗi đơn hàng
+                <div class="card card-kpi h-100 p-3 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="kpi-label">GIÁ TRỊ ĐƠN TRUNG BÌNH</span>
+                            <div class="kpi-icon-box bg-warning-lt text-warning">
+                                <i class="ti ti-chart-dots"></i>
                             </div>
                         </div>
-                        <div class="kpi-icon-box bg-warning-lt text-warning">
-                            <i class="ti ti-chart-dots"></i>
+                        <div class="kpi-value text-warning" id="kpi-aov">
+                            {{ $stats['kpis']['aov_formatted'] }}
                         </div>
+                    </div>
+                    <div class="kpi-footer mt-3 pt-2 border-top border-light d-flex align-items-center fs-12 text-muted">
+                        <span>Doanh thu trung bình / mỗi đơn hàng</span>
                     </div>
                 </div>
             </div>
