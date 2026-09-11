@@ -6,6 +6,7 @@ use App\Admin\Repositories\Admin\AdminRepositoryInterface;
 use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
 use App\AES\AESHelper;
 use App\Enums\Notification\MessageType;
+use App\Enums\Notification\NotificationStatus;
 use App\Mail\AdminNotificationMail;
 use App\Models\User;
 use App\Repositories\Setting\SettingRepositoryInterface;
@@ -241,6 +242,7 @@ trait  NotifiesViaFirebase
             'user_id' => $user->id,
             'title' => $title,
             'message' => $body,
+            'status' => NotificationStatus::NOT_READ->value,
             'is_pushed' => !empty($deviceToken)
         ];
 
