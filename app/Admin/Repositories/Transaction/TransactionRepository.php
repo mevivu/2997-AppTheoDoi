@@ -38,4 +38,15 @@ class TransactionRepository extends EloquentRepository implements TransactionRep
             'admin_note' => $data['admin_note'] ?? ($data['user_note'] ?? null),
         ]);
     }
+
+    /**
+     * Tìm giao dịch và khóa dòng dữ liệu chống race condition
+     *
+     * @param int $id
+     * @return Transaction|null
+     */
+    public function findForUpdate(int $id): ?Transaction
+    {
+        return $this->model->where('id', $id)->lockForUpdate()->first();
+    }
 }

@@ -10,4 +10,5 @@ interface UserRepositoryInterface extends EloquentRepositoryInterface
     public function getQueryBuilderOrderBy($column = 'id', $sort = 'DESC');
     public function getUserByRole($role);
     public function findMany(array $ids);
+    public function findForUpdate(int $id): ?\App\Models\User;
 }

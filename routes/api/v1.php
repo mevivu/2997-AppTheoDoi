@@ -68,6 +68,16 @@ Route::controller(App\Api\V1\Http\Controllers\Transaction\TransactionController:
         Route::get('/{id}', 'show');
     });
 
+// Affiliate Withdrawal
+Route::controller(App\Api\V1\Http\Controllers\Transaction\WithdrawController::class)
+    ->prefix('/affiliate/withdraw')
+    ->as('affiliate.withdraw.')
+    ->middleware('auth:api')
+    ->group(function () {
+        Route::get('/config', 'getConfig');
+        Route::post('/request', 'requestWithdraw');
+    });
+
 // Assessment
 Route::controller(\App\Api\V1\Http\Controllers\Assessment\AssessmentController::class)
     ->prefix('/assessment')

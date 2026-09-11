@@ -70,4 +70,14 @@ class UserRepository extends EloquentRepository implements UserRepositoryInterfa
         return $this->model->whereIn('id', $ids)->get();
     }
 
+    /**
+     * Tìm tài khoản user và khóa dòng dữ liệu chống race condition
+     *
+     * @param int $id
+     * @return User|null
+     */
+    public function findForUpdate(int $id): ?User
+    {
+        return $this->model->where('id', $id)->lockForUpdate()->first();
+    }
 }

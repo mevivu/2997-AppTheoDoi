@@ -134,8 +134,8 @@ class WithdrawService
         $config = $this->getWithdrawSettings();
 
         return DB::transaction(function () use ($user, $amount, $data, $config) {
-            // Khóa dòng user để chống race condition / double-spending
-            $lockedUser = User::where('id', $user->id)->lockForUpdate()->first();
+            // Khóa dòng user để chống race condition / double-spending qua repository
+            $lockedUser = $this->userRepository->findForUpdate($user->id);
 
             if (!$lockedUser) {
                 throw new Exception('Không tìm thấy tài khoản người dùng.');
@@ -143,31 +143,7 @@ class WithdrawService
 
             $currentBalance = (float) ($lockedUser->wallet_balance ?? 0);
 
-            // Kiểm tra điều kiện 1: Số dư tối thiểu 1.000.000đ
-            if ($currentBalance < $config['min_balance']) {
-                throw new Exception(
-                    'Số dư ví hoa hồng của bạn phải đạt tối thiểu ' .
-                    $config['min_balance_formatted'] .
-                    ' mới có thể yêu cầu rút tiền. (Hiện có: ' .
-                    number_format($currentBalance, 0, ',', '.') . 'đ)'
-                );
-            }
-
-            // Kiểm tra điều kiện 2: Số tiền rút tối thiểu
-            if ($amount < $config['min_balance']) {
-                throw new Exception('Số tiền rút tối thiểu mỗi lần là ' . $config['min_balance_formatted'] . '.');
-            }
-
-            // Kiểm tra điều kiện 3: Bắt buộc là bội số của 1.000.000đ
-            if ($config['step_multiple'] > 0 && fmod($amount, $config['step_multiple']) != 0) {
-                throw new Exception(
-                    'Số tiền rút bắt buộc phải là bội số của ' .
-                    $config['step_multiple_formatted'] .
-                    ' (Ví dụ: 1.000.000đ, 2.000.000đ, 3.000.000đ,...).'
-                );
-            }
-
-            // Kiểm tra điều kiện 4: Không rút vượt quá số dư hiện có
+            // Kiểm tra an toàn kép nếu số dư khả dụng bị thay đổi đồng thời
             if ($amount > $currentBalance) {
                 throw new Exception('Số tiền yêu cầu rút (' . number_format($amount, 0, ',', '.') . 'đ) vượt quá số dư khả dụng trong ví.');
             }
@@ -175,16 +151,18 @@ class WithdrawService
             // Sinh mã giao dịch duy nhất
             $code = 'WD' . date('Ymd') . strtoupper(Str::random(5));
 
-            // Trừ tiền khỏi ví khả dụng của đối tác
-            $lockedUser->wallet_balance = $currentBalance - $amount;
-            $lockedUser->save();
+            // Trừ tiền khỏi ví khả dụng của đối tác qua repository
+            $newBalance = $currentBalance - $amount;
+            $this->userRepository->update($lockedUser->id, [
+                'wallet_balance' => $newBalance,
+            ]);
 
             // Ghi nhận biến động ví vào affiliate_histories qua repository
             $this->affiliateHistoryRepository->create([
                 'user_id' => $lockedUser->id,
                 'source_user_id' => null,
                 'amount' => -$amount,
-                'balance_after' => $lockedUser->wallet_balance,
+                'balance_after' => $newBalance,
                 'type' => 'withdraw_request',
                 'description' => "Yêu cầu rút tiền [{$code}] về {$data['bank_name']} (STK: {$data['bank_account_number']}) - Dự kiến chi trả: {$config['next_payout_text']}",
             ]);
@@ -209,7 +187,7 @@ class WithdrawService
     public function approveWithdraw(int $transactionId, $adminUser, ?string $note = null): Transaction
     {
         $transaction = DB::transaction(function () use ($transactionId, $adminUser, $note) {
-            $transaction = Transaction::where('id', $transactionId)->lockForUpdate()->first();
+            $transaction = $this->transactionRepository->findForUpdate($transactionId);
 
             if (!$transaction || $transaction->status !== TransactionStatus::Pending) {
                 throw new Exception('Giao dịch không hợp lệ hoặc đã được xử lý.');
@@ -241,7 +219,7 @@ class WithdrawService
     public function rejectWithdraw(int $transactionId, $adminUser, string $reason): Transaction
     {
         $transaction = DB::transaction(function () use ($transactionId, $adminUser, $reason) {
-            $transaction = Transaction::where('id', $transactionId)->lockForUpdate()->first();
+            $transaction = $this->transactionRepository->findForUpdate($transactionId);
 
             if (!$transaction || $transaction->status !== TransactionStatus::Pending) {
                 throw new Exception('Giao dịch không hợp lệ hoặc đã được xử lý.');
@@ -255,8 +233,8 @@ class WithdrawService
                 'processed_by' => $adminUser->id ?? null,
             ]);
 
-            // Hoàn lại tiền cho ví đối tác
-            $user = User::where('id', $transaction->user_id)->lockForUpdate()->first();
+            // Hoàn lại tiền cho ví đối tác qua repository
+            $user = $this->userRepository->findForUpdate($transaction->user_id);
             if ($user) {
                 $newBalance = ($user->wallet_balance ?? 0) + $transaction->amount;
                 $this->userRepository->update($user->id, ['wallet_balance' => $newBalance]);
