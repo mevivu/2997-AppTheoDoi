@@ -464,6 +464,19 @@
         box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35);
     }
 
+    .dt-action-btn.dt-action-deactivate {
+        background: #fffbeb;
+        color: #d97706;
+        border-color: #fde68a;
+    }
+    .dt-action-btn.dt-action-deactivate:hover {
+        background: #d97706;
+        color: #ffffff;
+        border-color: #d97706;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+    }
+
 
     .dt-action-btn.dt-action-view {
         background: #f0fdf4;

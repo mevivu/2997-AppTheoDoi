@@ -20,7 +20,21 @@
         <i class="ti ti-cash-off"></i>
     </button>
     <x-admin.datatable.action-edit :href="route(RouteAdminSystem::USER_EDIT, $id)" />
-    <x-admin.datatable.action-delete :route="route(RouteAdminSystem::USER_DELETE, $id)" />
-    <x-admin.datatable.action-force-delete :route="route(RouteAdminSystem::USER_FORCE_DELETE, $id)" />
+    <button type="button"
+            class="dt-action-btn dt-action-deactivate open-modal-deactivate"
+            data-route="{{ route(RouteAdminSystem::USER_DELETE, $id) }}"
+            data-id="{{ $id }}"
+            data-fullname="{{ $fullname ?? '' }}"
+            data-code="{{ $code ?? '' }}"
+            data-bs-toggle="modal"
+            data-bs-target="#modalDeactivateUser"
+            title="{{ __('Ngưng hoạt động tài khoản (Cập nhật trạng thái)') }}">
+        <i class="ti ti-user-off"></i>
+    </button>
+    <x-admin.datatable.action-force-delete 
+        :route="route(RouteAdminSystem::USER_FORCE_DELETE, $id)" 
+        data-fullname="{{ $fullname ?? '' }}"
+        data-code="{{ $code ?? '' }}"
+    />
 </x-admin.datatable.action-group>
 

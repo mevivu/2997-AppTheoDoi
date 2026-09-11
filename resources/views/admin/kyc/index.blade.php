@@ -426,7 +426,16 @@
 @endsection
 
 @push('libs-js')
+    <!-- button in datatable -->
+    <script src="{{ asset('/public/vendor/datatables/buttons.server-side.js') }}"></script>
+@endpush
+
+@push('custom-js')
     {{ $dataTable->scripts() }}
+
+    @include('admin.scripts.datatable-toggle-columns', [
+        'id_table' => $dataTable->getTableAttribute('id'),
+    ])
 
     <script>
         let currentRotation = 0;

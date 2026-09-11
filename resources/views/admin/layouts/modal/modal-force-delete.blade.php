@@ -13,7 +13,7 @@
                     {{ __('Xác nhận xóa vĩnh viễn tài khoản?') }}
                 </h4>
                 <p class="modal-desc text-muted fs-13 mb-3">
-                    {{ __('Hành động này sẽ') }} <strong class="text-danger">{{ __('xóa vĩnh viễn và không thể khôi phục') }}</strong> {{ __('tài khoản cùng toàn bộ dữ liệu liên quan khỏi hệ thống:') }}
+                    {{ __('Hành động này sẽ') }} <strong class="text-danger">{{ __('xóa vĩnh viễn và không thể khôi phục') }}</strong> {{ __('tài khoản') }} <strong class="text-dark" id="forceDeleteUserName"></strong> {{ __('cùng toàn bộ dữ liệu liên quan khỏi hệ thống:') }}
                 </p>
                 <div class="p-3 text-start mb-3" style="background: #fff5f5; border: 1px solid #fed7d7; border-radius: 10px;">
                     <ul class="mb-0 ps-3 text-danger fs-12" style="line-height: 1.7;">

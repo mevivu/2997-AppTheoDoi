@@ -75,6 +75,8 @@
 
             <button type="button" class="btn btn-outline-danger open-modal-force-delete d-flex align-items-center justify-content-center gap-2 py-2"
                     data-route="{{ route(RouteAdminSystem::USER_FORCE_DELETE, $user->id) }}"
+                    data-fullname="{{ $user->fullname }}"
+                    data-code="{{ $user->code }}"
                     data-bs-toggle="modal" data-bs-target="#modalForceDelete"
                     title="{{ __('Xóa vĩnh viễn tài khoản này') }}">
                 <i class="ti ti-trash-x fs-4"></i>

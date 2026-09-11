@@ -427,8 +427,33 @@ $(document).on('click', '.open-modal-delete', function () {
 });
 
 $(document).on('click', '.open-modal-force-delete', function () {
-    var form = $("#modalFormForceDelete"), action = $(this).data('route');
+    var form = $("#modalFormForceDelete"), 
+        action = $(this).data('route'),
+        fullname = $(this).data('fullname'),
+        code = $(this).data('code');
     form.attr('action', action);
+    if ($('#forceDeleteUserName').length) {
+        var displayName = fullname || (code ? ('#' + code) : '');
+        if (code && fullname) {
+            displayName += ' (#' + code + ')';
+        }
+        $('#forceDeleteUserName').text(displayName ? ('(' + displayName + ')') : '');
+    }
+});
+
+$(document).on('click', '.open-modal-deactivate', function () {
+    var form = $("#modalFormDeactivate"), 
+        action = $(this).data('route'),
+        fullname = $(this).data('fullname'),
+        code = $(this).data('code');
+    form.attr('action', action);
+    if ($('#deactivateUserName').length) {
+        var displayName = fullname || (code ? ('#' + code) : '');
+        if (code && fullname) {
+            displayName += ' (#' + code + ')';
+        }
+        $('#deactivateUserName').text(displayName || '-');
+    }
 });
 
 

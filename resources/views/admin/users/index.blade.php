@@ -28,6 +28,7 @@
     </div>
     @include('admin.users.partials.modal.modal-deposit')
     @include('admin.users.partials.modal.modal-withdraw')
+    @include('admin.users.partials.modal.modal-deactivate')
 @endsection
 
 @push('libs-js')
@@ -45,9 +46,34 @@
     @include('admin.users.partials.scripts.deposit-wallet-script')
     @include('admin.users.partials.scripts.withdraw-wallet-script')
     <script>
-        $(document).on('click', '.open-modal-force-delete', function () {
-            var form = $("#modalFormForceDelete"), action = $(this).data('route');
+        // Modal Ngưng hoạt động (Cập nhật trạng thái)
+        $(document).on('click', '.open-modal-deactivate', function () {
+            var form = $("#modalFormDeactivate"), 
+                action = $(this).data('route'),
+                fullname = $(this).data('fullname'),
+                code = $(this).data('code');
             form.attr('action', action);
+            var displayName = fullname || (code ? ('#' + code) : '');
+            if (code && fullname) {
+                displayName += ' (#' + code + ')';
+            }
+            $('#deactivateUserName').text(displayName || '-');
+        });
+
+        // Modal Xóa vĩnh viễn
+        $(document).on('click', '.open-modal-force-delete', function () {
+            var form = $("#modalFormForceDelete"), 
+                action = $(this).data('route'),
+                fullname = $(this).data('fullname'),
+                code = $(this).data('code');
+            form.attr('action', action);
+            var displayName = fullname || (code ? ('#' + code) : '');
+            if (code && fullname) {
+                displayName += ' (#' + code + ')';
+            }
+            if ($('#forceDeleteUserName').length) {
+                $('#forceDeleteUserName').text(displayName ? ('(' + displayName + ')') : '');
+            }
         });
     </script>
 @endpush

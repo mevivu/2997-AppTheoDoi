@@ -81,11 +81,6 @@ class KycApprovalDatatable extends BaseDataTable
     protected function setCustomEditColumns(): void
     {
         $this->customEditColumns = [
-            'user' => function ($user) {
-                return view($this->view['user'], [
-                    'user' => $user,
-                ])->render();
-            },
             'wallet_balance' => function ($user) {
                 $balance = (float) ($user->wallet_balance ?? 0);
                 $html = '<div class="text-center py-1">';
@@ -94,16 +89,6 @@ class KycApprovalDatatable extends BaseDataTable
                 $html .= '</span>';
                 $html .= '</div>';
                 return $html;
-            },
-            'id_cards' => function ($user) {
-                return view($this->view['id_cards'], [
-                    'user' => $user,
-                ])->render();
-            },
-            'tax_and_bank' => function ($user) {
-                return view($this->view['tax_and_bank'], [
-                    'user' => $user,
-                ])->render();
             },
             'kyc_submitted_at' => function ($user) {
                 $time = $user->kyc_submitted_at ?: $user->updated_at;
@@ -119,16 +104,33 @@ class KycApprovalDatatable extends BaseDataTable
                     'user' => $user,
                 ])->render();
             },
+        ];
+    }
+
+    protected function setCustomAddColumns(): void
+    {
+        $this->customAddColumns = [
+            'user' => function ($user) {
+                return view($this->view['user'], [
+                    'user' => $user,
+                ])->render();
+            },
+            'id_cards' => function ($user) {
+                return view($this->view['id_cards'], [
+                    'user' => $user,
+                ])->render();
+            },
+            'tax_and_bank' => function ($user) {
+                return view($this->view['tax_and_bank'], [
+                    'user' => $user,
+                ])->render();
+            },
             'action' => function ($user) {
                 return view($this->view['action'], [
                     'user' => $user,
                 ])->render();
             },
         ];
-    }
-
-    protected function setCustomAddColumns(): void
-    {
     }
 
     protected function setCustomRawColumns(): void
@@ -148,10 +150,20 @@ class KycApprovalDatatable extends BaseDataTable
     {
         $this->customFilterColumns = [
             'user' => function ($query, $keyword) {
-                $query->where(function ($sub) use ($keyword) {
+                $encrypted = null;
+                try {
+                    $encrypted = \App\AES\AESHelper::encrypt($keyword);
+                } catch (\Throwable $e) {
+                }
+
+                $query->where(function ($sub) use ($keyword, $encrypted) {
                     $sub->where('fullname', 'like', "%$keyword%")
                         ->orWhere('phone', 'like', "%$keyword%")
                         ->orWhere('email', 'like', "%$keyword%");
+                    if ($encrypted) {
+                        $sub->orWhere('phone', $encrypted)
+                            ->orWhere('email', $encrypted);
+                    }
                 });
             },
             'tax_and_bank' => function ($query, $keyword) {
