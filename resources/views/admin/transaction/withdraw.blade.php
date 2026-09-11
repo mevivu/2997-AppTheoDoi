@@ -151,44 +151,42 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="formApproveWithdraw">
-                    <input type="hidden" id="approveWithdrawId" name="id">
-                    <div class="modal-body p-3.5">
-                        <div class="p-3 bg-light rounded-3 mb-3 border border-1">
-                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                                <span class="text-muted fs-12">{{ __('Mã yêu cầu') }}</span>
-                                <span class="fw-bold font-monospace text-dark fs-13 px-2 py-0.5 bg-white border rounded" id="approveCode">-</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                                <span class="text-muted fs-12">{{ __('Đối tác nhận') }}</span>
-                                <span class="fw-bold text-primary fs-13" id="approveUser">-</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                                <span class="text-muted fs-12">{{ __('Số tiền chi trả') }}</span>
-                                <span class="fw-extrabold text-success fs-16 font-monospace" id="approveAmount">-</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-start">
-                                <span class="text-muted fs-12 mt-0.5">{{ __('Tài khoản nhận') }}</span>
-                                <span class="fw-semibold text-dark text-end fs-12" id="approveBank" style="max-width: 65%;">-</span>
-                            </div>
+                <input type="hidden" id="approveWithdrawId">
+                <div class="modal-body p-3.5">
+                    <div class="p-3 bg-light rounded-3 mb-3 border border-1">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <span class="text-muted fs-12">{{ __('Mã yêu cầu') }}</span>
+                            <span class="fw-bold font-monospace text-dark fs-13 px-2 py-0.5 bg-white border rounded" id="approveCode">-</span>
                         </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <span class="text-muted fs-12">{{ __('Đối tác nhận') }}</span>
+                            <span class="fw-bold text-primary fs-13" id="approveUser">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <span class="text-muted fs-12">{{ __('Số tiền chi trả') }}</span>
+                            <span class="fw-extrabold text-success fs-16 font-monospace" id="approveAmount">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="text-muted fs-12 mt-0.5">{{ __('Tài khoản nhận') }}</span>
+                            <span class="fw-semibold text-dark text-end fs-12" id="approveBank" style="max-width: 65%;">-</span>
+                        </div>
+                    </div>
 
-                        <div class="mb-2">
-                            <label for="approveNote" class="form-label fw-semibold fs-13 text-dark">
-                                <i class="ti ti-receipt me-1 text-success"></i>{{ __('Mã giao dịch ngân hàng / Ghi chú đối soát (tùy chọn)') }}
-                            </label>
-                            <input type="text" class="form-control fs-13" id="approveNote" name="note" placeholder="{{ __('VD: FT2609110001, đã chuyển khoản qua Vietcombank...') }}">
-                            <small class="text-muted fs-11 mt-1 d-block"><i class="ti ti-info-circle me-0.5"></i>{{ __('Thông tin này sẽ được lưu trữ làm biên lai đối soát và gửi đến đối tác.') }}</small>
-                        </div>
+                    <div class="mb-2">
+                        <label for="approveNote" class="form-label fw-semibold fs-13 text-dark">
+                            <i class="ti ti-receipt me-1 text-success"></i>{{ __('Mã giao dịch ngân hàng / Ghi chú đối soát (tùy chọn)') }}
+                        </label>
+                        <input type="text" class="form-control fs-13" id="approveNote" placeholder="{{ __('VD: FT2609110001, đã chuyển khoản qua Vietcombank...') }}">
+                        <small class="text-muted fs-11 mt-1 d-block"><i class="ti ti-info-circle me-0.5"></i>{{ __('Thông tin này sẽ được lưu trữ làm biên lai đối soát và gửi đến đối tác.') }}</small>
                     </div>
-                    <div class="modal-footer py-2.5 px-3.5 bg-light border-top d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal">{{ __('Hủy') }}</button>
-                        <button type="submit" class="btn btn-success fw-bold px-3 d-flex align-items-center" id="btnSubmitApprove">
-                            <span class="spinner-border spinner-border-sm me-1.5 d-none" role="status"></span>
-                            <i class="ti ti-check me-1"></i>{{ __('Xác nhận Đã Chuyển Tiền') }}
-                        </button>
-                    </div>
-                </form>
+                </div>
+                <div class="modal-footer py-2.5 px-3.5 bg-light border-top d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal">{{ __('Hủy') }}</button>
+                    <button type="button" class="btn btn-success fw-bold px-3 d-flex align-items-center" id="btnSubmitApprove">
+                        <span class="spinner-border spinner-border-sm me-1.5 d-none" role="status"></span>
+                        <i class="ti ti-check me-1"></i>{{ __('Xác nhận Đã Chuyển Tiền') }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -204,58 +202,56 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="formRejectWithdraw">
-                    <input type="hidden" id="rejectWithdrawId" name="id">
-                    <div class="modal-body p-3.5">
-                        <div class="alert alert-warning py-2.5 px-3 mb-3 fs-12 border-warning-subtle d-flex align-items-center gap-2 rounded-2" role="alert">
-                            <i class="ti ti-alert-circle fs-3 text-warning flex-shrink-0"></i>
-                            <div>
-                                {{ __('Khi từ chối, số tiền rút sẽ được hệ thống ') }}
-                                <strong>{{ __('TỰ ĐỘNG HOÀN LẠI VÀO VÍ') }}</strong>
-                                {{ __(' của đối tác ngay lập tức.') }}
-                            </div>
-                        </div>
-
-                        <div class="p-2.5 bg-light rounded-2 mb-3 border fs-12">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="text-muted">{{ __('Mã yêu cầu') }}:</span>
-                                <strong class="text-dark font-monospace" id="rejectCode">-</strong>
-                            </div>
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="text-muted">{{ __('Đối tác') }}:</span>
-                                <strong class="text-primary" id="rejectUser">-</strong>
-                            </div>
-                            <div class="d-flex justify-content-between">
-                                <span class="text-muted">{{ __('Số tiền hoàn lại') }}:</span>
-                                <strong class="text-danger fs-13 font-monospace" id="rejectAmount">-</strong>
-                            </div>
-                        </div>
-
-                        <div class="mb-2">
-                            <label for="rejectReason" class="form-label fw-semibold fs-13 text-dark">
-                                <i class="ti ti-pencil me-1 text-danger"></i>{{ __('Lý do từ chối') }} <span class="text-danger">*</span>
-                            </label>
-
-                            {{-- Gợi ý lý do từ chối nhanh --}}
-                            <div class="d-flex flex-wrap gap-1.5 mb-2">
-                                <span class="reject-reason-chip" data-reason="Số tài khoản ngân hàng không chính xác">Số tài khoản sai</span>
-                                <span class="reject-reason-chip" data-reason="Tên chủ tài khoản không khớp với hồ sơ đăng ký">Tên chủ thẻ không khớp</span>
-                                <span class="reject-reason-chip" data-reason="Ngân hàng thụ hưởng tạm ngưng nhận tiền hoặc tài khoản bị khóa">TK ngân hàng bị khóa</span>
-                                <span class="reject-reason-chip" data-reason="Giao dịch cần xác minh thêm thông tin đối soát">Cần đối soát lại</span>
-                            </div>
-
-                            <textarea class="form-control fs-13" id="rejectReason" name="reason" rows="3" required placeholder="{{ __('Chọn gợi ý phía trên hoặc nhập lý do từ chối chi tiết...') }}"></textarea>
-                            <small class="text-muted fs-11 mt-1 d-block"><i class="ti ti-info-circle me-0.5"></i>{{ __('Lý do từ chối sẽ được thông báo ngay đến ứng dụng của đối tác.') }}</small>
+                <input type="hidden" id="rejectWithdrawId">
+                <div class="modal-body p-3.5">
+                    <div class="alert alert-warning py-2.5 px-3 mb-3 fs-12 border-warning-subtle d-flex align-items-center gap-2 rounded-2" role="alert">
+                        <i class="ti ti-alert-circle fs-3 text-warning flex-shrink-0"></i>
+                        <div>
+                            {{ __('Khi từ chối, số tiền rút sẽ được hệ thống ') }}
+                            <strong>{{ __('TỰ ĐỘNG HOÀN LẠI VÀO VÍ') }}</strong>
+                            {{ __(' của đối tác ngay lập tức.') }}
                         </div>
                     </div>
-                    <div class="modal-footer py-2.5 px-3.5 bg-light border-top d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal">{{ __('Hủy') }}</button>
-                        <button type="submit" class="btn btn-danger fw-bold px-3 d-flex align-items-center" id="btnSubmitReject">
-                            <span class="spinner-border spinner-border-sm me-1.5 d-none" role="status"></span>
-                            <i class="ti ti-arrow-back-up me-1"></i>{{ __('Từ chối & Hoàn tiền') }}
-                        </button>
+
+                    <div class="p-2.5 bg-light rounded-2 mb-3 border fs-12">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">{{ __('Mã yêu cầu') }}:</span>
+                            <strong class="text-dark font-monospace" id="rejectCode">-</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">{{ __('Đối tác') }}:</span>
+                            <strong class="text-primary" id="rejectUser">-</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">{{ __('Số tiền hoàn lại') }}:</span>
+                            <strong class="text-danger fs-13 font-monospace" id="rejectAmount">-</strong>
+                        </div>
                     </div>
-                </form>
+
+                    <div class="mb-2">
+                        <label for="rejectReason" class="form-label fw-semibold fs-13 text-dark">
+                            <i class="ti ti-pencil me-1 text-danger"></i>{{ __('Lý do từ chối') }} <span class="text-danger">*</span>
+                        </label>
+
+                        {{-- Gợi ý lý do từ chối nhanh --}}
+                        <div class="d-flex flex-wrap gap-1.5 mb-2">
+                            <span class="reject-reason-chip" data-reason="Số tài khoản ngân hàng không chính xác">Số tài khoản sai</span>
+                            <span class="reject-reason-chip" data-reason="Tên chủ tài khoản không khớp với hồ sơ đăng ký">Tên chủ thẻ không khớp</span>
+                            <span class="reject-reason-chip" data-reason="Ngân hàng thụ hưởng tạm ngưng nhận tiền hoặc tài khoản bị khóa">TK ngân hàng bị khóa</span>
+                            <span class="reject-reason-chip" data-reason="Giao dịch cần xác minh thêm thông tin đối soát">Cần đối soát lại</span>
+                        </div>
+
+                        <textarea class="form-control fs-13" id="rejectReason" rows="3" placeholder="{{ __('Chọn gợi ý phía trên hoặc nhập lý do từ chối chi tiết...') }}"></textarea>
+                        <small class="text-muted fs-11 mt-1 d-block"><i class="ti ti-info-circle me-0.5"></i>{{ __('Lý do từ chối sẽ được thông báo ngay đến ứng dụng của đối tác.') }}</small>
+                    </div>
+                </div>
+                <div class="modal-footer py-2.5 px-3.5 bg-light border-top d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal">{{ __('Hủy') }}</button>
+                    <button type="button" class="btn btn-danger fw-bold px-3 d-flex align-items-center" id="btnSubmitReject">
+                        <span class="spinner-border spinner-border-sm me-1.5 d-none" role="status"></span>
+                        <i class="ti ti-arrow-back-up me-1"></i>{{ __('Từ chối & Hoàn tiền') }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -275,6 +271,25 @@
     @include('admin.common.copy')
 
     <script>
+        let _withdrawApproveSubmitting = false;
+        let _withdrawRejectSubmitting = false;
+
+        // Helper: lấy hoặc tạo bootstrap Modal instance (tránh tạo trùng lặp)
+        function _getOrCreateWithdrawModal(el) {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                return bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+            }
+            return null;
+        }
+
+        // Helper: reset trạng thái nút submit
+        function _resetWithdrawBtnState(btnId) {
+            var $btn = $('#' + btnId);
+            if ($btn.length) {
+                $btn.prop('disabled', false).find('.spinner-border').addClass('d-none');
+            }
+        }
+
         // Các hàm mở modal toàn cục (sử dụng được từ onclick inline hoặc event listener)
         window.openApproveWithdrawModal = function (target, code, amount, user, bank) {
             var id = target;
@@ -294,14 +309,14 @@
             $('#approveBank').text(bank || '-');
             $('#approveNote').val('');
 
+            // RESET trạng thái nút submit trước khi hiển thị
+            _resetWithdrawBtnState('btnSubmitApprove');
+            _withdrawApproveSubmitting = false;
+
             var modalEl = document.getElementById('modalApproveWithdraw');
             if (modalEl) {
-                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-                    modal.show();
-                } else if (typeof $(modalEl).modal === 'function') {
-                    $(modalEl).modal('show');
-                }
+                var modal = _getOrCreateWithdrawModal(modalEl);
+                if (modal) modal.show();
             }
         };
 
@@ -322,38 +337,30 @@
             $('#rejectReason').val('');
             $('.reject-reason-chip').removeClass('active');
 
+            // RESET trạng thái nút submit trước khi hiển thị
+            _resetWithdrawBtnState('btnSubmitReject');
+            _withdrawRejectSubmitting = false;
+
             var modalEl = document.getElementById('modalRejectWithdraw');
             if (modalEl) {
-                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-                    modal.show();
-                } else if (typeof $(modalEl).modal === 'function') {
-                    $(modalEl).modal('show');
-                }
+                var modal = _getOrCreateWithdrawModal(modalEl);
+                if (modal) modal.show();
             }
         };
 
         function hideApproveModal() {
             var modalEl = document.getElementById('modalApproveWithdraw');
             if (modalEl) {
-                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                    var modal = bootstrap.Modal.getInstance(modalEl);
-                    if (modal) modal.hide();
-                } else if (typeof $(modalEl).modal === 'function') {
-                    $(modalEl).modal('hide');
-                }
+                var modal = _getOrCreateWithdrawModal(modalEl);
+                if (modal) modal.hide();
             }
         }
 
         function hideRejectModal() {
             var modalEl = document.getElementById('modalRejectWithdraw');
             if (modalEl) {
-                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                    var modal = bootstrap.Modal.getInstance(modalEl);
-                    if (modal) modal.hide();
-                } else if (typeof $(modalEl).modal === 'function') {
-                    $(modalEl).modal('hide');
-                }
+                var modal = _getOrCreateWithdrawModal(modalEl);
+                if (modal) modal.hide();
             }
         }
 
@@ -382,6 +389,22 @@
                 initTooltips();
             });
 
+            // Safety net: reset form state khi modal bị đóng (click X, backdrop, ESC)
+            var approveModalEl = document.getElementById('modalApproveWithdraw');
+            if (approveModalEl) {
+                approveModalEl.addEventListener('hidden.bs.modal', function () {
+                    _resetWithdrawBtnState('btnSubmitApprove');
+                    _withdrawApproveSubmitting = false;
+                });
+            }
+            var rejectModalEl = document.getElementById('modalRejectWithdraw');
+            if (rejectModalEl) {
+                rejectModalEl.addEventListener('hidden.bs.modal', function () {
+                    _resetWithdrawBtnState('btnSubmitReject');
+                    _withdrawRejectSubmitting = false;
+                });
+            }
+
             // Chọn chip lý do từ chối nhanh
             $(document).on('click', '.reject-reason-chip', function () {
                 const reason = $(this).data('reason');
@@ -390,20 +413,15 @@
                 $(this).addClass('active');
             });
 
-            // Sự kiện click mở modal Duyệt chi
-            $(document).on('click', '.btn-approve-withdraw', function (e) {
-                if (!$(this).attr('onclick')) {
-                    e.preventDefault();
-                    window.openApproveWithdrawModal(this);
-                }
-            });
+            // Click Duyệt Chi Trả via API (không dùng form)
+            $('#btnSubmitApprove').on('click', function () {
+                // Guard: chặn khi đang xử lý
+                if (_withdrawApproveSubmitting) return;
+                _withdrawApproveSubmitting = true;
 
-            // Submit Duyệt Chi Trả
-            $('#formApproveWithdraw').on('submit', function (e) {
-                e.preventDefault();
                 const id = $('#approveWithdrawId').val();
                 const note = $('#approveNote').val();
-                const $btn = $('#btnSubmitApprove');
+                const $btn = $(this);
 
                 $btn.prop('disabled', true).find('.spinner-border').removeClass('d-none');
 
@@ -450,25 +468,17 @@
                         }
                     },
                     complete: function () {
-                        $btn.prop('disabled', false).find('.spinner-border').addClass('d-none');
+                        _withdrawApproveSubmitting = false;
+                        _resetWithdrawBtnState('btnSubmitApprove');
                     }
                 });
             });
 
-            // Sự kiện click mở modal Từ chối
-            $(document).on('click', '.btn-reject-withdraw', function (e) {
-                if (!$(this).attr('onclick')) {
-                    e.preventDefault();
-                    window.openRejectWithdrawModal(this);
-                }
-            });
-
-            // Submit Từ Chối
-            $('#formRejectWithdraw').on('submit', function (e) {
-                e.preventDefault();
+            // Click Từ Chối via API (không dùng form)
+            $('#btnSubmitReject').on('click', function () {
                 const id = $('#rejectWithdrawId').val();
                 const reason = $('#rejectReason').val();
-                const $btn = $('#btnSubmitReject');
+                const $btn = $(this);
 
                 if (!reason || !reason.trim()) {
                     if (typeof msgError === 'function') {
@@ -484,6 +494,10 @@
                     }
                     return;
                 }
+
+                // Guard: chặn khi đang xử lý
+                if (_withdrawRejectSubmitting) return;
+                _withdrawRejectSubmitting = true;
 
                 $btn.prop('disabled', true).find('.spinner-border').removeClass('d-none');
 
@@ -530,7 +544,8 @@
                         }
                     },
                     complete: function () {
-                        $btn.prop('disabled', false).find('.spinner-border').addClass('d-none');
+                        _withdrawRejectSubmitting = false;
+                        _resetWithdrawBtnState('btnSubmitReject');
                     }
                 });
             });

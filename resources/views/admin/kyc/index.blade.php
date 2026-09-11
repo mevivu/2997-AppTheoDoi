@@ -324,39 +324,37 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="formApproveKyc">
-                    <input type="hidden" id="approveUserId" name="id">
-                    <div class="modal-body p-3.5">
-                        <div class="p-3 bg-light rounded-3 mb-3 border">
-                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                                <span class="text-muted fs-12">{{ __('Đối tác') }}</span>
-                                <span class="fw-bold text-dark fs-13" id="approvePartnerName">-</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                                <span class="text-muted fs-12">{{ __('Mã số thuế (MST)') }}</span>
-                                <span class="fw-bold font-monospace text-primary fs-13" id="approveTaxCode">-</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-muted fs-12">{{ __('Tên chủ TK Ngân hàng') }}</span>
-                                <span class="fw-bold text-success text-uppercase fs-13" id="approveBankHolder">-</span>
-                            </div>
+                <input type="hidden" id="approveUserId">
+                <div class="modal-body p-3.5">
+                    <div class="p-3 bg-light rounded-3 mb-3 border">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <span class="text-muted fs-12">{{ __('Đối tác') }}</span>
+                            <span class="fw-bold text-dark fs-13" id="approvePartnerName">-</span>
                         </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <span class="text-muted fs-12">{{ __('Mã số thuế (MST)') }}</span>
+                            <span class="fw-bold font-monospace text-primary fs-13" id="approveTaxCode">-</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted fs-12">{{ __('Tên chủ TK Ngân hàng') }}</span>
+                            <span class="fw-bold text-success text-uppercase fs-13" id="approveBankHolder">-</span>
+                        </div>
+                    </div>
 
-                        <div class="alert alert-info py-2.5 px-3 fs-12 border-info-subtle d-flex align-items-center gap-2 rounded-2 mb-0">
-                            <i class="ti ti-info-circle fs-3 text-info flex-shrink-0"></i>
-                            <div>
-                                {{ __('Sau khi duyệt, đối tác sẽ nhận được thông báo đẩy Firebase và đủ điều kiện rút tiền hoa hồng về ngân hàng.') }}
-                            </div>
+                    <div class="alert alert-info py-2.5 px-3 fs-12 border-info-subtle d-flex align-items-center gap-2 rounded-2 mb-0">
+                        <i class="ti ti-info-circle fs-3 text-info flex-shrink-0"></i>
+                        <div>
+                            {{ __('Sau khi duyệt, đối tác sẽ nhận được thông báo đẩy Firebase và đủ điều kiện rút tiền hoa hồng về ngân hàng.') }}
                         </div>
                     </div>
-                    <div class="modal-footer py-2.5 px-3.5 bg-light border-top d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal">{{ __('Hủy') }}</button>
-                        <button type="submit" class="btn btn-success fw-bold px-3 d-flex align-items-center" id="btnSubmitApprove">
-                            <span class="spinner-border spinner-border-sm me-1.5 d-none" role="status"></span>
-                            <i class="ti ti-check me-1"></i>{{ __('Xác nhận Duyệt') }}
-                        </button>
-                    </div>
-                </form>
+                </div>
+                <div class="modal-footer py-2.5 px-3.5 bg-light border-top d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal">{{ __('Hủy') }}</button>
+                    <button type="button" class="btn btn-success fw-bold px-3 d-flex align-items-center" id="btnSubmitApprove">
+                        <span class="spinner-border spinner-border-sm me-1.5 d-none" role="status"></span>
+                        <i class="ti ti-check me-1"></i>{{ __('Xác nhận Duyệt') }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -372,54 +370,52 @@
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form id="formRejectKyc">
-                    <input type="hidden" id="rejectUserId" name="id">
-                    <div class="modal-body p-3.5">
-                        <div class="d-flex justify-content-between align-items-center p-2.5 bg-light rounded-2 mb-3 border fs-12">
-                            <span class="text-muted">{{ __('Đối tác') }}</span>
-                            <span class="fw-bold text-dark fs-13" id="rejectPartnerName">-</span>
-                        </div>
+                <input type="hidden" id="rejectUserId">
+                <div class="modal-body p-3.5">
+                    <div class="d-flex justify-content-between align-items-center p-2.5 bg-light rounded-2 mb-3 border fs-12">
+                        <span class="text-muted">{{ __('Đối tác') }}</span>
+                        <span class="fw-bold text-dark fs-13" id="rejectPartnerName">-</span>
+                    </div>
 
-                        {{-- Gợi ý lý do chọn nhanh --}}
-                        <div class="mb-2.5">
-                            <label class="form-label fw-semibold fs-12 text-muted mb-1.5">{{ __('Gợi ý lý do thường gặp:') }}</label>
-                            <div class="d-flex flex-wrap gap-1.5" id="rejectReasonChips">
-                                <span class="reject-reason-chip" data-reason="Ảnh CCCD bị mờ hoặc lóa sáng, không đọc rõ thông tin.">
-                                    {{ __('Ảnh mờ/lóa') }}
-                                </span>
-                                <span class="reject-reason-chip" data-reason="Tên trên CCCD không trùng khớp với tên chủ tài khoản ngân hàng.">
-                                    {{ __('Sai tên tài khoản NH') }}
-                                </span>
-                                <span class="reject-reason-chip" data-reason="Mã số thuế cá nhân (MST) không đúng hoặc không hợp lệ.">
-                                    {{ __('MST không hợp lệ') }}
-                                </span>
-                                <span class="reject-reason-chip" data-reason="Ảnh CCCD bị cắt mất góc hoặc không hiển thị đầy đủ giấy tờ.">
-                                    {{ __('Ảnh bị mất góc') }}
-                                </span>
-                                <span class="reject-reason-chip" data-reason="Căn cước công dân đã hết hạn sử dụng.">
-                                    {{ __('CCCD hết hạn') }}
-                                </span>
-                            </div>
-                        </div>
-
-                        {{-- Ô nhập lý do chi tiết --}}
-                        <div class="mb-2">
-                            <label for="rejectReason" class="form-label fw-semibold fs-13 text-dark">
-                                {{ __('Lý do từ chối') }} <span class="text-danger">*</span>
-                            </label>
-                            <textarea class="form-control fs-13" id="rejectReason" name="reason" rows="3" 
-                                      placeholder="{{ __('Nhập cụ thể lý do từ chối để đối tác hiểu và chụp lại...') }}" required></textarea>
-                            <small class="text-muted fs-11 mt-1 d-block"><i class="ti ti-info-circle me-0.5"></i>{{ __('Lý do này sẽ được gửi trực tiếp qua thông báo đẩy Firebase đến điện thoại của đối tác.') }}</small>
+                    {{-- Gợi ý lý do chọn nhanh --}}
+                    <div class="mb-2.5">
+                        <label class="form-label fw-semibold fs-12 text-muted mb-1.5">{{ __('Gợi ý lý do thường gặp:') }}</label>
+                        <div class="d-flex flex-wrap gap-1.5" id="rejectReasonChips">
+                            <span class="reject-reason-chip" data-reason="Ảnh CCCD bị mờ hoặc lóa sáng, không đọc rõ thông tin.">
+                                {{ __('Ảnh mờ/lóa') }}
+                            </span>
+                            <span class="reject-reason-chip" data-reason="Tên trên CCCD không trùng khớp với tên chủ tài khoản ngân hàng.">
+                                {{ __('Sai tên tài khoản NH') }}
+                            </span>
+                            <span class="reject-reason-chip" data-reason="Mã số thuế cá nhân (MST) không đúng hoặc không hợp lệ.">
+                                {{ __('MST không hợp lệ') }}
+                            </span>
+                            <span class="reject-reason-chip" data-reason="Ảnh CCCD bị cắt mất góc hoặc không hiển thị đầy đủ giấy tờ.">
+                                {{ __('Ảnh bị mất góc') }}
+                            </span>
+                            <span class="reject-reason-chip" data-reason="Căn cước công dân đã hết hạn sử dụng.">
+                                {{ __('CCCD hết hạn') }}
+                            </span>
                         </div>
                     </div>
-                    <div class="modal-footer py-2.5 px-3.5 bg-light border-top d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal">{{ __('Hủy') }}</button>
-                        <button type="submit" class="btn btn-danger fw-bold px-3 d-flex align-items-center" id="btnSubmitReject">
-                            <span class="spinner-border spinner-border-sm me-1.5 d-none" role="status"></span>
-                            <i class="ti ti-x me-1"></i>{{ __('Xác nhận Từ Chối') }}
-                        </button>
+
+                    {{-- Ô nhập lý do chi tiết --}}
+                    <div class="mb-2">
+                        <label for="rejectReason" class="form-label fw-semibold fs-13 text-dark">
+                            {{ __('Lý do từ chối') }} <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control fs-13" id="rejectReason" rows="3" 
+                                  placeholder="{{ __('Nhập cụ thể lý do từ chối để đối tác hiểu và chụp lại...') }}"></textarea>
+                        <small class="text-muted fs-11 mt-1 d-block"><i class="ti ti-info-circle me-0.5"></i>{{ __('Lý do này sẽ được gửi trực tiếp qua thông báo đẩy Firebase đến điện thoại của đối tác.') }}</small>
                     </div>
-                </form>
+                </div>
+                <div class="modal-footer py-2.5 px-3.5 bg-light border-top d-flex justify-content-end gap-2">
+                    <button type="button" class="btn btn-light px-3" data-bs-dismiss="modal">{{ __('Hủy') }}</button>
+                    <button type="button" class="btn btn-danger fw-bold px-3 d-flex align-items-center" id="btnSubmitReject">
+                        <span class="spinner-border spinner-border-sm me-1.5 d-none" role="status"></span>
+                        <i class="ti ti-x me-1"></i>{{ __('Xác nhận Từ Chối') }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -439,6 +435,26 @@
 
     <script>
         let currentRotation = 0;
+        let _kycApproveSubmitting = false;
+        let _kycRejectSubmitting = false;
+
+        // Helper: lấy hoặc tạo bootstrap Modal instance (tránh tạo trùng lặp)
+        function _getOrCreateModal(el) {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                return bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el);
+            }
+            return null;
+        }
+
+        // Helper: reset trạng thái nút submit trong form
+        function _resetFormBtnState(btnId) {
+            var btn = document.getElementById(btnId);
+            if (btn) {
+                btn.disabled = false;
+                var spinner = btn.querySelector('.spinner-border');
+                if (spinner) spinner.classList.add('d-none');
+            }
+        }
 
         // Mở modal xem ảnh CCCD phóng to
         function previewKycImage(imageUrl, title) {
@@ -450,8 +466,9 @@
             document.getElementById('previewImageTitle').innerHTML = '<i class="ti ti-photo fs-16"></i> ' + title;
             document.getElementById('previewOpenNewTab').href = imageUrl;
 
-            const modal = new bootstrap.Modal(document.getElementById('modalPreviewKycImage'));
-            modal.show();
+            var modalEl = document.getElementById('modalPreviewKycImage');
+            var modal = _getOrCreateModal(modalEl);
+            if (modal) modal.show();
         }
 
         // Xoay ảnh trong modal
@@ -476,14 +493,14 @@
             document.getElementById('approveTaxCode').textContent = taxCode || '-';
             document.getElementById('approveBankHolder').textContent = bankHolder || '-';
 
+            // RESET trạng thái nút submit trước khi hiển thị modal
+            _resetFormBtnState('btnSubmitApprove');
+            _kycApproveSubmitting = false;
+
             var modalEl = document.getElementById('modalApproveKyc');
             if (modalEl) {
-                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-                    modal.show();
-                } else if (typeof $(modalEl).modal === 'function') {
-                    $(modalEl).modal('show');
-                }
+                var modal = _getOrCreateModal(modalEl);
+                if (modal) modal.show();
             }
         };
 
@@ -503,38 +520,30 @@
             // Reset chips
             document.querySelectorAll('.reject-reason-chip').forEach(c => c.classList.remove('active'));
 
+            // RESET trạng thái nút submit trước khi hiển thị modal
+            _resetFormBtnState('btnSubmitReject');
+            _kycRejectSubmitting = false;
+
             var modalEl = document.getElementById('modalRejectKyc');
             if (modalEl) {
-                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-                    modal.show();
-                } else if (typeof $(modalEl).modal === 'function') {
-                    $(modalEl).modal('show');
-                }
+                var modal = _getOrCreateModal(modalEl);
+                if (modal) modal.show();
             }
         };
 
         function hideApproveKycModal() {
             var modalEl = document.getElementById('modalApproveKyc');
             if (modalEl) {
-                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                    var modal = bootstrap.Modal.getInstance(modalEl);
-                    if (modal) modal.hide();
-                } else if (typeof $(modalEl).modal === 'function') {
-                    $(modalEl).modal('hide');
-                }
+                var modal = _getOrCreateModal(modalEl);
+                if (modal) modal.hide();
             }
         }
 
         function hideRejectKycModal() {
             var modalEl = document.getElementById('modalRejectKyc');
             if (modalEl) {
-                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
-                    var modal = bootstrap.Modal.getInstance(modalEl);
-                    if (modal) modal.hide();
-                } else if (typeof $(modalEl).modal === 'function') {
-                    $(modalEl).modal('hide');
-                }
+                var modal = _getOrCreateModal(modalEl);
+                if (modal) modal.hide();
             }
         }
 
@@ -553,19 +562,30 @@
                 });
             });
 
-            // Sự kiện click mở modal Duyệt CCCD (dự phòng)
-            $(document).on('click', '.btn-approve-kyc, .btn-action-approve', function (e) {
-                if (!$(this).attr('onclick')) {
-                    e.preventDefault();
-                    window.openApproveKycModal(this);
-                }
-            });
+            // Safety net: reset form state khi modal bị đóng (click X, backdrop, ESC)
+            var approveModalEl = document.getElementById('modalApproveKyc');
+            if (approveModalEl) {
+                approveModalEl.addEventListener('hidden.bs.modal', function () {
+                    _resetFormBtnState('btnSubmitApprove');
+                    _kycApproveSubmitting = false;
+                });
+            }
+            var rejectModalEl = document.getElementById('modalRejectKyc');
+            if (rejectModalEl) {
+                rejectModalEl.addEventListener('hidden.bs.modal', function () {
+                    _resetFormBtnState('btnSubmitReject');
+                    _kycRejectSubmitting = false;
+                });
+            }
 
-            // Submit Phê Duyệt CCCD via AJAX
-            document.getElementById('formApproveKyc').addEventListener('submit', function (e) {
-                e.preventDefault();
+            // Click Phê Duyệt CCCD via API (không dùng form)
+            document.getElementById('btnSubmitApprove').addEventListener('click', function () {
+                // Guard: chặn khi đang xử lý
+                if (_kycApproveSubmitting) return;
+                _kycApproveSubmitting = true;
+
                 const userId = document.getElementById('approveUserId').value;
-                const btn = document.getElementById('btnSubmitApprove');
+                const btn = this;
                 const spinner = btn.querySelector('.spinner-border');
 
                 btn.disabled = true;
@@ -580,8 +600,8 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-                    btn.disabled = false;
-                    spinner.classList.add('d-none');
+                    _kycApproveSubmitting = false;
+                    _resetFormBtnState('btnSubmitApprove');
 
                     if (data.status === 200 || data.success) {
                         hideApproveKycModal();
@@ -598,7 +618,6 @@
                         } else {
                             alert(data.message || 'Phê duyệt thành công!');
                         }
-                        // Reload datatable
                         if (window.LaravelDataTables && window.LaravelDataTables['KycApprovalTable']) {
                             window.LaravelDataTables['KycApprovalTable'].ajax.reload(null, false);
                         } else {
@@ -616,8 +635,8 @@
                     }
                 })
                 .catch(err => {
-                    btn.disabled = false;
-                    spinner.classList.add('d-none');
+                    _kycApproveSubmitting = false;
+                    _resetFormBtnState('btnSubmitApprove');
                     if (typeof msgError === 'function') {
                         msgError('{{ __("Lỗi kết nối máy chủ.") }}');
                     } else {
@@ -626,20 +645,11 @@
                 });
             });
 
-            // Sự kiện click mở modal Từ chối CCCD (dự phòng)
-            $(document).on('click', '.btn-reject-kyc, .btn-action-reject', function (e) {
-                if (!$(this).attr('onclick')) {
-                    e.preventDefault();
-                    window.openRejectKycModal(this);
-                }
-            });
-
-            // Submit Từ Chối CCCD via AJAX
-            document.getElementById('formRejectKyc').addEventListener('submit', function (e) {
-                e.preventDefault();
+            // Click Từ Chối CCCD via API (không dùng form)
+            document.getElementById('btnSubmitReject').addEventListener('click', function () {
                 const userId = document.getElementById('rejectUserId').value;
                 const reason = document.getElementById('rejectReason').value.trim();
-                const btn = document.getElementById('btnSubmitReject');
+                const btn = this;
                 const spinner = btn.querySelector('.spinner-border');
 
                 if (!reason) {
@@ -652,6 +662,10 @@
                     }
                     return;
                 }
+
+                // Guard: chặn khi đang xử lý
+                if (_kycRejectSubmitting) return;
+                _kycRejectSubmitting = true;
 
                 btn.disabled = true;
                 spinner.classList.remove('d-none');
@@ -666,8 +680,8 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-                    btn.disabled = false;
-                    spinner.classList.add('d-none');
+                    _kycRejectSubmitting = false;
+                    _resetFormBtnState('btnSubmitReject');
 
                     if (data.status === 200 || data.success) {
                         hideRejectKycModal();
@@ -684,7 +698,6 @@
                         } else {
                             alert(data.message || 'Từ chối hồ sơ thành công!');
                         }
-                        // Reload datatable
                         if (window.LaravelDataTables && window.LaravelDataTables['KycApprovalTable']) {
                             window.LaravelDataTables['KycApprovalTable'].ajax.reload(null, false);
                         } else {
@@ -702,8 +715,8 @@
                     }
                 })
                 .catch(err => {
-                    btn.disabled = false;
-                    spinner.classList.add('d-none');
+                    _kycRejectSubmitting = false;
+                    _resetFormBtnState('btnSubmitReject');
                     if (typeof msgError === 'function') {
                         msgError('{{ __("Lỗi kết nối máy chủ.") }}');
                     } else {
