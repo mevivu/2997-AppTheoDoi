@@ -206,6 +206,7 @@ class NotificationService implements NotificationServiceInterface
                         'type' => 'affiliate',
                         'screen' => '/referral',
                         'amount' => (string) $amount,
+                        'balance' => (string) ($referrer->wallet_balance ?? 0),
                     ]
                 );
             }
@@ -360,6 +361,7 @@ class NotificationService implements NotificationServiceInterface
                         'screen' => '/referral',
                         'amount' => (string) $commissionAmount,
                         'percent' => (string) $percent,
+                        'balance' => (string) ($referrer->wallet_balance ?? 0),
                     ]
                 );
             }

@@ -434,6 +434,8 @@ class UserService implements UserServiceInterface
                             'type' => 'wallet_deposit',
                             'transaction_id' => (string) $transaction->id,
                             'code' => $transaction->code,
+                            'amount' => (string) $amount,
+                            'balance' => (string) $newBalance,
                         ]
                     );
                 } catch (\Throwable $e) {
@@ -541,6 +543,8 @@ class UserService implements UserServiceInterface
                             'type' => 'wallet_withdraw',
                             'transaction_id' => (string) $transaction->id,
                             'code' => $transaction->code,
+                            'amount' => (string) $amount,
+                            'balance' => (string) $newBalance,
                         ]
                     );
                 } catch (\Throwable $e) {

@@ -365,6 +365,8 @@ class WithdrawService
                     'type' => 'withdraw_approved',
                     'transaction_id' => (string) $transaction->id,
                     'code' => $transaction->code,
+                    'amount' => (string) $transaction->amount,
+                    'balance' => (string) ($user->wallet_balance ?? 0),
                 ]
             );
         } catch (Throwable $e) {
@@ -407,6 +409,8 @@ class WithdrawService
                     'type' => 'withdraw_rejected',
                     'transaction_id' => (string) $transaction->id,
                     'code' => $transaction->code,
+                    'amount' => (string) $transaction->amount,
+                    'balance' => (string) ($user->wallet_balance ?? 0),
                 ]
             );
         } catch (Throwable $e) {
