@@ -45,6 +45,10 @@ class Transaction extends Model
         'bank_account_number',
         /** Tên chủ tài khoản ngân hàng */
         'bank_account_name',
+        /** Số tiền thuế TNCN 10% bị khấu trừ */
+        'tax_amount',
+        /** Số tiền thực nhận sau thuế (amount - tax_amount) */
+        'net_amount',
         /** Ngày Thứ 5 dự kiến chi trả tiền hoa hồng */
         'scheduled_payout_date',
         /** Ghi chú của admin, mã biên lai giao dịch ngân hàng hoặc lý do từ chối */
@@ -63,6 +67,8 @@ class Transaction extends Model
         'scheduled_payout_date' => 'date',
         'processed_at' => 'datetime',
         'amount' => 'decimal:0',
+        'tax_amount' => 'decimal:0',
+        'net_amount' => 'decimal:0',
     ];
 
     /**

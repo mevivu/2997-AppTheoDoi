@@ -153,6 +153,13 @@ class WithdrawService
             'max_withdrawable_formatted' => number_format($maxWithdrawable, 0, ',', '.') . 'đ',
             'banks' => $this->bankRepository->getAllBanks(),
             'saved_bank' => $savedBank,
+            // Thông tin KYC
+            'kyc_completed' => $user->hasCompletedKyc(),
+            'id_card_front' => $user->id_card_front,
+            'id_card_back' => $user->id_card_back,
+            'tax_code' => $user->tax_code,
+            // Thuế suất TNCN
+            'tax_rate' => 10,
         ]);
     }
 
@@ -166,10 +173,20 @@ class WithdrawService
      */
     public function createWithdrawRequest(User $user, array $data): Transaction
     {
+        // Kiểm tra KYC: yêu cầu CCCD + MST trước khi rút tiền
+        if (!$user->hasCompletedKyc()) {
+            throw new Exception('Vui lòng hoàn thành xác minh CCCD và Mã số thuế (MST) trước khi gửi yêu cầu rút tiền.');
+        }
+
         $amount = (float) $data['amount'];
         $config = $this->getWithdrawSettings();
 
-        $transaction = DB::transaction(function () use ($user, $amount, $data, $config) {
+        // Tính thuế TNCN 10%
+        $taxRate = 10;
+        $taxAmount = round($amount * ($taxRate / 100));
+        $netAmount = $amount - $taxAmount;
+
+        $transaction = DB::transaction(function () use ($user, $amount, $data, $config, $taxAmount, $netAmount) {
             // Khóa dòng user để chống race condition / double-spending qua repository
             $lockedUser = $this->userRepository->findForUpdate($user->id);
 
@@ -212,7 +229,7 @@ class WithdrawService
                 'amount' => -$amount,
                 'balance_after' => $newBalance,
                 'type' => 'withdraw_request',
-                'description' => "Yêu cầu rút tiền [{$code}] về {$data['bank_name']} (STK: {$data['bank_account_number']}) - Dự kiến chi trả: {$config['next_payout_text']}",
+                'description' => "Yêu cầu rút tiền [{$code}] về {$data['bank_name']} (STK: {$data['bank_account_number']}) - Thuế TNCN 10%: " . number_format($taxAmount, 0, ',', '.') . "đ, Thực nhận: " . number_format($netAmount, 0, ',', '.') . "đ - Dự kiến chi trả: {$config['next_payout_text']}",
             ]);
 
             // Tạo giao dịch rút tiền trực tiếp qua hàm riêng của repository
@@ -220,6 +237,8 @@ class WithdrawService
                 'code' => $code,
                 'user_id' => $lockedUser->id,
                 'amount' => $amount,
+                'tax_amount' => $taxAmount,
+                'net_amount' => $netAmount,
                 'bank_name' => $data['bank_name'],
                 'bank_account_number' => $data['bank_account_number'],
                 'bank_account_name' => $data['bank_account_name'],

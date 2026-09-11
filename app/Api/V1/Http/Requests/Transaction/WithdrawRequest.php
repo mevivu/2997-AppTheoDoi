@@ -35,6 +35,12 @@ class WithdrawRequest extends BaseRequest
                 return;
             }
 
+            // Kiểm tra KYC: yêu cầu CCCD mặt trước/sau + MST trước khi rút tiền
+            if (!$user->hasCompletedKyc()) {
+                $validator->errors()->add('kyc', 'Vui lòng hoàn thành xác minh CCCD và Mã số thuế (MST) trước khi gửi yêu cầu rút tiền.');
+                return;
+            }
+
             $amount = (float) $this->input('amount');
             $currentBalance = (float) ($user->wallet_balance ?? 0);
 

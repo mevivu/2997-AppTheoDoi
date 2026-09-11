@@ -132,6 +132,25 @@ class Child extends Model
                     ]
                 );
             }
+
+            // Chống gian lận Affiliate: Khi user mới tạo hồ sơ con lần đầu,
+            // trigger cộng hoa hồng cho người giới thiệu (deferred reward)
+            try {
+                $user = $child->user;
+                if ($user && $user->pending_referral_reward && !empty($user->referrer_id)) {
+                    // Chỉ trigger khi đây là hồ sơ con đầu tiên
+                    $childCount = Child::where('user_id', $user->id)->count();
+                    if ($childCount === 1) {
+                        app(\App\Services\Affiliate\AffiliateServiceInterface::class)
+                            ->processCompletedChildProfile($user);
+                    }
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error(
+                    'Lỗi khi trigger hoa hồng affiliate sau tạo hồ sơ con: ' . $e->getMessage(),
+                    ['child_id' => $child->id, 'user_id' => $child->user_id]
+                );
+            }
         });
     }
 

@@ -61,4 +61,15 @@ interface AffiliateServiceInterface
      * @return array [ 'bronze' => float, 'silver' => float, 'gold' => float, 'diamond' => float ]
      */
     public function getRankSalesThresholds(): array;
+
+    /**
+     * Xử lý cộng hoa hồng cho người giới thiệu khi user mới hoàn thành tạo hồ sơ con (chống gian lận)
+     *
+     * Phương thức này được gọi tự động khi user mới tạo hồ sơ con lần đầu tiên.
+     * Chỉ xử lý nếu user có pending_referral_reward = true và referrer_id hợp lệ.
+     *
+     * @param User $user Người dùng mới vừa hoàn thành tạo hồ sơ con
+     * @return bool
+     */
+    public function processCompletedChildProfile(User $user): bool;
 }

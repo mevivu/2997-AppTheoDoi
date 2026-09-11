@@ -100,6 +100,16 @@ class User extends Authenticatable implements JWTSubject
         'mother_height',
         /** Ngày sinh của mẹ */
         'mother_birthday',
+        /** Ảnh CCCD mặt trước */
+        'id_card_front',
+        /** Ảnh CCCD mặt sau */
+        'id_card_back',
+        /** Mã số thuế cá nhân (MST) */
+        'tax_code',
+        /** Thời điểm Admin xác minh KYC */
+        'kyc_verified_at',
+        /** Đánh dấu user mới chưa hoàn thành hồ sơ con (chống gian lận) */
+        'pending_referral_reward',
 
     ];
 
@@ -128,6 +138,8 @@ class User extends Authenticatable implements JWTSubject
         'affiliate_rank' => AffiliateRank::class,
         'affiliate_total_sales' => 'decimal:0',
         'wallet_balance' => 'decimal:0',
+        'kyc_verified_at' => 'datetime',
+        'pending_referral_reward' => 'boolean',
     ];
 
     public function userPackages(): HasMany
@@ -312,5 +324,23 @@ class User extends Authenticatable implements JWTSubject
     public function getAffiliateRankBadge(): string
     {
         return $this->affiliate_rank?->badge() ?? 'bg-secondary-lt';
+    }
+
+    /**
+     * Kiểm tra đối tác đã hoàn thành xác minh KYC (CCCD + MST) chưa
+     */
+    public function hasCompletedKyc(): bool
+    {
+        return !empty($this->id_card_front)
+            && !empty($this->id_card_back)
+            && !empty($this->tax_code);
+    }
+
+    /**
+     * Kiểm tra user đã tạo ít nhất 1 hồ sơ con chưa
+     */
+    public function hasChildren(): bool
+    {
+        return $this->children()->exists();
     }
 }

@@ -68,6 +68,16 @@ Route::controller(App\Api\V1\Http\Controllers\Transaction\TransactionController:
         Route::get('/{id}', 'show');
     });
 
+// KYC - Xác minh danh tính CCCD & MST
+Route::controller(App\Api\V1\Http\Controllers\User\KycController::class)
+    ->prefix('/user/kyc')
+    ->as('user.kyc.')
+    ->middleware('auth:api')
+    ->group(function () {
+        Route::get('/status', 'getStatus');
+        Route::post('/update', 'update');
+    });
+
 // Affiliate Withdrawal
 Route::controller(App\Api\V1\Http\Controllers\Transaction\WithdrawController::class)
     ->prefix('/affiliate/withdraw')

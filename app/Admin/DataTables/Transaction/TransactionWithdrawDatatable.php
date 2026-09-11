@@ -79,7 +79,20 @@ class TransactionWithdrawDatatable extends BaseDataTable
     {
         $this->customEditColumns = [
             'created_at' => '<span class="text-muted fs-12 text-nowrap"><i class="ti ti-clock me-1"></i>{{ $created_at ? format_datetime($created_at) : "" }}</span>',
-            'amount' => '<span class="fw-bold text-success font-monospace fs-13 text-nowrap">{{ $amount ? number_format($amount, 0, ",", ".") . " đ" : "0 đ" }}</span>',
+            'amount' => function ($transaction) {
+                $amount = (float) ($transaction->amount ?? 0);
+                $taxAmount = (float) ($transaction->tax_amount ?? 0);
+                $netAmount = (float) ($transaction->net_amount ?? 0);
+
+                $html = '<div class="text-start py-1 fs-12" style="line-height: 1.5;">';
+                $html .= '<div class="fw-bold text-dark font-monospace fs-13 text-nowrap">' . number_format($amount, 0, ',', '.') . ' đ</div>';
+                if ($taxAmount > 0) {
+                    $html .= '<div class="text-danger fs-11 text-nowrap"><i class="ti ti-receipt-tax me-1"></i>Thuế 10%: -' . number_format($taxAmount, 0, ',', '.') . 'đ</div>';
+                    $html .= '<div class="text-success fw-semibold fs-11 text-nowrap"><i class="ti ti-wallet me-1"></i>Thực nhận: ' . number_format($netAmount, 0, ',', '.') . 'đ</div>';
+                }
+                $html .= '</div>';
+                return $html;
+            },
             'status' => $this->view['status'],
             'code' => $this->view['code'],
             'user_id' => function ($transaction) {

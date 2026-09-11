@@ -100,115 +100,31 @@ class AffiliateService implements AffiliateServiceInterface
                 return true;
             }
 
-            // Lấy toàn bộ cấu hình 4 cấp bậc (Doanh số, User F1, % CK hoa hồng, Thưởng user mới)
-            $thresholds = $this->getRankThresholds();
+            // Đánh dấu user mới đang chờ hoàn thành hồ sơ con trước khi tính hoa hồng cho referrer
+            // Cơ chế chống gian lận: không cộng tiền ngay khi đăng ký
+            $newUser->pending_referral_reward = true;
+            $newUser->save();
 
-            // Lấy số tiền thưởng chào mừng cho người mới nếu Admin có cấu hình
-            $rewardRefereeSetting = $this->settingRepository->findByField('setting_key', 'affiliate_reward_referee');
-            $rewardReferee = $rewardRefereeSetting ? (float) $rewardRefereeSetting->plain_value : 0;
+            // Ghi nhận lịch sử trạng thái chờ (để admin theo dõi)
+            $referrer = User::find($newUser->referrer_id);
+            if ($referrer) {
+                $newUserName = $newUser->fullname ?: 'Thành viên mới';
+                $userCode = $newUser->affiliate_code ?: ($newUser->code ?: 'ID:' . $newUser->id);
 
-            // Thực hiện cộng tiền và ghi nhận lịch sử trong một Database Transaction an toàn
-            return DB::transaction(function () use ($newUser, $thresholds, $rewardReferee) {
-                // 1. Khóa và xử lý thưởng hoa hồng cho Người giới thiệu (Referrer)
-                $referrer = User::where('id', $newUser->referrer_id)->lockForUpdate()->first();
-                if ($referrer) {
-                    $newUserName = $newUser->fullname ?: 'Thành viên mới';
-                    $userCode = $newUser->affiliate_code ?: ($newUser->code ?: 'ID:' . $newUser->id);
+                $this->historyRepository->createHistory([
+                    'user_id' => $referrer->id,
+                    'source_user_id' => $newUser->id,
+                    'amount' => 0,
+                    'balance_after' => $referrer->wallet_balance ?? 0,
+                    'type' => 'referral_pending',
+                    'description' => "Thành viên {$newUserName} ({$userCode}) đã đăng ký qua mã giới thiệu — đang chờ hoàn thành hồ sơ con để tính hoa hồng",
+                ]);
+            }
 
-                    // Xác định rank hiện tại của referrer để tính mức thưởng F1 mới
-                    $currentRank = $referrer->affiliate_rank instanceof AffiliateRank
-                        ? $referrer->affiliate_rank
-                        : (AffiliateRank::tryFrom((int) $referrer->affiliate_rank) ?? AffiliateRank::Silver);
-
-                    $rankKey = match ($currentRank) {
-                        AffiliateRank::Diamond => 'diamond',
-                        AffiliateRank::Platinum => 'gold',
-                        AffiliateRank::Gold => 'silver',
-                        default => 'bronze',
-                    };
-
-                    // Thưởng F1 mới đăng ký theo cấp bậc của Người giới thiệu:
-                    // Bạc (1k), Vàng (3k), Bạch Kim (4k), Kim Cương (5k)
-                    $rewardReferrer = (float) ($thresholds['rewards_user'][$rankKey] ?? 1000);
-
-                    if ($rewardReferrer > 0) {
-                        // Cộng tiền vào ví hoa hồng của người giới thiệu
-                        $referrer->wallet_balance = ($referrer->wallet_balance ?? 0) + $rewardReferrer;
-
-                        // Lưu bản ghi lịch sử hoa hồng thông qua tầng Repository
-                        $this->historyRepository->createHistory([
-                            'user_id' => $referrer->id,
-                            'source_user_id' => $newUser->id,
-                            'amount' => $rewardReferrer,
-                            'balance_after' => $referrer->wallet_balance,
-                            'type' => 'referral_register',
-                            'description' => "Thưởng giới thiệu thành viên {$newUserName} ({$userCode}) theo cấp {$currentRank->name()}",
-                        ]);
-                    }
-
-                    // Tự động kiểm tra thăng hạng theo số lượng user F1 (Điều kiện HOẶC)
-                    $totalUsers = User::where('referrer_id', $referrer->id)->count();
-                    $totalSales = (float) ($referrer->affiliate_total_sales ?? 0);
-                    $targetRank = $this->calculateRank($totalSales, $totalUsers);
-
-                    $isUpgraded = false;
-                    if ($targetRank->value > $currentRank->value) {
-                        $referrer->affiliate_rank = $targetRank;
-                        $isUpgraded = true;
-
-                        // Lưu lịch sử thăng hạng
-                        $this->historyRepository->createHistory([
-                            'user_id' => $referrer->id,
-                            'source_user_id' => $newUser->id,
-                            'amount' => 0,
-                            'balance_after' => $referrer->wallet_balance ?? 0,
-                            'type' => 'rank_upgrade',
-                            'description' => "Thăng cấp lên {$targetRank->name()} (Số F1 đạt {$totalUsers} thành viên)",
-                        ]);
-                    }
-
-                    $referrer->save();
-
-                    // Gửi thông báo In-app & FCM thưởng giới thiệu
-                    if ($rewardReferrer > 0) {
-                        $this->notificationService->sendAffiliateRewardNotification($referrer, $rewardReferrer, $newUserName);
-                    }
-
-                    // Gửi thông báo chúc mừng nếu có thăng hạng
-                    if ($isUpgraded) {
-                        $this->notificationService->sendAffiliateRankUpgradeNotification(
-                            $referrer,
-                            $targetRank->name(),
-                            $totalSales
-                        );
-                    }
-                }
-
-                // 2. Thưởng chào mừng cho Người mới đăng ký (Referee) nếu Admin cấu hình > 0
-                if ($rewardReferee > 0) {
-                    $freshUser = User::where('id', $newUser->id)->lockForUpdate()->first();
-                    if ($freshUser) {
-                        // Cộng tiền chào mừng vào ví của người mới
-                        $freshUser->wallet_balance = ($freshUser->wallet_balance ?? 0) + $rewardReferee;
-                        $freshUser->save();
-
-                        // Lưu bản ghi lịch sử hoa hồng
-                        $this->historyRepository->createHistory([
-                            'user_id' => $freshUser->id,
-                            'source_user_id' => $newUser->referrer_id,
-                            'amount' => $rewardReferee,
-                            'balance_after' => $freshUser->wallet_balance,
-                            'type' => 'welcome_register',
-                            'description' => "Thưởng chào mừng khi đăng ký qua mã giới thiệu",
-                        ]);
-                    }
-                }
-
-                return true;
-            });
+            return true;
         } catch (Throwable $e) {
             // Ghi log chi tiết khi phát sinh lỗi
-            Log::error("Lỗi khi xử lý thưởng hoa hồng đăng ký affiliate: " . $e->getMessage(), [
+            Log::error("Lỗi khi xử lý đánh dấu pending referral reward: " . $e->getMessage(), [
                 'user_id' => $newUser->id,
                 'referrer_id' => $newUser->referrer_id,
                 'trace' => $e->getTraceAsString(),
@@ -425,6 +341,146 @@ class AffiliateService implements AffiliateServiceInterface
                 'paying_user_id' => $payingUser->id,
                 'referrer_id' => $payingUser->referrer_id,
                 'amount' => $amount,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Xử lý cộng hoa hồng cho người giới thiệu khi user mới hoàn thành tạo hồ sơ con
+     *
+     * Phương thức này được gọi tự động khi user mới tạo hồ sơ con lần đầu tiên.
+     * Chống gian lận: chỉ tính hoa hồng khi user mới thực sự sử dụng app (tạo hồ sơ con).
+     *
+     * @param User $user Người dùng mới vừa hoàn thành tạo hồ sơ con
+     * @return bool
+     */
+    public function processCompletedChildProfile(User $user): bool
+    {
+        // Kiểm tra điều kiện: phải có pending_referral_reward = true và có referrer_id
+        if (!$user->pending_referral_reward || empty($user->referrer_id)) {
+            return true;
+        }
+
+        try {
+            // Đọc trạng thái chương trình Affiliate từ CSDL
+            $activeSetting = $this->settingRepository->findByField('setting_key', 'affiliate_active');
+            $isActive = $activeSetting ? ($activeSetting->plain_value === '1') : true;
+
+            if (!$isActive) {
+                // Chương trình tắt → chỉ xóa flag pending, không cộng tiền
+                $user->pending_referral_reward = false;
+                $user->save();
+                return true;
+            }
+
+            // Lấy toàn bộ cấu hình 4 cấp bậc
+            $thresholds = $this->getRankThresholds();
+
+            // Lấy số tiền thưởng chào mừng cho người mới
+            $rewardRefereeSetting = $this->settingRepository->findByField('setting_key', 'affiliate_reward_referee');
+            $rewardReferee = $rewardRefereeSetting ? (float) $rewardRefereeSetting->plain_value : 0;
+
+            return DB::transaction(function () use ($user, $thresholds, $rewardReferee) {
+                // 1. Khóa và xử lý thưởng hoa hồng cho Người giới thiệu (Referrer)
+                $referrer = User::where('id', $user->referrer_id)->lockForUpdate()->first();
+                if ($referrer) {
+                    $newUserName = $user->fullname ?: 'Thành viên mới';
+                    $userCode = $user->affiliate_code ?: ($user->code ?: 'ID:' . $user->id);
+
+                    // Xác định rank hiện tại của referrer
+                    $currentRank = $referrer->affiliate_rank instanceof AffiliateRank
+                        ? $referrer->affiliate_rank
+                        : (AffiliateRank::tryFrom((int) $referrer->affiliate_rank) ?? AffiliateRank::Silver);
+
+                    $rankKey = match ($currentRank) {
+                        AffiliateRank::Diamond => 'diamond',
+                        AffiliateRank::Platinum => 'gold',
+                        AffiliateRank::Gold => 'silver',
+                        default => 'bronze',
+                    };
+
+                    // Thưởng F1 theo cấp bậc: Bạc (1k), Vàng (3k), Bạch Kim (4k), Kim Cương (5k)
+                    $rewardReferrer = (float) ($thresholds['rewards_user'][$rankKey] ?? 1000);
+
+                    if ($rewardReferrer > 0) {
+                        $referrer->wallet_balance = ($referrer->wallet_balance ?? 0) + $rewardReferrer;
+
+                        $this->historyRepository->createHistory([
+                            'user_id' => $referrer->id,
+                            'source_user_id' => $user->id,
+                            'amount' => $rewardReferrer,
+                            'balance_after' => $referrer->wallet_balance,
+                            'type' => 'referral_register',
+                            'description' => "Thưởng giới thiệu thành viên {$newUserName} ({$userCode}) theo cấp {$currentRank->name()} (đã xác minh hồ sơ con)",
+                        ]);
+                    }
+
+                    // Kiểm tra thăng hạng
+                    $totalUsers = User::where('referrer_id', $referrer->id)->count();
+                    $totalSales = (float) ($referrer->affiliate_total_sales ?? 0);
+                    $targetRank = $this->calculateRank($totalSales, $totalUsers);
+
+                    $isUpgraded = false;
+                    if ($targetRank->value > $currentRank->value) {
+                        $referrer->affiliate_rank = $targetRank;
+                        $isUpgraded = true;
+
+                        $this->historyRepository->createHistory([
+                            'user_id' => $referrer->id,
+                            'source_user_id' => $user->id,
+                            'amount' => 0,
+                            'balance_after' => $referrer->wallet_balance ?? 0,
+                            'type' => 'rank_upgrade',
+                            'description' => "Thăng cấp lên {$targetRank->name()} (Số F1 đạt {$totalUsers} thành viên)",
+                        ]);
+                    }
+
+                    $referrer->save();
+
+                    // Gửi thông báo
+                    if ($rewardReferrer > 0) {
+                        $this->notificationService->sendAffiliateRewardNotification($referrer, $rewardReferrer, $newUserName);
+                    }
+                    if ($isUpgraded) {
+                        $this->notificationService->sendAffiliateRankUpgradeNotification(
+                            $referrer,
+                            $targetRank->name(),
+                            $totalSales
+                        );
+                    }
+                }
+
+                // 2. Thưởng chào mừng cho Người mới nếu Admin cấu hình > 0
+                if ($rewardReferee > 0) {
+                    $freshUser = User::where('id', $user->id)->lockForUpdate()->first();
+                    if ($freshUser) {
+                        $freshUser->wallet_balance = ($freshUser->wallet_balance ?? 0) + $rewardReferee;
+                        $freshUser->pending_referral_reward = false;
+                        $freshUser->save();
+
+                        $this->historyRepository->createHistory([
+                            'user_id' => $freshUser->id,
+                            'source_user_id' => $user->referrer_id,
+                            'amount' => $rewardReferee,
+                            'balance_after' => $freshUser->wallet_balance,
+                            'type' => 'welcome_register',
+                            'description' => "Thưởng chào mừng khi hoàn thành hồ sơ con (đăng ký qua mã giới thiệu)",
+                        ]);
+                    }
+                } else {
+                    // Không có thưởng chào mừng nhưng vẫn phải xóa flag pending
+                    $user->pending_referral_reward = false;
+                    $user->save();
+                }
+
+                return true;
+            });
+        } catch (Throwable $e) {
+            Log::error("Lỗi khi xử lý hoa hồng sau hoàn thành hồ sơ con: " . $e->getMessage(), [
+                'user_id' => $user->id,
+                'referrer_id' => $user->referrer_id,
                 'trace' => $e->getTraceAsString(),
             ]);
             return false;
