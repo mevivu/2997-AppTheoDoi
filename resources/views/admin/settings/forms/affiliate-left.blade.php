@@ -13,38 +13,38 @@
                 </button>
             </li>
 
-            {{-- Tab Mẹ Đồng --}}
+            {{-- Tab Bạc --}}
             <li class="nav-item" role="presentation">
                 <button class="nav-link fw-bold" id="bronze-tab" data-bs-toggle="tab" data-bs-target="#tab-bronze" type="button" role="tab" aria-controls="tab-bronze" aria-selected="false">
-                    <i class="ti ti-medal me-1" style="color: #CD7F32;"></i>
-                    <span style="color: #CD7F32;">{{ __('Mẹ Đồng') }}</span>
-                    <span class="badge bg-orange-lt ms-1">Cấp 1</span>
+                    <i class="ti ti-medal me-1" style="color: #8A9BA8;"></i>
+                    <span style="color: #8A9BA8;">{{ __('Bạc') }}</span>
+                    <span class="badge bg-secondary-lt ms-1">Cấp 1</span>
                 </button>
             </li>
 
-            {{-- Tab Mẹ Bạc --}}
+            {{-- Tab Vàng --}}
             <li class="nav-item" role="presentation">
                 <button class="nav-link fw-bold" id="silver-tab" data-bs-toggle="tab" data-bs-target="#tab-silver" type="button" role="tab" aria-controls="tab-silver" aria-selected="false">
-                    <i class="ti ti-award me-1" style="color: #6C757D;"></i>
-                    <span style="color: #6C757D;">{{ __('Mẹ Bạc') }}</span>
-                    <span class="badge bg-secondary-lt ms-1">Cấp 2</span>
+                    <i class="ti ti-award me-1" style="color: #E6A100;"></i>
+                    <span style="color: #E6A100;">{{ __('Vàng') }}</span>
+                    <span class="badge bg-yellow-lt ms-1">Cấp 2</span>
                 </button>
             </li>
 
-            {{-- Tab Mẹ Vàng --}}
+            {{-- Tab Bạch Kim --}}
             <li class="nav-item" role="presentation">
                 <button class="nav-link fw-bold" id="gold-tab" data-bs-toggle="tab" data-bs-target="#tab-gold" type="button" role="tab" aria-controls="tab-gold" aria-selected="false">
-                    <i class="ti ti-crown me-1" style="color: #E6A100;"></i>
-                    <span style="color: #E6A100;">{{ __('Mẹ Vàng') }}</span>
-                    <span class="badge bg-yellow-lt ms-1">Cấp 3</span>
+                    <i class="ti ti-crown me-1" style="color: #6366F1;"></i>
+                    <span style="color: #6366F1;">{{ __('Bạch Kim') }}</span>
+                    <span class="badge bg-indigo-lt ms-1">Cấp 3</span>
                 </button>
             </li>
 
-            {{-- Tab Mẹ Kim Cương --}}
+            {{-- Tab Kim Cương --}}
             <li class="nav-item" role="presentation">
                 <button class="nav-link fw-bold" id="diamond-tab" data-bs-toggle="tab" data-bs-target="#tab-diamond" type="button" role="tab" aria-controls="tab-diamond" aria-selected="false">
                     <i class="ti ti-diamond me-1" style="color: #00B4D8;"></i>
-                    <span style="color: #00B4D8;">{{ __('Mẹ Kim Cương') }}</span>
+                    <span style="color: #00B4D8;">{{ __('Kim Cương') }}</span>
                     <span class="badge bg-cyan-lt ms-1">Cấp 4</span>
                 </button>
             </li>
@@ -192,25 +192,25 @@
             </div>
 
             {{-- ========================================================================= --}}
-            {{-- TAB 2: MẸ ĐỒNG (BRONZE) --}}
+            {{-- TAB 2: BẠC (SILVER - CẤP 1) --}}
             {{-- ========================================================================= --}}
             <div class="tab-pane fade" id="tab-bronze" role="tabpanel" aria-labelledby="bronze-tab">
-                <div class="d-flex align-items-center justify-content-between mb-3 p-3 rounded" style="background-color: #FFF4E6; border: 1px solid #FFE8CC;">
+                <div class="d-flex align-items-center justify-content-between mb-3 p-3 rounded" style="background-color: #F8FAFC; border: 1px solid #E2E8F0;">
                     <div class="d-flex align-items-center">
-                        <span class="avatar avatar-md rounded-circle me-3" style="background-color: #FFE8CC; color: #CD7F32;">
+                        <span class="avatar avatar-md rounded-circle me-3" style="background-color: #E2E8F0; color: #64748B;">
                             <i class="ti ti-medal fs-2"></i>
                         </span>
                         <div>
-                            <h3 class="card-title mb-0" style="color: #CD7F32;">{{ __('Cấp 1: Mẹ Đồng (Bronze)') }}</h3>
-                            <div class="text-muted small">{{ __('Cấp bậc mặc định khi thành viên bắt đầu tham gia giới thiệu') }}</div>
+                            <h3 class="card-title mb-0" style="color: #475569;">{{ __('Cấp 1: Bạc') }}</h3>
+                            <div class="text-muted small">{{ __('Cấp bậc mặc định khi thành viên bắt đầu tham gia tiếp thị liên kết') }}</div>
                         </div>
                     </div>
-                    <span class="badge bg-orange text-white fs-6 px-3 py-2">{{ __('Cấp Mặc Định') }}</span>
+                    <span class="badge bg-secondary text-white fs-6 px-3 py-2">{{ __('Cấp Mặc Định') }}</span>
                 </div>
 
                 <div class="alert alert-info py-2 mb-3" role="alert">
                     <i class="ti ti-info-circle me-1"></i>
-                    {{ __('Mẹ Đồng là cấp khởi đầu. Tất cả người dùng mới đều bắt đầu ở cấp này với mốc điều kiện từ 0đ và 0 user.') }}
+                    {{ __('Bạc là cấp khởi đầu (Cấp 1). Tất cả người dùng mới đều bắt đầu ở cấp này với mốc điều kiện còn lại (từ 0đ và 0 user).') }}
                 </div>
 
                 <div class="row g-4">
@@ -219,19 +219,19 @@
                         <div class="card h-100 affiliate-tier-card">
                             <div class="card-header py-2">
                                 <h4 class="card-title mb-0">
-                                    <i class="ti ti-gift text-primary me-1"></i> {{ __('🎁 Chính Sách Trả Thưởng & Hoa Hồng') }}
+                                     <i class="ti ti-gift text-primary me-1"></i> {{ __('🎁 Chính Sách Trả Thưởng & Hoa Hồng') }}
                                 </h4>
                             </div>
                             <div class="card-body">
                                 @include('admin.settings.forms.partials.setting-field', [
                                     'setting' => $settingsByKey->get('affiliate_reward_user_bronze'),
-                                    'label' => __('Thưởng F1 mới đăng ký (VNĐ)'),
+                                    'label' => __('Thưởng F1 mới đăng ký: Bạc (VNĐ)'),
                                     'hint' => __('Tiền thưởng cộng vào ví khi có F1 mới tạo tài khoản (Mặc định: 1.000đ).')
                                 ])
 
                                 @include('admin.settings.forms.partials.setting-field', [
                                     'setting' => $settingsByKey->get('affiliate_commission_bronze'),
-                                    'label' => __('Tỷ lệ hoa hồng mua gói (%)'),
+                                    'label' => __('Tỷ lệ hoa hồng mua gói: Bạc (%)'),
                                     'hint' => __('Tỷ lệ % chiết khấu nhận được khi F1 thanh toán mua gói VIP (Mặc định: 10%).')
                                 ])
                             </div>
@@ -265,25 +265,25 @@
             </div>
 
             {{-- ========================================================================= --}}
-            {{-- TAB 3: MẸ BẠC (SILVER) --}}
+            {{-- TAB 3: VÀNG (GOLD - CẤP 2) --}}
             {{-- ========================================================================= --}}
             <div class="tab-pane fade" id="tab-silver" role="tabpanel" aria-labelledby="silver-tab">
-                <div class="d-flex align-items-center justify-content-between mb-3 p-3 rounded" style="background-color: #F8F9FA; border: 1px solid #DEE2E6;">
+                <div class="d-flex align-items-center justify-content-between mb-3 p-3 rounded" style="background-color: #FFF9DB; border: 1px solid #FFE066;">
                     <div class="d-flex align-items-center">
-                        <span class="avatar avatar-md rounded-circle me-3" style="background-color: #E9ECEF; color: #6C757D;">
+                        <span class="avatar avatar-md rounded-circle me-3" style="background-color: #FFF3BF; color: #E6A100;">
                             <i class="ti ti-award fs-2"></i>
                         </span>
                         <div>
-                            <h3 class="card-title mb-0" style="color: #6C757D;">{{ __('Cấp 2: Mẹ Bạc (Silver)') }}</h3>
-                            <div class="text-muted small">{{ __('Cấp bậc sơ cấp khi đạt mốc giới thiệu đầu tiên') }}</div>
+                            <h3 class="card-title mb-0" style="color: #E6A100;">{{ __('Cấp 2: Vàng') }}</h3>
+                            <div class="text-muted small">{{ __('Cấp bậc trung cấp khi đạt mốc giới thiệu đầu tiên') }}</div>
                         </div>
                     </div>
-                    <span class="badge bg-secondary text-white fs-6 px-3 py-2">{{ __('Cấp 2') }}</span>
+                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">{{ __('Cấp 2') }}</span>
                 </div>
 
                 <div class="alert alert-success py-2 mb-3" role="alert">
                     <i class="ti ti-bulb me-1"></i>
-                    {{ __('Quy tắc HOẶC: Người dùng đạt 6.000 User F1 HOẶC đạt 10.000.000đ Doanh số F1 sẽ tự động được thăng hạng lên Mẹ Bạc.') }}
+                    {{ __('Quy tắc HOẶC: Người dùng đạt 6.000 User F1 HOẶC đạt 10.000.000đ Doanh số F1 sẽ tự động được thăng hạng lên Vàng.') }}
                 </div>
 
                 <div class="row g-4">
@@ -298,13 +298,13 @@
                             <div class="card-body">
                                 @include('admin.settings.forms.partials.setting-field', [
                                     'setting' => $settingsByKey->get('affiliate_reward_user_silver'),
-                                    'label' => __('Thưởng F1 mới đăng ký: Mẹ Bạc (VNĐ)'),
+                                    'label' => __('Thưởng F1 mới đăng ký: Vàng (VNĐ)'),
                                     'hint' => __('Tiền thưởng cộng vào ví khi có F1 mới tạo tài khoản (Khuyến nghị: 3.000đ).')
                                 ])
 
                                 @include('admin.settings.forms.partials.setting-field', [
                                     'setting' => $settingsByKey->get('affiliate_commission_silver'),
-                                    'label' => __('Tỷ lệ hoa hồng mua gói: Mẹ Bạc (%)'),
+                                    'label' => __('Tỷ lệ hoa hồng mua gói: Vàng (%)'),
                                     'hint' => __('Tỷ lệ % chiết khấu nhận được khi F1 thanh toán mua gói VIP (Khuyến nghị: 30%).')
                                 ])
                             </div>
@@ -342,25 +342,25 @@
             </div>
 
             {{-- ========================================================================= --}}
-            {{-- TAB 4: MẸ VÀNG (GOLD) --}}
+            {{-- TAB 4: BẠCH KIM (PLATINUM - CẤP 3) --}}
             {{-- ========================================================================= --}}
             <div class="tab-pane fade" id="tab-gold" role="tabpanel" aria-labelledby="gold-tab">
-                <div class="d-flex align-items-center justify-content-between mb-3 p-3 rounded" style="background-color: #FFF9DB; border: 1px solid #FFE066;">
+                <div class="d-flex align-items-center justify-content-between mb-3 p-3 rounded" style="background-color: #EEF2FF; border: 1px solid #C7D2FE;">
                     <div class="d-flex align-items-center">
-                        <span class="avatar avatar-md rounded-circle me-3" style="background-color: #FFF3BF; color: #E6A100;">
+                        <span class="avatar avatar-md rounded-circle me-3" style="background-color: #E0E7FF; color: #6366F1;">
                             <i class="ti ti-crown fs-2"></i>
                         </span>
                         <div>
-                            <h3 class="card-title mb-0" style="color: #E6A100;">{{ __('Cấp 3: Mẹ Vàng (Gold)') }}</h3>
-                            <div class="text-muted small">{{ __('Cấp bậc trung cấp với chính sách hoa hồng và thưởng vượt trội') }}</div>
+                            <h3 class="card-title mb-0" style="color: #6366F1;">{{ __('Cấp 3: Bạch Kim') }}</h3>
+                            <div class="text-muted small">{{ __('Cấp bậc cao cấp với chính sách hoa hồng và thưởng vượt trội') }}</div>
                         </div>
                     </div>
-                    <span class="badge bg-warning text-dark fs-6 px-3 py-2">{{ __('Cấp 3') }}</span>
+                    <span class="badge bg-indigo text-white fs-6 px-3 py-2">{{ __('Cấp 3') }}</span>
                 </div>
 
                 <div class="alert alert-success py-2 mb-3" role="alert">
                     <i class="ti ti-bulb me-1"></i>
-                    {{ __('Quy tắc HOẶC: Người dùng đạt 8.000 User F1 HOẶC đạt 15.000.000đ Doanh số F1 sẽ tự động được thăng hạng lên Mẹ Vàng.') }}
+                    {{ __('Quy tắc HOẶC: Người dùng đạt 8.000 User F1 HOẶC đạt 15.000.000đ Doanh số F1 sẽ tự động được thăng hạng lên Bạch Kim.') }}
                 </div>
 
                 <div class="row g-4">
@@ -375,13 +375,13 @@
                             <div class="card-body">
                                 @include('admin.settings.forms.partials.setting-field', [
                                     'setting' => $settingsByKey->get('affiliate_reward_user_gold'),
-                                    'label' => __('Thưởng F1 mới đăng ký: Mẹ Vàng (VNĐ)'),
+                                    'label' => __('Thưởng F1 mới đăng ký: Bạch Kim (VNĐ)'),
                                     'hint' => __('Tiền thưởng cộng vào ví khi có F1 mới tạo tài khoản (Khuyến nghị: 4.000đ).')
                                 ])
 
                                 @include('admin.settings.forms.partials.setting-field', [
                                     'setting' => $settingsByKey->get('affiliate_commission_gold'),
-                                    'label' => __('Tỷ lệ hoa hồng mua gói: Mẹ Vàng (%)'),
+                                    'label' => __('Tỷ lệ hoa hồng mua gói: Bạch Kim (%)'),
                                     'hint' => __('Tỷ lệ % chiết khấu nhận được khi F1 thanh toán mua gói VIP (Khuyến nghị: 40%).')
                                 ])
                             </div>
@@ -419,7 +419,7 @@
             </div>
 
             {{-- ========================================================================= --}}
-            {{-- TAB 5: MẸ KIM CƯƠNG (DIAMOND) --}}
+            {{-- TAB 5: KIM CƯƠNG (DIAMOND - CẤP 4) --}}
             {{-- ========================================================================= --}}
             <div class="tab-pane fade" id="tab-diamond" role="tabpanel" aria-labelledby="diamond-tab">
                 <div class="d-flex align-items-center justify-content-between mb-3 p-3 rounded" style="background-color: #E3FAFC; border: 1px solid #99E9F2;">
@@ -428,7 +428,7 @@
                             <i class="ti ti-diamond fs-2"></i>
                         </span>
                         <div>
-                            <h3 class="card-title mb-0" style="color: #00B4D8;">{{ __('Cấp 4: Mẹ Kim Cương (Diamond)') }}</h3>
+                            <h3 class="card-title mb-0" style="color: #00B4D8;">{{ __('Cấp 4: Kim Cương') }}</h3>
                             <div class="text-muted small">{{ __('Cấp bậc danh giá cao nhất với đặc quyền hoa hồng tối đa 50%') }}</div>
                         </div>
                     </div>
@@ -437,7 +437,7 @@
 
                 <div class="alert alert-success py-2 mb-3" role="alert">
                     <i class="ti ti-bulb me-1"></i>
-                    {{ __('Quy tắc HOẶC: Người dùng đạt 10.000 User F1 HOẶC đạt 20.000.000đ Doanh số F1 sẽ tự động được thăng hạng lên Mẹ Kim Cương.') }}
+                    {{ __('Quy tắc HOẶC: Người dùng đạt 10.000 User F1 HOẶC đạt 20.000.000đ Doanh số F1 sẽ tự động được thăng hạng lên Kim Cương.') }}
                 </div>
 
                 <div class="row g-4">
@@ -452,13 +452,13 @@
                             <div class="card-body">
                                 @include('admin.settings.forms.partials.setting-field', [
                                     'setting' => $settingsByKey->get('affiliate_reward_user_diamond'),
-                                    'label' => __('Thưởng F1 mới đăng ký: Mẹ Kim Cương (VNĐ)'),
+                                    'label' => __('Thưởng F1 mới đăng ký: Kim Cương (VNĐ)'),
                                     'hint' => __('Tiền thưởng cộng vào ví khi có F1 mới tạo tài khoản (Khuyến nghị: 5.000đ).')
                                 ])
 
                                 @include('admin.settings.forms.partials.setting-field', [
                                     'setting' => $settingsByKey->get('affiliate_commission_diamond'),
-                                    'label' => __('Tỷ lệ hoa hồng mua gói: Mẹ Kim Cương (%)'),
+                                    'label' => __('Tỷ lệ hoa hồng mua gói: Kim Cương (%)'),
                                     'hint' => __('Tỷ lệ % chiết khấu nhận được khi F1 thanh toán mua gói VIP (Khuyến nghị: 50%).')
                                 ])
                             </div>

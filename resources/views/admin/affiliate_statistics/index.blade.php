@@ -245,16 +245,16 @@
                                 <i class="ti ti-apps"></i> Tất cả
                             </button>
                             <button type="button" class="btn-rank-pill btn-rank {{ $currentRank === '1' ? 'active' : '' }}" data-rank="1">
-                                <span style="color: #CD7F32;">●</span> Mẹ Đồng
+                                <span style="color: #8A9BA8;">●</span> Bạc
                             </button>
                             <button type="button" class="btn-rank-pill btn-rank {{ $currentRank === '2' ? 'active' : '' }}" data-rank="2">
-                                <span style="color: #6C757D;">●</span> Mẹ Bạc
+                                <span style="color: #E6A100;">●</span> Vàng
                             </button>
                             <button type="button" class="btn-rank-pill btn-rank {{ $currentRank === '3' ? 'active' : '' }}" data-rank="3">
-                                <span style="color: #E5A100;">●</span> Mẹ Vàng
+                                <span style="color: #6366F1;">●</span> Bạch Kim
                             </button>
                             <button type="button" class="btn-rank-pill btn-rank {{ $currentRank === '4' ? 'active' : '' }}" data-rank="4">
-                                <span style="color: #00B4D8;">●</span> Mẹ Kim Cương
+                                <span style="color: #00B4D8;">●</span> Kim Cương
                             </button>
                         </div>
                     </div>

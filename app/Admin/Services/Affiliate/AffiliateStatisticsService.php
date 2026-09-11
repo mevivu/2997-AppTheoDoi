@@ -162,7 +162,7 @@ class AffiliateStatisticsService
             // Lấy rank enum an toàn
             $rankEnum = $partner->affiliate_rank instanceof AffiliateRank
                 ? $partner->affiliate_rank
-                : AffiliateRank::tryFrom((int)$partner->affiliate_rank) ?? AffiliateRank::Bronze;
+                : AffiliateRank::tryFrom((int)$partner->affiliate_rank) ?? AffiliateRank::Silver;
 
             $ranking[] = [
                 'id' => $partner->id,
@@ -448,10 +448,10 @@ class AffiliateStatisticsService
     protected function buildDonutChartData(array $ranking, float $totalRevenue): array
     {
         $rankGroups = [
-            1 => ['category' => 'Mẹ Đồng', 'value' => 0.0, 'color' => '#CD7F32', 'count' => 0],
-            2 => ['category' => 'Mẹ Bạc', 'value' => 0.0, 'color' => '#6C757D', 'count' => 0],
-            3 => ['category' => 'Mẹ Vàng', 'value' => 0.0, 'color' => '#E5A100', 'count' => 0],
-            4 => ['category' => 'Mẹ Kim Cương', 'value' => 0.0, 'color' => '#00B4D8', 'count' => 0],
+            1 => ['category' => 'Bạc', 'value' => 0.0, 'color' => '#8A9BA8', 'count' => 0],
+            2 => ['category' => 'Vàng', 'value' => 0.0, 'color' => '#E6A100', 'count' => 0],
+            3 => ['category' => 'Bạch Kim', 'value' => 0.0, 'color' => '#6366F1', 'count' => 0],
+            4 => ['category' => 'Kim Cương', 'value' => 0.0, 'color' => '#00B4D8', 'count' => 0],
         ];
 
         foreach ($ranking as $item) {

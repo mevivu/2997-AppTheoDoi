@@ -5,7 +5,7 @@ namespace App\Enums\User;
 use App\Admin\Support\Enum;
 
 /**
- * Cấp Bậc Mẹ Giới Thiệu (Affiliate Rank)
+ * Cấp Bậc Đối Tác (Affiliate Rank)
  *
  * Xác định thứ hạng và mức độ đóng góp doanh số của người dùng
  * trong hệ thống tiếp thị liên kết (Affiliate) của CHĂM CON 360.
@@ -14,16 +14,16 @@ enum AffiliateRank: int
 {
     use Enum;
 
-    /** Cấp 1: Mẹ Đồng (Bronze) - Cấp mặc định khi bắt đầu */
-    case Bronze = 1;
+    /** Cấp 1: Bạc (Silver) - Cấp mặc định khi bắt đầu / Còn lại */
+    case Silver = 1;
 
-    /** Cấp 2: Mẹ Bạc (Silver) - Đạt mốc doanh số sơ cấp */
-    case Silver = 2;
+    /** Cấp 2: Vàng (Gold) - Đạt mốc 6.000 user hoặc 10 triệu */
+    case Gold = 2;
 
-    /** Cấp 3: Mẹ Vàng (Gold) - Đạt mốc doanh số trung cấp */
-    case Gold = 3;
+    /** Cấp 3: Bạch Kim (Platinum) - Đạt mốc 8.000 user hoặc 15 triệu */
+    case Platinum = 3;
 
-    /** Cấp 4: Mẹ Kim Cương (Diamond) - Cấp bậc cao quý nhất */
+    /** Cấp 4: Kim Cương (Diamond) - Đạt mốc 10.000 user hoặc 20 triệu */
     case Diamond = 4;
 
     /**
@@ -34,10 +34,10 @@ enum AffiliateRank: int
     public function name(): string
     {
         return match ($this) {
-            self::Bronze => 'Mẹ Đồng',
-            self::Silver => 'Mẹ Bạc',
-            self::Gold => 'Mẹ Vàng',
-            self::Diamond => 'Mẹ Kim Cương',
+            self::Silver => 'Bạc',
+            self::Gold => 'Vàng',
+            self::Platinum => 'Bạch Kim',
+            self::Diamond => 'Kim Cương',
         };
     }
 
@@ -49,9 +49,9 @@ enum AffiliateRank: int
     public function badge(): string
     {
         return match ($this) {
-            self::Bronze => 'bg-orange-lt',
             self::Silver => 'bg-secondary-lt',
             self::Gold => 'bg-yellow-lt',
+            self::Platinum => 'bg-indigo-lt',
             self::Diamond => 'bg-cyan-lt',
         };
     }
@@ -64,9 +64,9 @@ enum AffiliateRank: int
     public function icon(): string
     {
         return match ($this) {
-            self::Bronze => 'ti ti-medal',
-            self::Silver => 'ti ti-award',
+            self::Silver => 'ti ti-medal',
             self::Gold => 'ti ti-crown',
+            self::Platinum => 'ti ti-sparkles',
             self::Diamond => 'ti ti-diamond',
         };
     }
@@ -79,9 +79,9 @@ enum AffiliateRank: int
     public function colorHex(): string
     {
         return match ($this) {
-            self::Bronze => '#CD7F32',
             self::Silver => '#8A9BA8',
             self::Gold => '#E6A100',
+            self::Platinum => '#6366F1',
             self::Diamond => '#00B4D8',
         };
     }
@@ -94,9 +94,9 @@ enum AffiliateRank: int
     public function getNextRank(): ?self
     {
         return match ($this) {
-            self::Bronze => self::Silver,
             self::Silver => self::Gold,
-            self::Gold => self::Diamond,
+            self::Gold => self::Platinum,
+            self::Platinum => self::Diamond,
             self::Diamond => null,
         };
     }

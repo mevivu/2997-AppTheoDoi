@@ -292,14 +292,6 @@ Route::controller(\App\Api\V1\Http\Controllers\Slider\SliderController::class)
     });
 
 
-Route::fallback(function () {
-    return response()->json([
-        'status' => 404,
-        'message' => __('Không tìm thấy đường dẫn.')
-    ], 404);
-});
-
-
 //***** -- Setting -- ******* //
 Route::controller(App\Api\V1\Http\Controllers\Setting\SettingController::class)
     ->prefix('/settings')
@@ -367,4 +359,12 @@ Route::controller(\App\Api\V1\Http\Controllers\Tracking\TrackingController::clas
     ->group(function () {
         Route::post('/feature-usage', 'logFeatureUsage');
     });
+
+Route::fallback(function () {
+    return response()->json([
+        'status' => 404,
+        'message' => __('Không tìm thấy đường dẫn.')
+    ], 404);
+});
+
 

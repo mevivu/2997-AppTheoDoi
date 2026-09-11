@@ -118,17 +118,17 @@ class AffiliateService implements AffiliateServiceInterface
                     // Xác định rank hiện tại của referrer để tính mức thưởng F1 mới
                     $currentRank = $referrer->affiliate_rank instanceof AffiliateRank
                         ? $referrer->affiliate_rank
-                        : (AffiliateRank::tryFrom((int) $referrer->affiliate_rank) ?? AffiliateRank::Bronze);
+                        : (AffiliateRank::tryFrom((int) $referrer->affiliate_rank) ?? AffiliateRank::Silver);
 
                     $rankKey = match ($currentRank) {
                         AffiliateRank::Diamond => 'diamond',
-                        AffiliateRank::Gold => 'gold',
-                        AffiliateRank::Silver => 'silver',
+                        AffiliateRank::Platinum => 'gold',
+                        AffiliateRank::Gold => 'silver',
                         default => 'bronze',
                     };
 
                     // Thưởng F1 mới đăng ký theo cấp bậc của Người giới thiệu:
-                    // Mẹ Đồng (1k), Mẹ Bạc (3k), Mẹ Vàng (4k), Mẹ Kim Cương (5k)
+                    // Bạc (1k), Vàng (3k), Bạch Kim (4k), Kim Cương (5k)
                     $rewardReferrer = (float) ($thresholds['rewards_user'][$rankKey] ?? 1000);
 
                     if ($rewardReferrer > 0) {
@@ -285,23 +285,23 @@ class AffiliateService implements AffiliateServiceInterface
         $salesTh = $thresholds['sales'];
         $usersTh = $thresholds['users'];
 
-        // Cấp Kim Cương: 10.000 user HOẶC 20 triệu VNĐ
+        // Cấp 4: Kim Cương: 10.000 user HOẶC 20 triệu VNĐ
         if (($usersTh['diamond'] > 0 && $totalUsers >= $usersTh['diamond']) || ($salesTh['diamond'] > 0 && $sales >= $salesTh['diamond'])) {
             return AffiliateRank::Diamond;
         }
 
-        // Cấp Vàng: 8.000 user HOẶC 15 triệu VNĐ
+        // Cấp 3: Bạch Kim: 8.000 user HOẶC 15 triệu VNĐ
         if (($usersTh['gold'] > 0 && $totalUsers >= $usersTh['gold']) || ($salesTh['gold'] > 0 && $sales >= $salesTh['gold'])) {
+            return AffiliateRank::Platinum;
+        }
+
+        // Cấp 2: Vàng: 6.000 user HOẶC 10 triệu VNĐ
+        if (($usersTh['silver'] > 0 && $totalUsers >= $usersTh['silver']) || ($salesTh['silver'] > 0 && $sales >= $salesTh['silver'])) {
             return AffiliateRank::Gold;
         }
 
-        // Cấp Bạc: 6.000 user HOẶC 10 triệu VNĐ
-        if (($usersTh['silver'] > 0 && $totalUsers >= $usersTh['silver']) || ($salesTh['silver'] > 0 && $sales >= $salesTh['silver'])) {
-            return AffiliateRank::Silver;
-        }
-
-        // Cấp mặc định: Mẹ Đồng
-        return AffiliateRank::Bronze;
+        // Cấp 1 mặc định: Bạc
+        return AffiliateRank::Silver;
     }
 
     /**
@@ -342,17 +342,17 @@ class AffiliateService implements AffiliateServiceInterface
                 // Cấp bậc hiện tại của Người giới thiệu
                 $currentRank = $referrer->affiliate_rank instanceof AffiliateRank
                     ? $referrer->affiliate_rank
-                    : (AffiliateRank::tryFrom((int) $referrer->affiliate_rank) ?? AffiliateRank::Bronze);
+                    : (AffiliateRank::tryFrom((int) $referrer->affiliate_rank) ?? AffiliateRank::Silver);
 
                 $rankKey = match ($currentRank) {
                     AffiliateRank::Diamond => 'diamond',
-                    AffiliateRank::Gold => 'gold',
-                    AffiliateRank::Silver => 'silver',
+                    AffiliateRank::Platinum => 'gold',
+                    AffiliateRank::Gold => 'silver',
                     default => 'bronze',
                 };
 
                 // 1. Tính và cộng hoa hồng mua gói (% CK) theo cấp bậc hiện tại của Người giới thiệu
-                // Mẹ Đồng: 10%, Mẹ Bạc: 30%, Mẹ Vàng: 40%, Mẹ Kim Cương: 50%
+                // Bạc: 10%, Vàng: 30%, Bạch Kim: 40%, Kim Cương: 50%
                 $commissionPercent = (float) ($thresholds['commissions'][$rankKey] ?? 10);
                 $commissionAmount = round($amount * ($commissionPercent / 100));
 
