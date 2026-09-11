@@ -26,7 +26,7 @@
             </div>
             <div class="mt-0.5">
                 <span class="badge {{ $user->getAffiliateRankBadge() }} px-1.5 py-0.5 fs-10 fw-semibold">
-                    <i class="ti ti-award me-0.5"></i>{{ $user->affiliate_rank?->label() ?? 'Mẹ tập sự' }}
+                    <i class="ti ti-award me-0.5"></i>{{ $user->getAffiliateRankName() }}
                 </span>
             </div>
         </div>

@@ -5,7 +5,9 @@ namespace App\Admin\Http\Controllers\User;
 use App\Admin\DataTables\User\KycApprovalDatatable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\User\RejectKycRequest;
+use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
 use App\Enums\Notification\MessageType;
+use App\Enums\Notification\NotificationStatus;
 use App\Enums\User\KycStatus;
 use App\Models\User;
 use App\Traits\NotifiesViaFirebase;
@@ -140,7 +142,7 @@ class KycApprovalController extends Controller
     }
 
     /**
-     * Gửi Firebase Notification thông báo duyệt CCCD thành công
+     * Gửi Firebase Notification và lưu thông báo in-app cho User khi duyệt CCCD thành công
      */
     protected function notifyUserKycApproved(User $user): void
     {
@@ -148,14 +150,31 @@ class KycApprovalController extends Controller
             $title = 'Xác minh danh tính thành công';
             $body = 'Hồ sơ CCCD và Mã số thuế của bạn đã được Admin phê duyệt thành công. Bạn đã có thể rút tiền hoa hồng về tài khoản ngân hàng!';
 
-            $deviceTokens = $user->devices()->whereNotNull('device_token')->pluck('device_token')->toArray();
+            // Lấy toàn bộ device_token từ cả bảng users và bảng user_devices
+            $deviceTokens = collect([$user->device_token])
+                ->merge($user->devices()->whereNotNull('device_token')->pluck('device_token'))
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+
+            $notificationRepository = app(NotificationRepositoryInterface::class);
+            $notification = $notificationRepository->create([
+                'user_id' => $user->id,
+                'title' => $title,
+                'message' => $body,
+                'type' => MessageType::AFFILIATE,
+                'status' => NotificationStatus::NOT_READ,
+                'is_pushed' => !empty($deviceTokens),
+            ]);
+
             if (!empty($deviceTokens)) {
                 $this->sendFirebaseNotification(
                     $deviceTokens,
                     null,
                     $title,
                     $body,
-                    null,
+                    $notification->id,
                     [
                         'type' => 'kyc_approved',
                         'screen' => '/withdraw',
@@ -164,12 +183,15 @@ class KycApprovalController extends Controller
                 );
             }
         } catch (Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Lỗi gửi FCM duyệt KYC: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Lỗi gửi FCM duyệt KYC: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 
     /**
-     * Gửi Firebase Notification thông báo từ chối CCCD kèm lý do
+     * Gửi Firebase Notification và lưu thông báo in-app cho User khi từ chối CCCD kèm lý do
      */
     protected function notifyUserKycRejected(User $user, string $reason): void
     {
@@ -177,14 +199,31 @@ class KycApprovalController extends Controller
             $title = 'Xác minh danh tính không thành công';
             $body = "Hồ sơ CCCD của bạn bị từ chối với lý do: {$reason}. Vui lòng cập nhật lại thông tin.";
 
-            $deviceTokens = $user->devices()->whereNotNull('device_token')->pluck('device_token')->toArray();
+            // Lấy toàn bộ device_token từ cả bảng users và bảng user_devices
+            $deviceTokens = collect([$user->device_token])
+                ->merge($user->devices()->whereNotNull('device_token')->pluck('device_token'))
+                ->filter()
+                ->unique()
+                ->values()
+                ->all();
+
+            $notificationRepository = app(NotificationRepositoryInterface::class);
+            $notification = $notificationRepository->create([
+                'user_id' => $user->id,
+                'title' => $title,
+                'message' => $body,
+                'type' => MessageType::AFFILIATE,
+                'status' => NotificationStatus::NOT_READ,
+                'is_pushed' => !empty($deviceTokens),
+            ]);
+
             if (!empty($deviceTokens)) {
                 $this->sendFirebaseNotification(
                     $deviceTokens,
                     null,
                     $title,
                     $body,
-                    null,
+                    $notification->id,
                     [
                         'type' => 'kyc_rejected',
                         'screen' => '/kyc-verification',
@@ -194,7 +233,10 @@ class KycApprovalController extends Controller
                 );
             }
         } catch (Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Lỗi gửi FCM từ chối KYC: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Lỗi gửi FCM từ chối KYC: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 }

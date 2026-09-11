@@ -42,6 +42,16 @@ enum AffiliateRank: int
     }
 
     /**
+     * Tên tiếng Việt hiển thị của Cấp bậc (Alias của name())
+     *
+     * @return string
+     */
+    public function label(): string
+    {
+        return $this->name();
+    }
+
+    /**
      * Class CSS màu nền badge giao diện Admin (Tabler UI)
      *
      * @return string

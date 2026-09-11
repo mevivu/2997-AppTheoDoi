@@ -77,4 +77,8 @@ return [
         'title' => 'Biến động số dư ví',
         'message' => 'Ví của bạn vừa bị trừ -{amount} từ Ban Quản Trị. Lý do: {reason}. Số dư hiện tại: {balance}.',
     ],
+    'admin_kyc_submitted' => [
+        'title' => 'Yêu cầu xác minh CCCD & MST mới',
+        'message' => 'Đối tác {fullname} vừa gửi hồ sơ xác minh CCCD và Mã số thuế. Vui lòng kiểm tra và phê duyệt.',
+    ],
 ];

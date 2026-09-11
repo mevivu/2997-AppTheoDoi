@@ -3,10 +3,16 @@
 namespace App\Api\V1\Http\Controllers\User;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Admin\Repositories\Admin\AdminRepositoryInterface;
+use App\Admin\Repositories\Notification\NotificationRepositoryInterface;
 use App\Admin\Services\File\FileService;
 use App\Api\V1\Http\Requests\User\KycUpdateRequest;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
+use App\Enums\Notification\MessageType;
+use App\Enums\Notification\NotificationStatus;
+use App\Models\User;
+use App\Traits\NotifiesViaFirebase;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -16,7 +22,7 @@ use Throwable;
  */
 class KycController extends Controller
 {
-    use Response, UseLog;
+    use Response, UseLog, NotifiesViaFirebase;
 
     protected FileService $fileService;
 
@@ -131,6 +137,9 @@ class KycController extends Controller
             $user->update(array_filter($data, fn($val) => !is_null($val)));
             $user->refresh();
 
+            // Gửi thông báo FCM và lưu in-app notification cho toàn bộ Admin
+            $this->notifyAdminsKycSubmitted($user);
+
             return $this->jsonResponseSuccess([
                 'kyc_completed' => $user->hasCompletedKyc(),
                 'kyc_status' => $user->kyc_status?->value ?? \App\Enums\User\KycStatus::PENDING->value,
@@ -143,6 +152,53 @@ class KycController extends Controller
         } catch (Throwable $e) {
             $this->logError('Update KYC failed:', $e);
             return $this->jsonResponseError('Đã có lỗi xảy ra khi cập nhật thông tin xác minh. Vui lòng thử lại.', 500);
+        }
+    }
+
+    /**
+     * Gửi thông báo đẩy Firebase và lưu in-app notification cho Admin khi đối tác nộp hồ sơ KYC
+     */
+    protected function notifyAdminsKycSubmitted(User $user): void
+    {
+        try {
+            $displayName = $user->fullname ?: '#' . $user->id;
+
+            $title = config('notifications.admin_kyc_submitted.title', 'Yêu cầu xác minh CCCD & MST mới');
+            $messageTemplate = config(
+                'notifications.admin_kyc_submitted.message',
+                'Đối tác {fullname} vừa gửi hồ sơ xác minh CCCD và Mã số thuế. Vui lòng kiểm tra và phê duyệt.'
+            );
+
+            $body = str_replace('{fullname}', $displayName, $messageTemplate);
+
+            $adminRepository = app(AdminRepositoryInterface::class);
+            $notificationRepository = app(NotificationRepositoryInterface::class);
+
+            $admins = $adminRepository->getAll();
+            $deviceTokens = $admins->pluck('device_token')->filter()->all();
+
+            $fcmData = [
+                'type' => 'kyc_submitted',
+                'user_id' => (string) $user->id,
+                'screen' => '/admin/giao-dich/duyet-cccd',
+            ];
+
+            if (!empty($deviceTokens)) {
+                $this->sendFirebaseNotification($deviceTokens, null, $title, $body, null, $fcmData);
+            }
+
+            foreach ($admins as $admin) {
+                $notificationRepository->create([
+                    'admin_id' => $admin->id,
+                    'user_id_attribute' => $user->id,
+                    'title' => $title,
+                    'message' => $body,
+                    'type' => MessageType::AFFILIATE,
+                    'status' => NotificationStatus::NOT_READ,
+                ]);
+            }
+        } catch (Throwable $e) {
+            $this->logError('Lỗi gửi FCM cho Admin khi nộp hồ sơ KYC: ' . $e->getMessage(), $e);
         }
     }
 }
