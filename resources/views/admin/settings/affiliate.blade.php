@@ -113,6 +113,15 @@
             margin: 0 10px;
             text-transform: uppercase;
         }
+
+        /* CKEditor min-height in Affiliate Settings */
+        #tab-terms .cke_contents {
+            min-height: 450px !important;
+        }
+
+        #tab-terms .cke_wysiwyg_frame {
+            min-height: 450px !important;
+        }
     </style>
 @endpush
 
@@ -148,16 +157,62 @@
 @push('custom-js')
     <script>
         $(document).ready(function() {
-            // Tự động điều chỉnh kích thước CKEditor khi mở tab Quy định tham gia
+            var preferredEditorHeights = {};
+            var defaultHeight = 450;
+
+            function adjustEditor(editor) {
+                if (!editor || !editor.container) return;
+                var targetHeight = preferredEditorHeights[editor.name] || defaultHeight;
+                // resize(width, height, isContentHeight): truyền true để targetHeight là chiều cao vùng soạn thảo
+                editor.resize('100%', targetHeight, true);
+
+                // Lắng nghe khi người dùng chủ động kéo giãn góc dưới
+                editor.on('resize', function(e) {
+                    if (e.data && e.data.contentsHeight && e.data.contentsHeight >= 200) {
+                        preferredEditorHeights[editor.name] = e.data.contentsHeight;
+                    }
+                });
+            }
+
+            // Gán listener khi CKEditor khởi tạo xong
+            if (typeof CKEDITOR !== 'undefined') {
+                for (var name in CKEDITOR.instances) {
+                    if (CKEDITOR.instances[name].status === 'ready') {
+                        adjustEditor(CKEDITOR.instances[name]);
+                    }
+                }
+                CKEDITOR.on('instanceReady', function(evt) {
+                    adjustEditor(evt.editor);
+                });
+            }
+
+            // Tự động điều chỉnh kích thước CKEditor đầy đủ khi mở tab Quy định tham gia
             $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
-                if (typeof CKEDITOR !== 'undefined') {
+                var targetTab = $(e.target).attr('data-bs-target');
+                if (targetTab) {
+                    sessionStorage.setItem('affiliate_active_tab', targetTab);
+                }
+
+                if (targetTab === '#tab-terms' && typeof CKEDITOR !== 'undefined') {
                     for (var instanceName in CKEDITOR.instances) {
-                        if (CKEDITOR.instances[instanceName]) {
-                            CKEDITOR.instances[instanceName].resize('100%');
+                        var instance = CKEDITOR.instances[instanceName];
+                        if (instance && instance.container) {
+                            var targetHeight = preferredEditorHeights[instanceName] || defaultHeight;
+                            instance.resize('100%', targetHeight, true);
                         }
                     }
                 }
             });
+
+            // Khôi phục tab đang mở trước đó (ví dụ sau khi nhấn Lưu thay đổi)
+            var savedTab = sessionStorage.getItem('affiliate_active_tab');
+            if (savedTab && $('button[data-bs-target="' + savedTab + '"]').length) {
+                var triggerEl = document.querySelector('button[data-bs-target="' + savedTab + '"]');
+                if (triggerEl) {
+                    var tab = bootstrap.Tab.getOrCreateInstance(triggerEl);
+                    tab.show();
+                }
+            }
 
             // Đảm bảo dữ liệu trong CKEditor được sync vào textarea trước khi submit
             $('form').on('submit', function() {
