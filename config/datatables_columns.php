@@ -204,6 +204,12 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
+        'processed_by' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-user-check"></i><span>Người xử lý</span></div>',
+            'width' => '160px',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
         'action' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
             'orderable' => false,

@@ -8,6 +8,7 @@ use App\Admin\Traits\Roles;
 use App\Enums\Transaction\TransactionStatus;
 use App\Enums\Transaction\TransactionType;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class TransactionWithdrawDatatable extends BaseDataTable
 {
@@ -36,7 +37,7 @@ class TransactionWithdrawDatatable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [0, 1, 2, 3, 4, 5, 6];
+        $this->columnAllSearch = [0, 1, 2, 3, 4, 5, 6, 7];
         $this->columnSearchDate = [4, 6];
         $this->columnSearchSelect = [
             [
@@ -54,6 +55,9 @@ class TransactionWithdrawDatatable extends BaseDataTable
     public function query(): Builder
     {
         $query = $this->repository->getQueryBuilderOrderBy();
+
+        // Eager load các quan hệ user và processor (admin duyệt/từ chối)
+        $query->with(['user', 'processor']);
 
         // Chỉ lấy các giao dịch RÚT TIỀN HOA HỒNG
         $query->where('type', TransactionType::Withdraw);
@@ -99,6 +103,28 @@ class TransactionWithdrawDatatable extends BaseDataTable
                 }
                 return '<span class="badge bg-success-lt text-success px-2 py-1 fs-11 fw-semibold text-nowrap"><i class="ti ti-calendar-event me-1"></i>Thứ 5 (' . format_date($transaction->scheduled_payout_date) . ')</span>';
             },
+            'processed_by' => function ($transaction) {
+                if (!$transaction->processed_by && !$transaction->processor) {
+                    return '<span class="badge bg-secondary-lt text-muted px-2 py-1 fs-11">' . __('Chưa xử lý') . '</span>';
+                }
+
+                $processorName = e($transaction->processor?->fullname ?? $transaction->processor?->username ?? 'Admin');
+                $html = '<div class="text-start py-1 fs-12" style="line-height: 1.45;">';
+                $html .= '<span class="fw-bold text-dark d-flex align-items-center gap-1"><i class="ti ti-user-check text-primary"></i>' . $processorName . '</span>';
+
+                if ($transaction->processed_at) {
+                    $html .= '<span class="text-muted fs-11 text-nowrap"><i class="ti ti-clock me-1"></i>' . format_datetime($transaction->processed_at) . '</span>';
+                }
+
+                if (!empty($transaction->admin_note)) {
+                    $note = e(Str::limit($transaction->admin_note, 30));
+                    $fullNote = e($transaction->admin_note);
+                    $html .= '<br><span class="text-muted fst-italic fs-11" data-bs-toggle="tooltip" title="' . $fullNote . '"><i class="ti ti-notes me-1"></i>' . $note . '</span>';
+                }
+
+                $html .= '</div>';
+                return $html;
+            },
             'action' => function ($transaction) {
                 return view($this->view['action'], [
                     'transaction' => $transaction,
@@ -121,6 +147,7 @@ class TransactionWithdrawDatatable extends BaseDataTable
             'bank_info',
             'scheduled_payout_date',
             'created_at',
+            'processed_by',
             'action',
         ];
     }
@@ -148,6 +175,13 @@ class TransactionWithdrawDatatable extends BaseDataTable
                     $q->where('bank_name', 'like', "%$keyword%")
                         ->orWhere('bank_account_number', 'like', "%$keyword%")
                         ->orWhere('bank_account_name', 'like', "%$keyword%");
+                });
+            },
+            'processed_by' => function ($query, $keyword) {
+                $keyword = trim($keyword);
+                $query->whereHas('processor', function ($subQuery) use ($keyword) {
+                    $subQuery->where('fullname', 'like', "%{$keyword}%")
+                        ->orWhere('username', 'like', "%{$keyword}%");
                 });
             },
         ];
