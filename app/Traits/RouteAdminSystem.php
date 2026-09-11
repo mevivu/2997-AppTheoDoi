@@ -222,6 +222,7 @@ class RouteAdminSystem
     const USER_DELETE = 'admin.user.delete';
     const USER_FORCE_DELETE = 'admin.user.forceDelete';
     const USER_DEPOSIT = 'admin.user.deposit';
+    const USER_WITHDRAW = 'admin.user.withdraw';
 
     const CHILDREN_INDEX = 'admin.children.index';
     const CHILDREN_CREATE = 'admin.children.create';

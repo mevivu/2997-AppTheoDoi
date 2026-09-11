@@ -52,6 +52,16 @@
                 <span>{{ __('Nạp tiền vào ví') }}</span>
             </button>
 
+            <button type="button" class="btn btn-outline-danger open-modal-withdraw d-flex align-items-center justify-content-center gap-2 py-2"
+                    data-id="{{ $user->id }}"
+                    data-fullname="{{ $user->fullname ?? '' }}"
+                    data-code="{{ $user->code ?? ('#' . $user->id) }}"
+                    data-balance="{{ (float)($user->wallet_balance ?? 0) }}"
+                    title="{{ __('Rút / Trừ tiền từ ví thành viên') }}">
+                <i class="ti ti-cash-off fs-4"></i>
+                <span>{{ __('Rút / Trừ tiền ví') }}</span>
+            </button>
+
             <a href="{{ route('admin.user.history', $user->id) }}" class="btn btn-outline-primary d-flex align-items-center justify-content-center gap-2 py-2">
                 <i class="ti ti-receipt fs-4"></i>
                 <span>{{ __('Lịch sử giao dịch') }}</span>

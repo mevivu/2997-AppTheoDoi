@@ -27,6 +27,7 @@
         </div>
     </div>
     @include('admin.users.partials.modal.modal-deposit')
+    @include('admin.users.partials.modal.modal-withdraw')
 @endsection
 
 @push('libs-js')
@@ -42,6 +43,7 @@
     ])
     @include('admin.common.copy')
     @include('admin.users.partials.scripts.deposit-wallet-script')
+    @include('admin.users.partials.scripts.withdraw-wallet-script')
     <script>
         $(document).on('click', '.open-modal-force-delete', function () {
             var form = $("#modalFormForceDelete"), action = $(this).data('route');

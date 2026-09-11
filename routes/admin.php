@@ -772,6 +772,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::post('/{userId}/devices/{deviceId}/revoke', 'revokeDevice')->name('device.revoke');
                 Route::post('/{userId}/devices/revoke-all', 'revokeAllDevices')->name('device.revokeAll');
                 Route::post('/nap-tien', 'deposit')->name('deposit');
+                Route::post('/rut-tien', 'withdraw')->name('withdraw');
             });
 
             Route::group(['middleware' => ['permission:deleteUser', 'auth:admin']], function () {

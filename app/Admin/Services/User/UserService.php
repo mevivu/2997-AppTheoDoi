@@ -3,6 +3,7 @@
 namespace App\Admin\Services\User;
 
 use App\Admin\Http\Requests\User\DepositWalletRequest;
+use App\Admin\Http\Requests\User\WithdrawWalletRequest;
 use App\Admin\Repositories\AffiliateHistory\AffiliateHistoryRepositoryInterface;
 use App\Admin\Repositories\Package\PackageRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
@@ -437,6 +438,113 @@ class UserService implements UserServiceInterface
                     );
                 } catch (\Throwable $e) {
                     $this->logError('Lỗi gửi Firebase notification khi nạp tiền ví User: ' . $e->getMessage(), $e);
+                }
+            }
+
+            return [
+                'user_id' => $lockedUser->id,
+                'fullname' => $lockedUser->fullname,
+                'code' => $lockedUser->code,
+                'amount' => $amount,
+                'amount_formatted' => number_format($amount, 0, ',', '.') . ' đ',
+                'old_balance' => $currentBalance,
+                'old_balance_formatted' => number_format($currentBalance, 0, ',', '.') . ' đ',
+                'new_balance' => $newBalance,
+                'new_balance_formatted' => number_format($newBalance, 0, ',', '.') . ' đ',
+                'transaction_code' => $code,
+            ];
+        });
+    }
+
+    /**
+     * Rút / Trừ tiền từ ví của thành viên
+     */
+    public function withdrawWallet(WithdrawWalletRequest $request, $adminUser): array
+    {
+        $userId = (int) $request->user_id;
+        $amount = (float) $request->amount;
+        $reason = trim((string) $request->admin_note);
+        $sendNotification = (bool) ($request->send_notification ?? true);
+
+        return DB::transaction(function () use ($userId, $amount, $reason, $adminUser, $sendNotification) {
+            $lockedUser = $this->repository->findForUpdate($userId);
+
+            if (!$lockedUser) {
+                throw new Exception('Không tìm thấy tài khoản thành viên.');
+            }
+
+            $currentBalance = (float) ($lockedUser->wallet_balance ?? 0);
+
+            if ($amount > $currentBalance) {
+                $curFmt = number_format($currentBalance, 0, ',', '.') . 'đ';
+                $amtFmt = number_format($amount, 0, ',', '.') . 'đ';
+                throw new Exception("Số dư ví của thành viên ({$curFmt}) không đủ để thực hiện rút {$amtFmt}.");
+            }
+
+            $newBalance = $currentBalance - $amount;
+
+            // 1. Cập nhật số dư ví
+            $this->repository->update($lockedUser->id, [
+                'wallet_balance' => $newBalance,
+            ]);
+
+            // 2. Sinh mã giao dịch duy nhất
+            $code = 'WD' . date('Ymd') . strtoupper(Str::random(5));
+
+            // 3. Ghi nhận biến động vào affiliate_histories
+            $affiliateHistoryRepository = app(AffiliateHistoryRepositoryInterface::class);
+            $affiliateHistoryRepository->create([
+                'user_id' => $lockedUser->id,
+                'source_user_id' => null,
+                'amount' => -$amount,
+                'balance_after' => $newBalance,
+                'type' => 'admin_withdraw',
+                'description' => "Ban Quản Trị rút/trừ tiền từ ví: {$reason}",
+            ]);
+
+            // 4. Tạo giao dịch tài chính hệ thống trong transactions
+            $transaction = Transaction::create([
+                'code' => $code,
+                'user_id' => $lockedUser->id,
+                'package_id' => null,
+                'amount' => $amount,
+                'type' => TransactionType::Withdraw,
+                'status' => TransactionStatus::Confirmed,
+                'admin_note' => "Admin [{$adminUser->name}]: {$reason}",
+                'processed_by' => $adminUser->id ?? null,
+                'processed_at' => now(),
+            ]);
+
+            // 5. Gửi thông báo đẩy Firebase & lưu chuông thông báo nếu được chọn
+            if ($sendNotification) {
+                try {
+                    $amountFmt = number_format($amount, 0, ',', '.') . 'đ';
+                    $balanceFmt = number_format($newBalance, 0, ',', '.') . 'đ';
+                    $title = config('notifications.admin_withdraw_wallet.title', 'Biến động số dư ví');
+                    $messageTemplate = config(
+                        'notifications.admin_withdraw_wallet.message',
+                        'Ví của bạn vừa bị trừ -{amount} từ Ban Quản Trị. Lý do: {reason}. Số dư hiện tại: {balance}.'
+                    );
+
+                    $body = str_replace(
+                        ['{amount}', '{reason}', '{balance}'],
+                        [$amountFmt, $reason, $balanceFmt],
+                        $messageTemplate
+                    );
+
+                    $this->sendFirebaseNotificationToUser(
+                        $lockedUser,
+                        $title,
+                        $body,
+                        MessageType::AFFILIATE,
+                        [
+                            'type' => 'wallet_withdraw',
+                            'transaction_id' => (string) $transaction->id,
+                            'code' => $transaction->code,
+                        ]
+                    );
+                } catch (\Throwable $e) {
+                    $this->logError('Lỗi gửi Firebase notification khi rút tiền ví User: ' . $e->getMessage(), $e);
                 }
             }
 

@@ -6,7 +6,7 @@
      tabindex="-1"
      aria-labelledby="depositModalLabel"
      aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 520px;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 660px;">
         <div class="modal-content shadow border-0 rounded-4 overflow-hidden">
             <!-- Modal Header -->
             <div class="modal-header bg-light border-bottom px-4 py-3">

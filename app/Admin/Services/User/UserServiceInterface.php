@@ -2,6 +2,7 @@
 
 namespace App\Admin\Services\User;
 use App\Admin\Http\Requests\User\DepositWalletRequest;
+use App\Admin\Http\Requests\User\WithdrawWalletRequest;
 use Illuminate\Http\Request;
 
 interface UserServiceInterface
@@ -24,5 +25,7 @@ interface UserServiceInterface
     public function forceDelete($id): bool;
 
     public function depositWallet(DepositWalletRequest $request, $adminUser): array;
+
+    public function withdrawWallet(WithdrawWalletRequest $request, $adminUser): array;
 }
 

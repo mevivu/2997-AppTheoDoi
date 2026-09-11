@@ -73,4 +73,8 @@ return [
         'title' => 'Biến động số dư ví',
         'message' => 'Ví của bạn vừa được cộng +{amount} từ Ban Quản Trị. Lý do: {reason}. Số dư hiện tại: {balance}.',
     ],
+    'admin_withdraw_wallet' => [
+        'title' => 'Biến động số dư ví',
+        'message' => 'Ví của bạn vừa bị trừ -{amount} từ Ban Quản Trị. Lý do: {reason}. Số dư hiện tại: {balance}.',
+    ],
 ];
