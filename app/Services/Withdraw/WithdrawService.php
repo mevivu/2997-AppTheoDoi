@@ -3,6 +3,7 @@
 namespace App\Services\Withdraw;
 
 use App\Admin\Repositories\AffiliateHistory\AffiliateHistoryRepositoryInterface;
+use App\Admin\Repositories\Bank\BankRepositoryInterface;
 use App\Admin\Repositories\Transaction\TransactionRepositoryInterface;
 use App\Admin\Repositories\User\UserRepositoryInterface;
 use App\Enums\Notification\MessageType;
@@ -25,15 +26,18 @@ class WithdrawService
     protected TransactionRepositoryInterface $transactionRepository;
     protected AffiliateHistoryRepositoryInterface $affiliateHistoryRepository;
     protected UserRepositoryInterface $userRepository;
+    protected BankRepositoryInterface $bankRepository;
 
     public function __construct(
         TransactionRepositoryInterface $transactionRepository,
         AffiliateHistoryRepositoryInterface $affiliateHistoryRepository,
-        UserRepositoryInterface $userRepository
+        UserRepositoryInterface $userRepository,
+        BankRepositoryInterface $bankRepository
     ) {
         $this->transactionRepository = $transactionRepository;
         $this->affiliateHistoryRepository = $affiliateHistoryRepository;
         $this->userRepository = $userRepository;
+        $this->bankRepository = $bankRepository;
     }
 
     /**
@@ -112,6 +116,7 @@ class WithdrawService
             'is_eligible' => $isEligible,
             'max_withdrawable' => $maxWithdrawable,
             'max_withdrawable_formatted' => number_format($maxWithdrawable, 0, ',', '.') . 'đ',
+            'banks' => $this->bankRepository->getAllBanks(),
             'saved_bank' => $lastWithdraw ? [
                 'bank_name' => $lastWithdraw->bank_name,
                 'bank_account_number' => $lastWithdraw->bank_account_number,

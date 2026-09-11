@@ -46,6 +46,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\Transaction\TransactionRepositoryInterface' => 'App\Api\V1\Repositories\Transaction\TransactionRepository',
         'App\Api\V1\Repositories\AffiliateHistory\AffiliateHistoryRepositoryInterface' => 'App\Api\V1\Repositories\AffiliateHistory\AffiliateHistoryRepository',
         'App\Api\V1\Repositories\AppVersion\AppVersionRepositoryInterface' => 'App\Api\V1\Repositories\AppVersion\AppVersionRepository',
+        'App\Api\V1\Repositories\Bank\BankRepositoryInterface' => 'App\Api\V1\Repositories\Bank\BankRepository',
 
 
 

@@ -238,6 +238,14 @@ Route::controller(App\Api\V1\Http\Controllers\Address\AddressController::class)
         Route::get('/provinces', 'getProvinces');
     });
 
+//***** -- Bank -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Bank\BankController::class)
+    ->prefix('/banks')
+    ->as('bank.')
+    ->group(function () {
+        Route::get('/', 'index');
+    });
+
 
 //***** -- Question -- ******* //
 Route::controller(\App\Api\V1\Http\Controllers\Question\QuestionController::class)

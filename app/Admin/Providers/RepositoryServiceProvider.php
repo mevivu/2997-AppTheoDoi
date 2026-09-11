@@ -63,6 +63,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Guide\GuideRepositoryInterface' => 'App\Admin\Repositories\Guide\GuideRepository',
         'App\Admin\Repositories\Step\StepRepositoryInterface' => 'App\Admin\Repositories\Step\StepRepository',
         'App\Admin\Repositories\AppVersion\AppVersionRepositoryInterface' => 'App\Admin\Repositories\AppVersion\AppVersionRepository',
+        'App\Admin\Repositories\Bank\BankRepositoryInterface' => 'App\Admin\Repositories\Bank\BankRepository',
         'App\Admin\Repositories\Children\UnBorn\ChildrenUnBornRepositoryInterface' => 'App\Admin\Repositories\Children\UnBorn\ChildrenUnUnBornRepository',
 
 
