@@ -12,10 +12,53 @@
             return clean ? parseInt(clean, 10) : 0;
         }
 
+        function getUserInitials(name) {
+            if (!name || name === '---') return 'U';
+            var parts = name.trim().split(/\s+/);
+            if (parts.length === 1) {
+                return parts[0].substring(0, 2).toUpperCase();
+            }
+            return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+        }
+
+        function syncQuickAmountActiveState(currentAmount) {
+            $('.quick-amount-btn').each(function () {
+                var btnAmount = parseInt($(this).data('amount'), 10);
+                if (btnAmount === currentAmount && currentAmount > 0) {
+                    $(this).removeClass('btn-outline-secondary').addClass('btn-success text-white border-success');
+                } else {
+                    $(this).removeClass('btn-success text-white border-success').addClass('btn-outline-secondary');
+                }
+            });
+        }
+
+        function syncQuickReasonActiveState(currentReason) {
+            $('.quick-reason-chip').each(function () {
+                var chipReason = $(this).data('reason');
+                if (chipReason === currentReason && currentReason) {
+                    $(this).removeClass('btn-outline-secondary').addClass('btn-primary text-white border-primary');
+                } else {
+                    $(this).removeClass('btn-primary text-white border-primary').addClass('btn-outline-secondary');
+                }
+            });
+        }
+
         function updateDepositPreview() {
             var addAmount = parseMoney($('#depositAmountInput').val());
             var newTotal = depositCurrentBalance + addAmount;
+            
+            $('#previewOldBalance').text(formatMoney(depositCurrentBalance) + ' đ');
+            $('#previewAddAmount').text((addAmount > 0 ? '+ ' : '') + formatMoney(addAmount) + ' đ');
             $('#depositPreviewNewBalance').text(formatMoney(newTotal) + ' đ');
+
+            // Hiển thị hoặc ẩn nút xóa nhanh số tiền
+            if (addAmount > 0) {
+                $('#btnClearDepositAmount').removeClass('d-none');
+            } else {
+                $('#btnClearDepositAmount').addClass('d-none');
+            }
+
+            syncQuickAmountActiveState(addAmount);
         }
 
         // Mở modal Nạp tiền khi click nút ví
@@ -29,6 +72,7 @@
 
             $('#depositUserId').val(userId);
             $('#depositUserFullname').text(fullname);
+            $('#depositUserAvatarInitials').text(getUserInitials(fullname));
             $('#depositUserCode').text(code);
             $('#depositUserCurrentBalance').text(formatMoney(depositCurrentBalance) + ' đ');
 
@@ -37,20 +81,32 @@
             $('#depositSendNotification').prop('checked', true);
             $('#depositErrorAlert').addClass('d-none').text('');
 
+            // Reset trạng thái active
+            $('.quick-amount-btn').removeClass('btn-success text-white border-success').addClass('btn-outline-secondary');
+            $('.quick-reason-chip').removeClass('btn-primary text-white border-primary').addClass('btn-outline-secondary');
+            $('#btnClearDepositAmount').addClass('d-none');
+
             updateDepositPreview();
 
             var modal = new bootstrap.Modal(document.getElementById('depositModal'));
             modal.show();
         });
 
-        // Xử lý nút chọn nhanh số tiền (+50k, +100k, ...)
+        // Xử lý nút chọn nhanh số tiền (50k, 100k, 200k, ...)
         $(document).on('click', '.quick-amount-btn', function () {
             var amount = $(this).data('amount');
             $('#depositAmountInput').val(formatMoney(amount));
             updateDepositPreview();
         });
 
-        // Tự động định dạng số tiền khi nhập
+        // Nút xóa nhanh số tiền đã nhập
+        $(document).on('click', '#btnClearDepositAmount', function () {
+            $('#depositAmountInput').val('');
+            updateDepositPreview();
+            $('#depositAmountInput').focus();
+        });
+
+        // Tự động định dạng số tiền khi gõ
         $(document).on('input', '#depositAmountInput', function () {
             var val = parseMoney($(this).val());
             if (val > 0) {
@@ -65,6 +121,12 @@
         $(document).on('click', '.quick-reason-chip', function () {
             var reason = $(this).data('reason');
             $('#depositAdminNote').val(reason);
+            syncQuickReasonActiveState(reason);
+        });
+
+        // Cập nhật active chip khi người dùng tự gõ lý do
+        $(document).on('input', '#depositAdminNote', function () {
+            syncQuickReasonActiveState($(this).val().trim());
         });
 
         // Submit form nạp tiền bằng AJAX
