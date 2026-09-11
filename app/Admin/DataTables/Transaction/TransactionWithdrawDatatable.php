@@ -36,7 +36,7 @@ class TransactionWithdrawDatatable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [0, 1, 2, 4, 5, 6];
+        $this->columnAllSearch = [0, 1, 2, 3, 4, 5, 6];
         $this->columnSearchDate = [4, 6];
         $this->columnSearchSelect = [
             [
@@ -134,7 +134,16 @@ class TransactionWithdrawDatatable extends BaseDataTable
                         ->orWhere('phone', 'like', "%$keyword%");
                 });
             },
+            'amount' => function ($query, $keyword) {
+                $clean = preg_replace('/[^0-9]/', '', $keyword);
+                if ($clean !== '') {
+                    $query->where('amount', 'like', "%{$clean}%");
+                } else {
+                    $query->where('amount', 'like', "%{$keyword}%");
+                }
+            },
             'bank_info' => function ($query, $keyword) {
+                $keyword = trim($keyword);
                 $query->where(function ($q) use ($keyword) {
                     $q->where('bank_name', 'like', "%$keyword%")
                         ->orWhere('bank_account_number', 'like', "%$keyword%")
