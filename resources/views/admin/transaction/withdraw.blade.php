@@ -275,14 +275,106 @@
     @include('admin.common.copy')
 
     <script>
+        // Các hàm mở modal toàn cục (sử dụng được từ onclick inline hoặc event listener)
+        window.openApproveWithdrawModal = function (target, code, amount, user, bank) {
+            var id = target;
+            if (typeof target === 'object' && target !== null) {
+                var $el = $(target);
+                id = $el.data('id');
+                code = $el.data('code');
+                amount = $el.data('amount');
+                user = $el.data('user');
+                bank = $el.data('bank');
+            }
+
+            $('#approveWithdrawId').val(id);
+            $('#approveCode').text(code || '-');
+            $('#approveAmount').text(amount || '-');
+            $('#approveUser').text(user || '-');
+            $('#approveBank').text(bank || '-');
+            $('#approveNote').val('');
+
+            var modalEl = document.getElementById('modalApproveWithdraw');
+            if (modalEl) {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.show();
+                } else if (typeof $(modalEl).modal === 'function') {
+                    $(modalEl).modal('show');
+                }
+            }
+        };
+
+        window.openRejectWithdrawModal = function (target, code, amount, user) {
+            var id = target;
+            if (typeof target === 'object' && target !== null) {
+                var $el = $(target);
+                id = $el.data('id');
+                code = $el.data('code');
+                amount = $el.data('amount');
+                user = $el.data('user');
+            }
+
+            $('#rejectWithdrawId').val(id);
+            $('#rejectCode').text(code || '-');
+            $('#rejectAmount').text(amount || '-');
+            $('#rejectUser').text(user || '-');
+            $('#rejectReason').val('');
+            $('.reject-reason-chip').removeClass('active');
+
+            var modalEl = document.getElementById('modalRejectWithdraw');
+            if (modalEl) {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.show();
+                } else if (typeof $(modalEl).modal === 'function') {
+                    $(modalEl).modal('show');
+                }
+            }
+        };
+
+        function hideApproveModal() {
+            var modalEl = document.getElementById('modalApproveWithdraw');
+            if (modalEl) {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                } else if (typeof $(modalEl).modal === 'function') {
+                    $(modalEl).modal('hide');
+                }
+            }
+        }
+
+        function hideRejectModal() {
+            var modalEl = document.getElementById('modalRejectWithdraw');
+            if (modalEl) {
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                } else if (typeof $(modalEl).modal === 'function') {
+                    $(modalEl).modal('hide');
+                }
+            }
+        }
+
         $(document).ready(function () {
             const tableId = '{{ $dataTable->getTableAttribute("id") }}';
 
-            // Kích hoạt Bootstrap tooltips mỗi khi DataTable vẽ lại
+            // Kích hoạt Bootstrap tooltips an toàn không gây lỗi
             function initTooltips() {
-                $('[data-bs-toggle="tooltip"]').tooltip({
-                    trigger: 'hover'
-                });
+                try {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Tooltip) {
+                        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (el) {
+                            if (!bootstrap.Tooltip.getInstance(el)) {
+                                new bootstrap.Tooltip(el, { trigger: 'hover' });
+                            }
+                        });
+                    } else if (typeof $.fn.tooltip === 'function') {
+                        $('[data-bs-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+                    }
+                } catch (e) {
+                    console.warn('Tooltip init error:', e);
+                }
             }
 
             initTooltips();
@@ -298,22 +390,12 @@
                 $(this).addClass('active');
             });
 
-            // 1. Mở Modal Duyệt Chi Trả
-            $(document).on('click', '.btn-approve-withdraw', function () {
-                const id = $(this).data('id');
-                const code = $(this).data('code');
-                const amount = $(this).data('amount');
-                const user = $(this).data('user');
-                const bank = $(this).data('bank');
-
-                $('#approveWithdrawId').val(id);
-                $('#approveCode').text(code);
-                $('#approveAmount').text(amount);
-                $('#approveUser').text(user);
-                $('#approveBank').text(bank);
-                $('#approveNote').val('');
-
-                $('#modalApproveWithdraw').modal('show');
+            // Sự kiện click mở modal Duyệt chi
+            $(document).on('click', '.btn-approve-withdraw', function (e) {
+                if (!$(this).attr('onclick')) {
+                    e.preventDefault();
+                    window.openApproveWithdrawModal(this);
+                }
             });
 
             // Submit Duyệt Chi Trả
@@ -333,20 +415,36 @@
                         note: note
                     },
                     success: function (res) {
-                        $('#modalApproveWithdraw').modal('hide');
+                        hideApproveModal();
                         if (typeof msgSuccess === 'function') {
                             msgSuccess(res.message || '{{ __("Duyệt chi trả thành công.") }}');
+                        } else if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '{{ __("Thành công") }}',
+                                text: res.message || '{{ __("Duyệt chi trả thành công.") }}',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
                         } else {
                             alert(res.message);
                         }
                         if (window.LaravelDataTables && window.LaravelDataTables[tableId]) {
                             window.LaravelDataTables[tableId].ajax.reload(null, false);
+                        } else {
+                            location.reload();
                         }
                     },
                     error: function (xhr) {
                         const msg = xhr.responseJSON?.message || '{{ __("Đã có lỗi xảy ra khi duyệt chi trả.") }}';
                         if (typeof msgError === 'function') {
                             msgError(msg);
+                        } else if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: '{{ __("Lỗi") }}',
+                                text: msg
+                            });
                         } else {
                             alert(msg);
                         }
@@ -357,21 +455,12 @@
                 });
             });
 
-            // 2. Mở Modal Từ Chối Chi Trả
-            $(document).on('click', '.btn-reject-withdraw', function () {
-                const id = $(this).data('id');
-                const code = $(this).data('code');
-                const amount = $(this).data('amount');
-                const user = $(this).data('user');
-
-                $('#rejectWithdrawId').val(id);
-                $('#rejectCode').text(code);
-                $('#rejectAmount').text(amount);
-                $('#rejectUser').text(user);
-                $('#rejectReason').val('');
-                $('.reject-reason-chip').removeClass('active');
-
-                $('#modalRejectWithdraw').modal('show');
+            // Sự kiện click mở modal Từ chối
+            $(document).on('click', '.btn-reject-withdraw', function (e) {
+                if (!$(this).attr('onclick')) {
+                    e.preventDefault();
+                    window.openRejectWithdrawModal(this);
+                }
             });
 
             // Submit Từ Chối
@@ -381,9 +470,15 @@
                 const reason = $('#rejectReason').val();
                 const $btn = $('#btnSubmitReject');
 
-                if (!reason.trim()) {
+                if (!reason || !reason.trim()) {
                     if (typeof msgError === 'function') {
                         msgError('{{ __("Vui lòng nhập lý do từ chối.") }}');
+                    } else if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: '{{ __("Chú ý") }}',
+                            text: '{{ __("Vui lòng nhập lý do từ chối.") }}'
+                        });
                     } else {
                         alert('{{ __("Vui lòng nhập lý do từ chối.") }}');
                     }
@@ -400,20 +495,36 @@
                         reason: reason
                     },
                     success: function (res) {
-                        $('#modalRejectWithdraw').modal('hide');
+                        hideRejectModal();
                         if (typeof msgSuccess === 'function') {
                             msgSuccess(res.message || '{{ __("Từ chối lệnh rút tiền thành công.") }}');
+                        } else if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '{{ __("Thành công") }}',
+                                text: res.message || '{{ __("Từ chối lệnh rút tiền thành công.") }}',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
                         } else {
                             alert(res.message);
                         }
                         if (window.LaravelDataTables && window.LaravelDataTables[tableId]) {
                             window.LaravelDataTables[tableId].ajax.reload(null, false);
+                        } else {
+                            location.reload();
                         }
                     },
                     error: function (xhr) {
                         const msg = xhr.responseJSON?.message || '{{ __("Đã có lỗi xảy ra khi từ chối lệnh rút.") }}';
                         if (typeof msgError === 'function') {
                             msgError(msg);
+                        } else if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: '{{ __("Lỗi") }}',
+                                text: msg
+                            });
                         } else {
                             alert(msg);
                         }

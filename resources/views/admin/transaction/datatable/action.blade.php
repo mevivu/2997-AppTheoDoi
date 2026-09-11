@@ -18,9 +18,8 @@
                 data-amount="{{ $amountFmt }}"
                 data-user="{{ $userFullname }}"
                 data-bank="{{ $bankInfo }}"
-                title="{{ __('Duyệt chuyển khoản chi trả') }}"
-                data-bs-toggle="tooltip"
-                data-bs-placement="top">
+                onclick="openApproveWithdrawModal(this)"
+                title="{{ __('Duyệt chuyển khoản chi trả') }}">
             <i class="ti ti-check"></i>
             <span>{{ __('Duyệt chi') }}</span>
         </button>
@@ -32,9 +31,8 @@
                 data-code="{{ $transaction->code }}"
                 data-amount="{{ $amountFmt }}"
                 data-user="{{ $userFullname }}"
-                title="{{ __('Từ chối và hoàn tiền vào ví') }}"
-                data-bs-toggle="tooltip"
-                data-bs-placement="top">
+                onclick="openRejectWithdrawModal(this)"
+                title="{{ __('Từ chối và hoàn tiền vào ví') }}">
             <i class="ti ti-x"></i>
             <span>{{ __('Từ chối') }}</span>
         </button>
