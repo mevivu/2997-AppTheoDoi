@@ -56,11 +56,19 @@ class WithdrawService
 
         $minBalance = isset($settings['affiliate_withdraw_min_balance'])
             ? (float) $settings['affiliate_withdraw_min_balance']
-            : 1000000;
+            : 10000;
 
         $stepMultiple = isset($settings['affiliate_withdraw_step_multiple'])
             ? (float) $settings['affiliate_withdraw_step_multiple']
-            : 1000000;
+            : 10000;
+
+        // Tự động điều chỉnh bội số không vượt quá số dư tối thiểu để tránh xung đột cấu hình
+        if ($stepMultiple > $minBalance && $minBalance > 0) {
+            $stepMultiple = $minBalance;
+        }
+        if ($stepMultiple <= 0) {
+            $stepMultiple = $minBalance > 0 ? $minBalance : 10000;
+        }
 
         $payoutDayText = $settings['affiliate_withdraw_payout_day'] ?? 'Thứ 5 hàng tuần';
         $payoutNote = $settings['affiliate_withdraw_payout_note'] ?? 'Hệ thống tiếp nhận yêu cầu rút tiền 24/7. Các yêu cầu hợp lệ sẽ được tổng hợp, đối soát và chuyển khoản vào Thứ 5 hàng tuần.';

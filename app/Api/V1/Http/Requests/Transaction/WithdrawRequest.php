@@ -15,7 +15,7 @@ class WithdrawRequest extends BaseRequest
     protected function methodPost(): array
     {
         return [
-            'amount' => ['required', 'numeric', 'min:1000000'],
+            'amount' => ['required', 'numeric', 'min:1'],
             'bank_name' => ['required', 'string', 'max:100'],
             'bank_account_number' => ['required', 'string', 'max:50'],
             'bank_account_name' => ['required', 'string', 'max:100'],
@@ -61,13 +61,17 @@ class WithdrawRequest extends BaseRequest
                 );
             }
 
-            // Điều kiện 3: Bắt buộc là bội số của 1.000.000đ
+            // Điều kiện 3: Bắt buộc là bội số của step_multiple
             if ($config['step_multiple'] > 0 && fmod($amount, $config['step_multiple']) != 0) {
+                $step = $config['step_multiple'];
+                $s1 = number_format($step, 0, ',', '.') . 'đ';
+                $s2 = number_format($step * 2, 0, ',', '.') . 'đ';
+                $s3 = number_format($step * 3, 0, ',', '.') . 'đ';
                 $validator->errors()->add(
                     'amount',
                     'Số tiền rút bắt buộc phải là bội số của ' .
                     $config['step_multiple_formatted'] .
-                    ' (Ví dụ: 1.000.000đ, 2.000.000đ, 3.000.000đ,...).'
+                    " (Ví dụ: {$s1}, {$s2}, {$s3},...).",
                 );
             }
 
@@ -91,7 +95,7 @@ class WithdrawRequest extends BaseRequest
         return [
             'amount.required' => 'Vui lòng nhập số tiền cần rút.',
             'amount.numeric' => 'Số tiền rút phải là định dạng số hợp lệ.',
-            'amount.min' => 'Số tiền rút tối thiểu là 1.000.000đ.',
+            'amount.min' => 'Số tiền rút không hợp lệ.',
             'bank_name.required' => 'Vui lòng chọn hoặc nhập tên ngân hàng nhận tiền.',
             'bank_name.string' => 'Tên ngân hàng không hợp lệ.',
             'bank_name.max' => 'Tên ngân hàng không được vượt quá 100 ký tự.',
