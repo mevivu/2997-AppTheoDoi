@@ -48,6 +48,15 @@
                     <span class="badge bg-cyan-lt ms-1">Cấp 4</span>
                 </button>
             </li>
+
+            {{-- Tab Quy định tham gia --}}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold" id="terms-tab" data-bs-toggle="tab" data-bs-target="#tab-terms" type="button" role="tab" aria-controls="tab-terms" aria-selected="false">
+                    <i class="ti ti-file-text me-1 text-primary"></i>
+                    <span class="text-primary">{{ __('Quy định tham gia') }}</span>
+                    <span class="badge bg-primary-lt ms-1">Chính sách</span>
+                </button>
+            </li>
         </ul>
     </div>
 
@@ -166,6 +175,7 @@
                             'affiliate_users_bronze', 'affiliate_users_silver', 'affiliate_users_gold', 'affiliate_users_diamond',
                             'affiliate_commission_bronze', 'affiliate_commission_silver', 'affiliate_commission_gold', 'affiliate_commission_diamond',
                             'affiliate_reward_user_bronze', 'affiliate_reward_user_silver', 'affiliate_reward_user_gold', 'affiliate_reward_user_diamond',
+                            'affiliate_terms',
                         ];
                         $otherSettings = $settings->whereNotIn('setting_key', $knownKeys);
                     @endphp
@@ -481,6 +491,45 @@
                                 ])
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ========================================================================= --}}
+            {{-- TAB 6: QUY ĐỊNH THAM GIA AFFILIATE --}}
+            {{-- ========================================================================= --}}
+            <div class="tab-pane fade" id="tab-terms" role="tabpanel" aria-labelledby="terms-tab">
+                <div class="d-flex align-items-center justify-content-between mb-3 p-3 rounded" style="background-color: #F0F6FF; border: 1px solid #D0E1FD;">
+                    <div class="d-flex align-items-center">
+                        <span class="avatar avatar-md rounded-circle me-3" style="background-color: #DBEAFE; color: #1D4ED8;">
+                            <i class="ti ti-file-text fs-2"></i>
+                        </span>
+                        <div>
+                            <h3 class="card-title mb-0 text-primary fw-bold">{{ __('Quy định & Điều khoản tham gia chương trình Affiliate') }}</h3>
+                            <div class="text-muted small">{{ __('Soạn thảo chính sách đối tác, cơ chế hoa hồng, điều kiện rút tiền và điều khoản phòng chống gian lận hiển thị trên ứng dụng') }}</div>
+                        </div>
+                    </div>
+                    <span class="badge bg-primary text-white fs-6 px-3 py-2 shadow-sm">
+                        <i class="ti ti-device-mobile me-1"></i>{{ __('Hiển thị trên Mobile App') }}
+                    </span>
+                </div>
+
+                <div class="alert alert-primary bg-white border-primary-subtle py-2 mb-3" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="ti ti-info-circle fs-3 text-primary me-2"></i>
+                        <span class="text-dark small">
+                            {{ __('Nội dung dưới đây hỗ trợ định dạng văn bản nâng cao (Tiêu đề H2/H3, In đậm, Bảng biểu, Gạch đầu dòng, Đường link,...). Khi lưu, nội dung này sẽ được đồng bộ trực tiếp tới màn hình xem Quy định / Điều khoản đối tác trên ứng dụng.') }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card affiliate-tier-card shadow-sm">
+                    <div class="card-body">
+                        @include('admin.settings.forms.partials.setting-field', [
+                            'setting' => $settingsByKey->get('affiliate_terms'),
+                            'label' => __('Soạn thảo nội dung Quy định tham gia Affiliate'),
+                            'hint' => __('Hỗ trợ thanh công cụ CKEditor đầy đủ. Bạn có thể chèn tiêu đề H2, H3, bảng biểu so sánh cấp bậc, danh sách gạch đầu dòng và lưu ý cho đối tác.')
+                        ])
                     </div>
                 </div>
             </div>

@@ -25,7 +25,7 @@ class SettingController extends Controller
         SettingRepositoryInterface $settingRepository
     ) {
         $this->settingRepository = $settingRepository;
-        $this->middleware('auth:api', ['except' => ['general', 'system', 'c_ride', 'c_car', 'c_delivery', 'c_intercity']]);
+        $this->middleware('auth:api', ['except' => ['general', 'system', 'c_ride', 'c_car', 'c_delivery', 'c_intercity', 'affiliateTerms']]);
 
     }
 
@@ -317,6 +317,48 @@ class SettingController extends Controller
         } catch (Exception $e) {
             $this->logError('C_Intercity setting failed:', $e);
             return $this->jsonResponseError('C_Intercity setting failed', 500);
+        }
+    }
+
+    /**
+     * Quy định & Điều khoản tham gia Affiliate
+     *
+     * Lấy nội dung quy định, điều khoản và các thông số chi trả của chương trình tiếp thị liên kết (Affiliate)
+     *
+     * @response 200 {
+     *      "status": 200,
+     *      "message": "Thực hiện thành công.",
+     *      "data": {
+     *          "affiliate_active": "1",
+     *          "affiliate_terms": "<div class=\"affiliate-policy-content\">...</div>",
+     *          "withdraw_min_balance": 1000000,
+     *          "withdraw_step_multiple": 1000000,
+     *          "withdraw_payout_day": "Thứ 5 hàng tuần",
+     *          "withdraw_payout_note": "Đối tác có thể gửi yêu cầu rút tiền 24/7..."
+     *      }
+     * }
+     *
+     * @return JsonResponse
+     */
+    public function affiliateTerms(): JsonResponse
+    {
+        try {
+            $affiliateSettings = $this->settingRepository->getByGroup([SettingGroup::Affiliate]);
+            $settingsMap = $affiliateSettings->pluck('plain_value', 'setting_key');
+
+            $data = [
+                'affiliate_active' => (string) $settingsMap->get('affiliate_active', '1'),
+                'affiliate_terms' => (string) $settingsMap->get('affiliate_terms', ''),
+                'withdraw_min_balance' => (int) ($settingsMap->get('affiliate_withdraw_min_balance', 1000000)),
+                'withdraw_step_multiple' => (int) ($settingsMap->get('affiliate_withdraw_step_multiple', 1000000)),
+                'withdraw_payout_day' => (string) $settingsMap->get('affiliate_withdraw_payout_day', 'Thứ 5 hàng tuần'),
+                'withdraw_payout_note' => (string) $settingsMap->get('affiliate_withdraw_payout_note', ''),
+            ];
+
+            return $this->jsonResponseSuccess($data);
+        } catch (Exception $e) {
+            $this->logError('Affiliate terms setting failed:', $e);
+            return $this->jsonResponseError('Affiliate terms setting failed', 500);
         }
     }
 }

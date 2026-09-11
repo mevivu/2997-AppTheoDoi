@@ -141,7 +141,34 @@
 
 @push('libs-js')
     @include('ckfinder::setup')
+    <script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
+    <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
 @endpush
 
 @push('custom-js')
+    <script>
+        $(document).ready(function() {
+            // Tự động điều chỉnh kích thước CKEditor khi mở tab Quy định tham gia
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+                if (typeof CKEDITOR !== 'undefined') {
+                    for (var instanceName in CKEDITOR.instances) {
+                        if (CKEDITOR.instances[instanceName]) {
+                            CKEDITOR.instances[instanceName].resize('100%');
+                        }
+                    }
+                }
+            });
+
+            // Đảm bảo dữ liệu trong CKEditor được sync vào textarea trước khi submit
+            $('form').on('submit', function() {
+                if (typeof CKEDITOR !== 'undefined') {
+                    for (var instanceName in CKEDITOR.instances) {
+                        if (CKEDITOR.instances[instanceName]) {
+                            CKEDITOR.instances[instanceName].updateElement();
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 @endpush

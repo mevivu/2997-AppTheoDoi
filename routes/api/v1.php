@@ -307,6 +307,7 @@ Route::controller(App\Api\V1\Http\Controllers\Setting\SettingController::class)
     ->group(function () {
         Route::get('/general', 'general');
         Route::get('/system', 'system');
+        Route::get('/affiliate-terms', 'affiliateTerms');
     });
 
 //***** -- Product -- ******* //

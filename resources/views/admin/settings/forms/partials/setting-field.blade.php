@@ -22,7 +22,7 @@
                 <label class="form-check-label" for="{{ $fieldSetting->setting_key }}"></label>
             </div>
         @elseif ($fieldSetting->type_input == App\Enums\Setting\SettingTypeInput::Textarea())
-            <textarea name="{{ $fieldSetting->setting_key }}" class="ckeditor visually-hidden" placeholder="{{ $fieldSetting->setting_name }}">{{ $fieldSetting->plain_value }}</textarea>
+            <textarea id="{{ $fieldSetting->setting_key }}" name="{{ $fieldSetting->setting_key }}" class="ckeditor visually-hidden" placeholder="{{ $fieldSetting->setting_name }}">{{ $fieldSetting->plain_value }}</textarea>
         @else
             <x-dynamic-component
                 :component="$fieldSetting->getNameComponentTypeInput()"

@@ -22,15 +22,15 @@ class SettingRepository extends EloquentRepository implements SettingRepositoryI
 
     public function updateMultipleRecord(array $data)
     {
-
         Cache::forget(Setting::CACHE_KEY_GET_ALL);
 
-        $query = "UPDATE settings SET plain_value = CASE setting_key ";
-        foreach ($data as $key => $value) {
-            $query .= "WHEN '{$key}' THEN '{$value}' ";
-        }
-        $query .= "END WHERE setting_key IN ('" . implode("', '", array_keys($data)) . "')";
-        return DB::update($query);
+        DB::transaction(function () use ($data) {
+            foreach ($data as $key => $value) {
+                $this->model->where('setting_key', $key)->update(['plain_value' => $value]);
+            }
+        });
+
+        return true;
     }
 
     public function getPlainValue(string $key)
