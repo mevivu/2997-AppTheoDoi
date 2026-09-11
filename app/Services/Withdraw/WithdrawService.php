@@ -169,7 +169,7 @@ class WithdrawService
         $amount = (float) $data['amount'];
         $config = $this->getWithdrawSettings();
 
-        return DB::transaction(function () use ($user, $amount, $data, $config) {
+        $transaction = DB::transaction(function () use ($user, $amount, $data, $config) {
             // Khóa dòng user để chống race condition / double-spending qua repository
             $lockedUser = $this->userRepository->findForUpdate($user->id);
 
