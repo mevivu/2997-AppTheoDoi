@@ -38,7 +38,7 @@ class User extends Authenticatable implements JWTSubject
         'affiliate_code',
         /** ID người giới thiệu */
         'referrer_id',
-        /** Cấp bậc mẹ giới thiệu (1: Mẹ Đồng, 2: Mẹ Bạc, 3: Mẹ Vàng, 4: Mẹ Kim Cương) */
+        /** Cấp bậc đối tác tiếp thị liên kết (1: Bạc, 2: Vàng, 3: Bạch Kim, 4: Kim Cương) */
         'affiliate_rank',
         /** Tổng doanh số giới thiệu tích lũy (VNĐ) */
         'affiliate_total_sales',
@@ -303,7 +303,7 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getAffiliateRankName(): string
     {
-        return $this->affiliate_rank?->name() ?? 'Mẹ Đồng';
+        return $this->affiliate_rank?->name() ?? 'Bạc';
     }
 
     /**
@@ -311,6 +311,6 @@ class User extends Authenticatable implements JWTSubject
      */
     public function getAffiliateRankBadge(): string
     {
-        return $this->affiliate_rank?->badge() ?? 'bg-orange-lt';
+        return $this->affiliate_rank?->badge() ?? 'bg-secondary-lt';
     }
 }

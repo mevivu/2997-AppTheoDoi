@@ -250,7 +250,7 @@ class AffiliateStatisticsService
 
         $rankEnum = $partner->affiliate_rank instanceof AffiliateRank
             ? $partner->affiliate_rank
-            : AffiliateRank::tryFrom((int)$partner->affiliate_rank) ?? AffiliateRank::Bronze;
+            : AffiliateRank::tryFrom((int)$partner->affiliate_rank) ?? AffiliateRank::Silver;
 
         // Danh sách toàn bộ thành viên được đối tác giới thiệu
         $referredUsers = User::where('referrer_id', $partnerId)

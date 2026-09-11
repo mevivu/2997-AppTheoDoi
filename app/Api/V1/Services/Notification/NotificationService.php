@@ -246,7 +246,7 @@ class NotificationService implements NotificationServiceInterface
      * Gửi thông báo chúc mừng thăng cấp bậc mẹ giới thiệu (In-app & Push FCM)
      *
      * @param User $referrer Người giới thiệu được thăng cấp
-     * @param string $newRankName Tên cấp bậc mới (ví dụ: Mẹ Bạc, Mẹ Vàng, Mẹ Kim Cương)
+     * @param string $newRankName Tên cấp bậc mới (ví dụ: Bạc, Vàng, Bạch Kim, Kim Cương)
      * @param float $totalSales Tổng doanh số tích lũy hiện tại (VNĐ)
      * @return void
      */

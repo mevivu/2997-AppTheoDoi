@@ -73,8 +73,8 @@ class SyncAffiliateRanksCommand extends Command
         $salesTh = $thresholds['sales'];
         $usersTh = $thresholds['users'];
         $this->line('');
-        $this->line("Ngưỡng Doanh số (VNĐ) : Đồng: " . number_format($salesTh['bronze']) . "đ | Bạc: " . number_format($salesTh['silver']) . "đ | Vàng: " . number_format($salesTh['gold']) . "đ | Kim Cương: " . number_format($salesTh['diamond']) . "đ");
-        $this->line("Ngưỡng User F1 (người): Đồng: " . number_format($usersTh['bronze']) . " | Bạc: " . number_format($usersTh['silver']) . " | Vàng: " . number_format($usersTh['gold']) . " | Kim Cương: " . number_format($usersTh['diamond']));
+        $this->line("Ngưỡng Doanh số (VNĐ) : Bạc: " . number_format($salesTh['bronze']) . "đ | Vàng: " . number_format($salesTh['silver']) . "đ | Bạch Kim: " . number_format($salesTh['gold']) . "đ | Kim Cương: " . number_format($salesTh['diamond']) . "đ");
+        $this->line("Ngưỡng User F1 (người): Bạc: " . number_format($usersTh['bronze']) . " | Vàng: " . number_format($usersTh['silver']) . " | Bạch Kim: " . number_format($usersTh['gold']) . " | Kim Cương: " . number_format($usersTh['diamond']));
 
         $query->chunk(100, function ($users) use (&$updatedCount, &$upgradedCount, $bar) {
             foreach ($users as $user) {

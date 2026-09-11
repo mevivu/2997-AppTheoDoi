@@ -116,7 +116,7 @@ class UserDataTable extends BaseDataTable
             },
             // Định dạng hiển thị Cấp bậc mẹ giới thiệu
             'affiliate_rank' => function ($item) {
-                $rank = $item->affiliate_rank ?? AffiliateRank::Bronze;
+                $rank = $item->affiliate_rank ?? AffiliateRank::Silver;
                 return '<span class="badge ' . $rank->badge() . '"><i class="' . $rank->icon() . ' me-1"></i>' . $rank->name() . '</span>';
             },
             'status' => $this->view['status'],
@@ -216,8 +216,8 @@ class UserDataTable extends BaseDataTable
         }
 
         if ($key === 'affiliate_rank') {
-            $rank = $row->affiliate_rank ?? AffiliateRank::Bronze;
-            return $rank instanceof AffiliateRank ? $rank->name() : 'Mẹ Đồng';
+            $rank = $row->affiliate_rank ?? AffiliateRank::Silver;
+            return $rank instanceof AffiliateRank ? $rank->name() : 'Bạc';
         }
 
         if ($key === 'package_name') {
