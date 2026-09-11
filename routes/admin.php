@@ -417,6 +417,17 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::post('/reject-withdraw/{id}', 'rejectWithdraw')->name('rejectWithdraw');
             });
         });
+    // KYC CCCD Approval
+    Route::controller(\App\Admin\Http\Controllers\User\KycApprovalController::class)
+        ->prefix('/giao-dich/duyet-cccd')
+        ->as('kyc.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:viewTransaction', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::post('/approve/{id}', 'approve')->name('approve');
+                Route::post('/reject/{id}', 'reject')->name('reject');
+            });
+        });
     //Quiz (IQ)
     Route::controller(\App\Admin\Http\Controllers\Quiz\QuizController::class)
         ->prefix('/bai-kiem-tra')

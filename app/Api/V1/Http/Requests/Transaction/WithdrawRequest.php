@@ -35,9 +35,16 @@ class WithdrawRequest extends BaseRequest
                 return;
             }
 
-            // Kiểm tra KYC: yêu cầu CCCD mặt trước/sau + MST trước khi rút tiền
+            // Kiểm tra KYC: yêu cầu CCCD mặt trước/sau + MST đã được Admin phê duyệt
             if (!$user->hasCompletedKyc()) {
-                $validator->errors()->add('kyc', 'Vui lòng hoàn thành xác minh CCCD và Mã số thuế (MST) trước khi gửi yêu cầu rút tiền.');
+                if ($user->isKycPending()) {
+                    $validator->errors()->add('kyc', 'Hồ sơ xác minh CCCD của bạn đang chờ Admin phê duyệt trước khi có thể rút tiền.');
+                } elseif ($user->isKycRejected()) {
+                    $reason = !empty($user->kyc_rejection_reason) ? " Lý do: {$user->kyc_rejection_reason}." : "";
+                    $validator->errors()->add('kyc', 'Hồ sơ xác minh CCCD của bạn đã bị từ chối.' . $reason . ' Vui lòng cập nhật lại hồ sơ.');
+                } else {
+                    $validator->errors()->add('kyc', 'Vui lòng hoàn thành xác minh CCCD và Mã số thuế (MST) trước khi gửi yêu cầu rút tiền.');
+                }
                 return;
             }
 

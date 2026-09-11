@@ -42,6 +42,12 @@ class AppServiceProvider extends ServiceProvider
                     ->count();
             }
             $view->with('pendingWithdrawCount', $pendingWithdrawCount);
+
+            $pendingKycCount = 0;
+            if (Schema::hasTable('users')) {
+                $pendingKycCount = \App\Models\User::where('kyc_status', \App\Enums\User\KycStatus::PENDING)->count();
+            }
+            $view->with('pendingKycCount', $pendingKycCount);
         });
     }
 }

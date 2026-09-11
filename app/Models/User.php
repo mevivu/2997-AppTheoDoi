@@ -14,7 +14,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use App\Enums\User\{Gender, UserStatus, UserServiceType, AffiliateRank};
+use App\Enums\User\{Gender, UserStatus, UserServiceType, AffiliateRank, KycStatus};
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -106,8 +106,16 @@ class User extends Authenticatable implements JWTSubject
         'id_card_back',
         /** Mã số thuế cá nhân (MST) */
         'tax_code',
+        /** Trạng thái xác minh CCCD */
+        'kyc_status',
+        /** Thời điểm gửi yêu cầu xác minh CCCD */
+        'kyc_submitted_at',
         /** Thời điểm Admin xác minh KYC */
         'kyc_verified_at',
+        /** Thời điểm Admin từ chối duyệt CCCD */
+        'kyc_rejected_at',
+        /** Lý do Admin từ chối duyệt CCCD */
+        'kyc_rejection_reason',
         /** Đánh dấu user mới chưa hoàn thành hồ sơ con (chống gian lận) */
         'pending_referral_reward',
 
@@ -138,7 +146,10 @@ class User extends Authenticatable implements JWTSubject
         'affiliate_rank' => AffiliateRank::class,
         'affiliate_total_sales' => 'decimal:0',
         'wallet_balance' => 'decimal:0',
+        'kyc_status' => KycStatus::class,
+        'kyc_submitted_at' => 'datetime',
         'kyc_verified_at' => 'datetime',
+        'kyc_rejected_at' => 'datetime',
         'pending_referral_reward' => 'boolean',
     ];
 
@@ -327,13 +338,35 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Kiểm tra đối tác đã hoàn thành xác minh KYC (CCCD + MST) chưa
+     * Kiểm tra đối tác đã hoàn thành và được Admin phê duyệt xác minh KYC (CCCD + MST) thành công chưa
      */
     public function hasCompletedKyc(): bool
     {
-        return !empty($this->id_card_front)
-            && !empty($this->id_card_back)
-            && !empty($this->tax_code);
+        return $this->kyc_status === KycStatus::APPROVED || !empty($this->kyc_verified_at);
+    }
+
+    /**
+     * Kiểm tra hồ sơ KYC có đang chờ Admin duyệt hay không
+     */
+    public function isKycPending(): bool
+    {
+        return $this->kyc_status === KycStatus::PENDING;
+    }
+
+    /**
+     * Kiểm tra hồ sơ KYC có bị từ chối hay không
+     */
+    public function isKycRejected(): bool
+    {
+        return $this->kyc_status === KycStatus::REJECTED;
+    }
+
+    /**
+     * Lấy class badge màu sắc của trạng thái KYC
+     */
+    public function getKycStatusBadge(): string
+    {
+        return $this->kyc_status?->badge() ?? 'bg-secondary-lt text-secondary';
     }
 
     /**

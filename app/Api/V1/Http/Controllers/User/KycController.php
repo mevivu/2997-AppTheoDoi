@@ -74,10 +74,15 @@ class KycController extends Controller
 
             return $this->jsonResponseSuccess([
                 'kyc_completed' => $user->hasCompletedKyc(),
+                'kyc_status' => $user->kyc_status?->value ?? \App\Enums\User\KycStatus::NOT_SUBMITTED->value,
+                'kyc_status_label' => $user->kyc_status?->label() ?? __('Chưa gửi'),
+                'kyc_rejection_reason' => $user->kyc_rejection_reason,
                 'id_card_front' => $this->formatIdCardUrl($user->id_card_front),
                 'id_card_back' => $this->formatIdCardUrl($user->id_card_back),
                 'tax_code' => $user->tax_code,
+                'kyc_submitted_at' => $user->kyc_submitted_at?->toIso8601String(),
                 'kyc_verified_at' => $user->kyc_verified_at?->toIso8601String(),
+                'kyc_rejected_at' => $user->kyc_rejected_at?->toIso8601String(),
             ]);
         } catch (Throwable $e) {
             $this->logError('Get KYC status failed:', $e);
@@ -98,7 +103,9 @@ class KycController extends Controller
      *   "status": 200,
      *   "message": "Cập nhật thông tin xác minh thành công!",
      *   "data": {
-     *       "kyc_completed": true,
+     *       "kyc_completed": false,
+     *       "kyc_status": "pending",
+     *       "kyc_status_label": "Chờ duyệt",
      *       "id_card_front": "http://domain.com/public/uploads/images/kyc/front.jpg",
      *       "id_card_back": "http://domain.com/public/uploads/images/kyc/back.jpg",
      *       "tax_code": "8601234567"
@@ -114,16 +121,25 @@ class KycController extends Controller
             // Sử dụng hàm uploadImages có sẵn của FileService để upload các ảnh và tự động xóa ảnh cũ
             $data = $this->fileService->uploadImages('images/kyc', $data, ['id_card_front', 'id_card_back'], $user);
 
+            // Chuyển trạng thái sang Chờ duyệt và cập nhật mốc thời gian
+            $data['kyc_status'] = \App\Enums\User\KycStatus::PENDING->value;
+            $data['kyc_submitted_at'] = now();
+            $data['kyc_rejection_reason'] = null;
+            $data['kyc_rejected_at'] = null;
+
             // Cập nhật thông tin vào user (lọc bỏ các giá trị null nếu không gửi ảnh mới)
             $user->update(array_filter($data, fn($val) => !is_null($val)));
             $user->refresh();
 
             return $this->jsonResponseSuccess([
                 'kyc_completed' => $user->hasCompletedKyc(),
+                'kyc_status' => $user->kyc_status?->value ?? \App\Enums\User\KycStatus::PENDING->value,
+                'kyc_status_label' => $user->kyc_status?->label() ?? __('Chờ duyệt'),
                 'id_card_front' => $this->formatIdCardUrl($user->id_card_front),
                 'id_card_back' => $this->formatIdCardUrl($user->id_card_back),
                 'tax_code' => $user->tax_code,
-            ], 'Cập nhật thông tin xác minh thành công!');
+                'kyc_submitted_at' => $user->kyc_submitted_at?->toIso8601String(),
+            ], 'Gửi yêu cầu xác minh CCCD thành công! Hồ sơ đang chờ Admin phê duyệt.');
         } catch (Throwable $e) {
             $this->logError('Update KYC failed:', $e);
             return $this->jsonResponseError('Đã có lỗi xảy ra khi cập nhật thông tin xác minh. Vui lòng thử lại.', 500);

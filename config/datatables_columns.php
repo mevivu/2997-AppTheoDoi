@@ -219,6 +219,52 @@ return [
             'width' => '170px',
         ],
     ],
+    'kyc_approval' => [
+        'user' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-user"></i><span>Đối tác</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+            'width' => '220px',
+        ],
+        'wallet_balance' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-wallet"></i><span>Ví hoa hồng</span></div>',
+            'width' => '120px',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'id_cards' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-id-badge-2"></i><span>Ảnh CCCD (Trước / Sau)</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+            'width' => '200px',
+        ],
+        'tax_and_bank' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-building-bank"></i><span>MST & Tài khoản NH</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+            'width' => '210px',
+        ],
+        'kyc_submitted_at' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar-time"></i><span>Thời gian gửi</span></div>',
+            'width' => '140px',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-small"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+            'width' => '120px',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle text-nowrap',
+            'width' => '160px',
+        ],
+    ],
     'eq' => [
         'checkbox' => [
             'title' => 'choose',

@@ -44,6 +44,11 @@ class RouteAdminSystem
     const TRANSACTION_UPDATE = 'admin.transaction.update';
     const TRANSACTION_DELETE = 'admin.transaction.delete';
 
+    /** KYC CCCD APPROVAL */
+    const KYC_INDEX = 'admin.kyc.index';
+    const KYC_APPROVE = 'admin.kyc.approve';
+    const KYC_REJECT = 'admin.kyc.reject';
+
     /** DEVELOP GUIDE */
     const DEVELOP_INDEX = 'admin.develop.index';
     const DEVELOP_CREATE = 'admin.develop.create';

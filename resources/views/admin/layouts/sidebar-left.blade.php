@@ -153,6 +153,14 @@
                                                             {{ (!empty($pendingWithdrawCount) && $pendingWithdrawCount > 99) ? '99+' : ($pendingWithdrawCount ?? 0) }}
                                                         </span>
                                                     @endif
+                                                    @if (isset($subItem['routeName']) && $subItem['routeName'] === RouteAdminSystem::KYC_INDEX)
+                                                        <span
+                                                            class="badge bg-warning text-white rounded-pill px-2 py-1 fs-11 fw-bold sidebar-badge-counter kyc-badge-counter shadow-sm ms-3 {{ (!empty($pendingKycCount) && $pendingKycCount > 0) ? '' : 'd-none' }}"
+                                                            title="{{ __('Có :count hồ sơ CCCD chờ duyệt', ['count' => $pendingKycCount ?? 0]) }}"
+                                                            style="{{ (!empty($pendingKycCount) && $pendingKycCount > 0) ? '' : 'display: none !important;' }}">
+                                                            {{ (!empty($pendingKycCount) && $pendingKycCount > 99) ? '99+' : ($pendingKycCount ?? 0) }}
+                                                        </span>
+                                                    @endif
                                                 </x-admin-item-link-sidebar-left>
                                             </li>
                                         @endif

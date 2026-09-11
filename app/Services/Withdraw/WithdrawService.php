@@ -155,6 +155,9 @@ class WithdrawService
             'saved_bank' => $savedBank,
             // Thông tin KYC
             'kyc_completed' => $user->hasCompletedKyc(),
+            'kyc_status' => $user->kyc_status?->value ?? \App\Enums\User\KycStatus::NOT_SUBMITTED->value,
+            'kyc_status_label' => $user->kyc_status?->label() ?? __('Chưa gửi'),
+            'kyc_rejection_reason' => $user->kyc_rejection_reason,
             'id_card_front' => $user->id_card_front,
             'id_card_back' => $user->id_card_back,
             'tax_code' => $user->tax_code,
@@ -173,9 +176,15 @@ class WithdrawService
      */
     public function createWithdrawRequest(User $user, array $data): Transaction
     {
-        // Kiểm tra KYC: yêu cầu CCCD + MST trước khi rút tiền
+        // Kiểm tra KYC: yêu cầu CCCD + MST đã được Admin phê duyệt trước khi rút tiền
         if (!$user->hasCompletedKyc()) {
-            throw new Exception('Vui lòng hoàn thành xác minh CCCD và Mã số thuế (MST) trước khi gửi yêu cầu rút tiền.');
+            if ($user->isKycPending()) {
+                throw new Exception(__('Hồ sơ xác minh CCCD của bạn đang chờ Admin phê duyệt trước khi có thể rút tiền.'));
+            } elseif ($user->isKycRejected()) {
+                $reason = !empty($user->kyc_rejection_reason) ? " Lý do: {$user->kyc_rejection_reason}." : "";
+                throw new Exception(__('Hồ sơ xác minh CCCD của bạn đã bị từ chối.:reason Vui lòng cập nhật lại hồ sơ.', ['reason' => $reason]));
+            }
+            throw new Exception(__('Vui lòng hoàn thành xác minh CCCD và Mã số thuế (MST) trước khi gửi yêu cầu rút tiền.'));
         }
 
         $amount = (float) $data['amount'];

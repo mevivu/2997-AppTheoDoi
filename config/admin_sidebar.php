@@ -49,6 +49,13 @@ return [
                 'roles' => [],
                 'permissions' => ['viewTransaction'],
             ],
+            [
+                'title' => 'Duyệt CCCD & MST',
+                'routeName' => RouteAdminSystem::KYC_INDEX,
+                'icon' => '<i class="ti ti-id-badge-2"></i>',
+                'roles' => [],
+                'permissions' => ['viewTransaction'],
+            ],
 
 
         ]
