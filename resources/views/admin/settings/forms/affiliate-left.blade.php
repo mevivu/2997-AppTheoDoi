@@ -92,10 +92,76 @@
                         ])
                     </div>
 
+                    {{-- Khối Cấu hình Rút tiền & Lịch chi trả Thứ 5 --}}
+                    <div class="col-12 mt-4">
+                        <div class="card p-3 shadow-none" style="background-color: #F8FCF9; border: 1px solid #C3E6CB; border-radius: 12px;">
+                            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-success-subtle">
+                                <div class="d-flex align-items-center">
+                                    <span class="avatar avatar-md rounded-circle me-3" style="background-color: #D1E7DD; color: #0F5132;">
+                                        <i class="ti ti-cash fs-2"></i>
+                                    </span>
+                                    <div>
+                                        <h3 class="card-title mb-0 text-success fw-bold">{{ __('Cấu hình rút tiền hoa hồng & Lịch chi trả') }}</h3>
+                                        <div class="text-muted small">{{ __('Thiết lập số dư ví tối thiểu, bội số rút tiền và quy định ngày chi trả hàng tuần') }}</div>
+                                    </div>
+                                </div>
+                                <span class="badge bg-success text-white fs-6 px-3 py-2 shadow-sm">
+                                    <i class="ti ti-calendar-event me-1"></i>{{ __('Định kỳ: Thứ 5 hàng tuần') }}
+                                </span>
+                            </div>
+
+                            <div class="alert alert-success bg-white border-success-subtle py-2 mb-3" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <i class="ti ti-info-circle fs-3 text-success me-2"></i>
+                                    <span class="text-dark small">
+                                        {{ __('Đối tác có thể gửi yêu cầu rút tiền 24/7 bất cứ lúc nào khi đạt đủ điều kiện. Ban quản trị sẽ tổng hợp, đối soát và thực hiện chi trả chuyển khoản vào ') }}
+                                        <strong>{{ __('Thứ 5 hàng tuần') }}</strong>.
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    @include('admin.settings.forms.partials.setting-field', [
+                                        'setting' => $settingsByKey->get('affiliate_withdraw_min_balance'),
+                                        'label' => __('Số dư ví tối thiểu để được rút tiền (VNĐ)'),
+                                        'hint' => __('Số dư tích lũy khả dụng tối thiểu để mở khóa tính năng rút tiền (Mặc định: 1.000.000đ).')
+                                    ])
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    @include('admin.settings.forms.partials.setting-field', [
+                                        'setting' => $settingsByKey->get('affiliate_withdraw_step_multiple'),
+                                        'label' => __('Bội số số tiền rút mỗi lần (VNĐ)'),
+                                        'hint' => __('Số tiền rút bắt buộc phải là bội số của giá trị này (VD: 1.000.000, 2.000.000, 3.000.000,...).')
+                                    ])
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    @include('admin.settings.forms.partials.setting-field', [
+                                        'setting' => $settingsByKey->get('affiliate_withdraw_payout_day'),
+                                        'label' => __('Ngày xử lý chi trả trong tuần'),
+                                        'hint' => __('Lịch hệ thống tổng hợp và chuyển khoản định kỳ (Mặc định: Thứ 5 hàng tuần).')
+                                    ])
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    @include('admin.settings.forms.partials.setting-field', [
+                                        'setting' => $settingsByKey->get('affiliate_withdraw_payout_note'),
+                                        'label' => __('Thông điệp / Lưu ý hiển thị cho đối tác'),
+                                        'hint' => __('Nội dung hướng dẫn chính sách chi trả hiển thị trên ứng dụng.')
+                                    ])
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Render các cài đặt khác trong nhóm Affiliate chưa được phân loại --}}
                     @php
                         $knownKeys = [
                             'affiliate_active', 'affiliate_reward_referee', 'affiliate_reward_referrer',
+                            'affiliate_withdraw_min_balance', 'affiliate_withdraw_step_multiple',
+                            'affiliate_withdraw_payout_day', 'affiliate_withdraw_payout_note',
                             'affiliate_sales_bronze', 'affiliate_sales_silver', 'affiliate_sales_gold', 'affiliate_sales_diamond',
                             'affiliate_users_bronze', 'affiliate_users_silver', 'affiliate_users_gold', 'affiliate_users_diamond',
                             'affiliate_commission_bronze', 'affiliate_commission_silver', 'affiliate_commission_gold', 'affiliate_commission_diamond',
