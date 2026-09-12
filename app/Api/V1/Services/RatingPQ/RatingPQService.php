@@ -14,6 +14,7 @@ use App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
 use App\Enums\ActiveStatus;
+use App\Enums\User\Gender;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -227,12 +228,12 @@ class RatingPQService implements RatingPQServiceInterface
             'bmi_result' => $ratingLasted->bmi_result,
             'height_result' => $ratingLasted->height_result,
             'height_comparison' => [
-                'height_who_current' => $heightWhoCurrent,
-                'is_taller_than_who' => $currenHeight > $who->height,
+                'height_who_current' => $who ? $heightWhoCurrent : 0,
+                'is_taller_than_who' => $who ? $currenHeight > $who->height : false,
             ],
             'weight_comparison' => [
-                'weight_who_current' => round($currentWeight - $who->weight, 2),
-                'is_heavier_than_who' => $currentWeight > $who->weight,
+                'weight_who_current' => $who ? round($currentWeight - $who->weight, 2) : 0,
+                'is_heavier_than_who' => $who ? $currentWeight > $who->weight : false,
             ],
             'current_height_percent' => round($currentHeightPercent, 1),
             'bmi_percent' => round($bmiPercent, 1),
@@ -512,17 +513,16 @@ class RatingPQService implements RatingPQServiceInterface
     public function getBmiCategory($bmi, $age, $gender, $birthday, $assessmentDate): ?string
     {
         $bmiCategory = null;
-        $ageThresholds = $birthday->diffInDays($assessmentDate) / 365.3;
-        $ageThresholds = round($ageThresholds);
-        if ($age) {
-            $bmiThresholds = $this->getBmi($ageThresholds, $gender);
-            // Fallback: Trẻ < 5 tuổi dùng threshold tại mốc 5 tuổi
-            if (!$bmiThresholds && $ageThresholds < 5) {
-                $bmiThresholds = $this->getBmi(5, $gender);
-            }
-            if ($bmiThresholds) {
-                $bmiCategory = $this->classifyBMI($bmi, $bmiThresholds);
-            }
+        $ageThresholds = $birthday ? round($birthday->diffInDays($assessmentDate) / 365.3) : ($age ? round($age) : 0);
+        $genderVal = $gender instanceof Gender ? $gender->value : $gender;
+
+        $bmiThresholds = $this->getBmi($ageThresholds, $genderVal);
+        // Fallback: Trẻ < 5 tuổi dùng threshold tại mốc 5 tuổi
+        if (!$bmiThresholds && $ageThresholds < 5) {
+            $bmiThresholds = $this->getBmi(5, $genderVal);
+        }
+        if ($bmiThresholds) {
+            $bmiCategory = $this->classifyBMI($bmi, $bmiThresholds);
         }
         return $bmiCategory;
     }
@@ -569,10 +569,11 @@ class RatingPQService implements RatingPQServiceInterface
 
     public function getWho($month, $gender)
     {
+        $genderVal = $gender instanceof Gender ? $gender->value : $gender;
         return $this->whoRepository->getBy(
             [
                 'month' => $month,
-                'gender' => $gender,
+                'gender' => $genderVal,
                 'status' => ActiveStatus::Active,
             ]
         )->first();
@@ -580,10 +581,11 @@ class RatingPQService implements RatingPQServiceInterface
 
     public function getBmi($age, $gender)
     {
+        $genderVal = $gender instanceof Gender ? $gender->value : $gender;
         return $this->bmiRepository->getBy(
             [
                 'age' => $age,
-                'gender' => $gender,
+                'gender' => $genderVal,
                 'status' => ActiveStatus::Active,
             ]
         )->first();
