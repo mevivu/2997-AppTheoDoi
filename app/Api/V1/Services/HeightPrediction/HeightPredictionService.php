@@ -293,8 +293,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         // Dự đoán chiều cao trưởng thành theo V1
         $predictedAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestRecordDateCopy);
 
-        // Khoảng tuổi hiển thị trên biểu đồ: từ ceil(currentAge) đến 19 tuổi
-        $startAge = (int)ceil($currentAge);
+        // Khoảng tuổi hiển thị trên biểu đồ: từ (floor(currentAge) + 1) đến 19 tuổi
+        $startAge = (int)floor($currentAge) + 1;
         if ($startAge < 5) {
             $startAge = 5;
         }
