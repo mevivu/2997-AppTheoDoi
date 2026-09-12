@@ -3,6 +3,7 @@
 namespace App\Api\V1\Http\Controllers\HeightPrediction;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Api\V1\Http\Requests\HeightPrediction\HeightChartRequest;
 use App\Api\V1\Http\Requests\HeightPrediction\HeightPredictionRequest;
 use App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
@@ -71,7 +72,25 @@ class HeightPredictionController extends Controller
         }
     }
 
-
-
-
+    /**
+     * Lấy dữ liệu phác đồ chiều cao (3 đường biểu đồ)
+     *
+     * @authenticated
+     * @queryParam child_id int required ID của trẻ. Example: 1
+     * @queryParam target_height numeric required Chiều cao mục tiêu. Example: 162
+     * @queryParam puberty_months numeric optional Số tháng đã dậy thì. Example: 0
+     *
+     * @param HeightChartRequest $request
+     * @return JsonResponse
+     */
+    public function chart(HeightChartRequest $request): JsonResponse
+    {
+        try {
+            $response = $this->service->chart($request);
+            return $this->jsonResponseSuccess($response);
+        } catch (Exception $exception) {
+            $this->logError('Get height chart failed:', $exception);
+            return $this->jsonResponseError('Get height chart failed', 500);
+        }
+    }
 }

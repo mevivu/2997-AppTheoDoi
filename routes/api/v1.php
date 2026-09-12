@@ -328,6 +328,7 @@ Route::controller(\App\Api\V1\Http\Controllers\HeightPrediction\HeightPrediction
     ->as('height-prediction.')
     ->group(function () {
         Route::get('/', 'index');
+        Route::get('/chart', 'chart');
     });
 
 //***** -- Guide -- ******* //
