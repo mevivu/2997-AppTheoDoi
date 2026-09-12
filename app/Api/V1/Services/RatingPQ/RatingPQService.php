@@ -152,8 +152,8 @@ class RatingPQService implements RatingPQServiceInterface
         $data = $request->validated();
         $height = $data['height'];
         $weight = $data['weight'];
-        $currentEndurance = $data['endurance'];
-        $currentStrength = $data['strength'];
+        $currentEndurance = $data['endurance'] ?? null;
+        $currentStrength = $data['strength'] ?? null;
         $child = $this->childRepository->findOrFail($data['child_id']);
         $assessmentDate = Carbon::parse($data['assessment_date']);
         $bmi = $this->calculateBMI($height, $weight);
