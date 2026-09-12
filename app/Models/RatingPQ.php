@@ -34,6 +34,8 @@ class RatingPQ extends Model
         'height_result',
         /** Giá trị thay đổi chiều cao */
         'height_change',
+        /** Giá trị thay đổi cân nặng so với chuẩn WHO */
+        'weight_change',
         /** Điểm */
         'score',
         /** Child ID */

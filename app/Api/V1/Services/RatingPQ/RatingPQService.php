@@ -135,6 +135,7 @@ class RatingPQService implements RatingPQServiceInterface
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
         $data['height_change'] = $height - $whoHeight;
+        $data['weight_change'] = $who ? round($weight - $who->weight, 2) : null;
         $data['height_result'] = $this->getHeightResult($height, $birthday, $assessmentDate, $gender);
         $data['score'] = $this->calculateScore($bmi, $ageCalculate, $gender,
             $child->id, $currentEndurance, $currentStrength, $height, $assessmentDate, $weight, $monthCalculate);
@@ -168,6 +169,7 @@ class RatingPQService implements RatingPQServiceInterface
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
         $data['height_change'] = $height - $whoHeight;
+        $data['weight_change'] = $who ? round($weight - $who->weight, 2) : null;
         $data['height_result'] = $this->getHeightResult($height, $birthday, $assessmentDate, $gender);
         $data['score'] = $this->calculateScore($bmi, $ageCalculate, $gender,
             $child->id, $currentEndurance, $currentStrength, $height, $assessmentDate, $weight, $monthCalculate);
@@ -227,6 +229,10 @@ class RatingPQService implements RatingPQServiceInterface
             'height_comparison' => [
                 'height_who_current' => $heightWhoCurrent,
                 'is_taller_than_who' => $currenHeight > $who->height,
+            ],
+            'weight_comparison' => [
+                'weight_who_current' => round($currentWeight - $who->weight, 2),
+                'is_heavier_than_who' => $currentWeight > $who->weight,
             ],
             'current_height_percent' => round($currentHeightPercent, 1),
             'bmi_percent' => round($bmiPercent, 1),
@@ -443,15 +449,18 @@ class RatingPQService implements RatingPQServiceInterface
                 return round(($currentBmi / $bmi->z_score_0) / 0.1, 1);
             }
         } else {
-            $who = $this->whoRepository->getBy(
-                [
-                    'gender' => $child->gender,
-                    'month' => $month
-                ])->first();
+            // Trẻ < 5 tuổi: So sánh BMI thực tế với z_score_0 tại mốc 5 tuổi
+            $bmi5 = $this->getBmi(5, $child->gender);
+            if (!$bmi5) return 0;
 
-            if (!$who) return 0;
+            $zScore0 = $bmi5->z_score_0 ?? 0;
+            if ($zScore0 <= 0) return 0;
 
-            return min($currentWeight / $who->weight / 0.1, 10);
+            if ($zScore0 < $currentBmi) {
+                return round(($zScore0 / $currentBmi) / 0.1, 1);
+            } else {
+                return round(($currentBmi / $zScore0) / 0.1, 1);
+            }
         }
 
 
@@ -507,6 +516,10 @@ class RatingPQService implements RatingPQServiceInterface
         $ageThresholds = round($ageThresholds);
         if ($age) {
             $bmiThresholds = $this->getBmi($ageThresholds, $gender);
+            // Fallback: Trẻ < 5 tuổi dùng threshold tại mốc 5 tuổi
+            if (!$bmiThresholds && $ageThresholds < 5) {
+                $bmiThresholds = $this->getBmi(5, $gender);
+            }
             if ($bmiThresholds) {
                 $bmiCategory = $this->classifyBMI($bmi, $bmiThresholds);
             }
