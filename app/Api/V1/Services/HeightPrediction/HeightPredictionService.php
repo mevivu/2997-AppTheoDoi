@@ -303,9 +303,19 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         }
         $maxAge = 19;
 
+        // 0. Mốc "Hiện tại"
+        $whoCurrentRecord = $this->getWho(round($currentAge * 12), $gender);
+        $whoCurrentHeight = $whoCurrentRecord ? (float)$whoCurrentRecord->height : $currentHeight;
+
         // 1. Lấy đường Chuẩn WHO cho các mốc tuổi
         $whoHeights = [];
-        $whoLine = [];
+        $whoLine = [
+            [
+                'age' => (float)$currentAge,
+                'height' => round($whoCurrentHeight, 1),
+                'is_current' => true,
+            ],
+        ];
         for ($age = $startAge; $age <= $maxAge; $age++) {
             $month = $age * 12;
             $who = $this->getWho($month, $gender);
@@ -314,11 +324,18 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             $whoLine[] = [
                 'age' => (float)$age,
                 'height' => round($h, 1),
+                'is_current' => false,
             ];
         }
 
         // 2. Tính đường DỰ ĐOÁN
-        $predictionLine = [];
+        $predictionLine = [
+            [
+                'age' => (float)$currentAge,
+                'height' => round($currentHeight, 1),
+                'is_current' => true,
+            ],
+        ];
         $predictionHeights = [];
         $prevPredHeight = $currentHeight;
         $predAtPubertyEnd = $currentHeight + max(0.0, $pubertyEndAge - $currentAge) * $effectiveSpeed;
@@ -339,6 +356,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             $predictionLine[] = [
                 'age' => (float)$age,
                 'height' => round($predH, 1),
+                'is_current' => false,
             ];
         }
 
@@ -349,7 +367,13 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $gap = $effectiveTargetHeight - $predAtPubertyEnd;
         $targetPerYear = $remainingYears > 0 ? $gap / $remainingYears : 0;
 
-        $targetLine = [];
+        $targetLine = [
+            [
+                'age' => (float)$currentAge,
+                'height' => round($currentHeight, 1),
+                'is_current' => true,
+            ],
+        ];
         for ($age = $startAge; $age <= $maxAge; $age++) {
             if ($age <= $pubertyEndAge) {
                 $tgtH = $predictionHeights[$age] + ($age - $currentAge) * $targetPerYear;
@@ -361,6 +385,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             $targetLine[] = [
                 'age' => (float)$age,
                 'height' => round($tgtH, 1),
+                'is_current' => false,
             ];
         }
 
