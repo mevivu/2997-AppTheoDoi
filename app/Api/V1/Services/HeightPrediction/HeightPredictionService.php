@@ -361,11 +361,14 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         }
 
         // 3. Tính đường MỤC TIÊU
-        // Mục tiêu phân bổ đều phần chênh lệch đến hết tuổi dậy thì
-        $effectiveTargetHeight = max($targetHeight, $predAtPubertyEnd);
+        // Luôn dùng targetHeight do người dùng nhập (không dùng max())
+        // để đường mục tiêu luôn khác biệt so với đường dự đoán.
         $remainingYears = max(0.5, $pubertyEndAge - $currentAge);
-        $gap = $effectiveTargetHeight - $predAtPubertyEnd;
-        $targetPerYear = $remainingYears > 0 ? $gap / $remainingYears : 0;
+
+        // Tính chiều cao mục tiêu ở tuổi hết dậy thì bằng nội suy tuyến tính
+        // từ currentHeight → targetHeight theo tỷ lệ thời gian
+        $maxGrowthAge = 19;
+        $totalYears = max(1, $maxGrowthAge - $currentAge);
 
         $targetLine = [
             [
@@ -375,13 +378,16 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             ],
         ];
         for ($age = $startAge; $age <= $maxAge; $age++) {
-            if ($age <= $pubertyEndAge) {
-                $tgtH = $predictionHeights[$age] + ($age - $currentAge) * $targetPerYear;
-            } else {
-                // Sau dậy thì, giữ khoảng cách đã đạt được tại tuổi hết dậy thì
-                $postPubertyDelta = $predictionHeights[$age] - $predAtPubertyEnd;
-                $tgtH = $effectiveTargetHeight + $postPubertyDelta;
+            // Nội suy tuyến tính từ currentHeight → targetHeight
+            $progress = ($age - $currentAge) / $totalYears;
+            $progress = min(1.0, max(0.0, $progress));
+            $tgtH = $currentHeight + ($targetHeight - $currentHeight) * $progress;
+
+            // Sau tuổi hết dậy thì, giữ nguyên chiều cao mục tiêu (plateau)
+            if ($age >= $maxAge) {
+                $tgtH = $targetHeight;
             }
+
             $targetLine[] = [
                 'age' => (float)$age,
                 'height' => round($tgtH, 1),
