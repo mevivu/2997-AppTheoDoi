@@ -4,6 +4,7 @@ namespace App\Api\V1\Http\Controllers\User;
 
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Exception\BadRequestException;
+use App\Api\V1\Http\Requests\User\AcceptAffiliateTermsRequest;
 use App\Api\V1\Http\Requests\User\ApplyReferralCodeRequest;
 use App\Api\V1\Http\Requests\User\UserRegisterRequest;
 use App\Api\V1\Http\Requests\User\UserUpdateRequest;
@@ -208,6 +209,57 @@ class UserController extends Controller
             return $this->jsonResponseError($e->getMessage(), 400);
         } catch (Throwable $e) {
             $this->logError('Lỗi khi áp dụng mã giới thiệu', $e);
+            return $this->jsonResponseError($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Chấp nhận Điều kiện & Điều khoản Affiliate
+     *
+     * API này cho phép người dùng xác nhận đồng ý Điều kiện & Điều khoản
+     * trước khi có thể sử dụng mã giới thiệu và tham gia chương trình Affiliate.
+     *
+     * @authenticated
+     * @bodyParam accepted boolean required Xác nhận đồng ý điều khoản (bắt buộc = true). Example: true
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Đã chấp nhận Điều kiện & Điều khoản Affiliate.",
+     *     "data": {
+     *         "affiliate_terms_accepted": true,
+     *         "affiliate_terms_accepted_at": "2026-09-12T10:00:00.000000Z"
+     *     }
+     * }
+     *
+     * @param AcceptAffiliateTermsRequest $request
+     * @return JsonResponse
+     */
+    public function acceptAffiliateTerms(AcceptAffiliateTermsRequest $request): JsonResponse
+    {
+        try {
+            $user = auth('api')->user();
+            if (!$user) {
+                return $this->jsonResponseError('Phiên đăng nhập không hợp lệ.', 401);
+            }
+
+            // Nếu đã đồng ý trước đó → trả success luôn
+            if ($user->hasAcceptedAffiliateTerms()) {
+                return $this->jsonResponseSuccess([
+                    'affiliate_terms_accepted' => true,
+                    'affiliate_terms_accepted_at' => $user->affiliate_terms_accepted_at->toISOString(),
+                ], 'Bạn đã đồng ý Điều kiện & Điều khoản trước đó.');
+            }
+
+            // Cập nhật thời điểm đồng ý
+            $user->affiliate_terms_accepted_at = now();
+            $user->save();
+
+            return $this->jsonResponseSuccess([
+                'affiliate_terms_accepted' => true,
+                'affiliate_terms_accepted_at' => $user->affiliate_terms_accepted_at->toISOString(),
+            ], 'Đã chấp nhận Điều kiện & Điều khoản Affiliate.');
+        } catch (Throwable $e) {
+            $this->logError('Lỗi khi chấp nhận điều khoản Affiliate', $e);
             return $this->jsonResponseError($e->getMessage(), 500);
         }
     }

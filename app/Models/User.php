@@ -118,6 +118,8 @@ class User extends Authenticatable implements JWTSubject
         'kyc_rejection_reason',
         /** Đánh dấu user mới chưa hoàn thành hồ sơ con (chống gian lận) */
         'pending_referral_reward',
+        /** Thời điểm user đồng ý Điều kiện & Điều khoản Affiliate */
+        'affiliate_terms_accepted_at',
 
     ];
 
@@ -151,6 +153,7 @@ class User extends Authenticatable implements JWTSubject
         'kyc_verified_at' => 'datetime',
         'kyc_rejected_at' => 'datetime',
         'pending_referral_reward' => 'boolean',
+        'affiliate_terms_accepted_at' => 'datetime',
     ];
 
     public function userPackages(): HasMany
@@ -375,5 +378,13 @@ class User extends Authenticatable implements JWTSubject
     public function hasChildren(): bool
     {
         return $this->children()->exists();
+    }
+
+    /**
+     * Kiểm tra user đã đồng ý Điều kiện & Điều khoản Affiliate chưa
+     */
+    public function hasAcceptedAffiliateTerms(): bool
+    {
+        return !empty($this->affiliate_terms_accepted_at);
     }
 }

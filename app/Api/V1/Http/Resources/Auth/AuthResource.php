@@ -55,6 +55,8 @@ class AuthResource extends JsonResource
             'affiliate_rank' => $this->affiliate_rank?->value ?? 1,
             'affiliate_rank_name' => $this->affiliate_rank?->name() ?? 'Bạc',
             'affiliate_total_sales' => (float) ($this->affiliate_total_sales ?? 0),
+            'affiliate_terms_accepted' => !empty($this->affiliate_terms_accepted_at),
+            'affiliate_terms_accepted_at' => $this->affiliate_terms_accepted_at?->toISOString(),
             'referrals_count' => $this->referrals()->count(),
             'referrer' => $this->referrer ? [
                 'id' => $this->referrer->id,

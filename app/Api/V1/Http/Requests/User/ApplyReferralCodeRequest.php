@@ -26,6 +26,12 @@ class ApplyReferralCodeRequest extends BaseRequest
                         return;
                     }
 
+                    // 0. Kiểm tra user đã đồng ý Điều kiện & Điều khoản Affiliate chưa
+                    if (!$currentUser->hasAcceptedAffiliateTerms()) {
+                        $fail('Bạn cần đồng ý Điều kiện & Điều khoản trước khi sử dụng mã giới thiệu.');
+                        return;
+                    }
+
                     // 1. Kiểm tra tài khoản đã liên kết người giới thiệu trước đó chưa
                     if (!empty($currentUser->referrer_id)) {
                         $fail('Tài khoản của bạn đã được liên kết với người giới thiệu trước đó.');
