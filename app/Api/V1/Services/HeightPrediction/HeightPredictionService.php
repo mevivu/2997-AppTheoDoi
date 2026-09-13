@@ -361,14 +361,15 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         }
 
         // 3. Tính đường MỤC TIÊU
-        // Luôn dùng targetHeight do người dùng nhập (không dùng max())
-        // để đường mục tiêu luôn khác biệt so với đường dự đoán.
-        $remainingYears = max(0.5, $pubertyEndAge - $currentAge);
-
-        // Tính chiều cao mục tiêu ở tuổi hết dậy thì bằng nội suy tuyến tính
-        // từ currentHeight → targetHeight theo tỷ lệ thời gian
-        $maxGrowthAge = 19;
-        $totalYears = max(1, $maxGrowthAge - $currentAge);
+        // Sử dụng offset ratio trên đường Dự đoán:
+        //   Tại tuổi 19: gap = targetHeight - prediction_final
+        //   Tại mỗi mốc: targetH = predictionH + gap * progress
+        // → Đường target luôn >= prediction, cong tự nhiên theo prediction.
+        $predictionFinal = isset($predictionHeights[$maxAge])
+            ? $predictionHeights[$maxAge]
+            : $prevPredHeight;
+        $gap = $targetHeight - $predictionFinal;
+        $totalYears = max(1.0, $maxAge - $currentAge);
 
         $targetLine = [
             [
@@ -378,15 +379,13 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             ],
         ];
         for ($age = $startAge; $age <= $maxAge; $age++) {
-            // Nội suy tuyến tính từ currentHeight → targetHeight
+            $predH = isset($predictionHeights[$age]) ? $predictionHeights[$age] : $predictionFinal;
             $progress = ($age - $currentAge) / $totalYears;
             $progress = min(1.0, max(0.0, $progress));
-            $tgtH = $currentHeight + ($targetHeight - $currentHeight) * $progress;
+            $tgtH = $predH + $gap * $progress;
 
-            // Sau tuổi hết dậy thì, giữ nguyên chiều cao mục tiêu (plateau)
-            if ($age >= $maxAge) {
-                $tgtH = $targetHeight;
-            }
+            // Clamp: đường mục tiêu luôn >= đường dự đoán
+            $tgtH = max($tgtH, $predH);
 
             $targetLine[] = [
                 'age' => (float)$age,
