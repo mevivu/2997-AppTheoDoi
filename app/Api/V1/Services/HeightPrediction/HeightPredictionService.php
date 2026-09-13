@@ -249,6 +249,9 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $childId = $data['child_id'];
         $targetHeight = (float)$data['target_height'];
         $pubertyMonths = isset($data['puberty_months']) ? (float)$data['puberty_months'] : 0.0;
+        // Làm tròn số tháng dậy thì thành năm: < 6 tháng = 0 năm, >= 6 tháng = 1 năm, >= 18 tháng = 2 năm, v.v.
+        // Khớp với cách tính trong Excel: round(tháng / 12)
+        $pubertyYears = round($pubertyMonths / 12);
 
         $child = $this->childRepository->findOrFail($childId);
         $birthday = $child->birthday;
@@ -279,8 +282,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         // Tuổi kết thúc dậy thì (Adulthood kết thúc tăng vọt)
         $basePubertyEndAge = ($gender == Gender::Male ? 14.0 : 13.0);
         $pubertyDuration = ($gender == Gender::Male ? 3.0 : 2.5);
-        if ($pubertyMonths > 0) {
-            $pubertyStartAge = $currentAge - ($pubertyMonths / 12.0);
+        if ($pubertyYears > 0) {
+            $pubertyStartAge = $currentAge - $pubertyYears;
             $pubertyEndAge = round($pubertyStartAge + $pubertyDuration, 1);
             $pubertyEndAge = max($currentAge, $pubertyEndAge);
         } else {
@@ -353,7 +356,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 }
                 // Chỉ giới hạn delta khi trẻ đã nhập tháng dậy thì (dậy thì kết thúc sớm)
                 // Khi pubertyMonths=0, WHO delta sau pubertyEndAge đã là giá trị hậu dậy thì tự nhiên
-                if ($pubertyMonths > 0) {
+                if ($pubertyYears > 0) {
                     $yearsAfterPuberty = $age - $pubertyEndAge;
                     // Cap hậu dậy thì: bắt đầu 3.5cm/năm, giảm 0.4/năm, tối thiểu 0.3
                     $maxPostDelta = max(0.3, 3.5 - $yearsAfterPuberty * 0.4);
