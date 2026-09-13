@@ -360,10 +360,13 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 if (isset($whoHeights[$age], $whoHeights[$age - 1])) {
                     $whoDelta = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
                 }
-                // Giới hạn delta hậu dậy thì: 2cm/năm giảm dần về 0.2cm
-                $yearsAfterPuberty = $age - $pubertyEndAge;
-                $maxPostDelta = max(0.2, 2.0 - $yearsAfterPuberty * 0.3);
-                $whoDelta = min($whoDelta, $maxPostDelta);
+                // Chỉ giới hạn delta khi trẻ đã nhập tháng dậy thì (dậy thì kết thúc sớm)
+                // Khi pubertyMonths=0, WHO delta sau pubertyEndAge đã là giá trị hậu dậy thì tự nhiên
+                if ($pubertyMonths > 0) {
+                    $yearsAfterPuberty = $age - $pubertyEndAge;
+                    $maxPostDelta = max(0.2, 2.0 - $yearsAfterPuberty * 0.3);
+                    $whoDelta = min($whoDelta, $maxPostDelta);
+                }
                 $predH = $prevPredHeight + $whoDelta;
             }
             $prevPredHeight = $predH;
