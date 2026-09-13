@@ -283,15 +283,6 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             $pubertyStartAge = $currentAge - ($pubertyMonths / 12.0);
             $pubertyEndAge = round($pubertyStartAge + $pubertyDuration, 1);
             $pubertyEndAge = max($currentAge, $pubertyEndAge);
-
-            // Tốc độ tăng trưởng trong dậy thì giảm dần theo đường cong:
-            // Đầu dậy thì: tốc độ đỉnh, cuối dậy thì: tốc độ chậm lại
-            // pubertyProgress = 0 → mới bắt đầu, 1 → gần hết dậy thì
-            $pubertyDurationMonths = $pubertyDuration * 12;
-            $pubertyProgress = min(1.0, $pubertyMonths / $pubertyDurationMonths);
-            // Factor giảm từ 1.0 (chưa dậy thì) → 0.3 (cuối dậy thì)
-            $decayFactor = max(0.3, 1.0 - $pubertyProgress * 0.7);
-            $effectiveSpeed *= $decayFactor;
         } else {
             $pubertyEndAge = $basePubertyEndAge;
         }
