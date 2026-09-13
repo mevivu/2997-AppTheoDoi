@@ -370,13 +370,16 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         }
 
         // 3. Tính đường MỤC TIÊU
-        // Hybrid: Trong giai đoạn dậy thì dùng offset trên prediction,
-        // sau dậy thì dùng nội suy đều đến targetHeight ở tuổi 19.
-        // → Đường cong tự nhiên, luôn >= prediction, không bị phẳng cuối.
-        $predictionFinal = isset($predictionHeights[$maxAge])
-            ? $predictionHeights[$maxAge]
-            : $prevPredHeight;
-        $totalYears = max(1.0, $maxAge - $currentAge);
+        // Dùng đường WHO làm "khuôn hình dạng" (shape template):
+        // Target đi theo hình dạng cong của WHO, co giãn từ currentHeight → targetHeight
+        // → Cong tự nhiên, tăng nhanh khi dậy thì, chậm lại sau dậy thì (giống WHO)
+        $whoStart = $whoCurrentHeight;
+        $whoEnd = isset($whoHeights[$maxAge]) ? $whoHeights[$maxAge] : $whoStart;
+        $whoRange = $whoEnd - $whoStart;
+        if ($whoRange < 1.0) {
+            $whoRange = 1.0; // Tránh chia cho 0
+        }
+        $targetRange = $targetHeight - $currentHeight;
 
         $targetLine = [
             [
@@ -385,34 +388,17 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 'is_current' => true,
             ],
         ];
-
-        // Tính target height tại mốc puberty end bằng offset ratio
-        $gapFull = $targetHeight - $predictionFinal;
-        $pubEndProgress = $pubertyEndAge < $maxAge
-            ? ($pubertyEndAge - $currentAge) / $totalYears
-            : 1.0;
-        $pubEndProgress = min(1.0, max(0.0, $pubEndProgress));
-        $predAtPubEnd = isset($predictionHeights[(int)ceil($pubertyEndAge)])
-            ? $predictionHeights[(int)ceil($pubertyEndAge)]
-            : $predAtPubertyEnd;
-        $targetAtPubEnd = $predAtPubEnd + $gapFull * $pubEndProgress;
-        $targetAtPubEnd = max($targetAtPubEnd, $predAtPubEnd);
-
         for ($age = $startAge; $age <= $maxAge; $age++) {
-            $predH = isset($predictionHeights[$age]) ? $predictionHeights[$age] : $predictionFinal;
+            $predH = isset($predictionHeights[$age]) ? $predictionHeights[$age] : $prevPredHeight;
+            $whoH = isset($whoHeights[$age]) ? $whoHeights[$age] : $whoEnd;
 
-            if ($age <= $pubertyEndAge) {
-                // Giai đoạn dậy thì: offset ratio trên prediction
-                $progress = ($age - $currentAge) / $totalYears;
-                $progress = min(1.0, max(0.0, $progress));
-                $tgtH = $predH + $gapFull * $progress;
-            } else {
-                // Sau dậy thì: nội suy đều từ targetAtPubEnd → targetHeight
-                $postYears = max(1.0, $maxAge - $pubertyEndAge);
-                $postProgress = ($age - $pubertyEndAge) / $postYears;
-                $postProgress = min(1.0, max(0.0, $postProgress));
-                $tgtH = $targetAtPubEnd + ($targetHeight - $targetAtPubEnd) * $postProgress;
-            }
+            // WHO progress: tỷ lệ tăng trưởng WHO tại tuổi này (0 → 1)
+            $whoProgress = ($whoH - $whoStart) / $whoRange;
+            $whoProgress = min(1.0, max(0.0, $whoProgress));
+
+            // Target = currentHeight + targetRange * whoProgress
+            // → Đi theo hình dạng WHO, kết thúc tại targetHeight
+            $tgtH = $currentHeight + $targetRange * $whoProgress;
 
             // Clamp: đường mục tiêu luôn >= đường dự đoán
             $tgtH = max($tgtH, $predH);
