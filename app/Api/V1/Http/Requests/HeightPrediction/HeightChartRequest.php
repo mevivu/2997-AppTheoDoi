@@ -17,7 +17,7 @@ class HeightChartRequest extends BaseRequest
         return [
             'child_id'       => ['required', 'numeric', new ValidChildPredictHeight()],
             'target_height'  => ['required', 'numeric', 'min:50', 'max:250'],
-            'puberty_months' => ['nullable', 'numeric', 'min:0', 'max:120'],
+            'puberty_months' => ['nullable', 'numeric', 'min:0', 'max:96'],
         ];
     }
 
@@ -33,7 +33,7 @@ class HeightChartRequest extends BaseRequest
             'target_height.max' => 'Mục tiêu chiều cao tối đa là 250cm.',
             'puberty_months.numeric' => 'Số tháng dậy thì phải là một số.',
             'puberty_months.min' => 'Số tháng dậy thì không được âm.',
-            'puberty_months.max' => 'Số tháng dậy thì không hợp lệ.',
+            'puberty_months.max' => 'Số tháng dậy thì tối đa là 96 tháng.',
         ];
     }
 }
