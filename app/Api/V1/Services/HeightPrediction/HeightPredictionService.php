@@ -279,19 +279,11 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             $effectiveSpeed = $increasedHeight;
         }
 
-        // Tuổi kết thúc dậy thì (Adulthood kết thúc tăng vọt)
-        $basePubertyEndAge = ($gender == Gender::Male ? 14.0 : 13.0);
-        $pubertyDuration = ($gender == Gender::Male ? 3.0 : 2.5);
-        if ($pubertyYears > 0) {
-            $pubertyStartAge = $currentAge - $pubertyYears;
-            $pubertyEndAge = round($pubertyStartAge + $pubertyDuration, 1);
-            $pubertyEndAge = max($currentAge, $pubertyEndAge);
-        } else {
-            $pubertyEndAge = $basePubertyEndAge;
-        }
-        if ($pubertyEndAge < $currentAge) {
-            $pubertyEndAge = $currentAge;
-        }
+        // Tuổi kết thúc dậy thì: Excel formula = basePubertyEndAge - pubertyYears
+        // Nam: kết thúc dậy thì mặc định 16 tuổi | Nữ: 14 tuổi
+        $basePubertyEndAge = ($gender == Gender::Male ? 16.0 : 14.0);
+        $pubertyEndAge = $basePubertyEndAge - $pubertyYears;
+        $pubertyEndAge = max($currentAge, $pubertyEndAge);
 
         // Dự đoán chiều cao trưởng thành theo V1
         $predictedAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestRecordDateCopy);
@@ -344,7 +336,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $predAtPubertyEnd = $currentHeight + max(0.0, $pubertyEndAge - $currentAge) * $effectiveSpeed;
 
         for ($age = $startAge; $age <= $maxAge; $age++) {
-            if ($age <= $pubertyEndAge) {
+            if ($age < $pubertyEndAge) {
                 $predH = $currentHeight + ($age - $currentAge) * $effectiveSpeed;
             } else {
                 // Sau tuổi hết dậy thì: tăng trưởng hậu dậy thì
