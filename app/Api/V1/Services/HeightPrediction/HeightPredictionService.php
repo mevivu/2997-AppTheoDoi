@@ -323,6 +323,16 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             ];
         }
 
+        // Pre-load WHO heights cho puberty-shifted delta (khi dậy thì kết thúc sớm N năm,
+        // dùng WHO delta ở tuổi+N → cần load thêm data cho tuổi > 19)
+        if ($pubertyYears > 0) {
+            for ($extraAge = $maxAge + 1; $extraAge <= $maxAge + (int)$pubertyYears; $extraAge++) {
+                $who = $this->getWho($extraAge * 12, $gender);
+                // Nếu không có WHO data (sau 19 tuổi), dùng chiều cao cuối cùng (tăng trưởng dừng)
+                $whoHeights[$extraAge] = $who ? (float)$who->height : ($whoHeights[$extraAge - 1] ?? 0.0);
+            }
+        }
+
         // 2. Tính đường DỰ ĐOÁN
         $predictionLine = [
             [
@@ -339,20 +349,15 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             if ($age < $pubertyEndAge) {
                 $predH = $currentHeight + ($age - $currentAge) * $effectiveSpeed;
             } else {
-                // Sau tuổi hết dậy thì: tăng trưởng hậu dậy thì
-                // WHO delta ở tuổi 10-14 bao gồm tăng trưởng dậy thì (5-6 cm/năm)
-                // → Cần giới hạn bằng tốc độ hậu dậy thì thực tế (giảm dần)
+                // Sau tuổi hết dậy thì: dùng WHO delta shifted theo pubertyYears
+                // Trẻ dậy thì sớm N năm → đường hậu dậy thì dịch lên N bậc trên bảng WHO
+                // VD: PM=12 (1yr) tại tuổi 15 → dùng WHO delta ở tuổi 16 (shift +1)
+                $shiftedAge = $age + (int)$pubertyYears;
                 $whoDelta = 0.2;
-                if (isset($whoHeights[$age], $whoHeights[$age - 1])) {
+                if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
+                    $whoDelta = max(0.0, $whoHeights[$shiftedAge] - $whoHeights[$shiftedAge - 1]);
+                } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
                     $whoDelta = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
-                }
-                // Chỉ giới hạn delta khi trẻ đã nhập tháng dậy thì (dậy thì kết thúc sớm)
-                // Khi pubertyMonths=0, WHO delta sau pubertyEndAge đã là giá trị hậu dậy thì tự nhiên
-                if ($pubertyYears > 0) {
-                    $yearsAfterPuberty = $age - $pubertyEndAge;
-                    // Cap hậu dậy thì: bắt đầu 3.5cm/năm, giảm 0.4/năm, tối thiểu 0.3
-                    $maxPostDelta = max(0.3, 3.5 - $yearsAfterPuberty * 0.4);
-                    $whoDelta = min($whoDelta, $maxPostDelta);
                 }
                 $predH = $prevPredHeight + $whoDelta;
             }
