@@ -95,7 +95,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 'is_taller_than_who' => $heightWhoCurrent > 0,
                 'message' => $growthEvaluation['message'],
             ],
-            'child' => new ChildResource($child)
+            'child' => new ChildResource($child),
+            'is_chart_unlocked' => true,
         ];
     }
 

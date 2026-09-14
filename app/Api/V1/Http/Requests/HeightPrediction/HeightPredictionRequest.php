@@ -17,6 +17,7 @@ class HeightPredictionRequest extends BaseRequest
     {
         return [
             'child_id' => ['required', 'numeric', new ValidChildPredictHeight()],
+            'puberty_months' => ['nullable', 'numeric', 'min:0', 'max:96'],
         ];
     }
 
