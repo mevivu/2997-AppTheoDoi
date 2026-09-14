@@ -859,7 +859,7 @@ return [
         ],
         'age' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-timeline"></i><span>Tuổi</span></div>',
-            'orderable' => false,
+            'orderable' => true,
             'addClass' => 'text-center align-middle',
         ],
         'z_score_minus_3' => [

@@ -55,8 +55,28 @@ class BmiDataTable extends BaseDataTable
 
     public function query()
     {
-        return $this->repository->getQueryBuilderOrderBy();
+        $query = $this->repository->getQueryBuilder();
+        if (!request()->has('order')) {
+            $query->orderBy('age', 'asc')->orderBy('gender', 'asc');
+        }
+        return $query;
     }
+
+    public function html()
+    {
+        $this->instanceHtml = $this->builder()
+            ->setTableId($this->nameTable)
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            ->dom('Bfrtip')
+            ->orderBy(2, 'asc')
+            ->selectStyleSingle();
+
+        $this->htmlParameters();
+
+        return $this->instanceHtml;
+    }
+
 
     protected function setCustomColumns(): void
     {
