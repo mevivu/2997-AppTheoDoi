@@ -99,7 +99,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 'message' => $growthEvaluation['message'],
             ],
             'child' => new ChildResource($child),
-            'is_chart_unlocked' => false,
+            'is_chart_unlocked' => true,
         ];
     }
 
