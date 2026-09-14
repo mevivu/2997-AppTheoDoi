@@ -42,6 +42,7 @@ class RatingPQMonthResource extends JsonResource
             'bmi_result' => $this->bmi_result,
             'height_result' => $this->height_result,
             'height_change' => round($this->height_change, 2),
+            'weight_change' => $this->weight_change !== null ? round((float)$this->weight_change, 2) : null,
             'bmi_info' => [
                 'z_score_0' => $bmiInfo ? $bmiInfo->z_score_0 : null,
 

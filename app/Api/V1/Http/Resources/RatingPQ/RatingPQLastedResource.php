@@ -53,6 +53,7 @@ class RatingPQLastedResource extends JsonResource
             'bmi_result' => $this->bmi_result,
             'height_result' => $this->height_result,
             'height_change' => round($this->height_change, 2),
+            'weight_change' => $this->weight_change !== null ? round((float)$this->weight_change, 2) : null,
             'height_mature' => min(10, round($heightMature, 1)),
 
 
