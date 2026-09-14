@@ -105,71 +105,70 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
     public function calculateMatureHeight($child, $currentHeight, $latestDate, float $pubertyMonths = 0.0): float
     {
-
-        $heightFather = $child->user->father_height ?? 0;
-        $heightMother = $child->user->mother_height ?? 0;
+        $gender = $child->gender;
         $birthday = $child->birthday;
+        $currentHeight = (float)$currentHeight;
 
-        // Dậy thì rút ngắn thời gian tăng trưởng: mỗi 12 tháng dậy thì giảm tương đương 1 năm tăng trưởng
+        // Tuổi hiện tại (năm)
+        $currentAge = round($latestDate->diffInDays($birthday) / 365.3, 1);
+
+        // Tính tốc độ tăng trưởng hiện tại
+        $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $child->id, $latestDate);
+        $rawSpeed = (float)$resultSpeedHeightChange['height_change'];
+        $increasedHeight = max(0.0, min(7.0, $rawSpeed));
+
+        // Nếu tốc độ tăng = 0, fallback theo mức tăng trung bình WHO của lứa tuổi hiện tại
+        if ($increasedHeight <= 0) {
+            $whoCurrent = $this->getWho(round($currentAge * 12), $gender);
+            $effectiveSpeed = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
+        } else {
+            $effectiveSpeed = $increasedHeight;
+        }
+
+        // Làm tròn số tháng dậy thì thành năm: < 6 tháng = 0 năm, >= 6 tháng = 1 năm, >= 18 tháng = 2 năm, v.v.
         $pubertyYears = round($pubertyMonths / 12);
-        $baseAdulthood = ($child->gender == Gender::Male ? 16.0 : 15.0);
 
-        $oneYearBefore = $latestDate->copy()->subYear();
+        // Tuổi kết thúc dậy thì: Excel formula = basePubertyEndAge - pubertyYears
+        // Nam: kết thúc dậy thì mặc định 16 tuổi | Nữ: 14 tuổi
+        $basePubertyEndAge = ($gender == Gender::Male ? 16.0 : 14.0);
+        $pubertyEndAge = $basePubertyEndAge - $pubertyYears;
+        $pubertyEndAge = max($currentAge, $pubertyEndAge);
 
-
-        $oldestRecord = $this->repository->getRecordInDateRange($child->id, $oneYearBefore, $latestDate, true);
-
-        $currentAge = $latestDate->diffInDays($birthday) / 365.3;
-
-        $Adulthood = max($currentAge, $baseAdulthood - $pubertyYears);
-        $predictAdulthood = max(0.0, $Adulthood - $currentAge);
-
-        $heightOneYearAgo = $oldestRecord ? $oldestRecord->height : 0;
-        $countDays = $latestDate->diffInDays($oldestRecord ? $oldestRecord->assessment_date : $latestDate);
-        if ($countDays == 0 || !$oldestRecord) {
-            $increasedHeight = $currentHeight - $heightOneYearAgo;
-        } else {
-            $increasedHeight = ($currentHeight - $heightOneYearAgo) * (365.3 / $countDays);
+        // Khoảng tuổi: từ (floor(currentAge) + 1) đến 19 tuổi
+        $startAge = (int)floor($currentAge) + 1;
+        if ($startAge < 5) {
+            $startAge = 5;
         }
-        $increasedHeight = max(0, min(7, $increasedHeight));
+        if ($startAge > 18) {
+            $startAge = 18;
+        }
+        $maxAge = 19;
 
+        // Pre-load WHO heights cho các mốc tuổi
+        $whoHeights = [];
+        for ($age = $startAge; $age <= $maxAge + (int)$pubertyYears; $age++) {
+            $who = $this->getWho($age * 12, $gender);
+            $whoHeights[$age] = $who ? (float)$who->height : ($whoHeights[$age - 1] ?? 0.0);
+        }
 
-        $adultHeightPrediction = $predictAdulthood * $increasedHeight;
-
-
-        $predictedHeightMale = ($heightFather + $heightMother + 13) / 2 + 5;
-        $predictedHeightFemale = ($heightFather + $heightMother - 13) / 2 + 3;
-        if ($child->age >= 5) {
-            if ($increasedHeight == 0) {
-                if ($child->gender == Gender::Male) {
-                    return max($currentHeight, $predictedHeightMale);
-                } else {
-                    return max($currentHeight, $predictedHeightFemale);
-                }
-            }
-
-            $CurrentHeightAttainmentForecast = $currentHeight + $adultHeightPrediction;
-        } else {
-            $ageCheckMonth = $child->gender == Gender::Male ? 24 : 18;
-            $ratingPq = $this->repository->getQueryBuilder()
-                ->where('child_id', $child->id)
-                ->where('age_month', $ageCheckMonth)
-                ->first();
-            if ($ratingPq) {
-                $CurrentHeightAttainmentForecast = $ratingPq->height * 2;
+        $prevPredHeight = $currentHeight;
+        for ($age = $startAge; $age <= $maxAge; $age++) {
+            if ($age < $pubertyEndAge) {
+                $predH = $currentHeight + ($age - $currentAge) * $effectiveSpeed;
             } else {
-                if ($child->gender == Gender::Male) {
-                    $CurrentHeightAttainmentForecast = $predictedHeightMale;
-                } else {
-                    $CurrentHeightAttainmentForecast = $predictedHeightFemale;
+                $shiftedAge = $age + (int)$pubertyYears;
+                $whoDelta = 0.2;
+                if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
+                    $whoDelta = max(0.0, $whoHeights[$shiftedAge] - $whoHeights[$shiftedAge - 1]);
+                } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
+                    $whoDelta = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
                 }
-
+                $predH = $prevPredHeight + $whoDelta;
             }
+            $prevPredHeight = $predH;
         }
 
-        $responseHeightParent = $child->gender == Gender::Male ? $predictedHeightMale * 0.3 : $predictedHeightFemale * 0.3;
-
-        return round(($CurrentHeightAttainmentForecast * 0.7) + $responseHeightParent, 0);
+        return round($prevPredHeight, 0);
     }
 
 
@@ -293,9 +292,6 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $pubertyEndAge = $basePubertyEndAge - $pubertyYears;
         $pubertyEndAge = max($currentAge, $pubertyEndAge);
 
-        // Dự đoán chiều cao trưởng thành theo V1 có tính đến số tháng dậy thì
-        $predictedAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestRecordDateCopy, $pubertyMonths);
-
         // Khoảng tuổi hiển thị trên biểu đồ: từ (floor(currentAge) + 1) đến 19 tuổi
         $startAge = (int)floor($currentAge) + 1;
         if ($startAge < 5) {
@@ -377,6 +373,11 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 'is_current' => false,
             ];
         }
+
+        // Dự đoán chiều cao trưởng thành (lấy tại mốc 19 tuổi trên đường dự đoán)
+        $predictedAdultHeight = isset($predictionHeights[$maxAge])
+            ? round($predictionHeights[$maxAge], 0)
+            : round($prevPredHeight, 0);
 
         // 3. Tính đường MỤC TIÊU
         // Dùng đường WHO làm "khuôn hình dạng" (shape template):
