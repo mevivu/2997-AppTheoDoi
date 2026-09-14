@@ -441,22 +441,13 @@ class RatingPQService implements RatingPQServiceInterface
     {
         $birthday = $child->birthday;
         $ageCalculate = floor($birthday->diffInDays($latestRecordDateCopy) / 365.3);
-        $month = round($birthday->diffInDays($latestRecordDateCopy) / 30.5);
-        if ($ageCalculate >= 5) {
-            $zScore0 = $bmi->z_score_0 ?? 0;
-            if ($zScore0 < $currentBmi) {
-                return round(($zScore0 / $currentBmi) / 0.1, 1);
-            } else {
-                return round(($currentBmi / $bmi->z_score_0) / 0.1, 1);
-            }
-        } else {
-            // Trẻ < 5 tuổi: So sánh BMI thực tế với z_score_0 tại mốc 5 tuổi
-            $bmi5 = $this->getBmi(5, $child->gender);
-            if (!$bmi5) return 0;
 
-            $zScore0 = $bmi5->z_score_0 ?? 0;
-            if ($zScore0 <= 0) return 0;
+        // Lấy BMI chuẩn theo độ tuổi thực tế (hỗ trợ đầy đủ từ 1 đến 19 tuổi)
+        $targetAge = max(1, min(19, (int)$ageCalculate));
+        $bmiRecord = ($ageCalculate == $child->age && $bmi) ? $bmi : $this->getBmi($targetAge, $child->gender);
+        $zScore0 = $bmiRecord ? (float)($bmiRecord->z_score_0 ?? 0) : 0;
 
+        if ($zScore0 > 0 && $currentBmi > 0) {
             if ($zScore0 < $currentBmi) {
                 return round(($zScore0 / $currentBmi) / 0.1, 1);
             } else {
@@ -464,7 +455,7 @@ class RatingPQService implements RatingPQServiceInterface
             }
         }
 
-
+        return 0;
     }
 
 
@@ -517,9 +508,9 @@ class RatingPQService implements RatingPQServiceInterface
         $genderVal = $gender instanceof Gender ? $gender->value : $gender;
 
         $bmiThresholds = $this->getBmi($ageThresholds, $genderVal);
-        // Fallback: Trẻ < 5 tuổi dùng threshold tại mốc 5 tuổi
-        if (!$bmiThresholds && $ageThresholds < 5) {
-            $bmiThresholds = $this->getBmi(5, $genderVal);
+        // Fallback: Trẻ < 1 tuổi dùng threshold tại mốc 1 tuổi
+        if (!$bmiThresholds && $ageThresholds < 1) {
+            $bmiThresholds = $this->getBmi(1, $genderVal);
         }
         if ($bmiThresholds) {
             $bmiCategory = $this->classifyBMI($bmi, $bmiThresholds);
