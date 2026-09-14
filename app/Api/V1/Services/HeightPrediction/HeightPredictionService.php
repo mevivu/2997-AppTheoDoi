@@ -77,8 +77,10 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $who = $this->getWho($month, $gender);
         $heightChangeWho = $who->height_change;
 
+        $pubertyMonths = isset($data['puberty_months']) ? (float)$data['puberty_months'] : 0.0;
+
         $adviceMessage = $this->getAdviceMessage($heightChange, $heightChangeWho);
-        $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestRecordDateCopy);
+        $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestRecordDateCopy, $pubertyMonths);
 
         $heightWhoCurrent = round($heightChangeLasted - $who->height, 2);
 
@@ -90,6 +92,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             'oldest_record_exists' => $oldestRecordExists,
             'speed_change' => $heightChange,
             'predicting_adult_height' => $predictingAdultHeight,
+            'puberty_months' => $pubertyMonths,
             'height_comparison' => [
                 'height_who_current' => $heightWhoCurrent,
                 'is_taller_than_who' => $heightWhoCurrent > 0,
@@ -100,13 +103,16 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         ];
     }
 
-    public function calculateMatureHeight($child, $currentHeight, $latestDate): float
+    public function calculateMatureHeight($child, $currentHeight, $latestDate, float $pubertyMonths = 0.0): float
     {
 
         $heightFather = $child->user->father_height ?? 0;
         $heightMother = $child->user->mother_height ?? 0;
         $birthday = $child->birthday;
-        $Adulthood = $child->gender == Gender::Male ? 16 : 15;
+
+        // Dậy thì rút ngắn thời gian tăng trưởng: mỗi 12 tháng dậy thì giảm tương đương 1 năm tăng trưởng
+        $pubertyYears = round($pubertyMonths / 12);
+        $baseAdulthood = ($child->gender == Gender::Male ? 16.0 : 15.0);
 
         $oneYearBefore = $latestDate->copy()->subYear();
 
@@ -115,7 +121,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         $currentAge = $latestDate->diffInDays($birthday) / 365.3;
 
-        $predictAdulthood = $Adulthood - $currentAge;
+        $Adulthood = max($currentAge, $baseAdulthood - $pubertyYears);
+        $predictAdulthood = max(0.0, $Adulthood - $currentAge);
 
         $heightOneYearAgo = $oldestRecord ? $oldestRecord->height : 0;
         $countDays = $latestDate->diffInDays($oldestRecord ? $oldestRecord->assessment_date : $latestDate);
@@ -286,8 +293,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $pubertyEndAge = $basePubertyEndAge - $pubertyYears;
         $pubertyEndAge = max($currentAge, $pubertyEndAge);
 
-        // Dự đoán chiều cao trưởng thành theo V1
-        $predictedAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestRecordDateCopy);
+        // Dự đoán chiều cao trưởng thành theo V1 có tính đến số tháng dậy thì
+        $predictedAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestRecordDateCopy, $pubertyMonths);
 
         // Khoảng tuổi hiển thị trên biểu đồ: từ (floor(currentAge) + 1) đến 19 tuổi
         $startAge = (int)floor($currentAge) + 1;
