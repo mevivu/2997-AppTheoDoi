@@ -1,6 +1,7 @@
 <?php
 
 use App\Api\V2\Http\Controllers\Auth\AuthController;
+use App\Api\V2\Http\Controllers\HeightPrediction\HeightPredictionV2Controller;
 use App\Api\V2\Http\Controllers\RatingPQ\RatingPQController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,3 +32,12 @@ Route::prefix('auth')->controller(AuthController::class)
         Route::post('/login-google', 'loginGoogle');
         Route::post('/login-apple', 'loginApple');
     });
+
+// Height Prediction V2: Dự đoán chiều cao & biểu đồ (bắt buộc nhập puberty_months, bỏ đường mục tiêu)
+Route::prefix('height-prediction')->controller(HeightPredictionV2Controller::class)
+    ->as('height-prediction.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/chart', 'chart');
+    });
+

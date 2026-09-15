@@ -14,4 +14,7 @@ interface HeightPredictionServiceInterface
 
     public function chart(Request $request): array;
 
+    public function indexV2(Request $request): array;
+
+    public function chartV2(Request $request): array;
 }
