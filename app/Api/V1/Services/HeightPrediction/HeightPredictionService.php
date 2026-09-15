@@ -598,15 +598,17 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 'is_current' => true,
             ],
         ];
-        // 2. Tính đường DỰ ĐOÁN thô (theo tốc độ tăng trưởng + WHO delta sau dậy thì)
-        $rawPredHeights = [];
-        $tempPrevHeight = $currentHeight;
+        $predictionHeights = [];
+        $prevPredHeight = $currentHeight;
+        $predAtPubertyEnd = $currentHeight + max(0.0, $pubertyEndAge - $currentAge) * $effectiveSpeed;
 
         for ($age = $startAge; $age <= $maxAge; $age++) {
             if ($age < $pubertyEndAge) {
                 $predH = $currentHeight + ($age - $currentAge) * $effectiveSpeed;
             } else {
                 // Sau tuổi hết dậy thì: dùng WHO delta shifted theo pubertyYears
+                // Trẻ dậy thì sớm N năm → đường hậu dậy thì dịch lên N bậc trên bảng WHO
+                // VD: PM=12 (1yr) tại tuổi 15 → dùng WHO delta ở tuổi 16 (shift +1)
                 $shiftedAge = $age + (int)$pubertyYears;
                 $whoDelta = 0.2;
                 if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
@@ -614,43 +616,13 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
                     $whoDelta = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
                 }
-                $predH = $tempPrevHeight + $whoDelta;
+                $predH = $prevPredHeight + $whoDelta;
             }
-            $tempPrevHeight = $predH;
-            $rawPredHeights[$age] = $predH;
-        }
-
-        // Chuẩn hoá đường DỰ ĐOÁN để điểm kết thúc tại maxAge (19 tuổi) khớp chính xác với $predictedAdultHeight (con số dự đoán hiển thị ở màn ngoài)
-        $rawFinalHeight = $rawPredHeights[$maxAge] ?? $currentHeight;
-        $rawGrowth = $rawFinalHeight - $currentHeight;
-        $expectedGrowth = (float)$predictedAdultHeight - $currentHeight;
-        $scaleFactor = ($rawGrowth > 0.01 && $expectedGrowth > 0.01) ? ($expectedGrowth / $rawGrowth) : 1.0;
-
-        $predictionLine = [
-            [
-                'age' => (float)$currentAge,
-                'height' => round($currentHeight, 1),
-                'is_current' => true,
-            ],
-        ];
-        $predictionHeights = [];
-        $prevPredHeight = $currentHeight;
-
-        foreach ($rawPredHeights as $age => $rawH) {
-            if ($expectedGrowth <= 0.01) {
-                $normH = $currentHeight;
-            } elseif ($age == $maxAge) {
-                $normH = (float)$predictedAdultHeight;
-            } else {
-                $normH = $currentHeight + ($rawH - $currentHeight) * $scaleFactor;
-            }
-            // Đảm bảo đơn điệu tăng dần không giảm
-            $normH = max($prevPredHeight, $normH);
-            $prevPredHeight = $normH;
-            $predictionHeights[$age] = $normH;
+            $prevPredHeight = $predH;
+            $predictionHeights[$age] = $predH;
             $predictionLine[] = [
                 'age' => (float)$age,
-                'height' => round($normH, 1),
+                'height' => round($predH, 1),
                 'is_current' => false,
             ];
         }
