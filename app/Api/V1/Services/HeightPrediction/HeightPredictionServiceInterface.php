@@ -12,6 +12,8 @@ interface HeightPredictionServiceInterface
 
     public function calculateMatureHeight($child, $currentHeight, $latestDate, float $pubertyMonths = 0.0): float;
 
+    public function calculateMatureHeightAt19($child, $currentHeight, $latestDate, float $pubertyMonths = 0.0): float;
+
     public function chart(Request $request): array;
 
     public function indexV2(Request $request): array;

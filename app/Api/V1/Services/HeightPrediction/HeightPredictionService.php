@@ -172,6 +172,64 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         return round(($CurrentHeightAttainmentForecast * 0.7) + $responseHeightParent, 0);
     }
 
+    public function calculateMatureHeightAt19($child, $currentHeight, $latestDate, float $pubertyMonths = 0.0): float
+    {
+        $birthday = $child->birthday;
+        $gender = $child->gender;
+        $pubertyYears = round($pubertyMonths / 12);
+        $currentAge = round($latestDate->diffInDays($birthday) / 365.3, 1);
+
+        $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $child->id, $latestDate);
+        $rawSpeed = (float)$resultSpeedHeightChange['height_change'];
+        $increasedHeight = max(0.0, min(7.0, $rawSpeed));
+
+        if ($increasedHeight <= 0) {
+            $whoCurrent = $this->getWho(round($currentAge * 12), $gender);
+            $effectiveSpeed = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
+        } else {
+            $effectiveSpeed = $increasedHeight;
+        }
+
+        $basePubertyEndAge = ($gender == Gender::Male ? 16.0 : 14.0);
+        $pubertyEndAge = $basePubertyEndAge - $pubertyYears;
+        $pubertyEndAge = max($currentAge, $pubertyEndAge);
+
+        $startAge = (int)floor($currentAge) + 1;
+        if ($startAge < 5) {
+            $startAge = 5;
+        }
+        if ($startAge > 18) {
+            $startAge = 18;
+        }
+        $maxAge = 19;
+
+        $whoHeights = [];
+        for ($age = $startAge; $age <= $maxAge + (int)$pubertyYears; $age++) {
+            $month = $age * 12;
+            $who = $this->getWho($month, $gender);
+            $whoHeights[$age] = $who ? (float)$who->height : ($whoHeights[$age - 1] ?? 0.0);
+        }
+
+        $prevPredHeight = $currentHeight;
+        for ($age = $startAge; $age <= $maxAge; $age++) {
+            if ($age < $pubertyEndAge) {
+                $predH = $currentHeight + ($age - $currentAge) * $effectiveSpeed;
+            } else {
+                $shiftedAge = $age + (int)$pubertyYears;
+                $whoDelta = 0.2;
+                if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
+                    $whoDelta = max(0.0, $whoHeights[$shiftedAge] - $whoHeights[$shiftedAge - 1]);
+                } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
+                    $whoDelta = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
+                }
+                $predH = $prevPredHeight + $whoDelta;
+            }
+            $prevPredHeight = $predH;
+        }
+
+        return round($prevPredHeight, 0);
+    }
+
 
     public function calculateSpeedHeightChange($currentHeight, $childId, $latestDate): array
     {
@@ -473,7 +531,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $heightChangeWho = $who ? $who->height_change : 0;
 
         $pubertyMonths = (float)$data['puberty_months'];
-        $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestRecordDateCopy, $pubertyMonths);
+        $predictingAdultHeight = $this->calculateMatureHeightAt19($child, $currentHeight, $latestRecordDateCopy, $pubertyMonths);
 
         $heightWhoCurrent = $who ? round($heightChangeLasted - $who->height, 2) : 0;
         $growthEvaluation = $this->evaluateHeightGrowth($heightChange, $heightChangeWho);
@@ -542,8 +600,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $pubertyEndAge = $basePubertyEndAge - $pubertyYears;
         $pubertyEndAge = max($currentAge, $pubertyEndAge);
 
-        // Dự đoán chiều cao trưởng thành theo V1 có tính đến số tháng dậy thì
-        $predictedAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestRecordDateCopy, $pubertyMonths);
+        // Dự đoán chiều cao trưởng thành khớp với mốc 19 tuổi của phác đồ
+        $predictedAdultHeight = $this->calculateMatureHeightAt19($child, $currentHeight, $latestRecordDateCopy, $pubertyMonths);
 
         // Khoảng tuổi hiển thị trên biểu đồ: từ (floor(currentAge) + 1) đến 19 tuổi
         $startAge = (int)floor($currentAge) + 1;
