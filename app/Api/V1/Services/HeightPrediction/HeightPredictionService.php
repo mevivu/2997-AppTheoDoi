@@ -627,16 +627,69 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             ];
         }
 
-        return [
+        // 3. Tính đường MỤC TIÊU (nếu có target_height)
+        $rawTarget = isset($data['target_height']) && (float)$data['target_height'] > 0
+            ? (float)$data['target_height']
+            : null;
+
+        $targetLine = null;
+        $finalTargetHeight = null;
+
+        if ($rawTarget !== null) {
+            // Không cho mục tiêu nhỏ hơn dự đoán: nếu nhỏ hơn thì lấy bằng dự đoán
+            $finalTargetHeight = max($rawTarget, (float)$predictedAdultHeight);
+
+            $whoStart = $whoCurrentHeight;
+            $whoEnd = isset($whoHeights[$maxAge]) ? $whoHeights[$maxAge] : $whoStart;
+            $whoRange = $whoEnd - $whoStart;
+            if ($whoRange < 1.0) {
+                $whoRange = 1.0; // Tránh chia cho 0
+            }
+            $targetRange = $finalTargetHeight - $currentHeight;
+
+            $targetLine = [
+                [
+                    'age' => (float)$currentAge,
+                    'height' => round($currentHeight, 1),
+                    'is_current' => true,
+                ],
+            ];
+            for ($age = $startAge; $age <= $maxAge; $age++) {
+                $predH = isset($predictionHeights[$age]) ? $predictionHeights[$age] : $prevPredHeight;
+                $whoH = isset($whoHeights[$age]) ? $whoHeights[$age] : $whoEnd;
+
+                // WHO progress: tỷ lệ tăng trưởng WHO tại tuổi này (0 → 1)
+                $whoProgress = ($whoH - $whoStart) / $whoRange;
+                $whoProgress = min(1.0, max(0.0, $whoProgress));
+
+                // Target = currentHeight + targetRange * whoProgress
+                $tgtH = $currentHeight + $targetRange * $whoProgress;
+
+                // Clamp: đường mục tiêu luôn >= đường dự đoán
+                $tgtH = max($tgtH, $predH);
+
+                $targetLine[] = [
+                    'age' => (float)$age,
+                    'height' => round($tgtH, 1),
+                    'is_current' => false,
+                ];
+            }
+        }
+
+        $res = [
             'child' => new ChildResource($child),
             'current_age' => $currentAge,
             'current_height' => $currentHeight,
             'speed_change' => $rawSpeed,
             'predicted_adult_height' => $predictedAdultHeight,
+            'target_height' => $finalTargetHeight,
             'puberty_end_age' => $pubertyEndAge,
             'puberty_months' => $pubertyMonths,
             'prediction_line' => $predictionLine,
             'who_line' => $whoLine,
+            'target_line' => $targetLine,
         ];
+
+        return $res;
     }
 }

@@ -17,6 +17,7 @@ class HeightChartV2Request extends BaseRequest
         return [
             'child_id'       => ['required', 'numeric', new ValidChildPredictHeight()],
             'puberty_months' => ['required', 'numeric', 'min:0', 'max:96'],
+            'target_height'  => ['nullable', 'numeric', 'min:50', 'max:250'],
         ];
     }
 
