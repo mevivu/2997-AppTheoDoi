@@ -10,6 +10,7 @@ use App\Api\V1\Repositories\WeightHeightWho\WhoRepositoryInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Enums\ActiveStatus;
 use App\Enums\User\Gender;
+use App\Models\Bmi;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -732,6 +733,15 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             }
         }
 
+        $regimenAdvice = $this->buildRegimenAdvice(
+            $child,
+            $currentAge,
+            $currentHeight,
+            $latestRecord,
+            $predictedAdultHeight,
+            $finalTargetHeight
+        );
+
         $res = [
             'child' => new ChildResource($child),
             'current_age' => $currentAge,
@@ -744,8 +754,105 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             'prediction_line' => $predictionLine,
             'who_line' => $whoLine,
             'target_line' => $targetLine,
+            'regimen_advice' => $regimenAdvice,
         ];
 
         return $res;
+    }
+
+    /**
+     * Xây dựng nội dung và công thức lời khuyên phác đồ phát triển chiều cao (theo chuẩn file Loi nhan phat do.docx)
+     */
+    protected function buildRegimenAdvice($child, float $currentAge, float $currentHeight, $latestRecord, ?float $predictedAdultHeight, ?float $finalTargetHeight): array
+    {
+        $childName = $child->name ?? ($child->fullname ?? 'bé');
+        $gender = $child->gender;
+        $genderVal = $gender instanceof Gender ? $gender->value : $gender;
+
+        // 1. Tính BMI hiện tại từ bản ghi mới nhất
+        $currentWeight = $latestRecord && $latestRecord->weight ? (float)$latestRecord->weight : 0.0;
+        $currentBmi = 0.0;
+        if ($latestRecord && $latestRecord->bmi) {
+            $currentBmi = (float)$latestRecord->bmi;
+        } elseif ($currentHeight > 0 && $currentWeight > 0) {
+            $currentBmi = round($currentWeight / pow($currentHeight / 100, 2), 1);
+        }
+
+        // 2. Tuổi tính toán tham chiếu bảng WHO BMI
+        $childAgeYears = (int)round($currentAge);
+        if ($childAgeYears < 1) $childAgeYears = 1;
+        if ($childAgeYears > 19) $childAgeYears = 19;
+
+        $bmiStandard = Bmi::where('age', $childAgeYears)
+            ->where('gender', $genderVal)
+            ->where('status', ActiveStatus::Active)
+            ->first();
+
+        if (!$bmiStandard) {
+            $bmiStandard = Bmi::where('age', $childAgeYears)
+                ->where('gender', $genderVal)
+                ->first();
+        }
+
+        $bmiWho = $bmiStandard ? (float)$bmiStandard->z_score_0 : null;
+        $bmiAssessment = 'Đạt chuẩn';
+        $bmiAdvice = 'BMI ở mức trung bình so với bé cùng tuổi và giới tính. Tiếp tục duy trì chế độ ăn đa dạng, vận động phù hợp và thói quen sinh hoạt lành mạnh.';
+
+        if ($bmiStandard && $currentBmi > 0) {
+            if ($currentBmi <= (float)$bmiStandard->z_score_minus_3) {
+                $bmiAssessment = 'Suy dinh dưỡng';
+                $bmiAdvice = 'Bé có nguy cơ thiếu dinh dưỡng, cần chú ý chế độ ăn, sức khỏe và theo dõi tăng trưởng. Nếu tình trạng kéo dài, nên tham khảo bác sĩ hoặc chuyên gia dinh dưỡng..';
+            } elseif ($currentBmi <= (float)$bmiStandard->z_score_minus_2) {
+                $bmiAssessment = 'Quá gầy';
+                $bmiAdvice = 'Cha mẹ nên đảm bảo bé được ăn đủ chất, đa dạng thực phẩm và theo dõi chiều cao, cân nặng định kỳ.';
+            } elseif ($currentBmi <= (float)$bmiStandard->z_score_minus_1) {
+                $bmiAssessment = 'Hơi gầy';
+                $bmiAdvice = 'BMI hơi thấp nhưng vẫn có thể phù hợp với quá trình phát triển của bé. Duy trì chế độ ăn cân đối, vận động và theo dõi tăng trưởng thường xuyên.';
+            } elseif ($currentBmi <= (float)$bmiStandard->z_score_plus_1) {
+                $bmiAssessment = 'Đạt chuẩn';
+                $bmiAdvice = 'BMI ở mức trung bình so với bé cùng tuổi và giới tính. Tiếp tục duy trì chế độ ăn đa dạng, vận động phù hợp và thói quen sinh hoạt lành mạnh.';
+            } elseif ($currentBmi <= (float)$bmiStandard->z_score_plus_2) {
+                $bmiAssessment = 'Hơi béo';
+                $bmiAdvice = 'BMI hơi cao so với mức trung bình. Nên chú ý chất lượng khẩu phần, hạn chế thực phẩm nhiều đường và tăng cường vận động, đồng thời tiếp tục theo dõi tăng trưởng.';
+            } elseif ($currentBmi <= (float)$bmiStandard->z_score_plus_3) {
+                $bmiAssessment = 'Tương đối Béo';
+                $bmiAdvice = 'BMI cao. Bé có nguy cơ thừa cân/béo phì tùy theo độ tuổi. Nên điều chỉnh thói quen ăn uống, tăng vận động và tham khảo chuyên gia nếu cần.';
+            } else {
+                $bmiAssessment = 'Béo phì';
+                $bmiAdvice = 'BMI rất cao. Bé có nguy cơ béo phì cao. Nên được bác sĩ hoặc chuyên gia dinh dưỡng đánh giá để có hướng theo dõi và điều chỉnh phù hợp.';
+            }
+        }
+
+        $displayTarget = $finalTargetHeight ? round($finalTargetHeight) : null;
+        $displayPred = $predictedAdultHeight ? round($predictedAdultHeight) : null;
+
+        return [
+            'child_name' => $childName,
+            'predicted_adult_height' => $displayPred,
+            'target_height' => $displayTarget,
+            'bmi' => $currentBmi > 0 ? $currentBmi : null,
+            'bmi_who' => $bmiWho,
+            'bmi_assessment' => $bmiAssessment,
+            'bmi_advice' => $bmiAdvice,
+            'intro' => "Lộ trình phát triển chiều cao của bạn {$childName} từ hiện tại đến tuổi 19, giúp bố mẹ theo dõi tiến trình và chủ động điều chỉnh mục tiêu theo từng giai đoạn.",
+            'prediction_note' => "Theo dữ liệu hiện tại, chiều cao dự đoán của bạn {$childName} khi trưởng thành là {$displayPred} cm.\nĐây là giá trị dự đoán, được tính dựa trên tốc độ tăng trưởng, yếu tố di truyền và tình trạng phát triển hiện tại của bé. Kết quả có thể thay đổi theo dinh dưỡng, vận động, giấc ngủ và sinh hoạt trong những năm tiếp theo.\nBố mẹ nên cập nhật chiều cao của bé định kỳ, tốt nhất vào đầu mỗi tháng. CHĂM CON 360 sẽ tự động cập nhật lại dự đoán theo dữ liệu mới nhất.",
+            'target_note' => $displayTarget ? "Đây là mục tiêu chiều cao trưởng thành {$displayTarget} cm mà bố mẹ đặt cho bé. Từ mục tiêu này, CHĂM CON 360 phân bổ thành các cột mốc theo từng năm để bố mẹ và bé dễ theo dõi và phấn đấu.\nMục tiêu không cố định. Nếu bé phát triển tốt hơn dự kiến, bố mẹ có thể điều chỉnh mục tiêu cao hơn; nếu tốc độ tăng trưởng chậm lại, có thể điều chỉnh cho phù hợp." : null,
+            'target_header' => $displayTarget ? "Để đạt mục tiêu {$displayTarget} cm bé phải tập trung vào 3 việc: ăn đủ – vận động đều – sinh hoạt đúng:" : "Để phát huy tối đa tiềm năng chiều cao, bé cần tập trung vào 3 việc: ăn đủ – vận động đều – sinh hoạt đúng:",
+            'target_actions' => [
+                [
+                    'title' => '1. Ăn đủ và đa dạng',
+                    'content' => 'Cho con ăn đa dạng, đủ đạm từ thịt, cá, trứng, đậu; bổ sung thêm các thực phẩm giàu canxi như sữa. Kết hợp các loại rau xanh cung cấp đầy đủ các loại Vitamin (D3, K2) và khoáng chất (kẽm, Magie). Không dùng nước ngọt, bánh kẹo và đồ ăn quá nhiều đường.',
+                ],
+                [
+                    'title' => '2. Vận động đều đặn',
+                    'content' => 'Khuyến khích bé vận động khoảng 60 phút mỗi ngày, phù hợp với độ tuổi và thể trạng. Có thể lựa chọn nhảy dây, bóng rổ, cầu lông, bơi lội và các bài tập bổ trợ chiều cao trong CHĂM CON 360. Duy trì đều đặn quan trọng hơn tập một cách quá sức.',
+                ],
+                [
+                    'title' => '3. Ngủ đủ và sinh hoạt lành mạnh',
+                    'content' => 'Khuyến khích bé ngủ sớm trước 22 giờ, ngủ đủ theo độ tuổi 8-10 tiếng/ngày, vui chơi ngoài trời và duy trì tinh thần vui vẻ, thoải mái.',
+                ],
+            ],
+            'bmi_general_note' => 'Trẻ béo hay gầy không chỉ dựa vào cân nặng để đánh giá mà phải dùng chỉ số BMI để đánh giá trẻ đang gầy, đạt chuẩn hay có xu hướng thừa cân. Bé cần duy trì chỉ số BMI hợp lý để giúp chiều cao phát triển tốt hơn.',
+        ];
     }
 }
