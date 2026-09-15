@@ -636,9 +636,9 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $finalTargetHeight = null;
 
         if ($rawTarget !== null) {
-            // Không cho mục tiêu nhỏ hơn dự đoán: nếu nhỏ hơn thì lấy bằng dự đoán
-            $finalTargetHeight = max($rawTarget, (float)$predictedAdultHeight);
             $predMatureHeight = $prevPredHeight ? round($prevPredHeight, 1) : (float)$predictedAdultHeight;
+            // Không cho mục tiêu nhỏ hơn dự đoán: nếu nhỏ hơn thì lấy bằng dự đoán
+            $finalTargetHeight = max($rawTarget, (float)$predMatureHeight);
             $predTotalGrowth = $predMatureHeight - $currentHeight;
             $targetTotalGrowth = $finalTargetHeight - $currentHeight;
 
