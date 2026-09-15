@@ -288,8 +288,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         }
 
         // Tuổi kết thúc dậy thì: Excel formula = basePubertyEndAge - pubertyYears
-        // Nam: kết thúc dậy thì mặc định 16 tuổi | Nữ: 14 tuổi
-        $basePubertyEndAge = ($gender == Gender::Male ? 16.0 : 14.0);
+        // Nam: 16 tuổi | Nữ: 15 tuổi (đồng bộ với calculateMatureHeight)
+        $basePubertyEndAge = ($gender == Gender::Male ? 16.0 : 15.0);
         $pubertyEndAge = $basePubertyEndAge - $pubertyYears;
         $pubertyEndAge = max($currentAge, $pubertyEndAge);
 
@@ -342,6 +342,29 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         }
 
         // 2. Tính đường DỰ ĐOÁN
+        // Đường dự đoán đi từ currentHeight tại currentAge, tăng trưởng theo tiến trình dậy thì,
+        // và hội tụ chính xác về predictedAdultHeight tại mốc 19 tuổi (trưởng thành).
+        $totalGrowth = max(0.0, (float)$predictedAdultHeight - $currentHeight);
+
+        // Tính phần tăng trưởng dư (residual growth) sau tuổi hết dậy thì theo delta WHO
+        $residualGrowth = 0.0;
+        for ($age = (int)ceil($pubertyEndAge); $age <= $maxAge; $age++) {
+            $shiftedAge = $age + (int)$pubertyYears;
+            $d = 0.1;
+            if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
+                $d = max(0.0, $whoHeights[$shiftedAge] - $whoHeights[$shiftedAge - 1]);
+            } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
+                $d = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
+            }
+            $residualGrowth += $d;
+        }
+
+        // Khống chế residual growth tối đa 2.5cm hoặc 20% tổng tăng trưởng còn lại
+        $residualGrowth = min($residualGrowth, min(2.5, $totalGrowth * 0.2));
+        $activeGrowth = $totalGrowth - $residualGrowth;
+        $activeYears = max(0.1, $pubertyEndAge - $currentAge);
+        $activeRate = $activeGrowth / $activeYears;
+
         $predictionLine = [
             [
                 'age' => (float)$currentAge,
@@ -351,24 +374,23 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         ];
         $predictionHeights = [];
         $prevPredHeight = $currentHeight;
-        $predAtPubertyEnd = $currentHeight + max(0.0, $pubertyEndAge - $currentAge) * $effectiveSpeed;
+        $heightAtPubertyEnd = $currentHeight + $activeGrowth;
 
         for ($age = $startAge; $age <= $maxAge; $age++) {
             if ($age < $pubertyEndAge) {
-                $predH = $currentHeight + ($age - $currentAge) * $effectiveSpeed;
+                $predH = $currentHeight + ($age - $currentAge) * $activeRate;
             } else {
-                // Sau tuổi hết dậy thì: dùng WHO delta shifted theo pubertyYears
-                // Trẻ dậy thì sớm N năm → đường hậu dậy thì dịch lên N bậc trên bảng WHO
-                // VD: PM=12 (1yr) tại tuổi 15 → dùng WHO delta ở tuổi 16 (shift +1)
-                $shiftedAge = $age + (int)$pubertyYears;
-                $whoDelta = 0.2;
-                if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
-                    $whoDelta = max(0.0, $whoHeights[$shiftedAge] - $whoHeights[$shiftedAge - 1]);
-                } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
-                    $whoDelta = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
+                if ($age == $maxAge) {
+                    $predH = (float)$predictedAdultHeight;
+                } else {
+                    $span = max(1.0, (float)($maxAge - $pubertyEndAge));
+                    $progress = ($age - $pubertyEndAge) / $span;
+                    $progress = min(1.0, max(0.0, $progress));
+                    $easeProgress = 1.0 - pow(1.0 - $progress, 2);
+                    $predH = $heightAtPubertyEnd + $residualGrowth * $easeProgress;
                 }
-                $predH = $prevPredHeight + $whoDelta;
             }
+            $predH = max($prevPredHeight, min((float)$predictedAdultHeight, $predH));
             $prevPredHeight = $predH;
             $predictionHeights[$age] = $predH;
             $predictionLine[] = [
@@ -537,8 +559,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         }
 
         // Tuổi kết thúc dậy thì: Excel formula = basePubertyEndAge - pubertyYears
-        // Nam: kết thúc dậy thì mặc định 16 tuổi | Nữ: 14 tuổi
-        $basePubertyEndAge = ($gender == Gender::Male ? 16.0 : 14.0);
+        // Nam: 16 tuổi | Nữ: 15 tuổi (đồng bộ với calculateMatureHeight)
+        $basePubertyEndAge = ($gender == Gender::Male ? 16.0 : 15.0);
         $pubertyEndAge = $basePubertyEndAge - $pubertyYears;
         $pubertyEndAge = max($currentAge, $pubertyEndAge);
 
@@ -591,6 +613,29 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         }
 
         // 2. Tính đường DỰ ĐOÁN
+        // Đường dự đoán đi từ currentHeight tại currentAge, tăng trưởng theo tiến trình dậy thì,
+        // và hội tụ chính xác về predictedAdultHeight tại mốc 19 tuổi (trưởng thành).
+        $totalGrowth = max(0.0, (float)$predictedAdultHeight - $currentHeight);
+
+        // Tính phần tăng trưởng dư (residual growth) sau tuổi hết dậy thì theo delta WHO
+        $residualGrowth = 0.0;
+        for ($age = (int)ceil($pubertyEndAge); $age <= $maxAge; $age++) {
+            $shiftedAge = $age + (int)$pubertyYears;
+            $d = 0.1;
+            if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
+                $d = max(0.0, $whoHeights[$shiftedAge] - $whoHeights[$shiftedAge - 1]);
+            } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
+                $d = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
+            }
+            $residualGrowth += $d;
+        }
+
+        // Khống chế residual growth tối đa 2.5cm hoặc 20% tổng tăng trưởng còn lại
+        $residualGrowth = min($residualGrowth, min(2.5, $totalGrowth * 0.2));
+        $activeGrowth = $totalGrowth - $residualGrowth;
+        $activeYears = max(0.1, $pubertyEndAge - $currentAge);
+        $activeRate = $activeGrowth / $activeYears;
+
         $predictionLine = [
             [
                 'age' => (float)$currentAge,
@@ -600,24 +645,23 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         ];
         $predictionHeights = [];
         $prevPredHeight = $currentHeight;
-        $predAtPubertyEnd = $currentHeight + max(0.0, $pubertyEndAge - $currentAge) * $effectiveSpeed;
+        $heightAtPubertyEnd = $currentHeight + $activeGrowth;
 
         for ($age = $startAge; $age <= $maxAge; $age++) {
             if ($age < $pubertyEndAge) {
-                $predH = $currentHeight + ($age - $currentAge) * $effectiveSpeed;
+                $predH = $currentHeight + ($age - $currentAge) * $activeRate;
             } else {
-                // Sau tuổi hết dậy thì: dùng WHO delta shifted theo pubertyYears
-                // Trẻ dậy thì sớm N năm → đường hậu dậy thì dịch lên N bậc trên bảng WHO
-                // VD: PM=12 (1yr) tại tuổi 15 → dùng WHO delta ở tuổi 16 (shift +1)
-                $shiftedAge = $age + (int)$pubertyYears;
-                $whoDelta = 0.2;
-                if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
-                    $whoDelta = max(0.0, $whoHeights[$shiftedAge] - $whoHeights[$shiftedAge - 1]);
-                } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
-                    $whoDelta = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
+                if ($age == $maxAge) {
+                    $predH = (float)$predictedAdultHeight;
+                } else {
+                    $span = max(1.0, (float)($maxAge - $pubertyEndAge));
+                    $progress = ($age - $pubertyEndAge) / $span;
+                    $progress = min(1.0, max(0.0, $progress));
+                    $easeProgress = 1.0 - pow(1.0 - $progress, 2);
+                    $predH = $heightAtPubertyEnd + $residualGrowth * $easeProgress;
                 }
-                $predH = $prevPredHeight + $whoDelta;
             }
+            $predH = max($prevPredHeight, min((float)$predictedAdultHeight, $predH));
             $prevPredHeight = $predH;
             $predictionHeights[$age] = $predH;
             $predictionLine[] = [
