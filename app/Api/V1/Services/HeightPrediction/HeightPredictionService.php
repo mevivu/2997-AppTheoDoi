@@ -448,18 +448,46 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $childId = $data['child_id'];
 
         $child = $this->childRepository->findOrFail($childId);
+        $birthDay = $child->birthday;
+        $gender = $child->gender;
 
         // Lấy bản ghi mới nhất của trẻ
         $latestRecord = $this->repository->getLatestByChildId($childId);
         $latestRecordDateCopy = $latestRecord ? $latestRecord->assessment_date->copy() : Carbon::now();
         $currentHeight = $latestRecord ? $latestRecord->height : 0;
 
+        // Lấy ngày đánh giá mới nhất hoặc ngày hiện tại nếu không có bản ghi
+        $latestDate = $latestRecord ? $latestRecord->assessment_date : Carbon::now();
+        $month = round($birthDay->diffInDays($latestDate) / 30.5);
+
+        // Tính sự thay đổi chiều cao (tốc độ tăng trưởng trong năm qua)
+        $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $childId, $latestDate);
+        $heightChange = $resultSpeedHeightChange['height_change'];
+        $oldestRecord = $resultSpeedHeightChange['oldest_record'];
+        $oldestRecordExists = (bool)$oldestRecord;
+
+        $heightChangeLasted = $latestRecord ? $latestRecord->height : 0;
+
+        // Lấy thông tin WHO cho độ tuổi và giới tính
+        $who = $this->getWho($month, $gender);
+        $heightChangeWho = $who ? $who->height_change : 0;
+
         $pubertyMonths = (float)$data['puberty_months'];
         $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestRecordDateCopy, $pubertyMonths);
 
+        $heightWhoCurrent = $who ? round($heightChangeLasted - $who->height, 2) : 0;
+        $growthEvaluation = $this->evaluateHeightGrowth($heightChange, $heightChangeWho);
+
         return [
+            'oldest_record_exists' => $oldestRecordExists,
+            'speed_change' => $heightChange,
             'predicting_adult_height' => $predictingAdultHeight,
             'puberty_months' => $pubertyMonths,
+            'height_comparison' => [
+                'height_who_current' => $heightWhoCurrent,
+                'is_taller_than_who' => $heightWhoCurrent > 0,
+                'message' => $growthEvaluation['message'],
+            ],
             'child' => new ChildResource($child),
             'is_chart_unlocked' => true,
         ];
