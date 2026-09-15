@@ -108,93 +108,68 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $gender = $child->gender;
         $birthday = $child->birthday;
         $currentHeight = (float)$currentHeight;
-
-        // Tuổi hiện tại (năm)
         $currentAge = round($latestDate->diffInDays($birthday) / 365.3, 1);
-
-        $heightFather = $child->user->father_height ?? 0;
-        $heightMother = $child->user->mother_height ?? 0;
-        $predictedHeightMale = ($heightFather + $heightMother + 13) / 2 + 5;
-        $predictedHeightFemale = ($heightFather + $heightMother - 13) / 2 + 3;
-        $targetGeneticHeight = ($gender == Gender::Male ? $predictedHeightMale : $predictedHeightFemale);
-        if ($targetGeneticHeight <= 50) {
-            $targetGeneticHeight = ($gender == Gender::Male ? 176.5 : 163.2);
-        }
-
-        // 1. DÀNH CHO TRẺ DƯỚI 5 TUỔI:
-        // Trẻ sơ sinh / nhũ nhi chưa vào giai đoạn dậy thì, dự đoán theo gen bố mẹ và mốc 24 tháng
-        if ($currentAge < 5) {
-            $ageCheckMonth = ($gender == Gender::Male ? 24 : 18);
-            $ratingPq = $this->repository->getQueryBuilder()
-                ->where('child_id', $child->id)
-                ->where('age_month', $ageCheckMonth)
-                ->first();
-            if ($ratingPq && $ratingPq->height > 0) {
-                $forecast = $ratingPq->height * 2;
-                return round(($forecast * 0.7) + ($targetGeneticHeight * 0.3), 0);
-            }
-            return round($targetGeneticHeight, 0);
-        }
-
-        // 2. DÀNH CHO TRẺ TỪ 5 TUỔI TRỞ LÊN:
-        // Tính tốc độ tăng trưởng hiện tại
-        $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $child->id, $latestDate);
-        $rawSpeed = (float)$resultSpeedHeightChange['height_change'];
-        $increasedHeight = max(0.0, min(7.0, $rawSpeed));
-
-        // Nếu tốc độ tăng = 0, fallback theo mức tăng trung bình WHO của lứa tuổi hiện tại (giới hạn [4.0, 7.0])
-        if ($increasedHeight <= 0) {
-            $whoCurrent = $this->getWho(round($currentAge * 12), $gender);
-            $whoSpeed = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
-            $effectiveSpeed = max(4.0, min(7.0, $whoSpeed));
-        } else {
-            $effectiveSpeed = $increasedHeight;
-        }
-
-        // Làm tròn số tháng dậy thì thành năm: < 6 tháng = 0 năm, >= 6 tháng = 1 năm, >= 18 tháng = 2 năm, v.v.
         $pubertyYears = round($pubertyMonths / 12);
 
-        // Tuổi kết thúc dậy thì: Excel formula = basePubertyEndAge - pubertyYears
-        // Nam: kết thúc dậy thì mặc định 16 tuổi | Nữ: 14 tuổi
-        $basePubertyEndAge = ($gender == Gender::Male ? 16.0 : 14.0);
-        $pubertyEndAge = $basePubertyEndAge - $pubertyYears;
-        $pubertyEndAge = max($currentAge, $pubertyEndAge);
+        // Chuẩn WHO tại thời điểm hiện tại
+        $whoCurrentRecord = $this->getWho(round($currentAge * 12), $gender);
+        $whoCurrentHeight = $whoCurrentRecord ? (float)$whoCurrentRecord->height : $currentHeight;
+        $deltaWho = $currentHeight - $whoCurrentHeight;
 
-        // Khoảng tuổi: từ (floor(currentAge) + 1) đến 19 tuổi
+        // 1. TRẺ DƯỚI 5 TUỔI: Bám theo kênh tăng trưởng chuẩn WHO (Canalization)
+        // Chiều cao lúc 19 tuổi = WHO[19] + deltaWho
+        if ($currentAge < 5.0) {
+            $who19 = $this->getWho(19 * 12, $gender);
+            $who19H = $who19 ? (float)$who19->height : ($gender == Gender::Male ? 176.5 : 163.2);
+            return round($who19H + $deltaWho, 0);
+        }
+
+        // 2. TRẺ TỪ 5 TUỔI TRỞ LÊN:
+        // Tính tốc độ tăng trưởng thực tế trong năm qua (nếu có)
+        $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $child->id, $latestDate);
+        $rawSpeed = (float)$resultSpeedHeightChange['height_change'];
+        $hasMeasuredSpeed = ($rawSpeed > 0);
+        $speed = max(0.0, min(7.0, $rawSpeed));
+
+        $basePubertyEndAge = ($gender == Gender::Male ? 16.0 : 14.0);
+        $pubertyEndAge = max($currentAge, $basePubertyEndAge - $pubertyYears);
+
         $startAge = (int)floor($currentAge) + 1;
-        if ($startAge < 5) {
-            $startAge = 5;
-        }
-        if ($startAge > 18) {
-            $startAge = 18;
-        }
+        if ($startAge < 5) $startAge = 5;
+        if ($startAge > 18) $startAge = 18;
         $maxAge = 19;
 
-        // Pre-load WHO heights cho các mốc tuổi
+        // Pre-load WHO heights
         $whoHeights = [];
         for ($age = $startAge; $age <= $maxAge + (int)$pubertyYears; $age++) {
             $who = $this->getWho($age * 12, $gender);
             $whoHeights[$age] = $who ? (float)$who->height : ($whoHeights[$age - 1] ?? 0.0);
         }
 
-        $prevPredHeight = $currentHeight;
-        for ($age = $startAge; $age <= $maxAge; $age++) {
-            if ($age < $pubertyEndAge) {
-                $predH = $currentHeight + ($age - $currentAge) * $effectiveSpeed;
-            } else {
-                $shiftedAge = $age + (int)$pubertyYears;
-                $whoDelta = 0.2;
-                if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
-                    $whoDelta = max(0.0, $whoHeights[$shiftedAge] - $whoHeights[$shiftedAge - 1]);
-                } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
-                    $whoDelta = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
+        if ($hasMeasuredSpeed) {
+            $prevPredHeight = $currentHeight;
+            for ($age = $startAge; $age <= $maxAge; $age++) {
+                if ($age < $pubertyEndAge) {
+                    $predH = $currentHeight + ($age - $currentAge) * $speed;
+                } else {
+                    $shiftedAge = $age + (int)$pubertyYears;
+                    $whoDelta = 0.2;
+                    if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
+                        $whoDelta = max(0.0, $whoHeights[$shiftedAge] - $whoHeights[$shiftedAge - 1]);
+                    } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
+                        $whoDelta = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
+                    }
+                    $predH = $prevPredHeight + $whoDelta;
                 }
-                $predH = $prevPredHeight + $whoDelta;
+                $prevPredHeight = $predH;
             }
-            $prevPredHeight = $predH;
+            return round($prevPredHeight, 0);
+        } else {
+            // Chưa có dữ liệu tốc độ: Bám theo kênh WHO
+            $who19 = isset($whoHeights[$maxAge]) ? $whoHeights[$maxAge] : ($gender == Gender::Male ? 176.5 : 163.2);
+            $pubertyPenalty = ($pubertyYears > 0) ? ($pubertyYears * 5.0) : 0.0;
+            return round($who19 + $deltaWho - $pubertyPenalty, 0);
         }
-
-        return round($prevPredHeight, 0);
     }
 
     /**
@@ -399,6 +374,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         // 0. Mốc "Hiện tại"
         $whoCurrentRecord = $this->getWho(round($currentAge * 12), $gender);
         $whoCurrentHeight = $whoCurrentRecord ? (float)$whoCurrentRecord->height : $currentHeight;
+        $deltaWho = $currentHeight - $whoCurrentHeight;
 
         // 1. Lấy đường Chuẩn WHO cho các mốc tuổi
         $whoHeights = [];
@@ -431,7 +407,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             }
         }
 
-        // 2. Tính đường DỰ ĐOÁN
+        // 2. Tính đường DỰ ĐOÁN (Theo mô hình Phác đồ thuần túy)
         $predictionLine = [
             [
                 'age' => (float)$currentAge,
@@ -441,24 +417,11 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         ];
         $predictionHeights = [];
 
-        if ($currentAge < 5) {
-            // Cho trẻ dưới 5 tuổi:
-            // Dự đoán chiều cao trưởng thành theo gen bố mẹ / mốc 24 tháng
-            $predictedAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestRecordDateCopy, $pubertyMonths);
-
-            // Mốc 5 tuổi = currentHeight + độ tăng trưởng WHO từ currentAge đến 5 tuổi
-            $who5 = isset($whoHeights[5]) ? $whoHeights[5] : $whoCurrentHeight;
-            $h5 = $currentHeight + max(0.0, $who5 - $whoCurrentHeight);
-            $whoEnd19 = isset($whoHeights[$maxAge]) ? $whoHeights[$maxAge] : $who5;
-            $whoSpan = max(1.0, $whoEnd19 - $who5);
-            $predSpan = $predictedAdultHeight - $h5;
-
+        if ($currentAge < 5.0) {
+            // Cho trẻ dưới 5 tuổi: Bám theo kênh tăng trưởng chuẩn WHO (Canalization)
             for ($age = $startAge; $age <= $maxAge; $age++) {
-                $whoAtAge = isset($whoHeights[$age]) ? $whoHeights[$age] : $who5;
-                $progress = ($whoAtAge - $who5) / $whoSpan;
-                $progress = min(1.0, max(0.0, $progress));
-                $predH = $h5 + $predSpan * $progress;
-
+                $whoH = isset($whoHeights[$age]) ? $whoHeights[$age] : $whoHeights[$maxAge];
+                $predH = $whoH + $deltaWho;
                 $predictionHeights[$age] = $predH;
                 $predictionLine[] = [
                     'age' => (float)$age,
@@ -468,37 +431,51 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             }
         } else {
             // Cho trẻ từ 5 tuổi trở lên:
-            $prevPredHeight = $currentHeight;
-            for ($age = $startAge; $age <= $maxAge; $age++) {
-                if ($age < $pubertyEndAge) {
-                    $predH = $currentHeight + ($age - $currentAge) * $effectiveSpeed;
-                } else {
-                    // Sau tuổi hết dậy thì: dùng WHO delta shifted theo pubertyYears
-                    // Trẻ dậy thì sớm N năm → đường hậu dậy thì dịch lên N bậc trên bảng WHO
-                    // VD: PM=12 (1yr) tại tuổi 15 → dùng WHO delta ở tuổi 16 (shift +1)
-                    $shiftedAge = $age + (int)$pubertyYears;
-                    $whoDelta = 0.2;
-                    if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
-                        $whoDelta = max(0.0, $whoHeights[$shiftedAge] - $whoHeights[$shiftedAge - 1]);
-                    } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
-                        $whoDelta = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
+            if ($increasedHeight > 0) {
+                // Trẻ có tốc độ tăng trưởng thực tế đo được trong năm qua
+                $prevPredHeight = $currentHeight;
+                for ($age = $startAge; $age <= $maxAge; $age++) {
+                    if ($age < $pubertyEndAge) {
+                        $predH = $currentHeight + ($age - $currentAge) * $effectiveSpeed;
+                    } else {
+                        // Sau tuổi hết dậy thì: dùng WHO delta shifted theo pubertyYears
+                        $shiftedAge = $age + (int)$pubertyYears;
+                        $whoDelta = 0.2;
+                        if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
+                            $whoDelta = max(0.0, $whoHeights[$shiftedAge] - $whoHeights[$shiftedAge - 1]);
+                        } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
+                            $whoDelta = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
+                        }
+                        $predH = $prevPredHeight + $whoDelta;
                     }
-                    $predH = $prevPredHeight + $whoDelta;
+                    $prevPredHeight = $predH;
+                    $predictionHeights[$age] = $predH;
+                    $predictionLine[] = [
+                        'age' => (float)$age,
+                        'height' => round($predH, 1),
+                        'is_current' => false,
+                    ];
                 }
-                $prevPredHeight = $predH;
-                $predictionHeights[$age] = $predH;
-                $predictionLine[] = [
-                    'age' => (float)$age,
-                    'height' => round($predH, 1),
-                    'is_current' => false,
-                ];
+            } else {
+                // Trẻ chưa có dữ liệu tốc độ: Bám theo kênh WHO có trừ hao hụt nếu dậy thì sớm
+                for ($age = $startAge; $age <= $maxAge; $age++) {
+                    $whoH = isset($whoHeights[$age]) ? $whoHeights[$age] : $whoHeights[$maxAge];
+                    $pubertyPenalty = ($pubertyYears > 0 && $age >= $pubertyEndAge) ? ($pubertyYears * 5.0) : 0.0;
+                    $predH = $whoH + $deltaWho - $pubertyPenalty;
+                    $predictionHeights[$age] = $predH;
+                    $predictionLine[] = [
+                        'age' => (float)$age,
+                        'height' => round($predH, 1),
+                        'is_current' => false,
+                    ];
+                }
             }
-
-            // Dự đoán chiều cao trưởng thành (lấy tại mốc 19 tuổi trên đường dự đoán)
-            $predictedAdultHeight = isset($predictionHeights[$maxAge])
-                ? round($predictionHeights[$maxAge], 0)
-                : round($prevPredHeight, 0);
         }
+
+        // Dự đoán chiều cao trưởng thành (lấy tại mốc 19 tuổi trên đường dự đoán)
+        $predictedAdultHeight = isset($predictionHeights[$maxAge])
+            ? round($predictionHeights[$maxAge], 0)
+            : round(end($predictionLine)['height'], 0);
 
         // 3. Tính đường MỤC TIÊU
         // Dùng đường WHO làm "khuôn hình dạng" (shape template):
