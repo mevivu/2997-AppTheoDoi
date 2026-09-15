@@ -401,16 +401,13 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         }
 
         // 3. Tính đường MỤC TIÊU
-        // Dùng đường WHO làm "khuôn hình dạng" (shape template):
-        // Target đi theo hình dạng cong của WHO, co giãn từ currentHeight → targetHeight
-        // → Cong tự nhiên, tăng nhanh khi dậy thì, chậm lại sau dậy thì (giống WHO)
-        $whoStart = $whoCurrentHeight;
-        $whoEnd = isset($whoHeights[$maxAge]) ? $whoHeights[$maxAge] : $whoStart;
-        $whoRange = $whoEnd - $whoStart;
-        if ($whoRange < 1.0) {
-            $whoRange = 1.0; // Tránh chia cho 0
-        }
-        $targetRange = $targetHeight - $currentHeight;
+        // Đường mục tiêu uốn lượn và tăng trưởng theo hình dạng đường DỰ ĐOÁN:
+        // Co giãn tỷ lệ tăng trưởng từ currentHeight -> finalTargetHeight theo tiến trình của đường Dự đoán
+        // Điểm đầu: currentHeight (tại currentAge)
+        // Điểm cuối: finalTargetHeight (tại maxAge = 19)
+        $finalTargetHeight = max($targetHeight, (float)$predictedAdultHeight);
+        $predTotalGrowth = (float)$predictedAdultHeight - $currentHeight;
+        $targetTotalGrowth = $finalTargetHeight - $currentHeight;
 
         $targetLine = [
             [
@@ -421,15 +418,15 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         ];
         for ($age = $startAge; $age <= $maxAge; $age++) {
             $predH = isset($predictionHeights[$age]) ? $predictionHeights[$age] : $prevPredHeight;
-            $whoH = isset($whoHeights[$age]) ? $whoHeights[$age] : $whoEnd;
 
-            // WHO progress: tỷ lệ tăng trưởng WHO tại tuổi này (0 → 1)
-            $whoProgress = ($whoH - $whoStart) / $whoRange;
-            $whoProgress = min(1.0, max(0.0, $whoProgress));
-
-            // Target = currentHeight + targetRange * whoProgress
-            // → Đi theo hình dạng WHO, kết thúc tại targetHeight
-            $tgtH = $currentHeight + $targetRange * $whoProgress;
+            if ($predTotalGrowth > 0.01) {
+                // Tỷ lệ tiến trình tăng trưởng của đường Dự đoán tại mốc tuổi này (0.0 -> 1.0)
+                $predProgress = ($predH - $currentHeight) / $predTotalGrowth;
+                $predProgress = min(1.0, max(0.0, $predProgress));
+                $tgtH = $currentHeight + $targetTotalGrowth * $predProgress;
+            } else {
+                $tgtH = $finalTargetHeight;
+            }
 
             // Clamp: đường mục tiêu luôn >= đường dự đoán
             $tgtH = max($tgtH, $predH);
@@ -448,7 +445,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             'speed_change' => $rawSpeed,
             'predicted_adult_height' => $predictedAdultHeight,
             'puberty_end_age' => $pubertyEndAge,
-            'target_height' => $targetHeight,
+            'target_height' => $finalTargetHeight,
             'puberty_months' => $pubertyMonths,
             'prediction_line' => $predictionLine,
             'who_line' => $whoLine,
@@ -682,14 +679,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         if ($rawTarget !== null) {
             // Không cho mục tiêu nhỏ hơn dự đoán: nếu nhỏ hơn thì lấy bằng dự đoán
             $finalTargetHeight = max($rawTarget, (float)$predictedAdultHeight);
-
-            $whoStart = $whoCurrentHeight;
-            $whoEnd = isset($whoHeights[$maxAge]) ? $whoHeights[$maxAge] : $whoStart;
-            $whoRange = $whoEnd - $whoStart;
-            if ($whoRange < 1.0) {
-                $whoRange = 1.0; // Tránh chia cho 0
-            }
-            $targetRange = $finalTargetHeight - $currentHeight;
+            $predTotalGrowth = (float)$predictedAdultHeight - $currentHeight;
+            $targetTotalGrowth = $finalTargetHeight - $currentHeight;
 
             $targetLine = [
                 [
@@ -700,14 +691,15 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             ];
             for ($age = $startAge; $age <= $maxAge; $age++) {
                 $predH = isset($predictionHeights[$age]) ? $predictionHeights[$age] : $prevPredHeight;
-                $whoH = isset($whoHeights[$age]) ? $whoHeights[$age] : $whoEnd;
 
-                // WHO progress: tỷ lệ tăng trưởng WHO tại tuổi này (0 → 1)
-                $whoProgress = ($whoH - $whoStart) / $whoRange;
-                $whoProgress = min(1.0, max(0.0, $whoProgress));
-
-                // Target = currentHeight + targetRange * whoProgress
-                $tgtH = $currentHeight + $targetRange * $whoProgress;
+                if ($predTotalGrowth > 0.01) {
+                    // Tỷ lệ tiến trình tăng trưởng của đường Dự đoán tại mốc tuổi này (0.0 -> 1.0)
+                    $predProgress = ($predH - $currentHeight) / $predTotalGrowth;
+                    $predProgress = min(1.0, max(0.0, $predProgress));
+                    $tgtH = $currentHeight + $targetTotalGrowth * $predProgress;
+                } else {
+                    $tgtH = $finalTargetHeight;
+                }
 
                 // Clamp: đường mục tiêu luôn >= đường dự đoán
                 $tgtH = max($tgtH, $predH);
