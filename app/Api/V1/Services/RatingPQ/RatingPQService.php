@@ -131,7 +131,7 @@ class RatingPQService implements RatingPQServiceInterface
         $monthCalculate = round($birthday->diffInDays($assessmentDate) / 30.5);
         $ageCalculate = round($birthday->diffInDays($assessmentDate) / 365.3);
         $who = $this->getWho($monthCalculate, $gender);
-        $whoHeight = $who->height;
+        $whoHeight = $who ? $who->height : 0;
         $data['age_month'] = (int)round($monthCalculate);
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
@@ -165,7 +165,7 @@ class RatingPQService implements RatingPQServiceInterface
         $monthCalculate = round($birthday->diffInDays($assessmentDate) / 30.5);
         $ageCalculate = round($birthday->diffInDays($assessmentDate) / 365.3);
         $who = $this->getWho($monthCalculate, $gender);
-        $whoHeight = $who->height;
+        $whoHeight = $who ? $who->height : 0;
         $data['age_month'] = (int)floor($monthCalculate);
         $data['bmi'] = $bmi;
         $data['bmi_result'] = $bmiCategory;
@@ -561,9 +561,10 @@ class RatingPQService implements RatingPQServiceInterface
     public function getWho($month, $gender)
     {
         $genderVal = $gender instanceof Gender ? $gender->value : $gender;
+        $safeMonth = max(0, min((int)$month, 228));
         return $this->whoRepository->getBy(
             [
-                'month' => $month,
+                'month' => $safeMonth,
                 'gender' => $genderVal,
                 'status' => ActiveStatus::Active,
             ]

@@ -36,13 +36,9 @@ class ValidChildAge implements Rule
             return false;
         }
 
-        if ($child->age > 16 && $child->gender == Gender::Male) {
-            $this->errorMessage = 'Tuổi của trẻ nam không được lớn hơn 16';
-            return false;
-        }
-
-        if ($child->age > 15 && $child->gender == Gender::Female) {
-            $this->errorMessage = 'Tuổi của trẻ nữ không được lớn hơn 15';
+        $childAge = $child->age ?? ($child->birthday ? $child->birthday->diffInYears(now()) : 0);
+        if ($childAge > 18) {
+            $this->errorMessage = 'Tuổi của trẻ không được lớn hơn 18';
             return false;
         }
 
