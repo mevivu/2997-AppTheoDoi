@@ -2099,4 +2099,208 @@ return [
             'addClass' => 'text-center align-middle',
         ],
     ],
+    'memo_themes' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'icon' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-photo"></i><span>Ảnh / Icon</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'name' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-file-text"></i><span>Tên chủ đề</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'code' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-code"></i><span>Mã code</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'cards_count' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-cards"></i><span>Số thẻ</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'position' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-sort-ascending"></i><span>Thứ tự</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'memo_cards' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'image' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-photo"></i><span>Hình ảnh</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'name' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-file-text"></i><span>Tên thẻ</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'theme_id' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-palette"></i><span>Chủ đề</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'audio' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-volume"></i><span>Âm thanh</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'memo_age_configs' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'name' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-bookmark"></i><span>Tên mức độ</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'age_range' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Độ tuổi</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'grid_size' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-grid-dots"></i><span>Kích thước lưới</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'total_cards' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-cards"></i><span>Tổng thẻ (Cặp)</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'total_duration' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-clock"></i><span>Thời lượng</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'total_rounds' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-repeat"></i><span>Số lượt</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'memo_ratings' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'child_id' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-user"></i><span>Tên bé</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'theme_id' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-palette"></i><span>Chủ đề</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'age' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Tuổi</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'total_duration_spent' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-clock"></i><span>Thời gian đã dùng</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'total_pairs_matched' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-check"></i><span>Số cặp đúng</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'total_mistakes' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-x"></i><span>Số lần sai</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'score' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-trophy"></i><span>Điểm</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'evaluation_label' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-medal"></i><span>Xếp loại</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'created_at' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar-time"></i><span>Ngày làm</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
 ];
+

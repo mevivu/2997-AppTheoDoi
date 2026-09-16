@@ -40,6 +40,8 @@ class ComponentServiceProvider extends ServiceProvider
         Blade::component('input-gallery-ckfinder', \App\Admin\View\Components\Input\InputGalleryCkfinder::class);
         Blade::component('input-image-ckfinder', \App\Admin\View\Components\Input\InputImageCkfinder::class);
         Blade::component('input-file-ckfinder', \App\Admin\View\Components\Input\InputFileCkfinder::class);
+        Blade::component('input-image', \App\Admin\View\Components\Input\InputImage::class);
+        Blade::component('input-file', \App\Admin\View\Components\Input\InputFile::class);
         Blade::component('input-pick-address', \App\Admin\View\Components\Input\InputPickAddress::class);
         Blade::component('input-pick-address-user', \App\Admin\View\Components\Input\InputPickAddressUser::class);
         Blade::component('input-pick-end-address', \App\Admin\View\Components\Input\InputPickEndAddress::class);

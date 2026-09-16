@@ -358,4 +358,27 @@ class RouteAdminSystem
     const APP_VERSION_STORE = 'admin.app-version.store';
     const APP_VERSION_UPDATE = 'admin.app-version.update';
     const APP_VERSION_DELETE = 'admin.app-version.delete';
+
+    /** MEMO GAME (TRÍ NHỚ) */
+    const MEMO_THEME_INDEX = 'admin.memo-game.theme.index';
+    const MEMO_THEME_CREATE = 'admin.memo-game.theme.create';
+    const MEMO_THEME_EDIT = 'admin.memo-game.theme.edit';
+
+    const MEMO_CARD_INDEX = 'admin.memo-game.card.index';
+    const MEMO_CARD_CREATE = 'admin.memo-game.card.create';
+    const MEMO_CARD_BULK_CREATE = 'admin.memo-game.card.bulkCreate';
+    const MEMO_CARD_EDIT = 'admin.memo-game.card.edit';
+    const MEMO_CARD_UPDATE_POSITION = 'admin.memo-game.card.update_position';
+
+    const MEMO_CONFIG_INDEX = 'admin.memo-game.config.index';
+    const MEMO_CONFIG_CREATE = 'admin.memo-game.config.create';
+    const MEMO_CONFIG_EDIT = 'admin.memo-game.config.edit';
+
+    const MEMO_AGE_CONFIG_INDEX = 'admin.memo-game.config.index';
+    const MEMO_AGE_CONFIG_CREATE = 'admin.memo-game.config.create';
+    const MEMO_AGE_CONFIG_EDIT = 'admin.memo-game.config.edit';
+
+    const MEMO_RATING_INDEX = 'admin.memo-game.rating.index';
+    const MEMO_RATING_SHOW = 'admin.memo-game.rating.show';
 }
+

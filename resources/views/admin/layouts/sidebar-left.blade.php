@@ -46,7 +46,7 @@
     <nav class="sidebar-menu">
         <ul class="menu-list" id="accordionSidebar">
             @foreach ($menu as $index => $item)
-                @if (auth('admin')->user()->checkPermissions($item['permissions']) || in_array('mevivuDev', $item['permissions']))
+                @if (empty($item['permissions']) || auth('admin')->user()->checkPermissions($item['permissions']) || in_array('mevivuDev', $item['permissions']))
                     @php
                         // Determine section headings based on module landmarks
                         $showHeading = null;
@@ -84,7 +84,7 @@
                             if ($hasSub) {
                                 foreach ($item['sub'] as $subItem) {
                                     if ($subItem['routeName'] === $item['routeName']) {
-                                        if (auth('admin')->user()->checkPermissions($subItem['permissions']) || in_array('mevivuDev', $subItem['permissions'])) {
+                                        if (empty($subItem['permissions']) || auth('admin')->user()->checkPermissions($subItem['permissions']) || in_array('mevivuDev', $subItem['permissions'])) {
                                             $parentHref = $routeName($subItem['routeName'], $subItem['param'] ?? []);
                                             break;
                                         }
@@ -92,7 +92,7 @@
                                 }
                                 if ($parentHref === '#') {
                                     foreach ($item['sub'] as $subItem) {
-                                        if (auth('admin')->user()->checkPermissions($subItem['permissions']) || in_array('mevivuDev', $subItem['permissions'])) {
+                                        if (empty($subItem['permissions']) || auth('admin')->user()->checkPermissions($subItem['permissions']) || in_array('mevivuDev', $subItem['permissions'])) {
                                             $parentHref = $routeName($subItem['routeName'], $subItem['param'] ?? []);
                                             break;
                                         }
@@ -135,7 +135,7 @@
                             <div class="submenu-container">
                                 <ul class="submenu-list">
                                     @foreach ($item['sub'] as $subItem)
-                                        @if (auth('admin')->user()->checkPermissions($subItem['permissions']) || in_array('mevivuDev', $subItem['permissions']))
+                                        @if (empty($subItem['permissions']) || auth('admin')->user()->checkPermissions($subItem['permissions']) || in_array('mevivuDev', $subItem['permissions']))
                                             <li class="submenu-item"
                                                 data-title="{{ strtolower(__($subItem['title'])) }}">
                                                 <x-admin-item-link-sidebar-left class="submenu-link"

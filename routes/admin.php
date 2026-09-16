@@ -1026,6 +1026,64 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::put('/edit', 'update')->name('update');
         });
 
+    // Memo Game (Trí nhớ)
+    Route::prefix('/memo-game')->as('memo-game.')->group(function () {
+        // Themes
+        Route::controller(App\Admin\Http\Controllers\Memo\MemoThemeController::class)
+            ->prefix('/theme')
+            ->as('theme.')
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+                Route::put('/edit', 'update')->name('update');
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+        // Cards
+        Route::controller(App\Admin\Http\Controllers\Memo\MemoCardController::class)
+            ->prefix('/card')
+            ->as('card.')
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+                Route::get('/bulk-add', 'bulkCreate')->name('bulkCreate');
+                Route::post('/bulk-add', 'bulkStore')->name('bulkStore');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+                Route::put('/edit', 'update')->name('update');
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+                Route::post('/cap-nhat-thu-tu', 'updatePosition')->name('update_position');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+        // Age Configs
+        Route::controller(App\Admin\Http\Controllers\Memo\MemoAgeConfigController::class)
+            ->prefix('/config')
+            ->as('config.')
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+                Route::put('/edit', 'update')->name('update');
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+
+        // Ratings
+        Route::controller(App\Admin\Http\Controllers\Memo\MemoRatingController::class)
+            ->prefix('/rating')
+            ->as('rating.')
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/show/{id}', 'show')->name('show');
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+    });
 
     //auth
     Route::controller(App\Admin\Http\Controllers\Auth\ProfileController::class)

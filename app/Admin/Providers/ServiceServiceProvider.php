@@ -45,7 +45,10 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\Step\StepServiceInterface' => 'App\Admin\Services\Step\StepService',
         'App\Admin\Services\GooglePlay\GooglePlayServiceInterface' => 'App\Admin\Services\GooglePlay\GooglePlayService',
         'App\Admin\Services\AppleStore\AppleStoreServiceInterface' => 'App\Admin\Services\AppleStore\AppleStoreService',
-
+        'App\Admin\Services\MemoTheme\MemoThemeServiceInterface' => 'App\Admin\Services\MemoTheme\MemoThemeService',
+        'App\Admin\Services\MemoCard\MemoCardServiceInterface' => 'App\Admin\Services\MemoCard\MemoCardService',
+        'App\Admin\Services\MemoAgeConfig\MemoAgeConfigServiceInterface' => 'App\Admin\Services\MemoAgeConfig\MemoAgeConfigService',
+        'App\Admin\Services\MemoRating\MemoRatingServiceInterface' => 'App\Admin\Services\MemoRating\MemoRatingService',
     ];
 
     /**

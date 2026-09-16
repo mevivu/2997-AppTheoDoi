@@ -535,6 +535,43 @@ return [
         'sub' => [],
     ],
     [
+        'title' => 'Memo Game (Trí nhớ)',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-cards"></i>',
+        'roles' => [],
+        'permissions' => ['viewQuiz', 'createQuiz', 'mevivuDev'],
+        'sub' => [
+            [
+                'title' => 'Chủ đề (Xe, Hoa, Số, Cờ)',
+                'routeName' => RouteAdminSystem::MEMO_THEME_INDEX,
+                'icon' => '<i class="ti ti-palette"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuiz', 'createQuiz', 'mevivuDev'],
+            ],
+            [
+                'title' => 'Thư viện thẻ bài',
+                'routeName' => RouteAdminSystem::MEMO_CARD_INDEX,
+                'icon' => '<i class="ti ti-cards"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuiz', 'createQuiz', 'mevivuDev'],
+            ],
+            [
+                'title' => 'Cấu hình độ tuổi & Lưới',
+                'routeName' => RouteAdminSystem::MEMO_CONFIG_INDEX,
+                'icon' => '<i class="ti ti-adjustments"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuiz', 'createQuiz', 'mevivuDev'],
+            ],
+            [
+                'title' => 'Lịch sử bài test',
+                'routeName' => RouteAdminSystem::MEMO_RATING_INDEX,
+                'icon' => '<i class="ti ti-chart-bar"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuiz', 'createQuiz', 'mevivuDev'],
+            ],
+        ],
+    ],
+    [
         'title' => 'Khách hàng',
         'routeName' => null,
         'icon' => '<i class="ti ti-users"></i>',

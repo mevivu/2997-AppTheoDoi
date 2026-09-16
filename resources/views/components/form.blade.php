@@ -1,4 +1,10 @@
-<form {{ $attributes->merge(['action' => $action, 'method' => $marcoMethod()]) }} {{ $isValidate() }}>
+@php
+    $formAttrs = ['action' => $action, 'method' => $marcoMethod()];
+    if ($hasFile || $attributes->get('has-file') || $attributes->get('has_file')) {
+        $formAttrs['enctype'] = 'multipart/form-data';
+    }
+@endphp
+<form {{ $attributes->merge($formAttrs) }} {{ $isValidate() }}>
     
     @unless($type == 'GET')
 

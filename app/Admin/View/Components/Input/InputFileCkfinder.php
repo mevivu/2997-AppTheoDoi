@@ -28,6 +28,6 @@ class InputFileCkfinder extends Input
      */
     public function render()
     {
-        return view('components.input.file');
+        return view('components.input.file-ckfinder');
     }
 }

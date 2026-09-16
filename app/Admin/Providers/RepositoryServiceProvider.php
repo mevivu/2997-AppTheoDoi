@@ -65,8 +65,10 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\AppVersion\AppVersionRepositoryInterface' => 'App\Admin\Repositories\AppVersion\AppVersionRepository',
         'App\Admin\Repositories\Bank\BankRepositoryInterface' => 'App\Admin\Repositories\Bank\BankRepository',
         'App\Admin\Repositories\Children\UnBorn\ChildrenUnBornRepositoryInterface' => 'App\Admin\Repositories\Children\UnBorn\ChildrenUnUnBornRepository',
-
-
+        'App\Admin\Repositories\MemoTheme\MemoThemeRepositoryInterface' => 'App\Admin\Repositories\MemoTheme\MemoThemeRepository',
+        'App\Admin\Repositories\MemoCard\MemoCardRepositoryInterface' => 'App\Admin\Repositories\MemoCard\MemoCardRepository',
+        'App\Admin\Repositories\MemoAgeConfig\MemoAgeConfigRepositoryInterface' => 'App\Admin\Repositories\MemoAgeConfig\MemoAgeConfigRepository',
+        'App\Admin\Repositories\MemoRating\MemoRatingRepositoryInterface' => 'App\Admin\Repositories\MemoRating\MemoRatingRepository',
     ];
 
     /**

@@ -54,7 +54,7 @@ class FileService
     public function upload()
     {
         $path = $this->file->storeAs($this->folder, $this->file->hashName(), $this->disk);
-        $this->instance = $this->folderPrefix . $path;
+        $this->instance = preg_replace('#/+#', '/', Str::finish($this->folderPrefix, '/') . ltrim($path, '/'));
         return $this;
     }
 

@@ -372,6 +372,9 @@ $(document).ready(function () {
 $(document).on('click', '.add-image-ckfinder', function (e) {
     selectImageCKFinder($(this).data('preview'), $(this).data('input'), $(this).data('type'));
 });
+$(document).on('click', '.add-file-ckfinder', function (e) {
+    selectFileCKFinder($(this).data('input'));
+});
 
 
 //thông báo lỗi khi chưa chọn bản ghi để xử lý
