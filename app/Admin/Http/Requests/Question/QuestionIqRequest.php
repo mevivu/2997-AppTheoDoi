@@ -14,6 +14,7 @@ class QuestionIqRequest extends BaseRequest
     {
         $rules = [
             'question.question_type' => ['required', new Enum(QuestionType::class)],
+            'question.question_group_id' => 'required|exists:question_groups,id',
             'question.age' => 'required|numeric',
             'question.question_image' => 'nullable',
             'question.question' => 'required',
@@ -38,6 +39,7 @@ class QuestionIqRequest extends BaseRequest
         $rules = [
             'question.id' => 'required|exists:questions,id',
             'question.question_type' => ['required', new Enum(QuestionType::class)],
+            'question.question_group_id' => 'required|exists:question_groups,id',
             'question.age' => 'required|numeric',
             'question.question' => 'required',
             'question.status' => ['required', new Enum(ActiveStatus::class)],
@@ -62,6 +64,8 @@ class QuestionIqRequest extends BaseRequest
         return [
             'question.question_type.required' => 'Loại câu hỏi không được để trống',
             'question.question_type.enum' => 'Loại câu hỏi không hợp lệ',
+            'question.question_group_id.required' => 'Nhóm câu hỏi không được để trống',
+            'question.question_group_id.exists' => 'Nhóm câu hỏi không tồn tại',
             'question.age.required' => 'Tuổi không được để trống',
             'question.age.numeric' => 'Tuổi phải là số',
             'question.question.required' => 'Câu hỏi không được để trống',

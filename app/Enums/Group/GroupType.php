@@ -31,6 +31,15 @@ enum GroupType: string
     /** Khả năng tự phản hồi */
     case SelfReflection = 'self_reflection';
 
+    /** Ngôn ngữ (IQ) */
+    case Linguistic = 'linguistic';
+    /** Toán học & Logic (IQ) */
+    case LogicMath = 'logic_math';
+    /** Hình ảnh (IQ) */
+    case Visual = 'visual';
+    /** Trí nhớ (IQ) */
+    case Memory = 'memory';
+
     public function badge(): string
     {
         return match ($this) {
@@ -44,6 +53,10 @@ enum GroupType: string
             self::Perseverance => 'bg-cyan',
             self::Positivity => 'bg-lime',
             self::SelfReflection => 'bg-amber',
+            self::Linguistic => 'bg-indigo',
+            self::LogicMath => 'bg-blue',
+            self::Visual => 'bg-azure',
+            self::Memory => 'bg-purple',
         };
     }
 }

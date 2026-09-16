@@ -241,5 +241,21 @@ return [
         GuideType::Strength->value => 'Sức mạnh',
         GuideType::Endurance->value => 'Sức bền',
         GuideType::Develop->value=> 'Phát triển',
+    ],
+    GroupType::class => [
+        GroupType::Empathy->value => 'Đồng cảm',
+        GroupType::Motivation->value => 'Động lực',
+        GroupType::SocialSkills->value => 'Kỹ năng xã hội',
+        GroupType::EmotionalRegulation->value => 'Kiểm soát cảm xúc',
+        GroupType::EmotionalAwareness->value => 'Nhận thức cảm xúc',
+        GroupType::Tolerance->value => 'Khả năng chịu đựng',
+        GroupType::Flexibility->value => 'Tính linh hoạt',
+        GroupType::Perseverance->value => 'Tính kiên trì',
+        GroupType::Positivity->value => 'Tính tích cực',
+        GroupType::SelfReflection->value => 'Khả năng tự phản hồi',
+        GroupType::Linguistic->value => 'Ngôn ngữ',
+        GroupType::LogicMath->value => 'Toán học & Logic',
+        GroupType::Visual->value => 'Hình ảnh',
+        GroupType::Memory->value => 'Trí nhớ',
     ]
 ];

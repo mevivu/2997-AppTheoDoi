@@ -97,6 +97,18 @@ class RatingIQDatable extends BaseDataTable
                     'image' => $rating->badge_image,
                 ])->render();
             },
+            'linguistic' => function ($rating) {
+                return $rating->linguistic ? '<span class="badge bg-indigo-lt fs-13 fw-bold">' . e($rating->linguistic) . '</span>' : '-';
+            },
+            'logic_math' => function ($rating) {
+                return $rating->logic_math ? '<span class="badge bg-blue-lt fs-13 fw-bold">' . e($rating->logic_math) . '</span>' : '-';
+            },
+            'visual' => function ($rating) {
+                return $rating->visual ? '<span class="badge bg-azure-lt fs-13 fw-bold">' . e($rating->visual) . '</span>' : '-';
+            },
+            'memory' => function ($rating) {
+                return $rating->memory ? '<span class="badge bg-purple-lt fs-13 fw-bold">' . e($rating->memory) . '</span>' : '-';
+            },
         ];
     }
 
@@ -127,8 +139,11 @@ class RatingIQDatable extends BaseDataTable
             'parent_code',
             'action',
             'checkbox',
-            'badge_image'
-
+            'badge_image',
+            'linguistic',
+            'logic_math',
+            'visual',
+            'memory',
         ];
     }
 

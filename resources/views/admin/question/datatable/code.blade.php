@@ -1,7 +1,11 @@
-@php use App\Enums\Question\QuestionType; @endphp
-@if ($question_type == QuestionType::IQ->value)
+@php 
+use App\Enums\Question\QuestionType; 
+$isIq = request()->routeIs('admin.question.iq') 
+    || (isset($question_type) && ($question_type == QuestionType::IQ || (is_object($question_type) && $question_type->value == 'iq') || $question_type == 'iq'));
+@endphp
+@if ($isIq)
     <x-link :href="route('admin.question.editIq', $id)" :title="$code"/>
-@elseif($question_type == QuestionType::AQ->value || $question_type == QuestionType::EQ->value)
+@else
     <x-link :href="route('admin.question.editEqAq', $id)" :title="$code"/>
 @endif
 

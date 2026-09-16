@@ -111,11 +111,21 @@ class QuestionController extends Controller
 
     public function createIq()
     {
+        $questionGroupIQ = [
+            GroupType::Linguistic,
+            GroupType::LogicMath,
+            GroupType::Visual,
+            GroupType::Memory,
+        ];
+        $questionGroups = $this->questionGroupRepository
+            ->getByActiveAndTypes(ActiveStatus::Active->value, $questionGroupIQ)
+            ->pluck('name', 'id');
+
         return view($this->view['createIq'], [
             'answer_types' => AnswerType::asSelectArray(),
             'status' => ActiveStatus::asSelectArray(),
             'types' => QuestionType::asSelectArray(),
-            'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
+            'questionGroups' => $questionGroups,
             'breadcrumbs' => $this->crums->add('Danh sách câu hỏi', route($this->route['iq']))->add('Thêm mới'),
             'back' => route('admin.question.iq'),
         ]);
@@ -134,14 +144,24 @@ class QuestionController extends Controller
     public function editIq($id)
     {
         $response = $this->repository->find($id);
-        $type = $response->answers->first()->type->value;
+        $type = $response->answers->first()?->type?->value ?? AnswerType::Normal->value;
+        $questionGroupIQ = [
+            GroupType::Linguistic,
+            GroupType::LogicMath,
+            GroupType::Visual,
+            GroupType::Memory,
+        ];
+        $questionGroups = $this->questionGroupRepository
+            ->getByActiveAndTypes(ActiveStatus::Active->value, $questionGroupIQ)
+            ->pluck('name', 'id');
+
         return view($this->view['editIq'], [
             'response' => $response,
             'type' => $type,
             'answer_types' => AnswerType::asSelectArray(),
             'status' => ActiveStatus::asSelectArray(),
             'types' => QuestionType::asSelectArray(),
-            'questionGroups' => $this->questionGroupRepository->getByQueryBuilder(['status' => ActiveStatus::Active])->pluck('name', 'id'),
+            'questionGroups' => $questionGroups,
             'breadcrumbs' => $this->crums->add('Danh sách câu hỏi IQ', route($this->route['iq']))->add('Cập nhật'),
             'back' => route('admin.question.iq'),
         ]);
@@ -213,11 +233,14 @@ class QuestionController extends Controller
         return back()->with('error', __('notifyFail'));
     }
 
-    public function editEqAq($id): Factory|View|Application
+    public function editEqAq($id): Factory|View|Application|RedirectResponse
     {
         $response = $this->repository->find($id);
+        if ($response && ($response->question_type == QuestionType::IQ || (is_object($response->question_type) && $response->question_type->value == 'iq') || $response->question_type == 'iq')) {
+            return to_route($this->route['editIq'], $id);
+        }
         $questionType = $response->question_type;
-        $type = $response->answers->first()->type->value;
+        $type = $response->answers->first()?->type?->value ?? AnswerType::Normal->value;
         $back = $response->question_type == QuestionType::EQ ? route('admin.question.eq') : route('admin.question.aq');
         $questionGroupAQ = [
             GroupType::Tolerance,

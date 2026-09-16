@@ -29,6 +29,7 @@ class IqQuestionDataTable extends BaseDataTable
             'status' => 'admin.question.datatable.status',
             'checkbox' => 'admin.common.checkbox',
             'question' => 'admin.question.datatable.question',
+            'question_group_id' => 'admin.question.datatable.question_group',
             'answer' => 'admin.question.datatable.answer',
             'code' => 'admin.question.datatable.code',
         ];
@@ -37,7 +38,7 @@ class IqQuestionDataTable extends BaseDataTable
     public function setColumnSearch(): void
     {
 
-        $this->columnAllSearch = [1, 2, 3, 4,5];
+        $this->columnAllSearch = [1, 2, 3, 4, 5];
 
         $this->columnSearchSelect = [
             [
@@ -56,7 +57,8 @@ class IqQuestionDataTable extends BaseDataTable
             [
                 'question_type' => QuestionType::IQ,
                 ['status', '!=', ActiveStatus::Deleted]
-            ]
+            ],
+            ['group']
         );
     }
 
@@ -72,6 +74,9 @@ class IqQuestionDataTable extends BaseDataTable
             'code' => $this->view['code'],
             'checkbox' => $this->view['checkbox'],
             'question' => $this->view['question'],
+            'question_group_id' => function ($query) {
+                return view($this->view['question_group_id'], ['question_group' => $query->group]);
+            },
             'answer' => $this->view['answer'],
             'created_at' => function ($query) {
                 return format_datetime($query->created_at);
@@ -89,6 +94,6 @@ class IqQuestionDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['question', 'action', 'status', 'checkbox','code'];
+        $this->customRawColumns = ['question', 'question_group_id', 'action', 'status', 'checkbox', 'code'];
     }
 }

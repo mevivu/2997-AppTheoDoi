@@ -55,7 +55,15 @@ class Rating extends Model
         /** Tính tích cực */
         'positivity',
         /** Khả năng tự phản hồi */
-        'self_reflection'
+        'self_reflection',
+        /** Ngôn ngữ (IQ) */
+        'linguistic',
+        /** Toán học & Logic (IQ) */
+        'logic_math',
+        /** Hình ảnh (IQ) */
+        'visual',
+        /** Trí nhớ (IQ) */
+        'memory'
     ];
     protected $casts = [
         'type' => QuestionType::class,

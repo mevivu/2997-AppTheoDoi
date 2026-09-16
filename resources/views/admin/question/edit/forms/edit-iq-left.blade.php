@@ -9,8 +9,8 @@
             </h5>
         </div>
         <div class="row card-body p-4 g-3">
-            <!-- Loại câu hỏi & Độ tuổi -->
-            <div class="col-12 col-md-6">
+            <!-- Loại câu hỏi, Nhóm câu hỏi & Độ tuổi -->
+            <div class="col-12 col-md-4">
                 <div class="mb-3">
                     <label class="form-label fw-bold text-muted fs-13 mb-2">
                         <i class="ti ti-category text-primary me-1"></i> {{ __('Loại câu hỏi') }}: <span class="text-danger">*</span>
@@ -25,7 +25,19 @@
                 </div>
             </div>
 
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-4">
+                <div class="mb-3">
+                    <label class="form-label fw-bold"><i class="ti ti-folders text-primary me-1"></i> {{ __('Nhóm câu hỏi') }}: <span class="text-danger">*</span></label>
+                    <x-select name="question[question_group_id]" :required="true">
+                        <x-select-option value="" title="-- Chọn nhóm câu hỏi IQ --" />
+                        @foreach ($questionGroups as $key => $value)
+                            <x-select-option :value="$key" :title="$value" :selected="$response->question_group_id == $key" />
+                        @endforeach
+                    </x-select>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-4">
                 <div class="mb-3">
                     <label class="form-label fw-bold"><i class="ti ti-calendar-event text-primary me-1"></i> {{ __('Độ tuổi phù hợp (Tuổi)') }}: <span class="text-danger">*</span></label>
                     <x-input type="number" min="0" name="question[age]" :value="$response->age" :required="true" placeholder="{{ __('Ví dụ: 6') }}" />

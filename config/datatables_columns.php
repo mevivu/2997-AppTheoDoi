@@ -427,6 +427,26 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false,
         ],
+        'linguistic' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-message"></i><span>Ngôn ngữ</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'logic_math' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calculator"></i><span>Toán & Logic</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'visual' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-eye"></i><span>Hình ảnh</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'memory' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-brain"></i><span>Trí nhớ</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
         'badge_image' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-photo"></i><span>hình ảnh</span></div>',
             'addClass' => 'text-center align-middle',
@@ -690,6 +710,11 @@ return [
         ],
         'question' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-help"></i><span>Câu hỏi</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'question_group_id' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-folders"></i><span>Nhóm câu hỏi</span></div>',
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],

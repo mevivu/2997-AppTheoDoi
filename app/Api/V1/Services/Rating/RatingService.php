@@ -81,11 +81,34 @@ class RatingService implements RatingServiceInterface
         $childId = $data['child_id'];
         $quizId = $data['quiz_id'];
         $quiz = $this->quizRepository->findOrFail($quizId);
-        $totalCount = $quiz->questions()->count();
+        $quizQuestions = $quiz->questions()->with('group')->get();
+        $totalCount = $quizQuestions->count();
         $ratingId = $data['rating_id'];
         $child = $this->childRepository->findOrFail($childId);
         $childName = $child->fullname;
         $type = QuestionType::IQ->value;
+
+        $groupTotals = [
+            'linguistic' => 0,
+            'logic_math' => 0,
+            'visual' => 0,
+            'memory' => 0,
+        ];
+        foreach ($quizQuestions as $q) {
+            if ($q->group) {
+                $gt = is_object($q->group->type) ? $q->group->type->value : $q->group->type;
+                if (isset($groupTotals[$gt])) {
+                    $groupTotals[$gt]++;
+                }
+            }
+        }
+
+        $groupCorrects = [
+            'linguistic' => 0,
+            'logic_math' => 0,
+            'visual' => 0,
+            'memory' => 0,
+        ];
         $correctCount = 0;
         foreach ($answers as $answer) {
             $correct = $this->answerRepository->getByQueryBuilder(
@@ -93,13 +116,26 @@ class RatingService implements RatingServiceInterface
                     'id' => $answer['answer_id'],
                     'question_id' => $answer['question_id'],
                     'is_correct' => true
-                ],
-                ['child']
+                ]
             )->exists();
             if ($correct) {
                 $correctCount++;
+                $q = $quizQuestions->firstWhere('id', $answer['question_id']);
+                if ($q && $q->group) {
+                    $gt = is_object($q->group->type) ? $q->group->type->value : $q->group->type;
+                    if (isset($groupCorrects[$gt])) {
+                        $groupCorrects[$gt]++;
+                    }
+                }
             }
         }
+
+        foreach (['linguistic', 'logic_math', 'visual', 'memory'] as $gk) {
+            $tot = $groupTotals[$gk];
+            $cor = $groupCorrects[$gk];
+            $data[$gk] = $tot > 0 ? "{$cor}/{$tot}" : null;
+        }
+
         $scoreValue = $correctCount * 10;
         $totalValue = $totalCount * 10;
         $result = $totalCount > 0 ? "{$scoreValue}/{$totalValue}" : "0/0";
