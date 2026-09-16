@@ -219,20 +219,36 @@ class QuestionService implements QuestionServiceInterface
     public function actionMultipleRecords(Request $request): bool
     {
         $data = $request->all();
+        $action = $data['action'] ?? '';
+        $ids = $data['id'] ?? [];
 
-        switch ($data['action']) {
+        if (empty($ids) || empty($action)) {
+            return false;
+        }
+
+        if (str_starts_with($action, 'group_')) {
+            $groupId = substr($action, 6);
+            $groupIdVal = ($groupId === 'clear') ? null : (int)$groupId;
+            \App\Models\Question::whereIn('id', $ids)->update(['question_group_id' => $groupIdVal]);
+            return true;
+        }
+
+        switch ($action) {
+            case (string)ActiveStatus::Active->value:
             case ActiveStatus::Active->value:
-                foreach ($data['id'] as $value) {
+                foreach ($ids as $value) {
                     $this->repository->updateAttribute($value, 'status', ActiveStatus::Active);
                 }
                 return true;
+            case (string)ActiveStatus::Draft->value:
             case ActiveStatus::Draft->value:
-                foreach ($data['id'] as $value) {
+                foreach ($ids as $value) {
                     $this->repository->updateAttribute($value, 'status', ActiveStatus::Draft);
                 }
                 return true;
+            case (string)ActiveStatus::Deleted->value:
             case ActiveStatus::Deleted->value:
-                foreach ($data['id'] as $value) {
+                foreach ($ids as $value) {
                     $this->repository->updateAttribute($value, 'status', ActiveStatus::Deleted);
                 }
                 return true;

@@ -13,5 +13,13 @@
         "last": "Last",
         "next": "<i class='ti ti-chevrons-right'></i>",
         "previous": "<i class='ti ti-chevrons-left'></i>"
+    },
+    "buttons": {
+        "pageLength": {
+            "-1": "Hiển thị tất cả bản ghi",
+            "_": "Hiển thị %d bản ghi"
+        },
+        "reset": "Tải lại bảng",
+        "reload": "Tải dữ liệu"
     }
 }

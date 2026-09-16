@@ -72,16 +72,36 @@ class QuestionController extends Controller
             'createAq' => 'admin.question.createAq',
             'editIq' => 'admin.question.editIq',
             'editEqAq' => 'admin.question.editEqAq',
-            'delete' => 'admin.question.delete'
+            'delete' => 'admin.question.delete',
+            'quickUpdateGroup' => 'admin.question.quickUpdateGroup'
         ];
     }
 
     public function iq(IqQuestionDataTable $dataTable)
     {
+        $questionGroupIQ = [
+            GroupType::Linguistic,
+            GroupType::LogicMath,
+            GroupType::Visual,
+            GroupType::Memory,
+        ];
+        $questionGroups = $this->questionGroupRepository
+            ->getByActiveAndTypes(ActiveStatus::Active->value, $questionGroupIQ)
+            ->pluck('name', 'id');
+
+        $actionMultiple = [];
+        foreach ($questionGroups as $id => $name) {
+            $actionMultiple['group_' . $id] = 'Gán nhóm: ' . $name;
+        }
+        $actionMultiple['group_clear'] = 'Bỏ gán nhóm (Chưa phân nhóm)';
+        foreach ($this->getActionMultiple() as $k => $v) {
+            $actionMultiple[$k] = 'Trạng thái: ' . $v;
+        }
+
         return $dataTable->render(
             $this->view['iq'],
             [
-                'actionMultiple' => $this->getActionMultiple(),
+                'actionMultiple' => $actionMultiple,
                 'breadcrumbs' => $this->crums->add('Danh sách câu hỏi IQ'),
             ]
         );
@@ -309,6 +329,39 @@ class QuestionController extends Controller
             return back()->with('success', __('notifySuccess'));
         }
         return back()->with('error', __('notifyFail'));
+    }
+
+    public function quickUpdateGroup(Request $request): JsonResponse
+    {
+        $request->validate([
+            'question_id' => 'required|exists:questions,id',
+            'question_group_id' => 'nullable|exists:question_groups,id',
+        ]);
+
+        try {
+            $question = $this->repository->find($request->input('question_id'));
+            if (!$question) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Không tìm thấy câu hỏi'
+                ], 404);
+            }
+
+            $groupId = $request->input('question_group_id') ?: null;
+            $question->update(['question_group_id' => $groupId]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Đã cập nhật nhóm câu hỏi thành công',
+                'question_id' => $question->id,
+                'question_group_id' => $groupId,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Lỗi khi cập nhật nhóm: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function getQuestionsByType(Request $request): JsonResponse

@@ -378,6 +378,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::put('/edit/iq', 'updateIq')->name('updateIq');
                 Route::put('/edit/aq-eq', 'updateEqAq')->name('updateAqEq');
                 Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+                Route::post('/quick-update-group', 'quickUpdateGroup')->name('quickUpdateGroup');
             });
 
             Route::group(['middleware' => ['permission:deleteQuestionGroup', 'auth:admin']], function () {

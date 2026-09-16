@@ -122,7 +122,10 @@ abstract class BaseDataTable extends DataTable
             'autoWidth' => false,
             // 'searching' => false,
             // 'searchDelay' => 350,
-            // 'lengthMenu' => [ [3, 25, 50, -1], [20, 50, 100, "All"] ],
+            'lengthMenu' => [
+                [10, 25, 50, 100, 250, -1],
+                ['10', '25', '50', '100', '250', 'Tất cả']
+            ],
             'language' => [
                 'url' => asset('/public/libs/datatables/lang/'.trans()->getLocale().'.json')
             ]

@@ -22,6 +22,24 @@ class IqQuestionDataTable extends BaseDataTable
 
     }
 
+    protected ?array $iqQuestionGroups = null;
+
+    protected function getQuestionGroups(): array
+    {
+        if ($this->iqQuestionGroups === null) {
+            $this->iqQuestionGroups = \App\Models\QuestionGroup::whereIn('type', [
+                \App\Enums\Group\GroupType::Linguistic,
+                \App\Enums\Group\GroupType::LogicMath,
+                \App\Enums\Group\GroupType::Visual,
+                \App\Enums\Group\GroupType::Memory,
+            ])
+            ->where('status', ActiveStatus::Active)
+            ->pluck('name', 'id')
+            ->toArray();
+        }
+        return $this->iqQuestionGroups;
+    }
+
     public function setView(): void
     {
         $this->view = [
@@ -37,18 +55,20 @@ class IqQuestionDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-
-        $this->columnAllSearch = [1, 2, 3, 4, 5];
+        $this->columnAllSearch = [1, 2, 3, 4, 5, 6];
 
         $this->columnSearchSelect = [
             [
-                'column' => 4,
+                'column' => 3,
+                'data' => $this->getQuestionGroups()
+            ],
+            [
+                'column' => 5,
                 'data' => ActiveStatus::asSelectArray()
             ],
         ];
 
-        $this->columnSearchDate = [5];
-
+        $this->columnSearchDate = [6];
     }
 
     public function query()
@@ -58,7 +78,7 @@ class IqQuestionDataTable extends BaseDataTable
                 'question_type' => QuestionType::IQ,
                 ['status', '!=', ActiveStatus::Deleted]
             ],
-            ['group']
+            ['group', 'answers']
         );
     }
 
@@ -73,15 +93,42 @@ class IqQuestionDataTable extends BaseDataTable
             'status' => $this->view['status'],
             'code' => $this->view['code'],
             'checkbox' => $this->view['checkbox'],
-            'question' => $this->view['question'],
+            'question' => function ($query) {
+                return view($this->view['question'], [
+                    'id' => $query->id,
+                    'question' => $query->question,
+                    'questionModel' => $query,
+                ]);
+            },
             'question_group_id' => function ($query) {
-                return view($this->view['question_group_id'], ['question_group' => $query->group]);
+                return view($this->view['question_group_id'], [
+                    'question' => $query,
+                    'question_group' => $query->group,
+                    'questionGroups' => $this->getQuestionGroups(),
+                ]);
             },
             'answer' => $this->view['answer'],
             'created_at' => function ($query) {
                 return format_datetime($query->created_at);
             }
 
+        ];
+    }
+
+    protected function setCustomFilterColumns(): void
+    {
+        $this->customFilterColumns = [
+            'question_group_id' => function ($query, $keyword) {
+                if (is_numeric($keyword)) {
+                    $query->where('question_group_id', $keyword);
+                } elseif ($keyword === 'null' || $keyword === 'none') {
+                    $query->whereNull('question_group_id');
+                } else {
+                    $query->whereHas('group', function ($g) use ($keyword) {
+                        $g->where('name', 'like', "%{$keyword}%");
+                    });
+                }
+            },
         ];
     }
 

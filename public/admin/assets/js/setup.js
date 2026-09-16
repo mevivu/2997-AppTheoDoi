@@ -377,10 +377,12 @@ $(document).on('click', '.add-file-ckfinder', function (e) {
 });
 
 
-//thông báo lỗi khi chưa chọn bản ghi để xử lý
-$(document).on('submit', '#formMultiple', function (e) {
+let isFormMultipleConfirmed = false;
 
-    if ($('.check-list:checked').length == 0) {
+// Thông báo lỗi khi chưa chọn bản ghi để xử lý & hiển thị modal popup xác nhận đẹp
+$(document).on('submit', '#formMultiple', function (e) {
+    const checkedCount = $('.check-list:checked').length;
+    if (checkedCount === 0) {
         e.preventDefault();
         $.toast({
             heading: 'Thông báo',
@@ -389,14 +391,109 @@ $(document).on('submit', '#formMultiple', function (e) {
             icon: 'warning'
         });
         endAjax($(this), 'Áp dụng');
-        return;
+        return false;
     }
-    if (!confirm('Bạn có muốn thực hiện?')) {
+
+    const actionValue = $("#bulkActionSelect").val();
+    if (!actionValue && $("#bulkActionSelect").length) {
         e.preventDefault();
-        endAjax($(this), 'Áp dụng');
-        return;
+        $.toast({
+            heading: "Thông báo",
+            text: "Vui lòng chọn hành động muốn thực hiện",
+            position: "top-right",
+            icon: "warning",
+        });
+        endAjax($(this), "Áp dụng");
+        return false;
     }
-})
+
+    if (!isFormMultipleConfirmed) {
+        e.preventDefault();
+
+        const $modal = $("#modalDelete");
+        const actionText = $("#bulkActionSelect option:selected").text().trim() || 'thao tác này';
+        const isDeleteAction = actionValue === '0' || actionValue === 'deleted' || String(actionValue).toLowerCase().includes('delete');
+
+        if ($modal.length) {
+            if (isDeleteAction) {
+                $modal.find(".modal-title").text("Xác nhận xóa hàng loạt?");
+                $modal.find(".modal-desc").text(`Bạn có chắc chắn muốn xóa ${checkedCount} bản ghi đã chọn khỏi hệ thống không?`);
+                
+                const $badge = $modal.find(".modal-icon-badge");
+                if ($badge.length) {
+                    $badge.attr("class", "modal-icon-badge badge-danger");
+                    $badge.find("i").attr("class", "ti ti-trash");
+                }
+
+                const $btnSubmit = $modal.find("#modalFormDelete button[type='submit']");
+                if ($btnSubmit.length) {
+                    $btnSubmit.attr("class", "btn btn-danger").text("Xác nhận xóa");
+                }
+            } else {
+                $modal.find(".modal-title").text("Xác nhận thực hiện?");
+                $modal.find(".modal-desc").text(`Bạn có chắc chắn muốn thực hiện "${actionText}" cho ${checkedCount} bản ghi đã chọn không?`);
+                
+                const $badge = $modal.find(".modal-icon-badge");
+                if ($badge.length) {
+                    $badge.attr("class", "modal-icon-badge badge-primary");
+                    $badge.find("i").attr("class", "ti ti-help-circle");
+                }
+
+                const $btnSubmit = $modal.find("#modalFormDelete button[type='submit']");
+                if ($btnSubmit.length) {
+                    $btnSubmit.attr("class", "btn btn-primary").text("Xác nhận");
+                }
+            }
+
+            // Gắn sự kiện submit cho form modal
+            $("#modalFormDelete").off("submit.bulkSubmit").on("submit.bulkSubmit", function (evt) {
+                evt.preventDefault();
+                isFormMultipleConfirmed = true;
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    var bsModal = bootstrap.Modal.getOrCreateInstance($modal[0]);
+                    bsModal.hide();
+                } else {
+                    $modal.modal("hide");
+                }
+                $("#formMultiple").submit();
+            });
+
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                var bsModal = bootstrap.Modal.getOrCreateInstance($modal[0]);
+                bsModal.show();
+            } else {
+                $modal.modal("show");
+            }
+        } else if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: isDeleteAction ? 'Xác nhận xóa hàng loạt?' : 'Xác nhận thực hiện?',
+                text: isDeleteAction ? `Bạn có chắc chắn muốn xóa ${checkedCount} bản ghi đã chọn?` : `Bạn có chắc chắn muốn thực hiện "${actionText}" cho ${checkedCount} bản ghi đã chọn?`,
+                icon: isDeleteAction ? 'warning' : 'question',
+                showCancelButton: true,
+                confirmButtonColor: isDeleteAction ? '#d63939' : '#206bc4',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: isDeleteAction ? 'Xác nhận xóa' : 'Xác nhận',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    isFormMultipleConfirmed = true;
+                    $("#formMultiple").submit();
+                }
+            });
+        } else {
+            if (confirm(`Bạn có muốn thực hiện "${actionText}" cho ${checkedCount} bản ghi đã chọn?`)) {
+                isFormMultipleConfirmed = true;
+                $("#formMultiple").submit();
+            }
+        }
+
+        endAjax($(this), 'Áp dụng');
+        return false;
+    }
+
+    // Reset cờ sau khi submit
+    isFormMultipleConfirmed = false;
+});
 
 //check all
 $(document).on('click', '.check-all', function (e) {
@@ -427,6 +524,22 @@ $(document).on('click', '.check-list', function (e) {
 $(document).on('click', '.open-modal-delete', function () {
     var form = $("#modalFormDelete"), action = $(this).data('route');
     form.attr('action', action);
+
+    var modal = $("#modalDelete");
+    modal.find(".modal-title").text("Bạn có chắc?");
+    modal.find(".modal-desc").text("Nếu bạn tiếp tục, dữ liệu này sẽ bị xóa khỏi hệ thống.");
+    
+    var submitBtn = modal.find("#modalFormDelete button[type='submit']");
+    submitBtn.text("Xác nhận xóa");
+    submitBtn.attr("class", "btn btn-danger");
+
+    var iconBadge = modal.find(".modal-icon-badge");
+    iconBadge.attr("class", "modal-icon-badge badge-danger");
+
+    var iconElement = iconBadge.find("i");
+    iconElement.attr("class", "ti ti-trash");
+
+    $("#modalFormDelete").off("submit.bulkSubmit");
 });
 
 $(document).on('click', '.open-modal-force-delete', function () {
