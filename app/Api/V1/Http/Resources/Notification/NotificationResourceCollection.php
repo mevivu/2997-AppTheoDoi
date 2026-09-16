@@ -31,8 +31,8 @@ class NotificationResourceCollection extends ResourceCollection
                     'title' => $item->title,
                     'message' => $item->message,
                     'status' => $statusVal,
-                    'created_at' => Carbon::parse($item->created_at)->format('d-m-Y H:i:s'),
-                    'user' => $item->user->fullname,
+                    'created_at' => $item->created_at ? Carbon::parse($item->created_at)->format('d-m-Y H:i:s') : null,
+                    'user' => $item->user?->fullname ?? '',
                 ];
                 return $data;
             }),

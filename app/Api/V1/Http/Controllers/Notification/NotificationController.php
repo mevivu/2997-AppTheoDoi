@@ -79,6 +79,10 @@ class NotificationController extends Controller
     public function index(NotificationRequest $request): JsonResponse
     {
         try {
+            $userId = $this->getCurrentUserId();
+            if (!$userId) {
+                return $this->jsonResponseError('Vui lòng đăng nhập để xem thông báo.', 401);
+            }
             $response = $this->service->getNotificationByUser($request);
             if ($response) {
                 return $this->jsonResponseSuccess(new NotificationResourceCollection($response));
@@ -86,7 +90,7 @@ class NotificationController extends Controller
                 return $this->jsonResponseError('Get user notifications failed', 500);
             }
 
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $this->logError('Get user notifications failed:', $e);
             return $this->jsonResponseError('Get user notifications failed', 500);
         }

@@ -15,8 +15,7 @@ trait AuthServiceApi
 
     public function getCurrentUserId()
     {
-
-        return auth(self::$GUARD_API)->user()->id;
+        return auth(self::$GUARD_API)->user()?->id;
     }
 
     public function getCurrentUser(): ?Authenticatable
@@ -26,7 +25,7 @@ trait AuthServiceApi
 
     public function getCurrentStoreId()
     {
-        return auth(self::$GUARD_API_STORE)->user()->id;
+        return auth(self::$GUARD_API_STORE)->user()?->id;
     }
 
     public function getCurrentStoreUser(): ?Authenticatable
