@@ -16,6 +16,9 @@ class QuestionGroupRepository extends EloquentRepository implements QuestionGrou
     {
         return QuestionGroup::where('status', $status)
             ->whereIn('type', $types)
-            ->get();
+            ->get()
+            ->unique(function ($item) {
+                return is_object($item->type) ? $item->type->value : $item->type;
+            });
     }
 }

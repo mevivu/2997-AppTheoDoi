@@ -43,7 +43,10 @@ class InputImage extends Input
 
     protected function resolveDisplayUrl(?string $value, string $default): array
     {
-        $defaultUrl = asset(ltrim($default, '/'));
+        $cleanDefault = ltrim(preg_replace('#^/?public/#', '', $default), '/');
+        $filePath = public_path($cleanDefault);
+        $v = file_exists($filePath) ? '?v=' . filemtime($filePath) : '';
+        $defaultUrl = asset(ltrim($default, '/')) . $v;
 
         if (empty($value) || $value === $default) {
             return ['url' => $defaultUrl, 'is_default' => true];

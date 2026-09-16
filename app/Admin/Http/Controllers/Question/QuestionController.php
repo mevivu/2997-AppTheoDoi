@@ -87,6 +87,9 @@ class QuestionController extends Controller
         ];
         $questionGroups = $this->questionGroupRepository
             ->getByActiveAndTypes(ActiveStatus::Active->value, $questionGroupIQ)
+            ->unique(function ($item) {
+                return is_object($item->type) ? $item->type->value : $item->type;
+            })
             ->pluck('name', 'id');
 
         $actionMultiple = [];

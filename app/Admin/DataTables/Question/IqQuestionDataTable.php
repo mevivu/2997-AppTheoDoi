@@ -34,6 +34,10 @@ class IqQuestionDataTable extends BaseDataTable
                 \App\Enums\Group\GroupType::Memory,
             ])
             ->where('status', ActiveStatus::Active)
+            ->get()
+            ->unique(function ($item) {
+                return is_object($item->type) ? $item->type->value : $item->type;
+            })
             ->pluck('name', 'id')
             ->toArray();
         }
