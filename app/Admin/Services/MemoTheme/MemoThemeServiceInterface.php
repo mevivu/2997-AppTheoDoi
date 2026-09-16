@@ -10,5 +10,7 @@ interface MemoThemeServiceInterface
 
     public function update(Request $request);
 
+    public function updatePosition(Request $request): bool;
+
     public function actionMultipleRecords(Request $request): bool;
 }

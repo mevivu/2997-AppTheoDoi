@@ -363,6 +363,7 @@ class RouteAdminSystem
     const MEMO_THEME_INDEX = 'admin.memo-game.theme.index';
     const MEMO_THEME_CREATE = 'admin.memo-game.theme.create';
     const MEMO_THEME_EDIT = 'admin.memo-game.theme.edit';
+    const MEMO_THEME_UPDATE_POSITION = 'admin.memo-game.theme.update_position';
 
     const MEMO_CARD_INDEX = 'admin.memo-game.card.index';
     const MEMO_CARD_CREATE = 'admin.memo-game.card.create';

@@ -72,8 +72,11 @@ class MemoThemeController extends Controller
     public function edit($id)
     {
         $response = $this->repository->findOrFail($id);
+        $allThemes = $this->repository->getAllByPosition();
+
         return view($this->view['edit'], [
             'response' => $response,
+            'allThemes' => $allThemes,
             'status' => ActiveStatus::asSelectArray(),
             'breadcrumbs' => $this->crums->add('Memo Game: Chủ đề', route($this->route['index']))->add('Cập nhật'),
         ]);
@@ -83,6 +86,24 @@ class MemoThemeController extends Controller
     {
         $this->service->update($request);
         return back()->with('success', __('notifySuccess'));
+    }
+
+    public function updatePosition(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $boolean = $this->service->updatePosition($request);
+        if ($boolean) {
+            return response()->json([
+                'status' => 200,
+                'success' => true,
+                'message' => __('Cập nhật thứ tự các chủ đề thành công!')
+            ]);
+        }
+
+        return response()->json([
+            'status' => 400,
+            'success' => false,
+            'message' => __('Cập nhật thứ tự chủ đề thất bại, vui lòng thử lại.')
+        ], 400);
     }
 
     public function delete($id): RedirectResponse

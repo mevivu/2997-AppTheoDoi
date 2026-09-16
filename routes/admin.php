@@ -1040,6 +1040,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::get('/edit/{id}', 'edit')->name('edit');
                 Route::put('/edit', 'update')->name('update');
                 Route::delete('/delete/{id}', 'delete')->name('delete');
+                Route::post('/cap-nhat-thu-tu', 'updatePosition')->name('update_position');
                 Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
             });
 

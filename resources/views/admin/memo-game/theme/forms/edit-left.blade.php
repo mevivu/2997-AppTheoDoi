@@ -1,4 +1,4 @@
-<div class="col-12 col-md-8 col-xl-9">
+<div class="col-12 col-lg-8">
     <div class="card custom-shadow">
         <div class="card-header">
             <h4 class="card-title mb-0">{{ __('Thông tin Chủ đề') }}</h4>

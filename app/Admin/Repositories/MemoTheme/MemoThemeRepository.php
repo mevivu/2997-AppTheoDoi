@@ -20,4 +20,22 @@ class MemoThemeRepository extends EloquentRepository implements MemoThemeReposit
             ->orderBy('position', 'asc')
             ->get();
     }
+
+    public function getAllByPosition()
+    {
+        return $this->model->withCount('cards')
+            ->orderBy('position', 'asc')
+            ->orderBy('id', 'asc')
+            ->get();
+    }
+
+    public function updatePosition(array $positions): bool
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($positions) {
+            foreach ($positions as $index => $id) {
+                $this->model->where('id', $id)->update(['position' => $index + 1]);
+            }
+            return true;
+        });
+    }
 }

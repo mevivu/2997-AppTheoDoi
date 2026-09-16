@@ -88,6 +88,16 @@ class MemoThemeService implements MemoThemeServiceInterface
         return $this->repository->update($data['id'], $data);
     }
 
+    public function updatePosition(Request $request): bool
+    {
+        $positions = $request->input('positions', []);
+        if (empty($positions) || !is_array($positions)) {
+            return false;
+        }
+
+        return $this->repository->updatePosition($positions);
+    }
+
     public function actionMultipleRecords(Request $request): bool
     {
         $data = $request->all();
