@@ -441,12 +441,7 @@
                 });
             }
 
-            // 8. Print / Xuất Phác Đồ handler
-            $(document).on('click', '#btn-print-phac-do', function() {
-                window.print();
-            });
-
-            // 9. Debug Dữ Liệu & Công Thức Modal Handlers
+            // 8. Debug Dữ Liệu & Công Thức Modal Handlers
             var latestDebugData = null;
 
             $('#btn-open-debug-modal').on('click', function() {

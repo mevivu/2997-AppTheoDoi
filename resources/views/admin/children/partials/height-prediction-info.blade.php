@@ -58,9 +58,6 @@
                 <button type="button" class="btn btn-outline-info btn-sm rounded-2 px-3 fw-normal" id="btn-open-debug-modal" data-bs-toggle="modal" data-bs-target="#modal-debug-height-v2">
                     <i class="ti ti-bug me-1"></i> {{ __('Debug Dữ Liệu & Công Thức') }}
                 </button>
-                <button type="button" class="btn btn-outline-secondary btn-sm rounded-2 px-3 fw-normal" id="btn-print-phac-do">
-                    <i class="ti ti-printer me-1 text-muted"></i> {{ __('In / Xuất Phác Đồ') }}
-                </button>
             </div>
         </div>
 
