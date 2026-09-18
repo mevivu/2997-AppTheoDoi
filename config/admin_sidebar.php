@@ -569,6 +569,13 @@ return [
                 'roles' => [],
                 'permissions' => ['viewQuiz', 'createQuiz', 'mevivuDev'],
             ],
+            [
+                'title' => 'Chơi thử Game',
+                'routeName' => RouteAdminSystem::MEMO_PLAY_INDEX,
+                'icon' => '<i class="ti ti-device-gamepad-2"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuiz', 'createQuiz', 'mevivuDev'],
+            ],
         ],
     ],
     [

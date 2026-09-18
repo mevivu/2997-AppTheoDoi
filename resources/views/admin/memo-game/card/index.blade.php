@@ -18,6 +18,11 @@
                     :addTitle="__('Thêm 1 thẻ mới')"
                 >
                     <x-slot:actions>
+                        <a href="{{ route('admin.memo-game.play.index') }}"
+                           class="btn btn-outline-success me-2">
+                            <i class="ti ti-device-gamepad-2 fs-16 me-1"></i>
+                            <span>{{ __('Chơi thử Game') }}</span>
+                        </a>
                         <a href="{{ route('admin.memo-game.card.bulkCreate') }}"
                            class="btn-memo-bulk">
                             <i class="ti ti-cloud-upload fs-16"></i>

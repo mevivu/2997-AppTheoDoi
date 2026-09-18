@@ -381,5 +381,9 @@ class RouteAdminSystem
 
     const MEMO_RATING_INDEX = 'admin.memo-game.rating.index';
     const MEMO_RATING_SHOW = 'admin.memo-game.rating.show';
+
+    const MEMO_PLAY_INDEX = 'admin.memo-game.play.index';
+    const MEMO_PLAY_DATA = 'admin.memo-game.play.data';
+    const MEMO_PLAY_SUBMIT = 'admin.memo-game.play.submit';
 }
 

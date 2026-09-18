@@ -1088,6 +1088,16 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
                 Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
             });
+
+        // Chơi thử Game (Play / Test Mode)
+        Route::controller(App\Admin\Http\Controllers\Memo\MemoPlayController::class)
+            ->prefix('/play')
+            ->as('play.')
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/data', 'getGameData')->name('data');
+                Route::post('/submit', 'submitResult')->name('submit');
+            });
     });
 
     //auth
