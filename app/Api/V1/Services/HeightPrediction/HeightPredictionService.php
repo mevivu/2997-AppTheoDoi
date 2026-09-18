@@ -132,7 +132,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         } else {
             $increasedHeight = ($currentHeight - $heightOneYearAgo) * (365.3 / $countDays);
         }
-        $increasedHeight = max(0, min(7, $increasedHeight));
+        $increasedHeight = max(0.0, min(6.5, (float)$increasedHeight));
 
 
         $adultHeightPrediction = $predictAdulthood * $increasedHeight;
@@ -182,11 +182,12 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $child->id, $latestDate);
         $rawSpeed = (float)$resultSpeedHeightChange['height_change'];
-        $increasedHeight = max(0.0, min(7.0, $rawSpeed));
+        $increasedHeight = max(0.0, min(6.5, $rawSpeed));
 
         if ($increasedHeight <= 0) {
             $whoCurrent = $this->getWho(round($currentAge * 12), $gender);
-            $effectiveSpeed = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
+            $rawFallback = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
+            $effectiveSpeed = max(0.0, min(6.5, $rawFallback));
         } else {
             $effectiveSpeed = $increasedHeight;
         }
@@ -336,12 +337,13 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         // Tính tốc độ tăng trưởng hiện tại
         $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $childId, $latestDate);
         $rawSpeed = (float)$resultSpeedHeightChange['height_change'];
-        $increasedHeight = max(0.0, min(7.0, $rawSpeed));
+        $increasedHeight = max(0.0, min(6.5, $rawSpeed));
 
         // Nếu tốc độ tăng = 0, fallback theo mức tăng trung bình WHO của lứa tuổi hiện tại
         if ($increasedHeight <= 0) {
             $whoCurrent = $this->getWho(round($currentAge * 12), $gender);
-            $effectiveSpeed = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
+            $rawFallback = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
+            $effectiveSpeed = max(0.0, min(6.5, $rawFallback));
         } else {
             $effectiveSpeed = $increasedHeight;
         }
@@ -585,12 +587,13 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         // Tính tốc độ tăng trưởng hiện tại
         $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $childId, $latestDate);
         $rawSpeed = (float)$resultSpeedHeightChange['height_change'];
-        $increasedHeight = max(0.0, min(7.0, $rawSpeed));
+        $increasedHeight = max(0.0, min(6.5, $rawSpeed));
 
         // Nếu tốc độ tăng = 0, fallback theo mức tăng trung bình WHO của lứa tuổi hiện tại
         if ($increasedHeight <= 0) {
             $whoCurrent = $this->getWho(round($currentAge * 12), $gender);
-            $effectiveSpeed = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
+            $rawFallback = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
+            $effectiveSpeed = max(0.0, min(6.5, $rawFallback));
         } else {
             $effectiveSpeed = $increasedHeight;
         }

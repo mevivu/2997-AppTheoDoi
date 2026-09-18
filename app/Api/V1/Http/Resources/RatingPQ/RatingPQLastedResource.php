@@ -90,7 +90,7 @@ class RatingPQLastedResource extends JsonResource
             ->first();
         $heightOneYearAgo = $oldestRecord ? $oldestRecord->height : 0;
         $increasedHeight = $currentHeight - $heightOneYearAgo;
-        $increasedHeight = max(0, min(7, $increasedHeight));
+        $increasedHeight = max(0.0, min(6.5, (float)$increasedHeight));
         $adultHeightPrediction = $predictAdulthood * $increasedHeight;
 
 
