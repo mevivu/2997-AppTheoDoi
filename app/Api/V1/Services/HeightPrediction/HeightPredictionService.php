@@ -908,23 +908,22 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         }
 
         $currentDaysLived = $birthday ? $latestDate->diffInDays($birthday) : 0;
-        $currentAge = $birthday ? round($currentDaysLived / 365.3, 2) : 5.0;
+        $currentAge = $birthday ? round($currentDaysLived / 365.3, 1) : 5.0;
         $currentAgeMonth = round($currentAge * 12);
 
         // Tính tốc độ tăng trưởng
-        $oneYearBefore = $latestDate->copy()->subYear();
-        $oldestRecord = $this->repository->getRecordInDateRange($childId, $oneYearBefore, $latestDate, true);
+        $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $childId, $latestDate);
+        $rawSpeed = (float)$resultSpeedHeightChange['height_change'];
+        $oldestRecord = $resultSpeedHeightChange['oldest_record'];
         $countDays = $latestDate->diffInDays($oldestRecord ? $oldestRecord->assessment_date : $latestDate);
         $oldestHeight = $oldestRecord ? (float)$oldestRecord->height : 0.0;
         $rawHeightDiff = round($currentHeight - $oldestHeight, 2);
 
-        $rawSpeedAnnualized = 0.0;
+        $rawSpeedAnnualized = $rawSpeed;
         $speedFormula = '';
         if ($countDays > 0 && $oldestRecord) {
-            $rawSpeedAnnualized = round($rawHeightDiff * (365.3 / $countDays), 2);
             $speedFormula = "({$currentHeight} - {$oldestHeight}) x (365.3 / {$countDays} ngày) = {$rawSpeedAnnualized} cm/năm";
         } elseif ($oldestRecord) {
-            $rawSpeedAnnualized = $rawHeightDiff;
             $speedFormula = "{$currentHeight} - {$oldestHeight} = {$rawSpeedAnnualized} cm/năm";
         } else {
             $speedFormula = "Chưa có bản ghi PQ cách 1 năm -> Tốc độ = 0 cm/năm";
@@ -948,7 +947,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $pubertyYears = round($pubertyMonths / 12);
         $basePubertyEndAge = ($genderVal == 1 ? 16.0 : 14.0);
         $pubertyEndAge = max($currentAge, $basePubertyEndAge - $pubertyYears);
-        $yearsRemainingInPuberty = max(0.0, round($pubertyEndAge - $currentAge, 2));
+        $yearsRemainingInPuberty = max(0.0, round($pubertyEndAge - $currentAge, 1));
         $predictedPubertyGrowth = round($yearsRemainingInPuberty * $effectiveSpeed, 1);
 
         // Vòng lặp mô phỏng tăng trưởng theo tuổi (Tuổi hiện tại -> 19)
