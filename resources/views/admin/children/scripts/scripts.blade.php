@@ -87,22 +87,22 @@
                     }
                 ];
 
-                var colors = ['#ea580c', '#0284c7'];
-                var strokeDash = [0, 5];
+                var colors = ['#d97706', '#64748b'];
+                var strokeDash = [0, 4];
 
                 if (hasTarget) {
                     series.push({
                         name: 'Mục tiêu phác đồ',
                         data: targetSeries
                     });
-                    colors.push('#dc2626');
+                    colors.push('#e05263');
                     strokeDash.push(0);
                 }
 
                 var options = {
                     series: series,
                     chart: {
-                        height: 420,
+                        height: 390,
                         type: 'line',
                         toolbar: {
                             show: true,
@@ -119,21 +119,21 @@
                         animations: {
                             enabled: true,
                             easing: 'easeinout',
-                            speed: 600
+                            speed: 500
                         },
                         fontFamily: 'inherit'
                     },
                     colors: colors,
                     stroke: {
-                        width: [3.5, 2.5, 3.5],
+                        width: [2.5, 2.0, 2.5],
                         curve: 'smooth',
                         dashArray: strokeDash
                     },
                     markers: {
-                        size: [5, 4, 5],
-                        strokeWidth: 2,
+                        size: [4, 3, 4],
+                        strokeWidth: 1.5,
                         hover: {
-                            size: 7
+                            size: 6
                         }
                     },
                     dataLabels: {
@@ -141,15 +141,15 @@
                         formatter: function(val) {
                             return val ? Math.round(val) + '' : '';
                         },
-                        offsetY: -7,
+                        offsetY: -6,
                         style: {
-                            fontSize: '11px',
-                            fontWeight: 600
+                            fontSize: '10px',
+                            fontWeight: 500
                         },
                         background: {
                             enabled: true,
-                            padding: 3,
-                            borderRadius: 4,
+                            padding: 2,
+                            borderRadius: 3,
                             opacity: 0.85
                         }
                     },
@@ -157,8 +157,9 @@
                         categories: categories,
                         labels: {
                             style: {
-                                fontSize: '11.5px',
-                                fontWeight: 600
+                                fontSize: '11px',
+                                fontWeight: 500,
+                                colors: '#64748b'
                             }
                         },
                         axisBorder: {
@@ -170,19 +171,24 @@
                         title: {
                             text: 'Chiều cao (cm)',
                             style: {
-                                fontSize: '12px',
-                                fontWeight: 600
+                                fontSize: '11px',
+                                fontWeight: 500,
+                                color: '#94a3b8'
                             }
                         },
                         labels: {
                             formatter: function(val) {
                                 return Math.round(val) + ' cm';
+                            },
+                            style: {
+                                fontSize: '11px',
+                                colors: '#94a3b8'
                             }
                         }
                     },
                     grid: {
                         borderColor: '#f1f5f9',
-                        strokeDashArray: 3
+                        strokeDashArray: 2
                     },
                     tooltip: {
                         shared: true,
@@ -223,15 +229,15 @@
                     var t = targetLine && targetLine[i] ? targetLine[i].height : null;
 
                     var ageLabel = p.is_current 
-                        ? '<span class="badge bg-success-lt text-success px-2 py-1"><i class="ti ti-pin me-1"></i>Hiện tại (' + p.age + 't)</span>' 
-                        : '<strong>' + p.age + ' tuổi</strong>';
+                        ? '<span class="badge-soft-neutral"><i class="ti ti-pin me-1"></i>Hiện tại (' + p.age + 't)</span>' 
+                        : '<span class="fw-semibold">' + p.age + ' tuổi</span>';
                     var isCurrentClass = p.is_current ? 'is-current-row' : '';
 
                     // Mức tăng/năm
                     var growthDelta = '--';
                     if (prevPred !== null && !p.is_current) {
                         var diff = (p.height - prevPred).toFixed(1);
-                        growthDelta = '<span class="text-orange fw-bold">+' + diff + ' cm</span>';
+                        growthDelta = '<span class="text-amber fw-medium">+' + diff + ' cm</span>';
                     } else if (p.is_current) {
                         growthDelta = '<span class="text-muted fs-11">Điểm xuất phát</span>';
                     }
@@ -242,21 +248,21 @@
                     if (w !== null) {
                         var dw = (p.height - w).toFixed(1);
                         if (dw > 0) {
-                            whoDiffText = '<span class="badge bg-green-lt text-green">+' + dw + ' cm vs WHO</span>';
+                            whoDiffText = '<span class="badge-soft-neutral" style="color: #059669; background: #ecfdf5;">+' + dw + ' cm vs WHO</span>';
                         } else if (dw < 0) {
-                            whoDiffText = '<span class="badge bg-orange-lt text-orange">' + dw + ' cm vs WHO</span>';
+                            whoDiffText = '<span class="badge-soft-neutral" style="color: #b45309; background: #fffbeb;">' + dw + ' cm vs WHO</span>';
                         } else {
-                            whoDiffText = '<span class="badge bg-blue-lt text-blue">Đạt chuẩn WHO</span>';
+                            whoDiffText = '<span class="badge-soft-neutral">Chuẩn WHO</span>';
                         }
                     }
 
-                    var targetText = t ? '<strong class="text-danger">' + t.toFixed(1) + ' cm</strong>' : '<span class="text-muted">--</span>';
+                    var targetText = t ? '<span class="text-rose fw-semibold">' + t.toFixed(1) + ' cm</span>' : '<span class="text-muted">--</span>';
 
                     html += '<tr class="' + isCurrentClass + '">' +
                         '<td>' + ageLabel + '</td>' +
-                        '<td class="text-orange fw-bold">' + p.height.toFixed(1) + ' cm</td>' +
+                        '<td><span class="text-amber fw-semibold">' + p.height.toFixed(1) + ' cm</span></td>' +
                         '<td>' + growthDelta + '</td>' +
-                        '<td class="text-info fw-bold">' + (w ? w.toFixed(1) + ' cm' : '--') + '</td>' +
+                        '<td><span class="text-muted fw-semibold">' + (w ? w.toFixed(1) + ' cm' : '--') + '</span></td>' +
                         '<td>' + targetText + '</td>' +
                         '<td>' + whoDiffText + '</td>' +
                         '</tr>';
