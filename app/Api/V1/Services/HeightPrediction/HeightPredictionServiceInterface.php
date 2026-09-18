@@ -19,4 +19,6 @@ interface HeightPredictionServiceInterface
     public function indexV2(Request $request): array;
 
     public function chartV2(Request $request): array;
+
+    public function debugHeightRegimen(int $childId, float $pubertyMonths = 0.0, ?float $targetHeight = null): array;
 }

@@ -55,6 +55,9 @@
             </div>
 
             <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-info btn-sm rounded-2 px-3 fw-normal" id="btn-open-debug-modal" data-bs-toggle="modal" data-bs-target="#modal-debug-height-v2">
+                    <i class="ti ti-bug me-1"></i> {{ __('Debug Dữ Liệu & Công Thức') }}
+                </button>
                 <button type="button" class="btn btn-outline-secondary btn-sm rounded-2 px-3 fw-normal" id="btn-print-phac-do">
                     <i class="ti ti-printer me-1 text-muted"></i> {{ __('In / Xuất Phác Đồ') }}
                 </button>
@@ -410,6 +413,136 @@
             </div>
         </div>
     @endif
+</div>
+
+<!-- MODAL DEBUG DỮ LIỆU & CÔNG THỨC PHÁC ĐỒ V2 -->
+<div class="modal modal-blur fade" id="modal-debug-height-v2" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
+        <div class="modal-content border-0 shadow-lg rounded-3">
+            <div class="modal-header py-3 px-4 bg-light-subtle border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="action-icon-box bg-indigo-soft">
+                        <i class="ti ti-bug text-indigo fs-3"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-semibold text-slate fs-15">
+                            {{ __('Tra Cứu Chi Tiết Công Thức & Dữ Liệu Tính Toán Phác Đồ V2') }}
+                        </h5>
+                        <span class="text-muted fs-12">
+                            {{ __('Bé: ') }} <strong>{{ $children->fullname }}</strong> (#{{ $children->id }})
+                        </span>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-2 px-2 py-1" id="btn-copy-debug-json" title="{{ __('Sao chép toàn bộ JSON chẩn đoán') }}">
+                        <i class="ti ti-copy me-1"></i> <span id="btn-copy-text">{{ __('Sao chép JSON') }}</span>
+                    </button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs bên trong Modal -->
+            <div class="bg-white border-bottom px-4 pt-2">
+                <ul class="nav nav-tabs nav-fill border-0" id="debugModalTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active py-2 fs-13 fw-semibold text-slate" id="tab-calc-steps" data-bs-toggle="tab" data-bs-target="#pane-calc-steps" type="button" role="tab">
+                            <i class="ti ti-calculator me-1 text-indigo"></i> {{ __('1. Luồng Tính Toán Từng Bước') }}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-2 fs-13 fw-semibold text-slate" id="tab-sim-matrix" data-bs-toggle="tab" data-bs-target="#pane-sim-matrix" type="button" role="tab">
+                            <i class="ti ti-table me-1 text-amber"></i> {{ __('2. Bảng Mô Phỏng Từng Năm') }}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link py-2 fs-13 fw-semibold text-slate" id="tab-raw-records" data-bs-toggle="tab" data-bs-target="#pane-raw-records" type="button" role="tab">
+                            <i class="ti ti-database me-1 text-emerald"></i> {{ __('3. Dữ Liệu Gốc & JSON') }}
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="modal-body p-4 bg-light-subtle">
+                <div class="tab-content" id="debugModalTabsContent">
+                    <!-- TAB 1: Luồng Tính Toán Từng Bước -->
+                    <div class="tab-pane fade show active" id="pane-calc-steps" role="tabpanel">
+                        <div id="debug-calc-steps-loading" class="text-center py-5 text-muted">
+                            <div class="spinner-border spinner-border-sm text-indigo mb-2" role="status"></div>
+                            <div class="fs-12">{{ __('Đang tổng hợp dữ liệu chẩn đoán...') }}</div>
+                        </div>
+                        <div id="debug-calc-steps-content" class="d-none">
+                            <!-- Đổ nội dung 7 bước qua JS -->
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: Bảng Mô Phỏng Chi Tiết Từng Năm -->
+                    <div class="tab-pane fade" id="pane-sim-matrix" role="tabpanel">
+                        <div class="table-responsive bg-white rounded-3 border border-light-subtle p-2">
+                            <table class="table table-slim text-center align-middle mb-0" id="debug-table-sim">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 90px;">{{ __('Tuổi') }}</th>
+                                        <th style="width: 150px;">{{ __('Giai đoạn') }}</th>
+                                        <th>{{ __('Công thức áp dụng') }}</th>
+                                        <th style="width: 100px;">{{ __('Mức tăng') }}</th>
+                                        <th style="width: 120px; color: #d97706;">{{ __('Dự đoán') }}</th>
+                                        <th style="width: 120px; color: #64748b;">{{ __('Chuẩn WHO') }}</th>
+                                        <th style="width: 120px; color: #e05263;">{{ __('Mục tiêu') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="debug-tbody-sim">
+                                    <!-- Đổ dòng mô phỏng qua JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: Dữ Liệu Gốc & JSON -->
+                    <div class="tab-pane fade" id="pane-raw-records" role="tabpanel">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <h6 class="fw-semibold text-slate fs-13 mb-2">
+                                    <i class="ti ti-history me-1 text-muted"></i> {{ __('Lịch Sử Tất Cả Các Đợt Đo PQ Của Bé') }}
+                                </h6>
+                                <div class="table-responsive bg-white rounded-3 border border-light-subtle">
+                                    <table class="table table-slim text-center align-middle mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>#ID</th>
+                                                <th>{{ __('Ngày đo') }}</th>
+                                                <th>{{ __('Tháng tuổi') }}</th>
+                                                <th>{{ __('Chiều cao (cm)') }}</th>
+                                                <th>{{ __('Cân nặng (kg)') }}</th>
+                                                <th>{{ __('BMI') }}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="debug-tbody-pq-history">
+                                            <!-- Đổ lịch sử PQ qua JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <h6 class="fw-semibold text-slate fs-13 mb-2">
+                                    <i class="ti ti-code me-1 text-muted"></i> {{ __('Dữ Liệu JSON Chẩn Đoán Chi Tiết') }}
+                                </h6>
+                                <pre class="bg-dark text-light p-3 rounded-3 fs-11" id="debug-json-viewer" style="max-height: 280px; overflow: auto;"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer py-2 px-4 bg-white border-top justify-content-between">
+                <span class="fs-12 text-muted">
+                    <i class="ti ti-shield-check text-success me-1"></i> {{ __('Thuật toán V2 được kiểm định theo chuẩn Chăm Con 360 & WHO Growth Standards.') }}
+                </span>
+                <button type="button" class="btn btn-secondary btn-sm rounded-2 px-3" data-bs-dismiss="modal">
+                    {{ __('Đóng') }}
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 {{-- Giao diện Thanh Lịch, Đẹp Mảnh, Màu Sắc Êm Dịu --}}

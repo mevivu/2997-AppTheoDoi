@@ -227,6 +227,47 @@ class ChildrenController extends Controller
         }
     }
 
+    public function ajaxDebugHeightV2(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $childId = $request->input('child_id');
+            $pubertyMonths = (float)$request->input('puberty_months', 0);
+            $targetHeight = $request->filled('target_height') ? (float)$request->input('target_height') : null;
+
+            $validator = validator([
+                'child_id' => $childId,
+                'puberty_months' => $pubertyMonths,
+                'target_height' => $targetHeight,
+            ], [
+                'child_id' => 'required|numeric',
+                'puberty_months' => 'required|numeric|min:0|max:96',
+                'target_height' => 'nullable|numeric|min:50|max:250',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 422,
+                    'message' => $validator->errors()->first(),
+                ], 422);
+            }
+
+            $heightService = app(\App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface::class);
+            $debugData = $heightService->debugHeightRegimen((int)$childId, $pubertyMonths, $targetHeight);
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Lấy dữ liệu chẩn đoán công thức thành công.',
+                'data' => $debugData,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('ajaxDebugHeightV2 error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 500,
+                'message' => 'Lỗi khi lấy dữ liệu chẩn đoán: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function update(ChildrenRequest $request): RedirectResponse
     {
         return $this->handleUpdateResponse($request, function ($request) {

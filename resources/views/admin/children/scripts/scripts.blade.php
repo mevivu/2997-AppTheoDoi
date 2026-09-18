@@ -445,6 +445,261 @@
             $(document).on('click', '#btn-print-phac-do', function() {
                 window.print();
             });
+
+            // 9. Debug Dữ Liệu & Công Thức Modal Handlers
+            var latestDebugData = null;
+
+            $('#btn-open-debug-modal').on('click', function() {
+                var pubertyMonths = parseFloat($('#input_puberty_months').val()) || 0;
+                var targetHeight = parseFloat($('#input_target_height').val()) || null;
+
+                $('#debug-calc-steps-loading').removeClass('d-none');
+                $('#debug-calc-steps-content').addClass('d-none');
+
+                $.ajax({
+                    url: "{{ route('admin.children.debugHeightV2') }}",
+                    type: 'POST',
+                    data: {
+                        child_id: childId,
+                        puberty_months: pubertyMonths,
+                        target_height: targetHeight,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(res) {
+                        if (res.status === 200 && res.data) {
+                            latestDebugData = res.data;
+                            renderDebugModal(latestDebugData);
+                        } else {
+                            alert(res.message || 'Không thể tải dữ liệu chẩn đoán.');
+                        }
+                    },
+                    error: function(xhr) {
+                        var msg = (xhr.responseJSON && xhr.responseJSON.message) ? xhr.responseJSON.message : 'Lỗi khi gọi API chẩn đoán.';
+                        alert(msg);
+                    },
+                    complete: function() {
+                        $('#debug-calc-steps-loading').addClass('d-none');
+                        $('#debug-calc-steps-content').removeClass('d-none');
+                    }
+                });
+            });
+
+            function renderDebugModal(data) {
+                // Render Tab 1: Luồng tính toán từng bước
+                var c = data.child_info;
+                var p = data.parents_info;
+                var s = data.speed_calculation;
+                var pb = data.puberty_calculation;
+                var a = data.adulthood_calculation;
+                var t = data.target_calculation;
+                var b = data.bmi_calculation;
+
+                var htmlSteps = `
+                    <div class="row g-3">
+                        <!-- Bước 1: Thông tin bé -->
+                        <div class="col-12 col-md-6">
+                            <div class="card p-3 border border-light-subtle rounded-3 bg-white h-100">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-indigo-soft text-indigo fw-semibold">BƯỚC 1: ĐẦU VÀO TRẺ EM</span>
+                                    <span class="fs-11 text-muted">ID #${c.id}</span>
+                                </div>
+                                <div class="fs-13 fw-semibold text-slate mb-1">${c.name} (${c.gender})</div>
+                                <div class="fs-12 text-muted mb-2">Ngày sinh: ${c.birthday || '--'}</div>
+                                <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12">
+                                    <div>• Số ngày sống: <strong>${c.days_lived} ngày</strong></div>
+                                    <div>• Tuổi chính xác: <strong>${c.current_age_years} tuổi</strong> (${c.days_lived} / 365.3)</div>
+                                    <div>• Tháng tuổi quy đổi: <strong>${c.current_age_months} tháng</strong></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bước 2: Di truyền cha mẹ -->
+                        <div class="col-12 col-md-6">
+                            <div class="card p-3 border border-light-subtle rounded-3 bg-white h-100">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-indigo-soft text-indigo fw-semibold">BƯỚC 2: YẾU TỐ DI TRUYỀN</span>
+                                    <span class="fs-11 text-muted">Mid-parental Height</span>
+                                </div>
+                                <div class="fs-12 text-muted mb-2">Chiều cao Bố: <strong>${p.father_height || '--'} cm</strong> | Mẹ: <strong>${p.mother_height || '--'} cm</strong></div>
+                                <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12 mb-2">
+                                    <div class="text-muted fs-11 text-uppercase fw-semibold mb-1">Công thức di truyền:</div>
+                                    <code class="text-indigo fs-12">${p.formula}</code>
+                                </div>
+                                <div class="fs-12 text-slate">
+                                    Chiều cao di truyền lý thuyết: <strong class="text-indigo fs-14">${p.mid_parent_height ? p.mid_parent_height + ' cm' : 'Chưa xác định'}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bước 3: Tốc độ tăng trưởng -->
+                        <div class="col-12">
+                            <div class="card p-3 border border-light-subtle rounded-3 bg-white">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-amber-soft text-amber fw-semibold">BƯỚC 3: TỐC ĐỘ TĂNG TRƯỞNG & QUY TẮC CHẶN TRẦN</span>
+                                    <span class="badge bg-light text-muted fs-11">${s.clamped_rule}</span>
+                                </div>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-12 col-md-6">
+                                        <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12">
+                                            <div class="text-muted fs-11 fw-semibold mb-1">ĐỢT ĐO PQ MỚI NHẤT:</div>
+                                            <div>Ngày: <strong>${s.latest_pq.date}</strong> | Cao: <strong>${s.latest_pq.height} cm</strong> | Nặng: <strong>${s.latest_pq.weight} kg</strong></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12">
+                                            <div class="text-muted fs-11 fw-semibold mb-1">ĐỢT ĐO PQ CŨ TRONG 1 NĂM QUA:</div>
+                                            <div>${s.oldest_pq_in_year ? `Ngày: <strong>${s.oldest_pq_in_year.date}</strong> | Cao: <strong>${s.oldest_pq_in_year.height} cm</strong>` : '<span class="text-muted">Không có bản ghi cách 1 năm</span>'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12 mb-2">
+                                    <div>• Khoảng cách giữa 2 lần đo: <strong>${s.count_days} ngày</strong> | Mức tăng thô: <strong>${s.raw_height_diff} cm</strong></div>
+                                    <div>• Công thức tốc độ tăng trưởng/năm: <code class="text-amber">${s.speed_formula}</code></div>
+                                    <div>• Tốc độ tính toán thô: <strong>${s.raw_speed_annualized} cm/năm</strong></div>
+                                    <div>• Áp dụng luật giới hạn trần: <strong>Max = 6.5 cm/năm</strong> -> Tốc độ sau chặn: <strong>${s.clamped_speed} cm/năm</strong></div>
+                                    ${s.is_fallback_used ? `<div class="text-amber mt-1"><i class="ti ti-alert-circle me-1"></i>Tốc độ thô <= 0 -> Áp dụng Fallback theo chuẩn WHO lứa tuổi: <strong>${s.who_current_speed} cm/năm</strong></div>` : ''}
+                                </div>
+                                <div class="fs-13 fw-semibold text-slate">
+                                    ==> Tốc độ tăng trưởng áp dụng (Effective Speed): <strong class="text-amber fs-15">${s.effective_speed} cm/năm</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bước 4: Điều chỉnh dậy thì -->
+                        <div class="col-12 col-md-6">
+                            <div class="card p-3 border border-light-subtle rounded-3 bg-white h-100">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-purple-soft text-purple fw-semibold">BƯỚC 4: ĐIỀU CHỈNH DẬY THÌ</span>
+                                    <span class="fs-11 text-muted">V2 Algorithm</span>
+                                </div>
+                                <div class="fs-12 text-muted mb-2">Số tháng dậy thì nhập: <strong>${pb.input_months} tháng</strong> -> Quy đổi: <strong>${pb.puberty_years} năm</strong></div>
+                                <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12 mb-2">
+                                    <div>• Tuổi chốt tăng trưởng chuẩn (${c.gender}): <strong>${pb.base_puberty_end_age} tuổi</strong></div>
+                                    <div>• Công thức tuổi chốt thực tế: <code class="text-purple">${pb.formula}</code></div>
+                                    <div>• Tuổi kết thúc dậy thì: <strong>${pb.puberty_end_age} tuổi</strong></div>
+                                    <div>• Thời gian tăng tốc còn lại: <strong>${pb.years_remaining} năm</strong> (${pb.puberty_end_age} - ${c.current_age_years})</div>
+                                </div>
+                                <div class="fs-12 text-slate">
+                                    Tăng trưởng dự kiến trong giai đoạn dậy thì: <strong class="text-purple">${pb.predicted_puberty_growth} cm</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bước 5: Dự đoán tuổi 19 -->
+                        <div class="col-12 col-md-6">
+                            <div class="card p-3 border border-light-subtle rounded-3 bg-white h-100">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-indigo-soft text-indigo fw-semibold">BƯỚC 5: DỰ ĐOÁN TUỔI 19</span>
+                                    <span class="badge bg-light text-muted fs-11">Mốc 19 tuổi</span>
+                                </div>
+                                <div class="fs-12 text-muted mb-2">Mô phỏng chu kỳ: <strong>Từ tuổi ${a.start_age} đến ${a.max_age}</strong></div>
+                                <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12 mb-2">
+                                    <div>• Sau tuổi hết dậy thì (${pb.puberty_end_age}t): Cộng delta WHO dịch chuyển +${pb.puberty_years} năm.</div>
+                                    <div>• Chiều cao chuẩn WHO mốc 19 tuổi: <strong>${a.who_adult_height} cm</strong></div>
+                                    <div>• Chênh lệch so với WHO lúc 19 tuổi: <strong>${(a.diff_with_who > 0 ? '+' : '') + a.diff_with_who} cm</strong></div>
+                                </div>
+                                <div class="fs-13 fw-semibold text-slate">
+                                    ==> Dự đoán chiều cao trưởng thành (V2): <strong class="text-indigo fs-16">${a.predicted_adult_height} cm</strong> (±5 cm)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bước 6: Phân bổ mục tiêu -->
+                        <div class="col-12 col-md-6">
+                            <div class="card p-3 border border-light-subtle rounded-3 bg-white h-100">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-rose-soft text-rose fw-semibold">BƯỚC 6: PHÂN BỔ MỤC TIÊU PHÁC ĐỒ</span>
+                                </div>
+                                <div class="fs-12 text-muted mb-2">Mục tiêu phụ huynh nhập: <strong>${t.input_target ? t.input_target + ' cm' : 'Chưa nhập'}</strong></div>
+                                <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12 mb-2">
+                                    <div>• Mục tiêu hợp lệ áp dụng: <strong>${t.final_target ? t.final_target + ' cm' : '--'}</strong> (phải >= ${a.predicted_adult_height} cm)</div>
+                                    <div>• Tổng chiều cao cần tăng từ hiện tại: <strong>${t.target_total_growth} cm</strong> (${t.final_target || 0} - ${s.latest_pq.height})</div>
+                                    <div>• Công thức đường cong: <code class="text-rose fs-11">${t.formula}</code></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bước 7: Phân tích BMI Z-Score -->
+                        <div class="col-12 col-md-6">
+                            <div class="card p-3 border border-light-subtle rounded-3 bg-white h-100">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-purple-soft text-purple fw-semibold">BƯỚC 7: CHỈ SỐ BMI & Z-SCORE WHO</span>
+                                </div>
+                                <div class="fs-12 text-muted mb-2">Chỉ số BMI hiện tại: <strong class="fs-14 text-purple">${b.current_bmi || '--'} kg/m²</strong> (Tuổi đối chiếu: ${b.table_age_years}t)</div>
+                                <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-11 mb-2">
+                                    ${b.standard_row ? `
+                                        <div class="d-flex justify-content-between mb-1">
+                                            <span>-3SD: <strong>${b.standard_row.z_minus_3}</strong></span>
+                                            <span>-2SD: <strong>${b.standard_row.z_minus_2}</strong></span>
+                                            <span>-1SD: <strong>${b.standard_row.z_minus_1}</strong></span>
+                                            <span class="text-success">0SD: <strong>${b.standard_row.z_0}</strong></span>
+                                            <span>+1SD: <strong>${b.standard_row.z_plus_1}</strong></span>
+                                            <span>+2SD: <strong>${b.standard_row.z_plus_2}</strong></span>
+                                            <span>+3SD: <strong>${b.standard_row.z_plus_3}</strong></span>
+                                        </div>
+                                    ` : '<div>Chưa có bảng tham chiếu độ tuổi này</div>'}
+                                </div>
+                                <div class="fs-12 text-slate">
+                                    Kết luận thể trạng: <strong class="text-purple">${b.assessment}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $('#debug-calc-steps-content').html(htmlSteps);
+
+                // Render Tab 2: Bảng mô phỏng
+                var tbodySim = $('#debug-tbody-sim');
+                var simRows = '';
+                (data.simulation_matrix || []).forEach(function(row) {
+                    var phaseClass = row.is_current ? 'badge-soft-neutral text-success fw-bold' : (row.phase.indexOf('Dậy thì') !== -1 ? 'badge-soft-amber' : 'badge-soft-neutral');
+                    var currentClass = row.is_current ? 'is-current-row' : '';
+                    simRows += `
+                        <tr class="${currentClass}">
+                            <td><strong>${row.label}</strong></td>
+                            <td><span class="${phaseClass}">${row.phase}</span></td>
+                            <td class="text-start fs-11"><code class="text-muted">${row.formula}</code></td>
+                            <td>${row.growth_delta > 0 ? '<span class="text-amber fw-semibold">+' + row.growth_delta + ' cm</span>' : '--'}</td>
+                            <td><strong style="color: #d97706;">${row.pred_height} cm</strong></td>
+                            <td><span class="text-muted">${row.who_height} cm</span></td>
+                            <td>${row.target_height ? '<strong style="color: #e05263;">' + row.target_height + ' cm</strong>' : '--'}</td>
+                        </tr>
+                    `;
+                });
+                tbodySim.html(simRows);
+
+                // Render Tab 3: Lịch sử PQ & JSON
+                var tbodyPq = $('#debug-tbody-pq-history');
+                var pqRows = '';
+                (data.raw_pq_history || []).forEach(function(item) {
+                    pqRows += `
+                        <tr>
+                            <td>#${item.id}</td>
+                            <td><strong>${item.assessment_date}</strong></td>
+                            <td>${item.age_month} tháng</td>
+                            <td><strong class="text-primary">${item.height} cm</strong></td>
+                            <td>${item.weight} kg</td>
+                            <td><span class="badge-soft-purple">${item.bmi}</span></td>
+                        </tr>
+                    `;
+                });
+                tbodyPq.html(pqRows || '<tr><td colspan="6" class="text-muted py-3">Chưa có bản ghi PQ</td></tr>');
+
+                $('#debug-json-viewer').text(JSON.stringify(data, null, 2));
+            }
+
+            // Copy JSON handler
+            $('#btn-copy-debug-json').on('click', function() {
+                if (!latestDebugData) return;
+                var jsonStr = JSON.stringify(latestDebugData, null, 2);
+                navigator.clipboard.writeText(jsonStr).then(function() {
+                    var $text = $('#btn-copy-text');
+                    $text.text('Đã chép!');
+                    setTimeout(function() {
+                        $text.text('Sao chép JSON');
+                    }, 2000);
+                });
+            });
         @endif
     });
 </script>

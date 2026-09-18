@@ -858,4 +858,301 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             'bmi_general_note' => 'Trẻ béo hay gầy không chỉ dựa vào cân nặng để đánh giá mà phải dùng chỉ số BMI để đánh giá trẻ đang gầy, đạt chuẩn hay có xu hướng thừa cân. Bé cần duy trì chỉ số BMI hợp lý để giúp chiều cao phát triển tốt hơn.',
         ];
     }
+
+    /**
+     * Tra cứu chi tiết toàn bộ công thức, tham số và dữ liệu thô phục vụ Debug Phác đồ Chiều cao V2
+     *
+     * @param int $childId
+     * @param float $pubertyMonths
+     * @param float|null $targetHeight
+     * @return array
+     */
+    public function debugHeightRegimen(int $childId, float $pubertyMonths = 0.0, ?float $targetHeight = null): array
+    {
+        $child = $this->childRepository->findOrFail($childId);
+        $birthday = $child->birthday;
+        $gender = $child->gender;
+        $genderVal = $gender instanceof Gender ? $gender->value : (int)$gender;
+        $genderName = ($genderVal == 1 ? 'Nam' : 'Nữ');
+
+        $parentUser = $child->user;
+        $fatherHeight = (float)($parentUser?->father_height ?? 0);
+        $motherHeight = (float)($parentUser?->mother_height ?? 0);
+        $midParentHeight = 0.0;
+        $geneticFormula = '';
+        if ($fatherHeight > 0 && $motherHeight > 0) {
+            if ($genderVal == 1) {
+                $midParentHeight = round(($fatherHeight + $motherHeight + 13) / 2 + 5, 1);
+                $geneticFormula = "({$fatherHeight} + {$motherHeight} + 13) / 2 + 5 = {$midParentHeight} cm";
+            } else {
+                $midParentHeight = round(($fatherHeight + $motherHeight - 13) / 2 + 3, 1);
+                $geneticFormula = "({$fatherHeight} + {$motherHeight} - 13) / 2 + 3 = {$midParentHeight} cm";
+            }
+        }
+
+        // Lịch sử đo PQ
+        $allPqRecords = $this->repository->getQueryBuilder()
+            ->where('child_id', $childId)
+            ->orderBy('assessment_date', 'desc')
+            ->get();
+
+        $latestRecord = $allPqRecords->first();
+        $latestDate = $latestRecord ? $latestRecord->assessment_date->copy() : Carbon::now();
+        $currentHeight = $latestRecord ? (float)$latestRecord->height : 0.0;
+        $currentWeight = $latestRecord ? (float)$latestRecord->weight : 0.0;
+        $currentBmi = 0.0;
+        if ($latestRecord && $latestRecord->bmi) {
+            $currentBmi = (float)$latestRecord->bmi;
+        } elseif ($currentHeight > 0 && $currentWeight > 0) {
+            $currentBmi = round($currentWeight / pow($currentHeight / 100, 2), 1);
+        }
+
+        $currentDaysLived = $birthday ? $latestDate->diffInDays($birthday) : 0;
+        $currentAge = $birthday ? round($currentDaysLived / 365.3, 2) : 5.0;
+        $currentAgeMonth = round($currentAge * 12);
+
+        // Tính tốc độ tăng trưởng
+        $oneYearBefore = $latestDate->copy()->subYear();
+        $oldestRecord = $this->repository->getRecordInDateRange($childId, $oneYearBefore, $latestDate, true);
+        $countDays = $latestDate->diffInDays($oldestRecord ? $oldestRecord->assessment_date : $latestDate);
+        $oldestHeight = $oldestRecord ? (float)$oldestRecord->height : 0.0;
+        $rawHeightDiff = round($currentHeight - $oldestHeight, 2);
+
+        $rawSpeedAnnualized = 0.0;
+        $speedFormula = '';
+        if ($countDays > 0 && $oldestRecord) {
+            $rawSpeedAnnualized = round($rawHeightDiff * (365.3 / $countDays), 2);
+            $speedFormula = "({$currentHeight} - {$oldestHeight}) x (365.3 / {$countDays} ngày) = {$rawSpeedAnnualized} cm/năm";
+        } elseif ($oldestRecord) {
+            $rawSpeedAnnualized = $rawHeightDiff;
+            $speedFormula = "{$currentHeight} - {$oldestHeight} = {$rawSpeedAnnualized} cm/năm";
+        } else {
+            $speedFormula = "Chưa có bản ghi PQ cách 1 năm -> Tốc độ = 0 cm/năm";
+        }
+
+        $clampedSpeed = max(0.0, min(6.5, $rawSpeedAnnualized));
+
+        $whoCurrent = $this->getWho($currentAgeMonth, $gender);
+        $whoCurrentHeight = $whoCurrent ? (float)$whoCurrent->height : $currentHeight;
+        $whoCurrentSpeed = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
+
+        $isFallbackUsed = false;
+        if ($clampedSpeed <= 0) {
+            $effectiveSpeed = max(0.0, min(6.5, $whoCurrentSpeed));
+            $isFallbackUsed = true;
+        } else {
+            $effectiveSpeed = $clampedSpeed;
+        }
+
+        // Tính toán dậy thì
+        $pubertyYears = round($pubertyMonths / 12);
+        $basePubertyEndAge = ($genderVal == 1 ? 16.0 : 14.0);
+        $pubertyEndAge = max($currentAge, $basePubertyEndAge - $pubertyYears);
+        $yearsRemainingInPuberty = max(0.0, round($pubertyEndAge - $currentAge, 2));
+        $predictedPubertyGrowth = round($yearsRemainingInPuberty * $effectiveSpeed, 1);
+
+        // Vòng lặp mô phỏng tăng trưởng theo tuổi (Tuổi hiện tại -> 19)
+        $startAge = (int)floor($currentAge) + 1;
+        if ($startAge < 5) $startAge = 5;
+        if ($startAge > 18) $startAge = 18;
+        $maxAge = 19;
+
+        $whoHeights = [];
+        for ($age = $startAge; $age <= $maxAge + (int)$pubertyYears; $age++) {
+            $w = $this->getWho($age * 12, $gender);
+            $whoHeights[$age] = $w ? (float)$w->height : ($whoHeights[$age - 1] ?? 0.0);
+        }
+
+        $simulationMatrix = [];
+        $prevPredH = $currentHeight;
+        $predictionHeights = [];
+
+        // Mốc hiện tại
+        $simulationMatrix[] = [
+            'age' => (float)$currentAge,
+            'label' => 'Hiện tại (' . $currentAge . 't)',
+            'is_current' => true,
+            'phase' => 'Điểm xuất phát',
+            'formula' => 'Chiều cao đo thực tế tại đợt PQ mới nhất',
+            'growth_delta' => 0.0,
+            'pred_height' => round($currentHeight, 1),
+            'who_height' => round($whoCurrentHeight, 1),
+            'target_height' => round($currentHeight, 1),
+        ];
+
+        for ($age = $startAge; $age <= $maxAge; $age++) {
+            $isPubertyActive = ($age < $pubertyEndAge);
+            if ($isPubertyActive) {
+                $predH = $currentHeight + ($age - $currentAge) * $effectiveSpeed;
+                $formula = "{$currentHeight} + (" . round($age - $currentAge, 1) . " x {$effectiveSpeed})";
+                $whoDelta = 0.0;
+            } else {
+                $shiftedAge = $age + (int)$pubertyYears;
+                $whoDelta = 0.2;
+                if (isset($whoHeights[$shiftedAge], $whoHeights[$shiftedAge - 1])) {
+                    $whoDelta = max(0.0, $whoHeights[$shiftedAge] - $whoHeights[$shiftedAge - 1]);
+                } elseif (isset($whoHeights[$age], $whoHeights[$age - 1])) {
+                    $whoDelta = max(0.0, $whoHeights[$age] - $whoHeights[$age - 1]);
+                }
+                $predH = $prevPredH + $whoDelta;
+                $formula = round($prevPredH, 1) . " + Delta WHO(tuổi {$shiftedAge}: " . round($whoDelta, 2) . " cm)";
+            }
+
+            $growthDelta = round($predH - $prevPredH, 1);
+            $prevPredH = $predH;
+            $predictionHeights[$age] = $predH;
+
+            $whoAtAge = $whoHeights[$age] ?? 0.0;
+
+            $simulationMatrix[] = [
+                'age' => (float)$age,
+                'label' => $age . ' tuổi',
+                'is_current' => false,
+                'phase' => $isPubertyActive ? 'Tăng tốc Dậy thì' : 'Hậu dậy thì (Giảm tốc)',
+                'formula' => $formula,
+                'growth_delta' => $growthDelta,
+                'pred_height' => round($predH, 1),
+                'who_height' => round($whoAtAge, 1),
+                'target_height' => null,
+            ];
+        }
+
+        $predictedAdultHeight = round($prevPredH, 0);
+
+        // Tính toán phân bổ đường mục tiêu
+        $finalTargetHeight = null;
+        $targetTotalGrowth = 0.0;
+        $predTotalGrowth = $predictedAdultHeight - $currentHeight;
+
+        if ($targetHeight && $targetHeight > 0) {
+            $finalTargetHeight = max($targetHeight, (float)$predictedAdultHeight);
+            $targetTotalGrowth = $finalTargetHeight - $currentHeight;
+
+            foreach ($simulationMatrix as &$row) {
+                $a = $row['age'];
+                if ($row['is_current']) {
+                    $row['target_height'] = round($currentHeight, 1);
+                } elseif ($a == $maxAge) {
+                    $row['target_height'] = round($finalTargetHeight, 1);
+                } else {
+                    $pH = $predictionHeights[$a] ?? $prevPredH;
+                    $progress = $predTotalGrowth > 0.01 ? ($pH - $currentHeight) / $predTotalGrowth : 1.0;
+                    $progress = min(1.0, max(0.0, $progress));
+                    $tH = max($pH, $currentHeight + $targetTotalGrowth * $progress);
+                    $row['target_height'] = round($tH, 1);
+                }
+            }
+        }
+
+        // Phân tích BMI Z-Score
+        $childAgeYears = (int)round($currentAge);
+        if ($childAgeYears < 1) $childAgeYears = 1;
+        if ($childAgeYears > 19) $childAgeYears = 19;
+
+        $bmiStandard = Bmi::where('age', $childAgeYears)
+            ->where('gender', $genderVal)
+            ->where('status', ActiveStatus::Active)
+            ->first() ?? Bmi::where('age', $childAgeYears)->where('gender', $genderVal)->first();
+
+        $bmiAssessment = 'Đạt chuẩn';
+        if ($bmiStandard && $currentBmi > 0) {
+            if ($currentBmi <= (float)$bmiStandard->z_score_minus_3) $bmiAssessment = 'Suy dinh dưỡng';
+            elseif ($currentBmi <= (float)$bmiStandard->z_score_minus_2) $bmiAssessment = 'Quá gầy';
+            elseif ($currentBmi <= (float)$bmiStandard->z_score_minus_1) $bmiAssessment = 'Hơi gầy';
+            elseif ($currentBmi <= (float)$bmiStandard->z_score_plus_1) $bmiAssessment = 'Đạt chuẩn';
+            elseif ($currentBmi <= (float)$bmiStandard->z_score_plus_2) $bmiAssessment = 'Hơi béo';
+            elseif ($currentBmi <= (float)$bmiStandard->z_score_plus_3) $bmiAssessment = 'Tương đối Béo';
+            else $bmiAssessment = 'Béo phì';
+        }
+
+        // Định dạng lịch sử đo PQ thô
+        $formattedPqHistory = $allPqRecords->map(function ($r) {
+            return [
+                'id' => $r->id,
+                'assessment_date' => $r->assessment_date ? $r->assessment_date->format('Y-m-d') : '',
+                'age_month' => $r->age_month,
+                'height' => (float)$r->height,
+                'weight' => (float)$r->weight,
+                'bmi' => (float)$r->bmi,
+            ];
+        })->toArray();
+
+        return [
+            'child_info' => [
+                'id' => $child->id,
+                'name' => $child->fullname,
+                'gender' => $genderName,
+                'birthday' => $birthday ? $birthday->format('Y-m-d') : '',
+                'days_lived' => $currentDaysLived,
+                'current_age_years' => $currentAge,
+                'current_age_months' => $currentAgeMonth,
+            ],
+            'parents_info' => [
+                'father_height' => $fatherHeight,
+                'mother_height' => $motherHeight,
+                'mid_parent_height' => $midParentHeight,
+                'formula' => $geneticFormula ?: 'Thiếu chiều cao Bố hoặc Mẹ',
+            ],
+            'speed_calculation' => [
+                'latest_pq' => [
+                    'date' => $latestDate->format('Y-m-d'),
+                    'height' => $currentHeight,
+                    'weight' => $currentWeight,
+                    'bmi' => $currentBmi,
+                ],
+                'oldest_pq_in_year' => $oldestRecord ? [
+                    'date' => $oldestRecord->assessment_date->format('Y-m-d'),
+                    'height' => $oldestHeight,
+                ] : null,
+                'count_days' => $countDays,
+                'raw_height_diff' => $rawHeightDiff,
+                'raw_speed_annualized' => $rawSpeedAnnualized,
+                'speed_formula' => $speedFormula,
+                'clamped_rule' => 'Max 6.5 cm/năm',
+                'clamped_speed' => $clampedSpeed,
+                'is_fallback_used' => $isFallbackUsed,
+                'who_current_speed' => round($whoCurrentSpeed, 1),
+                'effective_speed' => $effectiveSpeed,
+            ],
+            'puberty_calculation' => [
+                'input_months' => $pubertyMonths,
+                'puberty_years' => $pubertyYears,
+                'base_puberty_end_age' => $basePubertyEndAge,
+                'puberty_end_age' => $pubertyEndAge,
+                'years_remaining' => $yearsRemainingInPuberty,
+                'predicted_puberty_growth' => $predictedPubertyGrowth,
+                'formula' => "Tuổi chốt ({$basePubertyEndAge}) - Dậy thì quy đổi ({$pubertyYears} năm) = {$pubertyEndAge} tuổi",
+            ],
+            'adulthood_calculation' => [
+                'predicted_adult_height' => $predictedAdultHeight,
+                'start_age' => $startAge,
+                'max_age' => $maxAge,
+                'who_adult_height' => $whoHeights[$maxAge] ?? 0.0,
+                'diff_with_who' => round($predictedAdultHeight - ($whoHeights[$maxAge] ?? 0.0), 1),
+            ],
+            'target_calculation' => [
+                'input_target' => $targetHeight,
+                'final_target' => $finalTargetHeight,
+                'pred_total_growth' => round($predTotalGrowth, 1),
+                'target_total_growth' => round($targetTotalGrowth, 1),
+                'formula' => $finalTargetHeight ? "Phân bổ theo tiến trình đường dự đoán: H_now + {$targetTotalGrowth} x ProgressRatio" : 'Chưa nhập mục tiêu',
+            ],
+            'bmi_calculation' => [
+                'current_bmi' => $currentBmi,
+                'table_age_years' => $childAgeYears,
+                'standard_row' => $bmiStandard ? [
+                    'z_minus_3' => (float)$bmiStandard->z_score_minus_3,
+                    'z_minus_2' => (float)$bmiStandard->z_score_minus_2,
+                    'z_minus_1' => (float)$bmiStandard->z_score_minus_1,
+                    'z_0' => (float)$bmiStandard->z_score_0,
+                    'z_plus_1' => (float)$bmiStandard->z_score_plus_1,
+                    'z_plus_2' => (float)$bmiStandard->z_score_plus_2,
+                    'z_plus_3' => (float)$bmiStandard->z_score_plus_3,
+                ] : null,
+                'assessment' => $bmiAssessment,
+            ],
+            'simulation_matrix' => $simulationMatrix,
+            'raw_pq_history' => $formattedPqHistory,
+        ];
+    }
 }
