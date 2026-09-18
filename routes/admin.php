@@ -892,6 +892,8 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::get('/', 'index')->name('index');
                 Route::get('/sua/{id}', 'edit')->name('edit');
                 Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
+                Route::post('/du-bao-chieu-cao-v2', 'ajaxPredictHeightV2')->name('predictHeightV2');
+                Route::post('/chay-phac-do-v2', 'ajaxHeightChartV2')->name('heightChartV2');
             });
 
             Route::group(['middleware' => ['permission:updateChildren', 'auth:admin']], function () {

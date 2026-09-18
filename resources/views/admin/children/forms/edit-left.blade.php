@@ -40,7 +40,7 @@
 
                 <!-- Tab 2: Dự Báo Chiều Cao -->
                 <div class="tab-pane fade" id="content-child-height-pred" role="tabpanel" aria-labelledby="tab-child-height-pred">
-                    @include('admin.children.partials.height-prediction-info', ['children' => $children, 'heightPrediction' => $heightPrediction])
+                    @include('admin.children.partials.height-prediction-info', ['children' => $children, 'heightPrediction' => $heightPrediction, 'heightChart' => $heightChart ?? null])
                 </div>
 
                 <!-- Tab 3: Thống kê đánh giá -->

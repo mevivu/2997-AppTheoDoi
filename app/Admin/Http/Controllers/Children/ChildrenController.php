@@ -97,13 +97,33 @@ class ChildrenController extends Controller
         $instance = $this->repository->findOrFail($id);
 
         $heightPrediction = null;
+        $heightChart = null;
         try {
             $heightService = app(\App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface::class);
-            $heightRequest = new \App\Api\V1\Http\Requests\HeightPrediction\HeightPredictionRequest();
-            $heightRequest->setValidator(validator(['child_id' => $id], ['child_id' => 'required']));
-            $heightPrediction = $heightService->index($heightRequest);
+
+            $heightRequest = new \App\Api\V2\Http\Requests\HeightPrediction\HeightPredictionV2Request();
+            $heightRequest->setValidator(validator([
+                'child_id' => $id,
+                'puberty_months' => 0
+            ], [
+                'child_id' => 'required|numeric',
+                'puberty_months' => 'required|numeric|min:0|max:96'
+            ]));
+            $heightPrediction = $heightService->indexV2($heightRequest);
+
+            $chartRequest = new \App\Api\V2\Http\Requests\HeightPrediction\HeightChartV2Request();
+            $chartRequest->setValidator(validator([
+                'child_id' => $id,
+                'puberty_months' => 0,
+                'target_height' => null
+            ], [
+                'child_id' => 'required|numeric',
+                'puberty_months' => 'required|numeric|min:0|max:96',
+                'target_height' => 'nullable|numeric|min:50|max:250'
+            ]));
+            $heightChart = $heightService->chartV2($chartRequest);
         } catch (\Exception $e) {
-            Log::warning('Error calculating height prediction for child ' . $id . ': ' . $e->getMessage());
+            Log::warning('Error calculating height prediction/chart V2 for child ' . $id . ': ' . $e->getMessage());
         }
 
         return view(
@@ -111,6 +131,7 @@ class ChildrenController extends Controller
             [
                 'children' => $instance,
                 'heightPrediction' => $heightPrediction,
+                'heightChart' => $heightChart,
                 'gender' => Gender::asSelectArray(),
                 'birthday' => $instance->birthday,
                 'dueDate' => $instance->due_date,
@@ -119,6 +140,91 @@ class ChildrenController extends Controller
                 'breadcrumbs' => $this->crums->add(__('childrenList'), route($this->route['index']))->add(__('edit')),
             ],
         );
+    }
+
+    public function ajaxPredictHeightV2(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $childId = $request->input('child_id');
+            $pubertyMonths = (float)$request->input('puberty_months', 0);
+
+            $validator = validator([
+                'child_id' => $childId,
+                'puberty_months' => $pubertyMonths,
+            ], [
+                'child_id' => 'required|numeric',
+                'puberty_months' => 'required|numeric|min:0|max:96',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 422,
+                    'message' => $validator->errors()->first(),
+                ], 422);
+            }
+
+            $heightService = app(\App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface::class);
+            $serviceRequest = new \App\Api\V2\Http\Requests\HeightPrediction\HeightPredictionV2Request();
+            $serviceRequest->setValidator($validator);
+
+            $result = $heightService->indexV2($serviceRequest);
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Tính toán dự báo chiều cao V2 thành công.',
+                'data' => $result,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('ajaxPredictHeightV2 error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 500,
+                'message' => 'Lỗi khi tính toán dự báo: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function ajaxHeightChartV2(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $childId = $request->input('child_id');
+            $pubertyMonths = (float)$request->input('puberty_months', 0);
+            $targetHeight = $request->filled('target_height') ? (float)$request->input('target_height') : null;
+
+            $validator = validator([
+                'child_id' => $childId,
+                'puberty_months' => $pubertyMonths,
+                'target_height' => $targetHeight,
+            ], [
+                'child_id' => 'required|numeric',
+                'puberty_months' => 'required|numeric|min:0|max:96',
+                'target_height' => 'nullable|numeric|min:50|max:250',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 422,
+                    'message' => $validator->errors()->first(),
+                ], 422);
+            }
+
+            $heightService = app(\App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface::class);
+            $serviceRequest = new \App\Api\V2\Http\Requests\HeightPrediction\HeightChartV2Request();
+            $serviceRequest->setValidator($validator);
+
+            $result = $heightService->chartV2($serviceRequest);
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Lấy dữ liệu phác đồ chiều cao V2 thành công.',
+                'data' => $result,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('ajaxHeightChartV2 error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 500,
+                'message' => 'Lỗi khi tải phác đồ: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function update(ChildrenRequest $request): RedirectResponse

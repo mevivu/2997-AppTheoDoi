@@ -162,7 +162,7 @@
             <x-form id="notificationForm" :action="route(RouteAdminSystem::CHILDREN_UPDATE)" type="put" :validate="true">
                 <input type="hidden" name="id" value="{{ $children->id }}">
                 <div class="row g-4 justify-content-center">
-                    @include('admin.children.forms.edit-left', ['children' => $children, 'heightPrediction' => $heightPrediction])
+                    @include('admin.children.forms.edit-left', ['children' => $children, 'heightPrediction' => $heightPrediction, 'heightChart' => $heightChart])
                     @include('admin.children.forms.edit-right', ['children' => $children])
                 </div>
             </x-form>
@@ -171,6 +171,7 @@
 @endsection
 
 @push('libs-js')
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="{{ asset('public/libs/ckeditor/ckeditor.js') }}"></script>
     <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
     @include('ckfinder::setup')
