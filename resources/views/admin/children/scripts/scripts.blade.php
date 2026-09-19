@@ -520,9 +520,17 @@
                                     <div class="text-muted fs-11 text-uppercase fw-semibold mb-1">Công thức di truyền:</div>
                                     <code class="text-indigo fs-12">${p.formula}</code>
                                 </div>
-                                <div class="fs-12 text-slate">
-                                    Chiều cao di truyền lý thuyết: <strong class="text-indigo fs-14">${p.mid_parent_height ? p.mid_parent_height + ' cm' : 'Chưa xác định'}</strong>
+                                <div class="fs-12 text-slate mb-1">
+                                    • Chiều cao di truyền lý thuyết: <strong class="text-indigo fs-13">${p.mid_parent_height ? p.mid_parent_height + ' cm' : 'Chưa xác định'}</strong>
                                 </div>
+                                ${p.genetic_ratio ? `
+                                <div class="fs-12 text-slate mb-1">
+                                    • Tỷ lệ Di truyền / WHO: <strong style="color: #0891b2;">${p.genetic_ratio}</strong> (${p.mid_parent_height} cm / ${p.who_adult_height} cm WHO 19t)
+                                </div>
+                                <div class="fs-11 text-muted">
+                                    • Trọng số kết hợp: <span class="fw-semibold text-amber">90% Dự đoán thực tế</span> + <span class="fw-semibold" style="color: #0891b2;">10% Tiềm năng di truyền</span>
+                                </div>
+                                ` : ''}
                             </div>
                         </div>
 
@@ -603,39 +611,42 @@
                         <div class="col-12 col-md-6">
                             <div class="card p-3 border border-light-subtle rounded-3 bg-white h-100">
                                 <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <span class="badge bg-rose-soft text-rose fw-semibold">BƯỚC 6: PHÂN BỔ MỤC TIÊU PHÁC ĐỒ</span>
+                                    <span class="badge bg-rose-soft text-rose fw-semibold">BƯỚC 6: PHÂN BỔ MỤC TIÊU</span>
+                                    <span class="fs-11 text-muted">Goal Curve</span>
                                 </div>
-                                <div class="fs-12 text-muted mb-2">Mục tiêu phụ huynh nhập: <strong>${t.input_target ? t.input_target + ' cm' : 'Chưa nhập'}</strong></div>
+                                <div class="fs-12 text-muted mb-2">Mục tiêu nhập: <strong>${t.input_target ? t.input_target + ' cm' : 'Chưa đặt'}</strong> -> Mục tiêu tính: <strong>${t.final_target ? t.final_target + ' cm' : '--'}</strong></div>
                                 <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12 mb-2">
-                                    <div>• Mục tiêu hợp lệ áp dụng: <strong>${t.final_target ? t.final_target + ' cm' : '--'}</strong> (phải >= ${a.predicted_adult_height} cm)</div>
-                                    <div>• Tổng chiều cao cần tăng từ hiện tại: <strong>${t.target_total_growth} cm</strong> (${t.final_target || 0} - ${s.latest_pq.height})</div>
-                                    <div>• Công thức đường cong: <code class="text-rose fs-11">${t.formula}</code></div>
+                                    <div>• Tổng tăng trưởng theo dự đoán: <strong>${t.pred_total_growth} cm</strong></div>
+                                    <div>• Tổng tăng trưởng cần đạt theo mục tiêu: <strong>${t.target_total_growth} cm</strong></div>
+                                    <div>• Công thức đường mục tiêu: <code class="text-rose">${t.formula}</code></div>
+                                </div>
+                                <div class="fs-12 text-slate">
+                                    Nguyên tắc: <span class="text-muted">Mục tiêu >= Dự đoán, bám theo tỷ lệ tiến trình đường tăng trưởng tự nhiên.</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Bước 7: Phân tích BMI Z-Score -->
+                        <!-- Bước 7: Thể trạng BMI -->
                         <div class="col-12 col-md-6">
                             <div class="card p-3 border border-light-subtle rounded-3 bg-white h-100">
                                 <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <span class="badge bg-purple-soft text-purple fw-semibold">BƯỚC 7: CHỈ SỐ BMI & Z-SCORE WHO</span>
+                                    <span class="badge bg-emerald-soft text-emerald fw-semibold">BƯỚC 7: ĐÁNH GIÁ THỂ TRẠNG BMI</span>
+                                    <span class="badge bg-light text-muted fs-11">WHO Z-Score</span>
                                 </div>
-                                <div class="fs-12 text-muted mb-2">Chỉ số BMI hiện tại: <strong class="fs-14 text-purple">${b.current_bmi || '--'} kg/m²</strong> (Tuổi đối chiếu: ${b.table_age_years}t)</div>
+                                <div class="fs-12 text-muted mb-2">Chỉ số BMI hiện tại: <strong class="fs-14 text-emerald">${b.current_bmi}</strong> (Bảng lứa tuổi: <strong>${b.table_age_years} tuổi</strong>)</div>
+                                ${b.standard_row ? `
                                 <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-11 mb-2">
-                                    ${b.standard_row ? `
-                                        <div class="d-flex justify-content-between mb-1">
-                                            <span>-3SD: <strong>${b.standard_row.z_minus_3}</strong></span>
-                                            <span>-2SD: <strong>${b.standard_row.z_minus_2}</strong></span>
-                                            <span>-1SD: <strong>${b.standard_row.z_minus_1}</strong></span>
-                                            <span class="text-success">0SD: <strong>${b.standard_row.z_0}</strong></span>
-                                            <span>+1SD: <strong>${b.standard_row.z_plus_1}</strong></span>
-                                            <span>+2SD: <strong>${b.standard_row.z_plus_2}</strong></span>
-                                            <span>+3SD: <strong>${b.standard_row.z_plus_3}</strong></span>
-                                        </div>
-                                    ` : '<div>Chưa có bảng tham chiếu độ tuổi này</div>'}
+                                    <div class="row text-center g-1">
+                                        <div class="col"><span class="text-muted">-2SD</span><br><strong>${b.standard_row.z_minus_2}</strong></div>
+                                        <div class="col"><span class="text-muted">-1SD</span><br><strong>${b.standard_row.z_minus_1}</strong></div>
+                                        <div class="col text-emerald"><span class="fw-bold">Chuẩn (0)</span><br><strong>${b.standard_row.z_0}</strong></div>
+                                        <div class="col"><span class="text-muted">+1SD</span><br><strong>${b.standard_row.z_plus_1}</strong></div>
+                                        <div class="col"><span class="text-muted">+2SD</span><br><strong>${b.standard_row.z_plus_2}</strong></div>
+                                    </div>
                                 </div>
-                                <div class="fs-12 text-slate">
-                                    Kết luận thể trạng: <strong class="text-purple">${b.assessment}</strong>
+                                ` : ''}
+                                <div class="fs-13 fw-semibold text-slate">
+                                    ==> Đánh giá thể trạng: <span class="badge-soft-neutral text-emerald fw-bold fs-12">${b.assessment}</span>
                                 </div>
                             </div>
                         </div>
@@ -658,6 +669,8 @@
                             <td><strong style="color: #d97706;">${row.pred_height} cm</strong></td>
                             <td><span class="text-muted">${row.who_height} cm</span></td>
                             <td>${row.target_height ? '<strong style="color: #e05263;">' + row.target_height + ' cm</strong>' : '--'}</td>
+                            <td>${row.genetic_height ? '<span class="fw-semibold" style="color: #0891b2;">' + row.genetic_height + ' cm</span>' : '<span class="text-muted">--</span>'}</td>
+                            <td>${row.final_pred_height ? '<strong style="color: #059669;">' + row.final_pred_height + ' cm</strong>' : '<span class="text-muted">--</span>'}</td>
                         </tr>
                     `;
                 });

@@ -966,7 +966,18 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $prevPredH = $currentHeight;
         $predictionHeights = [];
 
+        // Tỷ lệ di truyền so với chuẩn WHO trưởng thành (mốc 19 tuổi)
+        $whoAdultHeight = $whoHeights[$maxAge] ?? ($genderVal == 1 ? 176.5 : 163.2);
+        if ($whoAdultHeight <= 0) {
+            $wAdult = $this->getWho(19 * 12, $gender);
+            $whoAdultHeight = $wAdult ? (float)$wAdult->height : ($genderVal == 1 ? 176.5 : 163.2);
+        }
+        $geneticRatio = ($midParentHeight > 0 && $whoAdultHeight > 0)
+            ? round($midParentHeight / $whoAdultHeight, 4)
+            : null;
+
         // Mốc hiện tại
+        $currentGeneticHeight = $geneticRatio !== null ? round($whoCurrentHeight * $geneticRatio, 1) : null;
         $simulationMatrix[] = [
             'age' => (float)$currentAge,
             'label' => 'Hiện tại (' . $currentAge . 't)',
@@ -976,6 +987,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             'growth_delta' => 0.0,
             'pred_height' => round($currentHeight, 1),
             'who_height' => round($whoCurrentHeight, 1),
+            'genetic_height' => $currentGeneticHeight,
+            'final_pred_height' => round($currentHeight, 1),
             'target_height' => round($currentHeight, 1),
         ];
 
@@ -1002,6 +1015,10 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             $predictionHeights[$age] = $predH;
 
             $whoAtAge = $whoHeights[$age] ?? 0.0;
+            $geneticAtAge = $geneticRatio !== null ? round($whoAtAge * $geneticRatio, 1) : null;
+            $finalPredH = $geneticAtAge !== null
+                ? round(($predH * 0.9) + ($geneticAtAge * 0.1), 1)
+                : round($predH, 1);
 
             $simulationMatrix[] = [
                 'age' => (float)$age,
@@ -1012,6 +1029,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 'growth_delta' => $growthDelta,
                 'pred_height' => round($predH, 1),
                 'who_height' => round($whoAtAge, 1),
+                'genetic_height' => $geneticAtAge,
+                'final_pred_height' => $finalPredH,
                 'target_height' => null,
             ];
         }
@@ -1090,6 +1109,10 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 'father_height' => $fatherHeight,
                 'mother_height' => $motherHeight,
                 'mid_parent_height' => $midParentHeight,
+                'who_adult_height' => $whoAdultHeight,
+                'genetic_ratio' => $geneticRatio,
+                'pred_weight' => 0.9,
+                'genetic_weight' => 0.1,
                 'formula' => $geneticFormula ?: 'Thiếu chiều cao Bố hoặc Mẹ',
             ],
             'speed_calculation' => [
