@@ -43,11 +43,11 @@ class QuizIQRequest extends BaseRequest
             'selected_questions' => [
                 'required',
                 function ($attribute, $value, $fail) use ($selectedQuestions) {
-                    if ((request()->type === QuestionType::IQ->value ) && count($selectedQuestions) < 1) {
-                        $fail('Bài kiểm tra phải chọn ít nhất 1 câu hỏi.');
-                    }
-                    if (request()->type === QuestionType::IQ->value && count($selectedQuestions) !== 15) {
-                        $fail('Bài kiểm tra IQ phải có đúng 15 câu hỏi.');
+                    if (request()->type === QuestionType::IQ->value) {
+                        $count = count($selectedQuestions);
+                        if ($count < 12 || $count > 15) {
+                            $fail('Bài kiểm tra IQ phải có từ 12 đến 15 câu hỏi.');
+                        }
                     }
                 },
             ],
@@ -60,7 +60,7 @@ class QuizIQRequest extends BaseRequest
     public function messages(): array
     {
         return [
-            'question_ids.min' => 'Bài kiểm tra phải có đủ 15 câu hỏi.',
+            'question_ids.min' => 'Bài kiểm tra phải có từ 12 đến 15 câu hỏi.',
             'question_ids.required' => 'Bạn phải chọn ít nhất một câu hỏi cho bài kiểm tra.',
             'question_ids.*.exists' => 'Câu hỏi được chọn không tồn tại.'
         ];

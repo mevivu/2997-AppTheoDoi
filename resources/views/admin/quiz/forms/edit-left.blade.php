@@ -68,7 +68,7 @@
                 <i class="ti ti-info-circle fs-3 me-2 text-info flex-shrink-0"></i>
                 <div class="fs-13">
                     <strong>{{ __('Quy định số lượng:') }}</strong>
-                    {{ __('Bài kiểm tra IQ bắt buộc phải có đúng') }} <strong class="text-primary fs-14">15</strong> {{ __('câu hỏi.') }}
+                    {{ __('Bài kiểm tra IQ cho phép có từ') }} <strong class="text-primary fs-14">12 đến 15</strong> {{ __('câu hỏi.') }}
                     <span id="iq-validation-notice" class="ms-2 fw-semibold"></span>
                 </div>
             </div>

@@ -18,8 +18,8 @@
             $('#estimated-time').text(Math.round(count * 1.5));
 
             if (isIQ) {
-                if (count < 15) {
-                    const diff = 15 - count;
+                if (count < 12) {
+                    const diff = 12 - count;
                     $('#checked-count')
                         .attr('class', 'badge bg-warning text-dark fw-bold')
                         .html(`<i class="ti ti-alert-triangle me-1"></i>${count}/15 câu (thiếu ${diff} câu)`);
@@ -30,7 +30,7 @@
                     
                     $('#iq-validation-notice')
                         .attr('class', 'ms-2 fw-bold text-warning')
-                        .html(`— ⚠️ Hiện tại mới chọn <strong>${count}/15</strong> câu (cần thêm <strong>${diff}</strong> câu)`);
+                        .html(`— ⚠️ Hiện tại mới chọn <strong>${count}</strong> câu (cần thêm ít nhất <strong>${diff}</strong> câu để đạt 12 - 15 câu)`);
 
                     $('#sidebar-validation-badge')
                         .attr('class', 'badge bg-warning-lt text-warning fw-bold fs-11')
@@ -38,11 +38,11 @@
 
                     $('#sidebar-status-text')
                         .attr('class', 'stat-sub text-warning fw-semibold')
-                        .html(`<i class="ti ti-alert-circle me-1"></i>Cần chọn thêm ${diff} câu để đủ 15 câu`);
-                } else if (count === 15) {
+                        .html(`<i class="ti ti-alert-circle me-1"></i>Cần tối thiểu 12 câu (thiếu ${diff} câu)`);
+                } else if (count >= 12 && count <= 15) {
                     $('#checked-count')
                         .attr('class', 'badge bg-success fw-bold')
-                        .html(`<i class="ti ti-check me-1"></i>Đã đủ 15/15 câu chuẩn`);
+                        .html(`<i class="ti ti-check me-1"></i>Hợp lệ (${count}/15 câu)`);
 
                     $('#iq-rule-alert')
                         .attr('class', 'alert alert-success d-flex align-items-center py-2 px-3 mb-3 border-0 bg-success-lt rounded-3')
@@ -50,15 +50,15 @@
 
                     $('#iq-validation-notice')
                         .attr('class', 'ms-2 fw-bold text-success')
-                        .html(`— ✅ Tuyệt vời! Đã chọn đủ đúng <strong>15/15</strong> câu hỏi.`);
+                        .html(`— ✅ Tuyệt vời! Đã chọn <strong>${count}</strong> câu hỏi (nằm trong khoảng chuẩn 12 - 15 câu).`);
 
                     $('#sidebar-validation-badge')
                         .attr('class', 'badge bg-success-lt text-success fw-bold fs-11')
-                        .html(`<i class="ti ti-check me-1"></i>Chuẩn 15/15`);
+                        .html(`<i class="ti ti-check me-1"></i>Hợp lệ (${count}/15)`);
 
                     $('#sidebar-status-text')
                         .attr('class', 'stat-sub text-success fw-semibold')
-                        .html(`<i class="ti ti-circle-check me-1"></i>Đã đủ số lượng câu hỏi quy định`);
+                        .html(`<i class="ti ti-circle-check me-1"></i>Đã đủ số lượng câu hỏi quy định (12 - 15 câu)`);
                 } else {
                     const diff = count - 15;
                     $('#checked-count')
@@ -71,7 +71,7 @@
 
                     $('#iq-validation-notice')
                         .attr('class', 'ms-2 fw-bold text-danger')
-                        .html(`— ❌ Đang vượt quá <strong>${diff}</strong> câu (cần bỏ bớt để đủ 15 câu)`);
+                        .html(`— ❌ Đang vượt quá <strong>${diff}</strong> câu (tối đa cho phép 15 câu)`);
 
                     $('#sidebar-validation-badge')
                         .attr('class', 'badge bg-danger-lt text-danger fw-bold fs-11')
@@ -79,7 +79,7 @@
 
                     $('#sidebar-status-text')
                         .attr('class', 'stat-sub text-danger fw-semibold')
-                        .html(`<i class="ti ti-alert-circle me-1"></i>Cần bỏ bớt ${diff} câu để đủ 15 câu`);
+                        .html(`<i class="ti ti-alert-circle me-1"></i>Cần bỏ bớt ${diff} câu để không quá 15 câu`);
                 }
             } else {
                 $('#checked-count').attr('class', 'badge bg-success fw-bold').text(count + ' câu');
@@ -159,13 +159,13 @@
                 const isIQ = (type === 'iq' || type === 'IQ' || type == '{{ \App\Enums\Question\QuestionType::IQ->value }}');
                 if (isIQ) {
                     const count = selectedQuestionIds.length;
-                    if (count !== 15) {
+                    if (count < 12 || count > 15) {
                         e.preventDefault();
                         e.stopPropagation();
 
-                        const msg = count < 15
-                            ? `Bài kiểm tra IQ phải có đúng 15 câu hỏi. Hiện tại bạn mới chọn ${count}/15 câu (thiếu ${15 - count} câu).`
-                            : `Bài kiểm tra IQ phải có đúng 15 câu hỏi. Hiện tại bạn đang chọn ${count}/15 câu (thừa ${count - 15} câu).`;
+                        const msg = count < 12
+                            ? `Bài kiểm tra IQ phải có từ 12 đến 15 câu hỏi. Hiện tại bạn mới chọn ${count} câu (thiếu ít nhất ${12 - count} câu).`
+                            : `Bài kiểm tra IQ cho phép tối đa 15 câu hỏi. Hiện tại bạn đang chọn ${count} câu (thừa ${count - 15} câu).`;
 
                         if (typeof msgWarning === 'function') {
                             msgWarning(msg);

@@ -7,12 +7,12 @@
                 <i class="ti ti-award me-1"></i>{{ __('Tổng câu hỏi đã chọn') }}
             </div>
             <span id="sidebar-validation-badge" class="badge bg-success-lt fw-bold fs-11">
-                <i class="ti ti-check me-1"></i>{{ __('15/15 câu') }}
+                <i class="ti ti-check me-1"></i>{{ $selected_questions->count() >= 12 && $selected_questions->count() <= 15 ? __('Hợp lệ (' . $selected_questions->count() . '/15 câu)') : __('12 - 15 câu') }}
             </span>
         </div>
         <div class="d-flex align-items-baseline gap-2">
             <span class="stat-count" id="sidebar-selected-count">{{ $selected_questions->count() }}</span>
-            <span class="fs-13 fw-semibold text-primary">/ 15 {{ __('câu') }}</span>
+            <span class="fs-13 fw-semibold text-primary">/ 12 - 15 {{ __('câu') }}</span>
         </div>
         <div class="stat-sub" id="sidebar-status-text">
             <i class="ti ti-clock me-1"></i>{{ __('Thời gian làm bài: ~') }}<span id="estimated-time">{{ round($selected_questions->count() * 1.5) }}</span> {{ __('phút') }}
