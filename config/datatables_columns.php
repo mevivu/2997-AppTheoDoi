@@ -2223,12 +2223,12 @@ return [
             'addClass' => 'text-center align-middle',
         ],
         'total_duration' => [
-            'title' => '<div class="header-cell-content"><i class="ti ti-clock"></i><span>Thời lượng</span></div>',
+            'title' => '<div class="header-cell-content"><i class="ti ti-clock"></i><span>Thời lượng / ván</span></div>',
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
         'total_rounds' => [
-            'title' => '<div class="header-cell-content"><i class="ti ti-repeat"></i><span>Số lượt</span></div>',
+            'title' => '<div class="header-cell-content"><i class="ti ti-repeat"></i><span>Số ván</span></div>',
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
