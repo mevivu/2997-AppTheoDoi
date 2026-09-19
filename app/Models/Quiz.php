@@ -28,14 +28,15 @@ class Quiz extends Model
         /* Trạng thái */
         'status',
         /** Loại */
-        'age_group'
-
+        'age_group',
+        /** Số lần chơi Memo Game (IQ) */
+        'game_plays',
     ];
     protected $casts = [
         'type' => QuestionType::class,
         'status' => ActiveStatus::class,
         'age_group' => AgeGroup::class,
-
+        'game_plays' => 'integer',
     ];
 
     public function questions(): BelongsToMany

@@ -23,6 +23,7 @@ class QuizIQRequest extends BaseRequest
             'title' => ['required', 'string'],
             'age' => ['nullable', 'numeric', new UniqueQuiz(request()->type)],
             'type' => ['required', new Enum(QuestionType::class)],
+            'game_plays' => ['nullable', 'integer', 'min:1', 'max:20'],
             'description' => ['nullable', 'string'],
             'age_group' => ['nullable', new Enum(AgeGroup::class)]
         ];
@@ -37,6 +38,7 @@ class QuizIQRequest extends BaseRequest
             'id' => ['required', 'exists:App\Models\Quiz,id'],
             'title' => ['required', 'string'],
             'type' => ['required', new Enum(QuestionType::class)],
+            'game_plays' => ['nullable', 'integer', 'min:1', 'max:20'],
             'description' => ['nullable', 'string'],
             'age' => ['nullable', 'numeric', new UniqueQuiz(request()->type, $quizId)],
             'selected_questions.*' => ['exists:questions,id'],
@@ -60,6 +62,9 @@ class QuizIQRequest extends BaseRequest
     public function messages(): array
     {
         return [
+            'game_plays.integer' => 'Số lần chơi game phải là số nguyên hợp lệ.',
+            'game_plays.min' => 'Số lần chơi game phải từ ít nhất 1 lần.',
+            'game_plays.max' => 'Số lần chơi game tối đa là 20 lần.',
             'question_ids.min' => 'Bài kiểm tra phải có đủ 15 câu hỏi.',
             'question_ids.required' => 'Bạn phải chọn ít nhất một câu hỏi cho bài kiểm tra.',
             'question_ids.*.exists' => 'Câu hỏi được chọn không tồn tại.'

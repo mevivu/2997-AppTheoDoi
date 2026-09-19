@@ -28,8 +28,15 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
         $childName = $child->fullname;
         $type = QuestionType::IQ->value;
 
-        // Điểm Memo Game (0 hoặc 1)
-        $gameScore = (int) ($data['game_score'] ?? 0);
+        // Số lần chơi game cấu hình cho bài test (mặc định 3 lần)
+        $gamePlays = (int) ($quiz->game_plays ?? 3);
+        if ($gamePlays < 1) {
+            $gamePlays = 3;
+        }
+
+        // Điểm Memo Game (mỗi lần chiến thắng = 1 điểm, tối đa $gamePlays điểm)
+        $rawGameScore = (int) ($data['game_score'] ?? 0);
+        $gameScore = max(0, min($rawGameScore, $gamePlays));
 
         // Khởi tạo điểm cho các nhóm năng lực IQ
         $groupTotals = [
@@ -73,11 +80,9 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
             }
         }
 
-        // Memo Game được tính là 1 câu thuộc nhóm Trí nhớ (Memory)
-        $groupTotals['memory']++;
-        if ($gameScore === 1) {
-            $groupCorrects['memory']++;
-        }
+        // Memo Game được tính tương ứng $gamePlays câu thuộc nhóm Trí nhớ (Memory)
+        $groupTotals['memory'] += $gamePlays;
+        $groupCorrects['memory'] += $gameScore;
 
         foreach (['linguistic', 'logic_math', 'visual', 'memory'] as $gk) {
             $tot = $groupTotals[$gk];
@@ -86,15 +91,16 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
         }
 
         // Công thức tính điểm IQ V2:
-        // Tổng số mục đánh giá = 12 câu + 1 ván game = 13
-        // Tổng số đúng = correctCount (0-12) + gameScore (0-1)
-        $totalItems = $totalQuestionCount + 1;
+        // Tổng số mục đánh giá = số câu hỏi trắc nghiệm + số lần chơi game ($gamePlays)
+        // Tổng số đúng = correctCount + gameScore
+        $totalItems = $totalQuestionCount + $gamePlays;
         $totalCorrect = $correctCount + $gameScore;
         $scoreValue = $totalCorrect * 10;
         $totalValue = $totalItems * 10;
         $result = "{$scoreValue}/{$totalValue}";
 
-        $data['score'] = min(10, floor($totalCorrect / 1.5));
+        $divisor = $totalItems > 0 ? ($totalItems / 10.0) : 1.5;
+        $data['score'] = min(10, (int) floor($totalCorrect / $divisor));
         $data['result'] = $result;
         $data['type'] = $type;
         $data['version'] = 'v2';

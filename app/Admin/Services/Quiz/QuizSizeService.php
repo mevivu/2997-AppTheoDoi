@@ -68,6 +68,7 @@ class QuizSizeService implements QuizServiceInterface
     {
         $data = $request->validated();
         $data['status'] = ActiveStatus::Active;
+        $data['game_plays'] = isset($data['game_plays']) && $data['game_plays'] !== '' ? (int)$data['game_plays'] : 3;
         $questionIds = json_decode($data['selected_questions'] ?? '[]', true);
 
         $quiz = $this->repository->create($data);
@@ -117,6 +118,9 @@ class QuizSizeService implements QuizServiceInterface
     {
 
         $data = $request->validated();
+        if (isset($data['game_plays'])) {
+            $data['game_plays'] = $data['game_plays'] !== '' ? (int)$data['game_plays'] : 3;
+        }
         $questionItems = json_decode($data['selected_questions'] ?? '[]', true);
         $quiz = $this->repository->update($data['id'], $data);
 

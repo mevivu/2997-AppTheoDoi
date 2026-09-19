@@ -13,19 +13,34 @@
         </div>
         <div class="card-body">
             <div class="row g-3">
-                <!-- title -->
-                <div class="col-12 col-md-8">
-                    <label class="form-label fw-bold text-dark">@lang('title') <span class="text-danger">*</span></label>
-                    <x-input type="text" name="title" :value="$instance->title" :required="true"
-                             :placeholder="__('Nhập tên bài kiểm tra...')" />
-                </div>
-
                 @if ($instance->type == QuestionType::IQ || $instance->type->value == QuestionType::IQ->value)
+                    <!-- title -->
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-bold text-dark">@lang('title') <span class="text-danger">*</span></label>
+                        <x-input type="text" name="title" :value="$instance->title" :required="true"
+                                 :placeholder="__('Nhập tên bài kiểm tra...')" />
+                    </div>
+
                     <!-- age -->
-                    <div class="col-12 col-md-4">
+                    <div class="col-6 col-md-3">
                         <label class="form-label fw-bold text-dark">@lang('age') (tuổi) <span class="text-danger">*</span></label>
                         <x-input type="number" name="age" :value="$instance->age" :required="true"
                                  :placeholder="__('Độ tuổi (VD: 1, 2, 3...)')" min="1" max="100" />
+                    </div>
+
+                    <!-- game_plays -->
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold text-dark">{{ __('Số lần chơi game') }} <span class="text-danger">*</span></label>
+                        <x-input type="number" name="game_plays" :value="$instance->game_plays ?? 3" :required="true"
+                                 :placeholder="__('Mặc định: 3')" min="1" max="20" />
+                        <small class="form-hint text-muted">{{ __('1 lần = 1 điểm (Mặc định: 3)') }}</small>
+                    </div>
+                @else
+                    <!-- title -->
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-dark">@lang('title') <span class="text-danger">*</span></label>
+                        <x-input type="text" name="title" :value="$instance->title" :required="true"
+                                 :placeholder="__('Nhập tên bài kiểm tra...')" />
                     </div>
                 @endif
 

@@ -14,6 +14,7 @@ class QuizIQResource extends ResourceCollection
                 'id' => $quiz->id,
                 'age' => $quiz->age,
                 'type' => $quiz->type,
+                'game_plays' => (int) ($quiz->game_plays ?? 3),
                 'questions' => QuestionResource::collection($quiz->questions),
             ];
         });
