@@ -1,5 +1,6 @@
 @php
     use App\Enums\Question\QuestionType;
+    use App\Traits\RouteAdminSystem;
     $children = $user->children;
 @endphp
 
@@ -41,17 +42,24 @@
                 <div>
                     <!-- Child Top Header -->
                     <div class="d-flex align-items-center gap-3 mb-2">
-                        @if($child->avatar && file_exists(public_path($child->avatar)))
-                            <img src="{{ asset($child->avatar) }}" alt="{{ $child->fullname }}" class="child-avatar" style="width: 58px; height: 58px;">
-                        @else
-                            <div class="child-avatar-initials">
-                                {{ $childInitials ?: 'BÉ' }}
-                            </div>
-                        @endif
+                        <a href="{{ route(RouteAdminSystem::CHILDREN_EDIT, $child->id) }}" target="_blank" class="text-decoration-none d-inline-block position-relative" title="{{ __('Xem hồ sơ chi tiết của bé') }}">
+                            @if($child->avatar && file_exists(public_path($child->avatar)))
+                                <img src="{{ asset($child->avatar) }}" alt="{{ $child->fullname }}" class="child-avatar" style="width: 58px; height: 58px; border-radius: 50%; object-fit: cover;">
+                            @else
+                                <div class="child-avatar-initials">
+                                    {{ $childInitials ?: 'BÉ' }}
+                                </div>
+                            @endif
+                        </a>
 
-                        <div class="flex-grow-1">
+                        <div class="flex-grow-1 min-w-0">
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
-                                <h5 class="mb-0 fw-bold text-dark fs-15">{{ $child->fullname }}</h5>
+                                <a href="{{ route(RouteAdminSystem::CHILDREN_EDIT, $child->id) }}" target="_blank" class="child-fullname-link text-decoration-none" title="{{ __('Xem hồ sơ chi tiết của bé') }}">
+                                    <h5 class="mb-0 fw-bold text-dark fs-15 d-inline-flex align-items-center gap-1">
+                                        {{ $child->fullname }}
+                                        <i class="ti ti-external-link fs-14 text-muted"></i>
+                                    </h5>
+                                </a>
                                 <div class="d-flex align-items-center gap-1">
                                     @if($child->gender)
                                         <span class="badge {{ $child->gender->value == 1 ? 'bg-blue-lt' : 'bg-pink-lt' }}">
@@ -61,6 +69,10 @@
                                     @if($child->status)
                                         <span class="badge {{ $child->status->badge() }}">{{ $child->status->description() }}</span>
                                     @endif
+                                    <a href="{{ route(RouteAdminSystem::CHILDREN_EDIT, $child->id) }}" target="_blank" class="btn btn-sm btn-outline-primary px-2 py-0.5 rounded-pill fs-11 fw-semibold d-inline-flex align-items-center gap-1" title="{{ __('Xem hồ sơ chi tiết của bé') }}">
+                                        <i class="ti ti-id fs-12"></i>
+                                        <span>{{ __('Hồ sơ bé') }}</span>
+                                    </a>
                                 </div>
                             </div>
 
@@ -103,6 +115,14 @@
 
                 <!-- Assessment Action Buttons -->
                 <div class="child-actions-bar">
+                    <a href="{{ route(RouteAdminSystem::CHILDREN_EDIT, $child->id) }}"
+                       target="_blank"
+                       class="btn-assessment-action btn-detail"
+                       title="{{ __('Xem hồ sơ chi tiết, dự báo chiều cao & lộ trình phát triển của bé') }}">
+                        <i class="ti ti-user-circle fs-5"></i>
+                        <span>{{ __('Chi tiết trẻ') }}</span>
+                    </a>
+
                     <a href="{{ route('admin.rating.iq', ['child_id' => $child->id]) }}"
                        class="btn-assessment-action btn-iq"
                        title="{{ __('Xem chi tiết đánh giá IQ của bé') }}">

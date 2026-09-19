@@ -2491,6 +2491,23 @@ span.select2.select2-container.select2-container--bootstrap-5 {
     color: #ffffff;
 }
 
+.btn-assessment-action.btn-detail {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+.btn-assessment-action.btn-detail:hover {
+    background: #1d4ed8;
+    color: #ffffff;
+}
+
+.child-fullname-link:hover h5 {
+    color: #206bc4 !important;
+}
+.child-fullname-link:hover .ti-external-link {
+    color: #206bc4 !important;
+}
+
 /* ============================================
    CHILD PROFILE CRM & ASSESSMENT DETAILS
    ============================================ */
