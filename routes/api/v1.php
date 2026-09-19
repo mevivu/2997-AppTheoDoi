@@ -185,6 +185,18 @@ Route::controller(\App\Api\V1\Http\Controllers\Rating\RatingController::class)
         Route::delete('/{id}', 'delete');
     });
 
+// Rating V2 (IQ V2 với Memo Game)
+Route::post('/ratings/iq-v2', [\App\Api\V1\Http\Controllers\Rating\RatingV2Controller::class, 'storeIQV2']);
+
+// Memo Game (cho App User)
+Route::controller(\App\Api\V1\Http\Controllers\Memo\MemoGameController::class)
+    ->prefix('/memo-game')
+    ->as('memoGame.')
+    ->group(function () {
+        Route::get('/age-configs', 'getAgeConfigs');
+        Route::get('/data', 'getGameData');
+    });
+
 // Rating PQ
 Route::controller(\App\Api\V1\Http\Controllers\RatingPQ\RatingPQController::class)
     ->prefix('/rating-pqs')

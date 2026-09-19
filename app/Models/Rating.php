@@ -63,7 +63,21 @@ class Rating extends Model
         /** Hình ảnh (IQ) */
         'visual',
         /** Trí nhớ (IQ) */
-        'memory'
+        'memory',
+        /** Version (v1, v2) */
+        'version',
+        /** Điểm memo game (0 hoặc 1) */
+        'game_score',
+        /** Thời gian chơi game (giây) */
+        'game_duration_spent',
+        /** Số cặp ghép đúng */
+        'game_pairs_matched',
+        /** Số lần lật sai */
+        'game_mistakes',
+        /** Chủ đề memo game */
+        'memo_theme_id',
+        /** Cấu hình độ tuổi memo game */
+        'memo_age_config_id'
     ];
     protected $casts = [
         'type' => QuestionType::class,
@@ -75,5 +89,13 @@ class Rating extends Model
         return $this->belongsTo(Child::class, 'child_id');
     }
 
+    public function memoTheme(): BelongsTo
+    {
+        return $this->belongsTo(MemoTheme::class, 'memo_theme_id');
+    }
 
+    public function memoAgeConfig(): BelongsTo
+    {
+        return $this->belongsTo(MemoAgeConfig::class, 'memo_age_config_id');
+    }
 }
