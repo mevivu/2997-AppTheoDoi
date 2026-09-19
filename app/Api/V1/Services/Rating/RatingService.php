@@ -109,18 +109,28 @@ class RatingService implements RatingServiceInterface
             'visual' => 0,
             'memory' => 0,
         ];
+        $quizQuestionIds = $quizQuestions->pluck('id')->toArray();
         $correctCount = 0;
+        $processedQuestions = [];
         foreach ($answers as $answer) {
+            $qId = (int) ($answer['question_id'] ?? 0);
+            $ansId = (int) ($answer['answer_id'] ?? 0);
+
+            if (!$qId || !in_array($qId, $quizQuestionIds) || isset($processedQuestions[$qId])) {
+                continue;
+            }
+            $processedQuestions[$qId] = true;
+
             $correct = $this->answerRepository->getByQueryBuilder(
                 [
-                    'id' => $answer['answer_id'],
-                    'question_id' => $answer['question_id'],
+                    'id' => $ansId,
+                    'question_id' => $qId,
                     'is_correct' => true
                 ]
             )->exists();
             if ($correct) {
                 $correctCount++;
-                $q = $quizQuestions->firstWhere('id', $answer['question_id']);
+                $q = $quizQuestions->firstWhere('id', $qId);
                 if ($q && $q->group) {
                     $gt = is_object($q->group->type) ? $q->group->type->value : $q->group->type;
                     if (isset($groupCorrects[$gt])) {
@@ -136,6 +146,7 @@ class RatingService implements RatingServiceInterface
             $data[$gk] = $tot > 0 ? "{$cor}/{$tot}" : null;
         }
 
+        $correctCount = min($totalCount, $correctCount);
         $scoreValue = $correctCount * 10;
         $totalValue = $totalCount * 10;
         $result = $totalCount > 0 ? "{$scoreValue}/{$totalValue}" : "0/0";

@@ -82,17 +82,28 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
             'visual' => 0,
             'memory' => 0,
         ];
+        $quizQuestionIds = $quizQuestions->pluck('id')->toArray();
         $correctCount = 0;
+        $processedQuestions = [];
         foreach ($answers as $answer) {
+            $qId = (int) ($answer['question_id'] ?? 0);
+            $ansId = (int) ($answer['answer_id'] ?? 0);
+
+            // Bắt buộc câu hỏi phải thuộc bài trắc nghiệm hiện tại và tránh xử lý trùng lặp
+            if (!$qId || !in_array($qId, $quizQuestionIds) || isset($processedQuestions[$qId])) {
+                continue;
+            }
+            $processedQuestions[$qId] = true;
+
             $correct = $this->answerRepository->getByQueryBuilder([
-                'id' => $answer['answer_id'],
-                'question_id' => $answer['question_id'],
+                'id' => $ansId,
+                'question_id' => $qId,
                 'is_correct' => true
             ])->exists();
 
             if ($correct) {
                 $correctCount++;
-                $q = $quizQuestions->firstWhere('id', $answer['question_id']);
+                $q = $quizQuestions->firstWhere('id', $qId);
                 if ($q && $q->group) {
                     $gt = is_object($q->group->type) ? $q->group->type->value : $q->group->type;
                     if (isset($groupCorrects[$gt])) {
@@ -114,9 +125,9 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
 
         // Công thức tính điểm IQ V2:
         // Tổng số mục đánh giá = số câu hỏi trắc nghiệm + số lần chơi game ($gamePlays)
-        // Tổng số đúng = correctCount + gameScore
+        // Tổng số đúng = correctCount (của quiz hiện tại) + gameScore
         $totalItems = $totalQuestionCount + $gamePlays;
-        $totalCorrect = $correctCount + $gameScore;
+        $totalCorrect = min($totalItems, $correctCount + $gameScore);
         $scoreValue = $totalCorrect * 10;
         $totalValue = $totalItems * 10;
         $result = "{$scoreValue}/{$totalValue}";
