@@ -385,5 +385,41 @@ class RouteAdminSystem
     const MEMO_PLAY_INDEX = 'admin.memo-game.play.index';
     const MEMO_PLAY_DATA = 'admin.memo-game.play.data';
     const MEMO_PLAY_SUBMIT = 'admin.memo-game.play.submit';
+
+    /**
+     * Helper URL dẫn đến trang chi tiết trẻ em tại tab #childrenInfo trong trang sửa thông tin phụ huynh
+     * Fallback sang route sửa trẻ em nếu không có thông tin phụ huynh
+     *
+     * @param mixed $child
+     * @param int|null $userId
+     * @return string
+     */
+    public static function childDetailUrl($child = null, $userId = null): string
+    {
+        if (!$child && !$userId) {
+            return '#';
+        }
+
+        $childId = null;
+        if (is_object($child)) {
+            $userId = $userId ?: ($child->user_id ?? ($child->user?->id ?? null));
+            $childId = $child->id ?? null;
+        } elseif (is_array($child)) {
+            $userId = $userId ?: ($child['user_id'] ?? null);
+            $childId = $child['id'] ?? null;
+        } elseif (is_numeric($child)) {
+            $childId = $child;
+        }
+
+        if ($userId) {
+            return route(self::USER_EDIT, $userId) . '#childrenInfo';
+        }
+
+        if ($childId) {
+            return route(self::CHILDREN_EDIT, $childId);
+        }
+
+        return '#';
+    }
 }
 

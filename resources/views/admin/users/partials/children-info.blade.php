@@ -36,7 +36,7 @@
             }
             $childInitials = mb_strtoupper($childInitials);
         @endphp
-        <div class="col-12 col-xl-6">
+        <div class="col-12 col-xl-6" id="child-{{ $child->id }}">
             <div class="child-assessment-card">
                 <div>
                     <!-- Child Top Header -->

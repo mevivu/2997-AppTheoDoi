@@ -203,12 +203,18 @@ $(document).ready(function () {
         });
     });
 
-    // Tự động khôi phục tab đang chọn từ URL Hash (Ví dụ: #devicesInfo)
+    // Tự động khôi phục tab đang chọn từ URL Hash (Ví dụ: #childrenInfo, #devicesInfo)
     const hash = window.location.hash;
     if (hash) {
         const targetTabBtn = $('button[data-bs-target="' + hash + '"]');
         if (targetTabBtn.length) {
-            targetTabBtn.tab('show');
+            if (typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+                bootstrap.Tab.getOrCreateInstance(targetTabBtn[0]).show();
+            } else if (typeof targetTabBtn.tab === 'function') {
+                targetTabBtn.tab('show');
+            } else {
+                targetTabBtn.trigger('click');
+            }
         }
     }
 
