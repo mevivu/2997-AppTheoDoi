@@ -25,6 +25,13 @@ class MemoGameBuilderService
             ->first();
 
         if (!$ageConfig) {
+            // Fallback nếu độ tuổi chưa có cấu hình riêng: lấy cấu hình thấp nhất nếu age nhỏ hoặc cao nhất nếu age lớn
+            $ageConfig = MemoAgeConfig::where('status', ActiveStatus::Active->value)
+                ->orderBy('min_age', 'asc')
+                ->first();
+        }
+
+        if (!$ageConfig) {
             return [];
         }
 
@@ -38,6 +45,13 @@ class MemoGameBuilderService
             ->where('age', $age)
             ->inRandomOrder()
             ->get();
+
+        // Fallback: nếu không có chủ đề theo đúng độ tuổi, lấy tất cả các chủ đề active đang có
+        if ($activeThemes->isEmpty()) {
+            $activeThemes = MemoTheme::where('status', ActiveStatus::Active->value)
+                ->inRandomOrder()
+                ->get();
+        }
 
         if ($activeThemes->isEmpty()) {
             return [];

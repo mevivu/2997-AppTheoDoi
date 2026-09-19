@@ -46,7 +46,8 @@ class MemoGameDataResource extends JsonResource
                 'columns' => (int) $ageConfig->columns,
                 'total_cards' => (int) ($ageConfig->rows * $ageConfig->columns),
                 'pairs_count' => (int) ($this['needed_pairs'] ?? $ageConfig->pairs_count),
-                'total_duration' => 540, // 9 phút cho IQ V2
+                'total_duration' => (int) ($ageConfig->total_duration ?: 180),
+                'total_rounds' => (int) ($ageConfig->total_rounds ?: 3),
                 'peek_time' => (int) ($ageConfig->peek_time ?: 3),
             ],
             'cards' => array_map(function ($card) {
