@@ -14,11 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('quizzes', function (Blueprint $table) {
-            if (!Schema::hasColumn('quizzes', 'game_plays')) {
-                $table->unsignedInteger('game_plays')
-                    ->default(3)
-                    ->after('type')
-                    ->comment('Số lần chơi Memo Game (1 lần = 1 điểm, mặc định 3)');
+            if (Schema::hasColumn('quizzes', 'game_plays')) {
+                $table->dropColumn('game_plays');
             }
         });
     }
@@ -31,8 +28,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('quizzes', function (Blueprint $table) {
-            if (Schema::hasColumn('quizzes', 'game_plays')) {
-                $table->dropColumn('game_plays');
+            if (!Schema::hasColumn('quizzes', 'game_plays')) {
+                $table->unsignedInteger('game_plays')
+                    ->default(3)
+                    ->after('type')
+                    ->comment('Số lần chơi Memo Game (1 lần = 1 điểm, mặc định 3)');
             }
         });
     }

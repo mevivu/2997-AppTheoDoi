@@ -30,18 +30,15 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
         $type = QuestionType::IQ->value;
 
         // Kiểm tra xem độ tuổi của bài test có cấu hình game phù hợp không
-        $memoGames = MemoGameBuilderService::buildRounds((int) ($quiz->age ?? 1), (int) ($quiz->game_plays ?? 3));
+        $memoGames = MemoGameBuilderService::buildRounds((int) ($quiz->age ?? 1));
         $hasGame = !empty($memoGames);
 
         if (!$hasGame) {
             $gamePlays = 0;
             $gameScore = 0;
         } else {
-            // Số lần chơi game cấu hình cho bài test (mặc định 3 lần)
-            $gamePlays = (int) ($quiz->game_plays ?? 3);
-            if ($gamePlays < 1) {
-                $gamePlays = 3;
-            }
+            // Số lần chơi game lấy theo cấu hình độ tuổi (total_rounds)
+            $gamePlays = count($memoGames);
 
             // Điểm Memo Game (mỗi lần chiến thắng = 1 điểm, tối đa $gamePlays điểm)
             $rawGameScore = (int) ($data['game_score'] ?? 0);

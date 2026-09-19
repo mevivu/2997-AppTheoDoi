@@ -11,16 +11,16 @@ class QuizIQResource extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->map(function ($quiz) {
-            $gamePlays = (int) ($quiz->game_plays ?? 3);
-            $memoGames = MemoGameBuilderService::buildRounds((int) ($quiz->age ?? 1), $gamePlays);
+            $memoGames = MemoGameBuilderService::buildRounds((int) ($quiz->age ?? 1));
             $hasGame = !empty($memoGames);
+            $gamePlays = count($memoGames);
 
             return [
                 'id' => $quiz->id,
                 'age' => $quiz->age,
                 'type' => $quiz->type,
                 'has_game' => $hasGame,
-                'game_plays' => $hasGame ? $gamePlays : 0,
+                'game_plays' => $gamePlays,
                 'memo_games' => $memoGames,
                 'questions' => QuestionResource::collection($quiz->questions),
             ];

@@ -14,15 +14,11 @@ class MemoGameBuilderService
      * Tạo danh sách N ván Memo Game với các chủ đề ngẫu nhiên khác nhau
      *
      * @param int $age Độ tuổi của bài kiểm tra
-     * @param int $gamePlays Số lượng ván game cần tạo (mặc định 3)
+     * @param int|null $gamePlays Số lượng ván game cần tạo (mặc định lấy từ cấu hình độ tuổi: total_rounds)
      * @return array Danh sách payload các ván chơi đã format qua MemoGameDataResource
      */
-    public static function buildRounds(int $age, int $gamePlays = 3): array
+    public static function buildRounds(int $age, ?int $gamePlays = null): array
     {
-        if ($gamePlays < 1) {
-            $gamePlays = 3;
-        }
-
         // 1. Xác định Age Config theo đúng độ tuổi
         $ageConfig = MemoAgeConfig::forAge($age)
             ->where('status', ActiveStatus::Active->value)
@@ -30,6 +26,11 @@ class MemoGameBuilderService
 
         if (!$ageConfig) {
             return [];
+        }
+
+        // Lấy số lượt chơi game từ cấu hình độ tuổi (total_rounds)
+        if ($gamePlays === null || $gamePlays < 1) {
+            $gamePlays = (int) ($ageConfig->total_rounds ?: 3);
         }
 
         // 2. Lấy các chủ đề đang active thuộc đúng độ tuổi của bài test
