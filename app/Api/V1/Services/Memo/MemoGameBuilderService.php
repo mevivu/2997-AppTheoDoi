@@ -36,10 +36,18 @@ class MemoGameBuilderService
             return [];
         }
 
-        // 2. Lấy tất cả các chủ đề đang active
+        // 2. Lấy các chủ đề đang active thuộc đúng độ tuổi của bài test
         $activeThemes = MemoTheme::where('status', ActiveStatus::Active->value)
+            ->where('age', $age)
             ->inRandomOrder()
             ->get();
+
+        // Cơ chế Fallback an toàn: Nếu độ tuổi này chưa có chủ đề riêng, fallback lấy các chủ đề active bất kỳ
+        if ($activeThemes->isEmpty()) {
+            $activeThemes = MemoTheme::where('status', ActiveStatus::Active->value)
+                ->inRandomOrder()
+                ->get();
+        }
 
         if ($activeThemes->isEmpty()) {
             $activeThemes = MemoTheme::all();

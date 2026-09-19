@@ -2123,6 +2123,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
+        'age' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Độ tuổi</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
         'cards_count' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-cards"></i><span>Số thẻ</span></div>',
             'orderable' => false,

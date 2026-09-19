@@ -22,6 +22,7 @@ class MemoThemeDataTable extends BaseDataTable
             'action' => 'admin.memo-game.theme.datatable.action',
             'status' => 'admin.memo-game.theme.datatable.status',
             'icon' => 'admin.memo-game.theme.datatable.icon',
+            'age' => 'admin.memo-game.theme.datatable.age',
             'checkbox' => 'admin.common.checkbox',
             'cards_count' => 'admin.memo-game.theme.datatable.cards-count',
         ];
@@ -70,6 +71,7 @@ class MemoThemeDataTable extends BaseDataTable
     {
         $this->customEditColumns = [
             'icon' => $this->view['icon'],
+            'age' => $this->view['age'],
             'status' => $this->view['status'],
             'cards_count' => $this->view['cards_count'],
             'action' => $this->view['action'],
@@ -86,6 +88,6 @@ class MemoThemeDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['checkbox', 'icon', 'status', 'cards_count', 'action'];
+        $this->customRawColumns = ['checkbox', 'icon', 'age', 'status', 'cards_count', 'action'];
     }
 }

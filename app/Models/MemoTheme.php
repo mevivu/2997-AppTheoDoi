@@ -24,6 +24,8 @@ class MemoTheme extends Model
         'name',
         /** Mã định danh chủ đề (vehicles, flowers, numbers...) */
         'code',
+        /** Độ tuổi áp dụng chủ đề (ví dụ: 1, 2, 3...) */
+        'age',
         /** Đường dẫn ảnh đại diện hoặc icon chủ đề */
         'icon',
         /** Đường dẫn hình ảnh mặt sau thẻ bài (mặt úp) */
@@ -44,7 +46,16 @@ class MemoTheme extends Model
     protected $casts = [
         'status' => ActiveStatus::class,
         'position' => 'integer',
+        'age' => 'integer',
     ];
+
+    /**
+     * Scope lọc chủ đề theo độ tuổi
+     */
+    public function scopeForAge($query, int $age)
+    {
+        return $query->where('age', $age);
+    }
 
     /**
      * Danh sách tất cả thẻ bài thuộc chủ đề này

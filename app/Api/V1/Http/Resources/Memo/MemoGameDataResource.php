@@ -36,6 +36,7 @@ class MemoGameDataResource extends JsonResource
                 'id' => $theme->id,
                 'name' => $theme->name,
                 'code' => $theme->code,
+                'age' => (int) ($theme->age ?? 1),
                 'card_back' => $cardBack ? asset($cardBack) : null,
             ],
             'age_config' => [

@@ -5,18 +5,26 @@
         </div>
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-5">
                     <div class="mb-3">
                         <label class="form-label fw-bold">{{ __('Tên chủ đề') }}: <span class="text-danger">*</span></label>
                         <x-input type="text" name="name" :value="$response->name" :required="true" />
                     </div>
                 </div>
 
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-4">
                     <div class="mb-3">
                         <label class="form-label fw-bold">{{ __('Mã code chủ đề') }}: <span class="text-danger">*</span></label>
                         <x-input type="text" name="code" :value="$response->code" :required="true" />
-                        <small class="text-muted fs-12">{{ __('Mã duy nhất dùng để API đồng bộ với Mobile App') }}</small>
+                        <small class="text-muted fs-12">{{ __('Mã duy nhất dùng để API đồng bộ') }}</small>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ __('Độ tuổi áp dụng') }}: <span class="text-danger">*</span></label>
+                        <x-input type="number" name="age" :value="$response->age ?? 1" min="1" max="20" :required="true" placeholder="1" />
+                        <small class="text-muted fs-12">{{ __('Tuổi làm bài test (VD: 1, 2...)') }}</small>
                     </div>
                 </div>
 

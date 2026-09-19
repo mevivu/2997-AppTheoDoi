@@ -80,10 +80,16 @@ class MemoGameController extends Controller
                 return $this->jsonResponseError('Chưa có cấu hình độ tuổi cho Memo Game.', 404);
             }
 
-            // 2. Xác định Theme: ngẫu nhiên trong các theme đang active
+            // 2. Xác định Theme: ưu tiên theo độ tuổi bé nếu có
             $theme = null;
             if ($themeId) {
                 $theme = MemoTheme::find($themeId);
+            }
+            if (!$theme && isset($age) && $age > 0) {
+                $theme = MemoTheme::where('status', ActiveStatus::Active->value)
+                    ->where('age', $age)
+                    ->inRandomOrder()
+                    ->first();
             }
             if (!$theme) {
                 $theme = MemoTheme::where('status', ActiveStatus::Active->value)->inRandomOrder()->first();
