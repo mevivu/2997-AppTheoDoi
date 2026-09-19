@@ -21,12 +21,22 @@ class MemoGameDataResource extends JsonResource
         $ageConfig = $this['age_config'];
         $cards = $this['cards'] ?? [];
 
+        $cardBack = $theme->card_back;
+        if (empty($cardBack)) {
+            $firstCard = \App\Models\MemoCard::where('memo_theme_id', $theme->id)
+                ->whereNotNull('image')
+                ->where('image', '!=', '')
+                ->orderBy('id', 'asc')
+                ->first();
+            $cardBack = $firstCard?->image ?: $theme->icon;
+        }
+
         return [
             'theme' => [
                 'id' => $theme->id,
                 'name' => $theme->name,
                 'code' => $theme->code,
-                'card_back' => $theme->card_back ? asset($theme->card_back) : null,
+                'card_back' => $cardBack ? asset($cardBack) : null,
             ],
             'age_config' => [
                 'id' => $ageConfig->id,
