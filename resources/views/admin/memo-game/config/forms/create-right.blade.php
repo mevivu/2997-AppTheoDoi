@@ -42,7 +42,7 @@
 
             <div class="mb-2 pb-2 border-bottom">
                 <div class="text-muted fs-11 text-uppercase fw-semibold">{{ __('Số ván chơi') }}</div>
-                <div class="fw-bold text-purple fs-13 mt-0.5" id="simRounds">--</div>
+                <div class="fw-bold text-azure fs-13 mt-0.5" id="simRounds">--</div>
             </div>
 
             <div class="mb-2 pb-2 border-bottom">

@@ -197,7 +197,7 @@
                                     <div class="col-4">
                                         <div class="p-2 bg-white rounded border">
                                             <div class="text-muted mb-1">{{ __('Số lượt hoàn thành') }}</div>
-                                            <span class="fw-bold text-purple">{{ count($response->rounds) }} / {{ $response->ageConfig->total_rounds ?? 3 }}</span>
+                                            <span class="fw-bold text-azure">{{ count($response->rounds) }} / {{ $response->ageConfig->total_rounds ?? 3 }}</span>
                                         </div>
                                     </div>
                                 </div>

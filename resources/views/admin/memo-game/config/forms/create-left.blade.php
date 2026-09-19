@@ -1,3 +1,188 @@
+@push('custom-css')
+<style>
+/* Phone Mockup Screen Simulation (No Purple, 100% Matching App Screenshot) */
+.phone-mockup-wrapper {
+    max-width: 310px;
+    margin: 0 auto;
+}
+.phone-mockup-screen {
+    background: linear-gradient(180deg, #E0F2FE 0%, #BAE6FD 30%, #F0FDF4 100%);
+    border: 4px solid #0284C7;
+    border-radius: 28px;
+    padding: 10px 12px 14px;
+    box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.25), 0 8px 10px -6px rgba(2, 132, 199, 0.2);
+    position: relative;
+    user-select: none;
+}
+.phone-mockup-speaker {
+    width: 42px;
+    height: 4px;
+    background: #0284C7;
+    border-radius: 4px;
+    margin: 0 auto 8px;
+    opacity: 0.6;
+}
+.phone-app-header {
+    margin-bottom: 6px;
+}
+.phone-app-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #0369A1;
+    letter-spacing: -0.2px;
+    line-height: 1.2;
+}
+.phone-app-title .sparkle {
+    color: #F59E0B;
+}
+.phone-app-subtitle {
+    font-size: 9.5px;
+    color: #0284C7;
+    font-weight: 500;
+    margin-top: 1px;
+}
+.phone-app-stats {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.phone-stat-pill {
+    font-size: 9.5px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+.phone-game-board {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(4px);
+    border-radius: 14px;
+    border: 1px solid rgba(186, 230, 253, 0.8);
+    padding: 8px;
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.phone-cards-grid {
+    display: grid !important;
+    width: 100%;
+    justify-content: center;
+    align-content: center;
+}
+
+/* Mini Card Styles */
+.phone-card-item {
+    aspect-ratio: 3.2 / 4;
+    max-height: 50px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(2, 132, 199, 0.12);
+    user-select: none;
+    transition: transform 0.15s ease;
+}
+/* Face-down cards */
+.phone-card-item.card-down {
+    background: linear-gradient(135deg, #FFFFFF 0%, #E0F2FE 100%);
+    border: 1.5px solid #7DD3FC;
+    color: #0284C7;
+}
+/* Face-up Matched cards (Image 3) */
+.phone-card-item.card-matched {
+    background: #FFFFFF;
+    border: 2px solid #10B981 !important;
+    box-shadow: 0 0 0 1px #10B981, 0 3px 6px rgba(16, 185, 129, 0.2);
+}
+.phone-card-item.card-matched .card-matched-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    background: #10B981;
+    color: #FFFFFF;
+    border-radius: 50%;
+    font-size: 7.5px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.phone-card-item.card-matched .card-matched-val {
+    font-size: 11px;
+    font-weight: 800;
+    color: #059669;
+    line-height: 1;
+}
+.phone-card-item.card-matched .card-matched-sub {
+    font-size: 7px;
+    font-weight: 700;
+    color: #059669;
+    margin-top: 1px;
+    line-height: 1;
+}
+
+/* Phone bottom controls */
+.phone-app-footer {
+    margin-top: 8px;
+}
+.phone-app-action-btn {
+    background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+    color: #FFFFFF;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.35);
+    display: inline-block;
+    width: 100%;
+}
+.phone-app-link {
+    font-size: 8.5px;
+    color: #059669;
+    font-weight: 600;
+    margin-top: 3px;
+    text-decoration: underline;
+}
+
+/* Preset Buttons - Fresh Blue & Emerald (NO PURPLE) */
+.memo-preset-btn {
+    transition: all 0.15s ease-in-out;
+    border: 1.5px solid #CBD5E1 !important;
+    background-color: #FFFFFF !important;
+    color: #334155 !important;
+    font-size: 12px;
+    cursor: pointer;
+}
+.memo-preset-btn:hover {
+    border-color: #0284C7 !important;
+    color: #0284C7 !important;
+    background-color: #F0F9FF !important;
+}
+.memo-preset-btn.active-preset {
+    background-color: #0284C7 !important;
+    border-color: #0284C7 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 3px 8px rgba(2, 132, 199, 0.35) !important;
+}
+.memo-preset-btn.active-preset-teal {
+    background-color: #0D9488 !important;
+    border-color: #0D9488 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 3px 8px rgba(13, 148, 136, 0.35) !important;
+}
+</style>
+@endpush
+
 <div class="col-12 col-md-8 col-xl-9">
     <!-- Card 1: Thông tin cơ bản & Nhóm tuổi áp dụng -->
     <div class="card custom-shadow mb-4">
@@ -42,7 +227,7 @@
         </div>
     </div>
 
-    <!-- Card 2: Kích thước Lưới thẻ (Hàng x Cột & Presets) -->
+    <!-- Card 2: Kích thước Lưới thẻ (Hàng x Cột & Mô phỏng App chuẩn Flutter) -->
     <div class="card custom-shadow mb-4">
         <div class="card-header">
             <h4 class="card-title mb-0 d-flex align-items-center">
@@ -51,60 +236,113 @@
             </h4>
         </div>
         <div class="card-body">
-            <!-- Preset gợi ý theo lứa tuổi -->
+            <!-- Preset gợi ý theo lứa tuổi (Clean Blue, Zero Purple) -->
             <div class="mb-3 pb-3 border-bottom">
                 <label class="form-label fw-bold fs-12 text-muted text-uppercase mb-2">
                     <i class="ti ti-sparkles text-warning me-1"></i> {{ __('Gợi ý kích thước lưới chuẩn theo lứa tuổi (Bấm để chọn nhanh):') }}
                 </label>
                 <div class="d-flex flex-wrap gap-2">
-                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill btn-grid-preset px-2.5 py-1" data-rows="2" data-cols="3">
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-grid-preset px-3 py-1" data-rows="2" data-cols="3">
                         <i class="ti ti-check d-none me-1 check-icon"></i> <strong>2 × 3</strong> (6 thẻ • 3 cặp) - Khởi động (3-5t)
                     </button>
-                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill btn-grid-preset px-2.5 py-1" data-rows="3" data-cols="4">
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-grid-preset px-3 py-1" data-rows="3" data-cols="4">
                         <i class="ti ti-check d-none me-1 check-icon"></i> <strong>3 × 4</strong> (12 thẻ • 6 cặp) - Cơ bản (6-8t)
                     </button>
-                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill btn-grid-preset px-2.5 py-1" data-rows="4" data-cols="4">
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-grid-preset px-3 py-1" data-rows="4" data-cols="4">
                         <i class="ti ti-check d-none me-1 check-icon"></i> <strong>4 × 4</strong> (16 thẻ • 8 cặp) - Nâng cao (9-11t)
                     </button>
-                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill btn-grid-preset px-2.5 py-1" data-rows="4" data-cols="5">
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-grid-preset px-3 py-1" data-rows="4" data-cols="5">
                         <i class="ti ti-check d-none me-1 check-icon"></i> <strong>4 × 5</strong> (20 thẻ • 10 cặp) - Thử thách (12+t)
                     </button>
                 </div>
             </div>
 
-            <div class="row g-3 align-items-center">
-                <div class="col-12 col-md-3">
-                    <label class="form-label fw-bold">{{ __('Số hàng (Rows)') }}: <span class="text-danger">*</span></label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light"><i class="ti ti-arrows-vertical fs-14"></i></span>
-                        <input type="number" name="rows" id="inputRows" class="form-control fw-bold" value="{{ old('rows', 2) }}" min="2" max="10" required>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-3">
-                    <label class="form-label fw-bold">{{ __('Số cột (Columns)') }}: <span class="text-danger">*</span></label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-light"><i class="ti ti-arrows-horizontal fs-14"></i></span>
-                        <input type="number" name="columns" id="inputCols" class="form-control fw-bold" value="{{ old('columns', 3) }}" min="2" max="10" required>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6">
-                    <div class="p-3 bg-light rounded-3 border">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="fs-12 text-muted fw-semibold">{{ __('Tổng thẻ & Số cặp hình:') }}</span>
-                            <span class="fw-bold fs-15" id="gridPreview">
-                                <span class="text-primary">6</span> thẻ (<span class="text-success">3</span> cặp)
-                            </span>
+            <div class="row g-3 align-items-start">
+                <div class="col-12 col-md-5">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ __('Số hàng (Rows)') }}: <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-primary"><i class="ti ti-arrows-vertical fs-14"></i></span>
+                            <input type="number" name="rows" id="inputRows" class="form-control fw-bold fs-14" value="{{ old('rows', 2) }}" min="2" max="10" required>
+                            <span class="input-group-text bg-light text-muted fs-12">{{ __('hàng') }}</span>
                         </div>
-                        <!-- Mini visual grid preview -->
-                        <div class="d-flex justify-content-center">
-                            <div id="visualGridContainer" class="p-2 bg-white rounded border d-inline-block shadow-xs" style="min-height: 48px; min-width: 100px;">
-                                <!-- Rendered dynamically by JS -->
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">{{ __('Số cột (Columns)') }}: <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-primary"><i class="ti ti-arrows-horizontal fs-14"></i></span>
+                            <input type="number" name="columns" id="inputCols" class="form-control fw-bold fs-14" value="{{ old('columns', 3) }}" min="2" max="10" required>
+                            <span class="input-group-text bg-light text-muted fs-12">{{ __('cột') }}</span>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-light rounded-3 border mb-3">
+                        <div class="d-flex align-items-center justify-content-between mb-1.5">
+                            <span class="fs-12 text-muted fw-semibold">{{ __('Tổng thẻ bài:') }}</span>
+                            <strong class="fs-14 text-primary" id="gridTotalCardsBadge">6 thẻ</strong>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="fs-12 text-muted fw-semibold">{{ __('Số cặp trùng nhau:') }}</span>
+                            <strong class="fs-14 text-success" id="gridPairsBadge">3 cặp</strong>
+                        </div>
+                        <div class="fs-11 text-muted border-top pt-2">
+                            <i class="ti ti-info-circle text-azure me-1"></i> {{ __('Màn hình dọc điện thoại (Portrait): Nên chọn số cột ≤ 4 hoặc 5 để các thẻ hiển thị đẹp mắt, vừa vặn.') }}
+                        </div>
+                    </div>
+
+                    <div id="gridWarning" class="alert alert-danger py-1.5 px-2.5 fs-12 mb-0 d-none text-center">
+                        <i class="ti ti-alert-triangle me-1"></i> {{ __('Số thẻ phải là số chẵn (Rows × Cols chẵn) để tạo thành các cặp trùng nhau!') }}
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-7">
+                    <!-- Khung mô phỏng màn hình App điện thoại thực tế (Theo ảnh app Flutter) -->
+                    <div class="phone-mockup-wrapper">
+                        <div class="phone-mockup-screen">
+                            <div class="phone-mockup-speaker"></div>
+
+                            <div class="phone-app-header text-center">
+                                <div class="phone-app-title">
+                                    <span class="sparkle">✨</span> {{ __('Trò chơi Trí nhớ') }} <span class="sparkle">✨</span>
+                                </div>
+                                <div class="phone-app-subtitle">
+                                    {{ __('Nhớ và tìm đúng cặp hình giống nhau nhé!') }}
+                                </div>
+                            </div>
+
+                            <div class="phone-app-stats">
+                                <span class="phone-stat-pill bg-white text-dark">
+                                    <i class="ti ti-device-gamepad text-primary"></i> Ván <span id="phoneStatRound">1/3</span>
+                                </span>
+                                <span class="phone-stat-pill bg-white text-dark">
+                                    <i class="ti ti-clock text-azure"></i> <span id="phoneStatDuration">03:00</span>
+                                </span>
+                                <span class="phone-stat-pill bg-white text-success">
+                                    <i class="ti ti-circle-check text-success"></i> <span id="phoneStatPairs">1/3</span>
+                                </span>
+                            </div>
+
+                            <div class="phone-game-board">
+                                <div id="visualGridContainer" class="phone-cards-grid">
+                                    <!-- Rendered dynamically by JS -->
+                                </div>
+                            </div>
+
+                            <div class="phone-app-footer text-center">
+                                <div class="phone-app-action-btn">
+                                    <i class="ti ti-cards me-1"></i>
+                                    <span id="phoneBtnText">{{ __('Tìm tất cả 3 cặp hình giống nhau!') }}</span>
+                                </div>
+                                <div class="phone-app-link">
+                                    {{ __('Kết thúc sớm & Nộp bài') }}
+                                </div>
                             </div>
                         </div>
-                        <div id="gridWarning" class="alert alert-danger py-1 px-2 fs-12 mt-2 mb-0 d-none text-center">
-                            <i class="ti ti-alert-triangle me-1"></i> {{ __('Số thẻ phải là số chẵn để tạo thành các cặp trùng nhau!') }}
+                        <div class="phone-mockup-label text-center mt-2">
+                            <span class="badge bg-blue-lt text-blue px-2.5 py-1 fs-11 rounded-pill">
+                                <i class="ti ti-device-mobile me-1"></i> {{ __('Mô phỏng kích thước lưới trên App Flutter') }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -112,7 +350,7 @@
         </div>
     </div>
 
-    <!-- Card 3: Quy chuẩn Thời gian & Ván chơi (Rõ ràng 100%) -->
+    <!-- Card 3: Quy chuẩn Thời gian & Ván chơi (Rõ ràng 100%, Không màu tím) -->
     <div class="card custom-shadow mb-4">
         <div class="card-header bg-light-subtle">
             <h4 class="card-title mb-0 d-flex align-items-center text-dark">
@@ -128,19 +366,19 @@
                         <i class="ti ti-hourglass-low text-primary me-1"></i>
                         {{ __('Thời gian cho MỖI ván chơi (1 game):') }} <span class="text-danger">*</span>
                     </label>
-                    <span id="durationConvertedBadge" class="badge bg-azure-lt px-2 py-1 fs-12 fw-semibold">
-                        3 phút 00s / ván
+                    <span id="durationConvertedBadge" class="badge bg-azure-lt text-azure px-2 py-1 fs-12 fw-semibold">
+                        3 phút / ván
                     </span>
                 </div>
 
                 <!-- Presets chọn nhanh thời gian -->
                 <div class="d-flex flex-wrap gap-1.5 mb-2.5">
                     <span class="fs-12 text-muted align-self-center me-1">{{ __('Chọn nhanh:') }}</span>
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill btn-duration-preset px-2.5 py-0.5 fs-12" data-seconds="60">1 phút (60s)</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill btn-duration-preset px-2.5 py-0.5 fs-12" data-seconds="120">2 phút (120s)</button>
-                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill btn-duration-preset px-2.5 py-0.5 fs-12" data-seconds="180">⭐ 3 phút (180s - Chuẩn)</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill btn-duration-preset px-2.5 py-0.5 fs-12" data-seconds="240">4 phút (240s)</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill btn-duration-preset px-2.5 py-0.5 fs-12" data-seconds="300">5 phút (300s)</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-duration-preset px-2.5 py-0.5" data-seconds="60">1 phút (60s)</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-duration-preset px-2.5 py-0.5" data-seconds="120">2 phút (120s)</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-duration-preset px-2.5 py-0.5" data-seconds="180">⭐ 3 phút (180s - Chuẩn)</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-duration-preset px-2.5 py-0.5" data-seconds="240">4 phút (240s)</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-duration-preset px-2.5 py-0.5" data-seconds="300">5 phút (300s)</button>
                 </div>
 
                 <div class="row align-items-center g-2">
@@ -159,14 +397,14 @@
                 </div>
             </div>
 
-            <!-- 2. Số ván chơi -->
+            <!-- 2. Số ván chơi (Xanh Azure thanh lịch - Không tím) -->
             <div class="mb-4 pb-3 border-bottom">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
                     <label class="form-label fw-bold mb-0 fs-14">
-                        <i class="ti ti-repeat text-purple me-1"></i>
+                        <i class="ti ti-repeat text-azure me-1"></i>
                         {{ __('Số ván chơi của bài test (Rounds):') }} <span class="text-danger">*</span>
                     </label>
-                    <span id="roundsConvertedBadge" class="badge bg-purple-lt px-2 py-1 fs-12 fw-semibold">
+                    <span id="roundsConvertedBadge" class="badge bg-azure-lt text-azure px-2 py-1 fs-12 fw-semibold">
                         {{ old('total_rounds', 3) }} ván liên tiếp
                     </span>
                 </div>
@@ -174,11 +412,11 @@
                 <!-- Presets chọn nhanh số ván -->
                 <div class="d-flex flex-wrap gap-1.5 mb-2.5">
                     <span class="fs-12 text-muted align-self-center me-1">{{ __('Chọn nhanh:') }}</span>
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill btn-rounds-preset px-2.5 py-0.5 fs-12" data-rounds="1">1 ván</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill btn-rounds-preset px-2.5 py-0.5 fs-12" data-rounds="2">2 ván</button>
-                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill btn-rounds-preset px-2.5 py-0.5 fs-12" data-rounds="3">⭐ 3 ván (Chuẩn)</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill btn-rounds-preset px-2.5 py-0.5 fs-12" data-rounds="4">4 ván</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill btn-rounds-preset px-2.5 py-0.5 fs-12" data-rounds="5">5 ván</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-rounds-preset px-2.5 py-0.5" data-rounds="1">1 ván</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-rounds-preset px-2.5 py-0.5" data-rounds="2">2 ván</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-rounds-preset px-2.5 py-0.5" data-rounds="3">⭐ 3 ván (Chuẩn)</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-rounds-preset px-2.5 py-0.5" data-rounds="4">4 ván</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-rounds-preset px-2.5 py-0.5" data-rounds="5">5 ván</button>
                 </div>
 
                 <div class="row align-items-center g-2">
@@ -204,7 +442,7 @@
                         <i class="ti ti-eye text-teal me-1"></i>
                         {{ __('Thời gian mở thẻ xem trước (Peek Time):') }}
                     </label>
-                    <span id="peekConvertedBadge" class="badge bg-teal-lt px-2 py-1 fs-12 fw-semibold">
+                    <span id="peekConvertedBadge" class="badge bg-teal-lt text-teal px-2 py-1 fs-12 fw-semibold">
                         {{ old('peek_time', 3) }} giây quan sát
                     </span>
                 </div>
@@ -212,10 +450,10 @@
                 <!-- Presets chọn nhanh peek time -->
                 <div class="d-flex flex-wrap gap-1.5 mb-2.5">
                     <span class="fs-12 text-muted align-self-center me-1">{{ __('Chọn nhanh:') }}</span>
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill btn-peek-preset px-2.5 py-0.5 fs-12" data-seconds="0">0s (Tắt)</button>
-                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill btn-peek-preset px-2.5 py-0.5 fs-12" data-seconds="3">⭐ 3s (Chuẩn)</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill btn-peek-preset px-2.5 py-0.5 fs-12" data-seconds="5">5s</button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill btn-peek-preset px-2.5 py-0.5 fs-12" data-seconds="10">10s</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-peek-preset px-2.5 py-0.5" data-seconds="0">0s (Tắt)</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-peek-preset px-2.5 py-0.5" data-seconds="3">⭐ 3s (Chuẩn)</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-peek-preset px-2.5 py-0.5" data-seconds="5">5s</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-peek-preset px-2.5 py-0.5" data-seconds="10">10s</button>
                 </div>
 
                 <div class="row align-items-center g-2">
@@ -251,12 +489,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Badges & Previews
     const ageRangeBadge = document.getElementById('ageRangeBadge');
-    const gridPreview = document.getElementById('gridPreview');
+    const gridTotalCardsBadge = document.getElementById('gridTotalCardsBadge');
+    const gridPairsBadge = document.getElementById('gridPairsBadge');
     const gridWarning = document.getElementById('gridWarning');
     const visualGridContainer = document.getElementById('visualGridContainer');
     const durationConvertedBadge = document.getElementById('durationConvertedBadge');
     const roundsConvertedBadge = document.getElementById('roundsConvertedBadge');
     const peekConvertedBadge = document.getElementById('peekConvertedBadge');
+
+    // Phone Mockup Elements
+    const phoneStatRound = document.getElementById('phoneStatRound');
+    const phoneStatDuration = document.getElementById('phoneStatDuration');
+    const phoneStatPairs = document.getElementById('phoneStatPairs');
+    const phoneBtnText = document.getElementById('phoneBtnText');
 
     // Simulation Card (Right column)
     const simAge = document.getElementById('simAge');
@@ -284,9 +529,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // 2. Grid & Cards
         const totalCards = rows * cols;
         const pairsCount = Math.floor(totalCards / 2);
-        if (gridPreview) {
-            gridPreview.innerHTML = `<span class="text-primary">${totalCards}</span> thẻ (<span class="text-success">${pairsCount}</span> cặp)`;
-        }
+
+        if (gridTotalCardsBadge) gridTotalCardsBadge.textContent = `${totalCards} thẻ`;
+        if (gridPairsBadge) gridPairsBadge.textContent = `${pairsCount} cặp`;
+
         if (simGrid) {
             simGrid.textContent = `${rows} hàng × ${cols} cột (${totalCards} thẻ • ${pairsCount} cặp)`;
         }
@@ -297,32 +543,6 @@ document.addEventListener('DOMContentLoaded', function () {
             gridWarning?.classList.add('d-none');
         }
 
-        // Draw Mini Visual Grid
-        if (visualGridContainer) {
-            visualGridContainer.innerHTML = '';
-            visualGridContainer.style.display = 'grid';
-            visualGridContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-            visualGridContainer.style.gap = '4px';
-            visualGridContainer.style.maxWidth = '180px';
-            visualGridContainer.style.margin = '0 auto';
-
-            for (let i = 0; i < totalCards; i++) {
-                const card = document.createElement('div');
-                card.style.width = '24px';
-                card.style.height = '24px';
-                card.style.borderRadius = '5px';
-                card.style.backgroundColor = '#E0F2FE';
-                card.style.border = '1.5px solid #38BDF8';
-                card.style.display = 'flex';
-                card.style.alignItems = 'center';
-                card.style.justifyContent = 'center';
-                card.style.fontSize = '10px';
-                card.style.color = '#0284C7';
-                card.innerHTML = '🎴';
-                visualGridContainer.appendChild(card);
-            }
-        }
-
         // 3. Duration of 1 round
         const durationMin = Math.floor(totalDuration / 60);
         const durationSec = totalDuration % 60;
@@ -330,6 +550,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (durationMin > 0) durationFormatted += `${durationMin} phút`;
         if (durationSec > 0) durationFormatted += ` ${durationSec}s`;
         if (durationFormatted === '') durationFormatted = '0s';
+
+        const clockFormatted = `${String(durationMin).padStart(2, '0')}:${String(durationSec).padStart(2, '0')}`;
 
         if (durationConvertedBadge) {
             durationConvertedBadge.textContent = `${durationFormatted} / ván`;
@@ -346,7 +568,48 @@ document.addEventListener('DOMContentLoaded', function () {
             simRounds.textContent = `${totalRounds} ván chơi`;
         }
 
-        // 5. Total Game Duration & Total Assessment Duration
+        // 5. Update Phone Mockup Header & Footer
+        if (phoneStatRound) phoneStatRound.textContent = `1/${totalRounds}`;
+        if (phoneStatDuration) phoneStatDuration.textContent = clockFormatted;
+        if (phoneStatPairs) phoneStatPairs.textContent = `1/${pairsCount}`;
+        if (phoneBtnText) phoneBtnText.textContent = `Tìm tất cả ${pairsCount} cặp hình giống nhau!`;
+
+        // 6. Draw Realistic Phone Visual Grid (Fix display: grid !important)
+        if (visualGridContainer) {
+            visualGridContainer.innerHTML = '';
+            visualGridContainer.style.setProperty('display', 'grid', 'important');
+            visualGridContainer.style.setProperty('grid-template-columns', `repeat(${cols}, 1fr)`, 'important');
+            visualGridContainer.style.setProperty('gap', cols >= 5 ? '3px' : '5px', 'important');
+
+            // Pick 2 matched cards to demonstrate matching state (matching app screenshot)
+            const matchedIndex1 = totalCards >= 4 ? 2 : 0;
+            const matchedIndex2 = totalCards >= 6 ? (cols + 1) : (totalCards >= 4 ? 3 : 1);
+
+            const funIcons = ['🧸', '🚀', '🚗', '🎨', '🧩', '🎈', '⭐', '🦁', '🐱', '🐼', '🍎', '🎁'];
+
+            for (let i = 0; i < totalCards; i++) {
+                const card = document.createElement('div');
+                card.className = 'phone-card-item';
+
+                if (i === matchedIndex1 || i === matchedIndex2) {
+                    // Face-up matched card with green border & check badge (Image 3)
+                    card.classList.add('card-matched');
+                    card.innerHTML = `
+                        <span class="card-matched-badge">✓</span>
+                        <div class="card-matched-val">9</div>
+                        <div class="card-matched-sub">Số 9</div>
+                    `;
+                } else {
+                    // Face-down card with cheerful toy/symbol
+                    card.classList.add('card-down');
+                    const icon = funIcons[i % funIcons.length];
+                    card.innerHTML = `<span style="font-size: ${cols >= 5 ? '11px' : '13px'};">${icon}</span>`;
+                }
+                visualGridContainer.appendChild(card);
+            }
+        }
+
+        // 7. Total Game Duration & Total Assessment Duration
         const totalGameSeconds = totalDuration * totalRounds;
         const totalGameMinutes = Math.round(totalGameSeconds / 60);
         const totalAssessmentMinutes = 15 + totalGameMinutes;
@@ -361,12 +624,12 @@ document.addEventListener('DOMContentLoaded', function () {
             simTotalAssessment.textContent = `${totalAssessmentMinutes} PHÚT`;
         }
 
-        // 6. Peek Time Badge
+        // 8. Peek Time Badge
         if (peekConvertedBadge) {
             peekConvertedBadge.textContent = peekTime > 0 ? `${peekTime} giây quan sát` : 'Không mở trước';
         }
 
-        // Highlight active presets
+        // Highlight active presets (100% Ocean Blue & Emerald, NO PURPLE)
         highlightActivePresets(rows, cols, totalDuration, totalRounds, peekTime);
     }
 
@@ -377,12 +640,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const c = parseInt(btn.dataset.cols);
             const check = btn.querySelector('.check-icon');
             if (r === rows && c === cols) {
-                btn.classList.remove('btn-outline-primary');
-                btn.classList.add('btn-primary');
+                btn.classList.add('active-preset');
                 check?.classList.remove('d-none');
             } else {
-                btn.classList.add('btn-outline-primary');
-                btn.classList.remove('btn-primary');
+                btn.classList.remove('active-preset');
                 check?.classList.add('d-none');
             }
         });
@@ -391,35 +652,29 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.btn-duration-preset').forEach(btn => {
             const sec = parseInt(btn.dataset.seconds);
             if (sec === duration) {
-                btn.classList.remove('btn-outline-secondary', 'btn-outline-primary');
-                btn.classList.add('btn-primary');
+                btn.classList.add('active-preset');
             } else {
-                btn.classList.remove('btn-primary');
-                btn.classList.add('btn-outline-secondary');
+                btn.classList.remove('active-preset');
             }
         });
 
-        // Rounds presets
+        // Rounds presets (Clean Ocean Blue, NO PURPLE)
         document.querySelectorAll('.btn-rounds-preset').forEach(btn => {
             const rnd = parseInt(btn.dataset.rounds);
             if (rnd === rounds) {
-                btn.classList.remove('btn-outline-secondary', 'btn-outline-primary');
-                btn.classList.add('btn-purple', 'btn-primary');
+                btn.classList.add('active-preset');
             } else {
-                btn.classList.remove('btn-purple', 'btn-primary');
-                btn.classList.add('btn-outline-secondary');
+                btn.classList.remove('active-preset');
             }
         });
 
-        // Peek presets
+        // Peek presets (Emerald / Teal)
         document.querySelectorAll('.btn-peek-preset').forEach(btn => {
             const sec = parseInt(btn.dataset.seconds);
             if (sec === peek) {
-                btn.classList.remove('btn-outline-secondary', 'btn-outline-primary');
-                btn.classList.add('btn-teal', 'btn-primary');
+                btn.classList.add('active-preset-teal');
             } else {
-                btn.classList.remove('btn-teal', 'btn-primary');
-                btn.classList.add('btn-outline-secondary');
+                btn.classList.remove('active-preset-teal');
             }
         });
     }
