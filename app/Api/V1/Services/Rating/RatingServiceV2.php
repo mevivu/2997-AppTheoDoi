@@ -3,10 +3,14 @@
 namespace App\Api\V1\Services\Rating;
 
 use App\Api\V1\Services\Memo\MemoGameBuilderService;
+use App\Enums\ActiveStatus;
 use App\Enums\Question\QuestionType;
 use App\Enums\VerifiedStatus;
+use App\Models\MemoAgeConfig;
+use App\Models\MemoRating;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
 {
@@ -29,16 +33,27 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
         $childName = $child->fullname;
         $type = QuestionType::IQ->value;
 
-        // Kiểm tra xem độ tuổi của bài test có cấu hình game phù hợp không
+        // Kiểm tra cấu hình Memo Game theo độ tuổi hoặc theo ID gửi lên từ app
+        $ageConfig = null;
+        if (!empty($data['memo_age_config_id'])) {
+            $ageConfig = MemoAgeConfig::find($data['memo_age_config_id']);
+        }
+        if (!$ageConfig) {
+            $ageConfig = MemoAgeConfig::forAge((int) ($quiz->age ?? 1))->first();
+        }
+        if (!$ageConfig) {
+            $ageConfig = MemoAgeConfig::where('status', ActiveStatus::Active->value)->orderBy('min_age', 'asc')->first();
+        }
+
         $memoGames = MemoGameBuilderService::buildRounds((int) ($quiz->age ?? 1));
-        $hasGame = !empty($memoGames);
+        $hasGame = ($ageConfig !== null) || !empty($memoGames) || !empty($data['memo_theme_id']);
 
         if (!$hasGame) {
             $gamePlays = 0;
             $gameScore = 0;
         } else {
             // Số lần chơi game lấy theo cấu hình độ tuổi (total_rounds)
-            $gamePlays = count($memoGames);
+            $gamePlays = $ageConfig ? (int) ($ageConfig->total_rounds ?: 3) : (!empty($memoGames) ? count($memoGames) : 3);
 
             // Điểm Memo Game (mỗi lần chiến thắng = 1 điểm, tối đa $gamePlays điểm)
             $rawGameScore = (int) ($data['game_score'] ?? 0);
@@ -125,6 +140,67 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
         $data['badge_image'] = $path;
         $data['status'] = VerifiedStatus::Active;
 
-        return $this->repository->update($ratingId, $data);
+        $rating = $this->repository->update($ratingId, $data);
+
+        // Tự động đồng bộ tạo bản ghi vào bảng memo_ratings nếu bài test IQ V2 có phần chơi game
+        if ($hasGame && (!empty($data['memo_theme_id']) || $gamePlays > 0)) {
+            try {
+                $memoScorePercent = $gamePlays > 0 ? round(($gameScore / $gamePlays) * 100, 2) : 0;
+                $label = $this->getMemoEvaluationLabel($memoScorePercent);
+                $mistakes = (int) ($data['game_mistakes'] ?? 0);
+                $duration = (int) ($data['game_duration_spent'] ?? 0);
+                $feedback = $this->getMemoFeedback($memoScorePercent, $mistakes, $duration);
+
+                MemoRating::create([
+                    'child_id' => $childId,
+                    'memo_theme_id' => $data['memo_theme_id'] ?? (!empty($memoGames[0]['theme']['id']) ? $memoGames[0]['theme']['id'] : null),
+                    'memo_age_config_id' => $data['memo_age_config_id'] ?? ($ageConfig->id ?? null),
+                    'age' => (int) ($quiz->age ?? $child->age ?? 5),
+                    'total_duration_spent' => $duration,
+                    'total_pairs_matched' => (int) ($data['game_pairs_matched'] ?? 0),
+                    'total_mistakes' => $mistakes,
+                    'score' => $memoScorePercent,
+                    'evaluation_label' => $label,
+                    'feedback' => $feedback,
+                    'status' => 'completed',
+                ]);
+            } catch (\Throwable $e) {
+                Log::warning('Không thể tạo memo_ratings từ storeIQV2: ' . $e->getMessage());
+            }
+        }
+
+        return $rating;
+    }
+
+    /**
+     * Xếp loại kết quả Memo Game theo thang điểm 100
+     */
+    protected function getMemoEvaluationLabel(float $score): string
+    {
+        if ($score >= 85) {
+            return 'Xuất sắc';
+        } elseif ($score >= 70) {
+            return 'Tốt';
+        } elseif ($score >= 50) {
+            return 'Khá';
+        } else {
+            return 'Cần rèn luyện';
+        }
+    }
+
+    /**
+     * Sinh nhận xét chuyên môn cho Memo Game
+     */
+    protected function getMemoFeedback(float $score, int $mistakes, int $duration): string
+    {
+        if ($score >= 85) {
+            return "Bé có khả năng ghi nhớ thị giác và định vị không gian xuất sắc! Tốc độ nhận diện các cặp hình ảnh rất nhanh, chỉ mắc {$mistakes} lỗi trong suốt bài test. Khả năng tập trung và chuyển đổi chú ý đạt mức tối ưu.";
+        } elseif ($score >= 70) {
+            return "Khả năng quan sát và ghi nhớ của bé ở mức Tốt. Bé nhận diện mặt thẻ và liên kết hình ảnh khá chuẩn xác. Để tiến bộ hơn nữa, có thể tăng thử thách với các bộ thẻ nhiều chi tiết hơn.";
+        } elseif ($score >= 50) {
+            return "Bé hoàn thành bài test ở mức Khá. Có dấu hiệu mất tập trung nhẹ với {$mistakes} lần lật sai. Phụ huynh nên đồng hành, khích lệ bé chơi thường xuyên để nâng cao trí nhớ ngắn hạn.";
+        } else {
+            return "Bé cần thêm thời gian để làm quen với cấu trúc trò chơi và rèn luyện kỹ năng định vị hình ảnh. Nên bắt đầu từ mức độ Khởi động với các hình ảnh thật quen thuộc để tạo hứng thú cho bé.";
+        }
     }
 }

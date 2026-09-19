@@ -58,7 +58,7 @@ class RatingIQDatable extends BaseDataTable
             [
                 'type' => QuestionType::IQ
             ],
-            ['child.user']
+            ['child.user', 'memoTheme', 'memoAgeConfig']
         )->whereNotNull('score')->where('score', '>', 0);
 
         if (request()->filled('child_id')) {
@@ -107,7 +107,44 @@ class RatingIQDatable extends BaseDataTable
                 return $rating->visual ? '<span class="badge bg-azure-lt fs-13 fw-bold">' . e($rating->visual) . '</span>' : '-';
             },
             'memory' => function ($rating) {
-                return $rating->memory ? '<span class="badge bg-purple-lt fs-13 fw-bold">' . e($rating->memory) . '</span>' : '-';
+                return $rating->memory ? '<span class="badge bg-teal-lt text-teal fs-13 fw-bold">' . e($rating->memory) . '</span>' : '-';
+            },
+            'game_info' => function ($rating) {
+                if ($rating->version !== 'v2' && $rating->game_score === null && $rating->memo_theme_id === null) {
+                    return '<span class="badge bg-secondary-lt text-muted fs-11" title="Bài test IQ V1 không có phần chơi game">-</span>';
+                }
+
+                $score = $rating->game_score ?? 0;
+                $maxRounds = $rating->memoAgeConfig?->total_rounds ?? 3;
+                $duration = (int) ($rating->game_duration_spent ?? 0);
+                $durationMin = floor($duration / 60);
+                $durationSec = $duration % 60;
+                $durationStr = $durationMin > 0 ? "{$durationMin}p{$durationSec}s" : "{$durationSec}s";
+
+                $html = '<div class="d-inline-flex flex-column align-items-center gap-1 py-1">';
+                $html .= '<span class="badge bg-blue-lt text-blue fs-12 fw-bold px-2 py-0.5 rounded-pill"><i class="ti ti-trophy me-1"></i>' . e($score) . '/' . e($maxRounds) . ' ván</span>';
+
+                $metaItems = [];
+                if ($duration > 0) {
+                    $metaItems[] = '<span title="Thời gian làm bài game"><i class="ti ti-clock fs-11 text-muted"></i> ' . e($durationStr) . '</span>';
+                }
+                if ($rating->game_pairs_matched !== null) {
+                    $metaItems[] = '<span title="Số cặp hình ghép đúng"><i class="ti ti-cards fs-11 text-success"></i> ' . e($rating->game_pairs_matched) . '</span>';
+                }
+                if ($rating->game_mistakes !== null) {
+                    $metaItems[] = '<span title="Số lần lật sai" class="text-danger"><i class="ti ti-x fs-11"></i> ' . e($rating->game_mistakes) . '</span>';
+                }
+
+                if (!empty($metaItems)) {
+                    $html .= '<div class="fs-11 text-muted d-flex align-items-center gap-1.5">' . implode(' • ', $metaItems) . '</div>';
+                }
+
+                if ($rating->memoTheme) {
+                    $html .= '<span class="badge bg-azure-lt text-azure fs-10 px-1.5 py-0 rounded" title="Chủ đề lật thẻ"><i class="ti ti-palette me-0.5"></i>' . e($rating->memoTheme->name) . '</span>';
+                }
+
+                $html .= '</div>';
+                return $html;
             },
         ];
     }
@@ -144,6 +181,7 @@ class RatingIQDatable extends BaseDataTable
             'logic_math',
             'visual',
             'memory',
+            'game_info',
         ];
     }
 
@@ -155,6 +193,8 @@ class RatingIQDatable extends BaseDataTable
                     return $row->child_id ? 'TE' . $row->child_id : '';
                 case 'parent_code':
                     return ($row->child && $row->child->user) ? 'CM' . $row->child->user->id : '';
+                case 'game_info':
+                    return ($row->game_score !== null) ? "{$row->game_score} ván thắng ({$row->game_duration_spent}s)" : '';
             }
         } catch (\Throwable $e) {
             return '';

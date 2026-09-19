@@ -447,6 +447,11 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false,
         ],
+        'game_info' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-device-gamepad"></i><span>Game Trí Nhớ</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
         'badge_image' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-photo"></i><span>hình ảnh</span></div>',
             'addClass' => 'text-center align-middle',
