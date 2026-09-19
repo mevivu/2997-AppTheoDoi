@@ -57,8 +57,13 @@
                                 <span class="theme-badge-pos badge {{ $isCurrent ? 'bg-primary text-white' : 'bg-secondary-subtle text-dark' }} rounded-pill px-2 py-1 fs-12 font-monospace">
                                     #{{ $index + 1 }}
                                 </span>
-                                @if($item->icon && $item->icon != \App\Traits\ImageSystem::DEFAULT_IMAGE)
-                                    <img src="{{ asset($item->icon) }}" alt="{{ $item->name }}" class="rounded-2 border object-fit-contain bg-white flex-shrink-0" style="width: 32px; height: 32px;">
+                                @php
+                                    $itemImg = (!empty($item->icon) && $item->icon != \App\Traits\ImageSystem::DEFAULT_IMAGE)
+                                        ? $item->icon
+                                        : ((!empty($item->card_back) && $item->card_back != \App\Traits\ImageSystem::DEFAULT_IMAGE) ? $item->card_back : null);
+                                @endphp
+                                @if($itemImg)
+                                    <img src="{{ asset($itemImg) }}" alt="{{ $item->name }}" class="rounded-2 border object-fit-contain bg-white flex-shrink-0" style="width: 32px; height: 32px;">
                                 @else
                                     <div class="rounded-2 border bg-light d-flex align-items-center justify-content-center flex-shrink-0 text-primary" style="width: 32px; height: 32px;">
                                         @if($item->code == 'vehicles')
