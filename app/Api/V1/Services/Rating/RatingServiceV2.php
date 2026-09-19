@@ -2,6 +2,7 @@
 
 namespace App\Api\V1\Services\Rating;
 
+use App\Api\V1\Services\Memo\MemoGameBuilderService;
 use App\Enums\Question\QuestionType;
 use App\Enums\VerifiedStatus;
 use Exception;
@@ -28,15 +29,24 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
         $childName = $child->fullname;
         $type = QuestionType::IQ->value;
 
-        // Số lần chơi game cấu hình cho bài test (mặc định 3 lần)
-        $gamePlays = (int) ($quiz->game_plays ?? 3);
-        if ($gamePlays < 1) {
-            $gamePlays = 3;
-        }
+        // Kiểm tra xem độ tuổi của bài test có cấu hình game phù hợp không
+        $memoGames = MemoGameBuilderService::buildRounds((int) ($quiz->age ?? 1), (int) ($quiz->game_plays ?? 3));
+        $hasGame = !empty($memoGames);
 
-        // Điểm Memo Game (mỗi lần chiến thắng = 1 điểm, tối đa $gamePlays điểm)
-        $rawGameScore = (int) ($data['game_score'] ?? 0);
-        $gameScore = max(0, min($rawGameScore, $gamePlays));
+        if (!$hasGame) {
+            $gamePlays = 0;
+            $gameScore = 0;
+        } else {
+            // Số lần chơi game cấu hình cho bài test (mặc định 3 lần)
+            $gamePlays = (int) ($quiz->game_plays ?? 3);
+            if ($gamePlays < 1) {
+                $gamePlays = 3;
+            }
+
+            // Điểm Memo Game (mỗi lần chiến thắng = 1 điểm, tối đa $gamePlays điểm)
+            $rawGameScore = (int) ($data['game_score'] ?? 0);
+            $gameScore = max(0, min($rawGameScore, $gamePlays));
+        }
 
         // Khởi tạo điểm cho các nhóm năng lực IQ
         $groupTotals = [

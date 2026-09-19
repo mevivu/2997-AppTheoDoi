@@ -23,14 +23,10 @@ class MemoGameBuilderService
             $gamePlays = 3;
         }
 
-        // 1. Xác định Age Config theo độ tuổi
+        // 1. Xác định Age Config theo đúng độ tuổi
         $ageConfig = MemoAgeConfig::forAge($age)
             ->where('status', ActiveStatus::Active->value)
             ->first();
-
-        if (!$ageConfig) {
-            $ageConfig = MemoAgeConfig::where('status', ActiveStatus::Active->value)->first();
-        }
 
         if (!$ageConfig) {
             return [];
@@ -41,17 +37,6 @@ class MemoGameBuilderService
             ->where('age', $age)
             ->inRandomOrder()
             ->get();
-
-        // Cơ chế Fallback an toàn: Nếu độ tuổi này chưa có chủ đề riêng, fallback lấy các chủ đề active bất kỳ
-        if ($activeThemes->isEmpty()) {
-            $activeThemes = MemoTheme::where('status', ActiveStatus::Active->value)
-                ->inRandomOrder()
-                ->get();
-        }
-
-        if ($activeThemes->isEmpty()) {
-            $activeThemes = MemoTheme::all();
-        }
 
         if ($activeThemes->isEmpty()) {
             return [];

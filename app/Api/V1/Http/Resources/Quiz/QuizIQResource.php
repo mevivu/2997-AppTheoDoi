@@ -13,12 +13,14 @@ class QuizIQResource extends ResourceCollection
         return $this->collection->map(function ($quiz) {
             $gamePlays = (int) ($quiz->game_plays ?? 3);
             $memoGames = MemoGameBuilderService::buildRounds((int) ($quiz->age ?? 1), $gamePlays);
+            $hasGame = !empty($memoGames);
 
             return [
                 'id' => $quiz->id,
                 'age' => $quiz->age,
                 'type' => $quiz->type,
-                'game_plays' => $gamePlays,
+                'has_game' => $hasGame,
+                'game_plays' => $hasGame ? $gamePlays : 0,
                 'memo_games' => $memoGames,
                 'questions' => QuestionResource::collection($quiz->questions),
             ];
