@@ -37,7 +37,7 @@ class MemoRatingDataTable extends BaseDataTable
     public function query()
     {
         return $this->repository->getQueryBuilder()
-            ->with(['child', 'theme', 'ageConfig', 'rounds'])
+            ->with(['child.user', 'theme', 'ageConfig', 'rounds'])
             ->orderBy('id', 'desc');
     }
 
@@ -69,8 +69,7 @@ class MemoRatingDataTable extends BaseDataTable
             'total_duration_spent' => $this->view['total_duration_spent'],
             'score' => $this->view['score'],
             'evaluation_label' => $this->view['evaluation_label'],
-            'created_at' => '{{ format_date($created_at) }}',
-            'action' => $this->view['action'],
+            'created_at' => '{{ $created_at ? format_datetime($created_at) : "" }}',
         ];
     }
 
