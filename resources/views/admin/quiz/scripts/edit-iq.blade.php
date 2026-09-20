@@ -155,6 +155,7 @@
 
             // Intercept form submission for instant client-side validation
             $('form').on('submit', function (e) {
+                syncInput();
                 const type = $('#type-select').val();
                 const isIQ = (type === 'iq' || type === 'IQ' || type == '{{ \App\Enums\Question\QuestionType::IQ->value }}');
                 if (isIQ) {

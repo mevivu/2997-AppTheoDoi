@@ -46,7 +46,7 @@ class QuizRequest extends BaseRequest
 
     protected function methodPut(): array
     {
-        $quizId = $this->route('id');
+        $quizId = $this->route('id') ?: $this->input('id');
         return [
             'id' => ['required', 'exists:App\Models\Quiz,id'],
             'title' => ['required', 'string'],

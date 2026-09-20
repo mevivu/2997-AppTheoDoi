@@ -115,9 +115,14 @@ class QuizSizeService implements QuizServiceInterface
      */
     public function updateIQ(Request $request): object|bool
     {
-
         $data = $request->validated();
-        $questionItems = json_decode($data['selected_questions'] ?? '[]', true);
+        $selectedQuestions = $data['selected_questions'] ?? [];
+        $questionItems = is_array($selectedQuestions) 
+            ? $selectedQuestions 
+            : json_decode($selectedQuestions ?? '[]', true);
+        if (!is_array($questionItems)) {
+            $questionItems = [];
+        }
         $quiz = $this->repository->update($data['id'], $data);
 
         $syncData = [];
