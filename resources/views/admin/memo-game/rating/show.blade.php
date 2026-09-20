@@ -255,8 +255,18 @@
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <span class="badge bg-yellow-subtle text-warning border border-warning-subtle fw-bold fs-13">
-                                                {{ number_format($round->score, 1) }}
+                                            @php
+                                                $rScore = (float) ($round->score ?? 0);
+                                                $rStyle = $rScore >= 90
+                                                    ? 'background-color: #fffbeb !important; color: #92400e !important; border: 1px solid #fde68a !important;'
+                                                    : ($rScore >= 70
+                                                        ? 'background-color: #eff6ff !important; color: #1e40af !important; border: 1px solid #bfdbfe !important;'
+                                                        : ($rScore >= 50
+                                                            ? 'background-color: #f0fdf4 !important; color: #166534 !important; border: 1px solid #bbf7d0 !important;'
+                                                            : 'background-color: #f8fafc !important; color: #64748b !important; border: 1px solid #e2e8f0 !important;'));
+                                            @endphp
+                                            <span class="badge rounded-pill px-2.5 py-1 fw-bold fs-12 font-monospace shadow-xs" style="{{ $rStyle }}">
+                                                {{ number_format($rScore, 1) }}
                                             </span>
                                         </td>
                                         <td>
