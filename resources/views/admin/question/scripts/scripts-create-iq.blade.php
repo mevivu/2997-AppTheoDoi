@@ -102,5 +102,37 @@
             const radio = $(this).find('.radio-correct-answer');
             radio.prop('checked', true).trigger('change');
         });
+
+        // Xử lý bộ đếm ký tự cho ô câu hỏi
+        const $questionContent = $('#question_content');
+        const $charCount = $('#question_char_count');
+        const $charWrapper = $('#question_char_count_wrapper');
+        const $charWarning = $('#question_char_warning');
+        const maxQuestionChars = 2000;
+
+        function updateQuestionCharCount() {
+            if (!$questionContent.length) return;
+            const currentLength = $questionContent.val().length;
+            $charCount.text(currentLength);
+
+            if (currentLength >= maxQuestionChars) {
+                $charWrapper.addClass('text-danger fw-bold').removeClass('text-muted text-warning');
+                $charWarning.removeClass('d-none');
+                $questionContent.addClass('is-invalid');
+            } else if (currentLength >= maxQuestionChars * 0.9) {
+                $charWrapper.addClass('text-warning fw-semibold').removeClass('text-muted text-danger fw-bold');
+                $charWarning.addClass('d-none');
+                $questionContent.removeClass('is-invalid');
+            } else {
+                $charWrapper.addClass('text-muted').removeClass('text-danger text-warning fw-bold fw-semibold');
+                $charWarning.addClass('d-none');
+                $questionContent.removeClass('is-invalid');
+            }
+        }
+
+        if ($questionContent.length) {
+            $questionContent.on('input propertychange', updateQuestionCharCount);
+            updateQuestionCharCount();
+        }
     });
 </script>

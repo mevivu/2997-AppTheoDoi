@@ -195,10 +195,13 @@ class QuestionController extends Controller
         if ($request->question['status'] == ActiveStatus::Deleted->value) {
             $this->repository->delete($request->question['id']);
             return to_route($this->route['iq'])->with('success', __('notifySuccess'));
-        } else
-            $this->service->updateIq($request);
-        return back()->with('success', __('notifySuccess'));
+        }
 
+        $response = $this->service->updateIq($request);
+        if ($response) {
+            return back()->with('success', __('notifySuccess'));
+        }
+        return back()->with('error', __('notifyFail'))->withInput();
     }
 
     public function createEq(): Factory|View|Application
@@ -305,9 +308,13 @@ class QuestionController extends Controller
             if ($request->question['question_type'] == QuestionType::EQ->value)
                 return to_route($this->route['eq'])->with('success', __('notifySuccess'));
             return to_route($this->route['aq'])->with('success', __('notifySuccess'));
-        } else
-            $this->service->updateEqAq($request);
-        return back()->with('success', __('notifySuccess'));
+        }
+
+        $response = $this->service->updateEqAq($request);
+        if ($response) {
+            return back()->with('success', __('notifySuccess'));
+        }
+        return back()->with('error', __('notifyFail'))->withInput();
     }
 
     public function delete($id): RedirectResponse

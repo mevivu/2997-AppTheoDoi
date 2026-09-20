@@ -64,8 +64,31 @@
 
             <div class="col-12">
                 <div class="mb-3">
-                    <label class="form-label fw-bold"><i class="ti ti-message-2-question text-primary me-1"></i> {{ __('Nội dung câu hỏi') }}: <span class="text-danger">*</span></label>
-                    <x-input name="question[question]" :value="$response->question" :required="true" placeholder="{{ __('Nhập nội dung câu hỏi...') }}" />
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <label class="form-label fw-bold mb-0">
+                            <i class="ti ti-message-2-question text-primary me-1"></i> {{ __('Nội dung câu hỏi') }}: <span class="text-danger">*</span>
+                        </label>
+                        <span class="fs-12 text-muted" id="question_char_count_wrapper">
+                            <span id="question_char_count">0</span> / 2000 {{ __('ký tự') }}
+                        </span>
+                    </div>
+                    <textarea 
+                        name="question[question]" 
+                        id="question_content"
+                        class="form-control question-textarea" 
+                        rows="4" 
+                        required 
+                        maxlength="2000"
+                        placeholder="{{ __('Nhập nội dung câu hỏi...') }}" 
+                        style="min-height: 100px; resize: vertical; line-height: 1.55; font-size: 14px;">{{ old('question.question', $response->question) }}</textarea>
+                    <div class="d-flex justify-content-between align-items-center mt-1">
+                        <small class="text-muted fs-11">
+                            <i class="ti ti-info-circle me-1"></i>{{ __('Ô nhập hỗ trợ nhiều dòng, có thể kéo góc dưới bên phải để mở rộng thêm.') }}
+                        </small>
+                        <small class="text-danger fs-11 d-none" id="question_char_warning">
+                            <i class="ti ti-alert-triangle me-1"></i>{{ __('Đã đạt giới hạn tối đa 2000 ký tự!') }}
+                        </small>
+                    </div>
                 </div>
             </div>
 
