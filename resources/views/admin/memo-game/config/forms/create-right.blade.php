@@ -46,6 +46,11 @@
             </div>
 
             <div class="mb-2 pb-2 border-bottom">
+                <div class="text-muted fs-11 text-uppercase fw-semibold">{{ __('Giới hạn lật sai (Game Over)') }}</div>
+                <div class="fw-bold text-danger fs-13 mt-0.5" id="simMistakes">Không giới hạn</div>
+            </div>
+
+            <div class="mb-2 pb-2 border-bottom">
                 <div class="text-muted fs-11 text-uppercase fw-semibold">{{ __('Tổng thời gian Game') }}</div>
                 <div class="fw-bold text-success fs-13 mt-0.5" id="simTotalGame">--</div>
             </div>

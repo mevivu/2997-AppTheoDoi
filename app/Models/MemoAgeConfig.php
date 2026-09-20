@@ -40,6 +40,8 @@ class MemoAgeConfig extends Model
         'total_rounds',
         /** Thời gian cho bé ghi nhớ trước khi úp thẻ (giây) */
         'peek_time',
+        /** Số lần lật sai tối đa trước khi Game Over (0 = không giới hạn) */
+        'max_mistakes',
         /** Trạng thái cấu hình (active, draft, deleted) */
         'status',
     ];
@@ -59,6 +61,7 @@ class MemoAgeConfig extends Model
         'total_duration' => 'integer',
         'total_rounds' => 'integer',
         'peek_time' => 'integer',
+        'max_mistakes' => 'integer',
         'status' => ActiveStatus::class,
     ];
 

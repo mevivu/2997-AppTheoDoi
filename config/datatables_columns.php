@@ -2237,6 +2237,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
+        'max_mistakes' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-alert-triangle"></i><span>Giới hạn sai</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
         'status' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
             'orderable' => false,

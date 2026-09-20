@@ -19,6 +19,7 @@ class MemoAgeConfigRequest extends BaseRequest
             'total_duration' => ['required', 'integer', 'min:30', 'max:600'],
             'total_rounds' => ['required', 'integer', 'min:1', 'max:10'],
             'peek_time' => ['required', 'integer', 'min:0', 'max:30'],
+            'max_mistakes' => ['nullable', 'integer', 'min:0', 'max:100'],
             'status' => ['required', new Enum(ActiveStatus::class)],
         ];
     }
@@ -35,6 +36,7 @@ class MemoAgeConfigRequest extends BaseRequest
             'total_duration' => ['required', 'integer', 'min:30', 'max:600'],
             'total_rounds' => ['required', 'integer', 'min:1', 'max:10'],
             'peek_time' => ['required', 'integer', 'min:0', 'max:30'],
+            'max_mistakes' => ['nullable', 'integer', 'min:0', 'max:100'],
             'status' => ['required', new Enum(ActiveStatus::class)],
         ];
     }

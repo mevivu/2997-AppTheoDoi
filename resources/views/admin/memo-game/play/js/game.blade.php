@@ -424,7 +424,7 @@
                 // Update HUD placeholders
                 document.getElementById('hudPairsTotal').textContent = data.age_config.pairs_count;
                 document.getElementById('hudPairsMatched').textContent = '0';
-                document.getElementById('hudMistakes').textContent = '0';
+                this.updateMistakesHud();
                 document.getElementById('hudTimer').textContent = this.formatTime(data.age_config.total_duration);
                 document.getElementById('hudRound').textContent = `1/${this.gameMode === 'multi' ? (data.age_config.total_rounds || 3) : 1}`;
 
@@ -534,7 +534,7 @@
                 // Update HUD
                 document.getElementById('hudRound').textContent = `${this.currentRound}/${this.totalRounds}`;
                 document.getElementById('hudPairsMatched').textContent = '0';
-                document.getElementById('hudMistakes').textContent = '0';
+                this.updateMistakesHud();
 
                 // Re-shuffle for this round
                 const data = this.gameData;
@@ -675,7 +675,8 @@
                     }, 400);
                 } else {
                     this.mistakes++;
-                    document.getElementById('hudMistakes').textContent = this.mistakes;
+                    const maxMistakes = parseInt(this.gameData?.age_config?.max_mistakes) || 0;
+                    this.updateMistakesHud();
 
                     setTimeout(() => {
                         card1.classList.add('wrong');
@@ -687,7 +688,12 @@
                         card1.classList.remove('flipped', 'wrong');
                         card2.classList.remove('flipped', 'wrong');
                         this.flippedCards = [];
-                        this.isBoardLocked = false;
+
+                        if (maxMistakes > 0 && this.mistakes >= maxMistakes) {
+                            this.handleGameOverByMistakes();
+                        } else {
+                            this.isBoardLocked = false;
+                        }
                     }, 950);
                 }
             },
@@ -744,6 +750,50 @@
 
                 alert('⏰ Đã hết thời gian làm bài của lượt này!');
                 this.finishGameSession();
+            },
+
+            handleGameOverByMistakes() {
+                clearInterval(this.timerInterval);
+                this.isBoardLocked = true;
+                SoundFX.playWrong();
+
+                const maxMistakes = parseInt(this.gameData?.age_config?.max_mistakes) || 0;
+                // Calculate round score based on pairs matched before Game Over
+                const roundScore = Math.round((this.matchedPairs / this.gameData.age_config.pairs_count) * 40);
+                this.roundsHistory.push({
+                    round_number: this.currentRound,
+                    duration_spent: this.roundDurationSpent,
+                    pairs_matched: this.matchedPairs,
+                    mistakes: this.mistakes,
+                    score: roundScore,
+                });
+                this.totalDurationSpent += this.roundDurationSpent;
+
+                setTimeout(() => {
+                    alert(`💥 GAME OVER!\n\nBạn đã lật sai ${this.mistakes}/${maxMistakes} lần ở Lượt ${this.currentRound}!\nVán đấu đã dừng lại.`);
+
+                    if (this.currentRound < this.totalRounds) {
+                        if (confirm(`Bạn có muốn tiếp tục thử sức với Lượt ${this.currentRound + 1}/${this.totalRounds} tiếp theo không?`)) {
+                            this.currentRound++;
+                            this.startRound();
+                        } else {
+                            this.finishGameSession();
+                        }
+                    } else {
+                        this.finishGameSession();
+                    }
+                }, 400);
+            },
+
+            updateMistakesHud() {
+                const hud = document.getElementById('hudMistakes');
+                if (!hud) return;
+                const maxMistakes = parseInt(this.gameData?.age_config?.max_mistakes) || 0;
+                if (maxMistakes > 0) {
+                    hud.innerHTML = `${this.mistakes}/<span class="text-muted fs-11">${maxMistakes}</span>`;
+                } else {
+                    hud.textContent = this.mistakes;
+                }
             },
 
             finishGameSession() {
