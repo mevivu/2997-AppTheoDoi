@@ -163,8 +163,8 @@
                     </div>
                     <div class="col-3">
                         <div class="memo-hud-item">
-                            <span class="memo-hud-label">{{ __('Lần lật sai') }}</span>
-                            <span id="hudMistakes" class="memo-hud-value text-danger">0</span>
+                            <span class="memo-hud-label">{{ __('Lượt mở thẻ') }}</span>
+                            <span id="hudMoves" class="memo-hud-value text-danger">0</span>
                         </div>
                     </div>
                 </div>

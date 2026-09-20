@@ -49,7 +49,8 @@ class MemoGameDataResource extends JsonResource
                 'total_duration' => (int) ($ageConfig->total_duration ?: 180),
                 'total_rounds' => (int) ($ageConfig->total_rounds ?: 3),
                 'peek_time' => (int) ($ageConfig->peek_time ?: 3),
-                'max_mistakes' => (int) ($ageConfig->max_mistakes ?? 0),
+                'max_moves' => (int) ($ageConfig->max_moves ?? 0),
+                'max_mistakes' => (int) ($ageConfig->max_moves ?? 0),
             ],
             'cards' => array_map(function ($card) {
                 return (new MemoGameCardResource($card))->resolve();

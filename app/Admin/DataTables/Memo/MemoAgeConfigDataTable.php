@@ -26,7 +26,7 @@ class MemoAgeConfigDataTable extends BaseDataTable
             'total_cards' => 'admin.memo-game.config.datatable.total-cards',
             'total_duration' => 'admin.memo-game.config.datatable.duration',
             'total_rounds' => 'admin.memo-game.config.datatable.rounds',
-            'max_mistakes' => 'admin.memo-game.config.datatable.max-mistakes',
+            'max_moves' => 'admin.memo-game.config.datatable.max-moves',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
@@ -89,7 +89,7 @@ class MemoAgeConfigDataTable extends BaseDataTable
             'total_cards' => $this->view['total_cards'],
             'total_duration' => $this->view['total_duration'],
             'total_rounds' => $this->view['total_rounds'],
-            'max_mistakes' => $this->view['max_mistakes'],
+            'max_moves' => $this->view['max_moves'],
             'status' => $this->view['status'],
             'action' => $this->view['action'],
         ];
@@ -105,6 +105,6 @@ class MemoAgeConfigDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['checkbox', 'age_range', 'grid_size', 'total_cards', 'total_duration', 'total_rounds', 'max_mistakes', 'status', 'action'];
+        $this->customRawColumns = ['checkbox', 'age_range', 'grid_size', 'total_cards', 'total_duration', 'total_rounds', 'max_moves', 'status', 'action'];
     }
 }

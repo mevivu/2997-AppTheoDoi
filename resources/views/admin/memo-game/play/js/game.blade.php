@@ -534,7 +534,7 @@
                 // Update HUD
                 document.getElementById('hudRound').textContent = `${this.currentRound}/${this.totalRounds}`;
                 document.getElementById('hudPairsMatched').textContent = '0';
-                this.updateMistakesHud();
+                this.updateMovesHud();
 
                 // Re-shuffle for this round
                 const data = this.gameData;
@@ -651,6 +651,8 @@
             checkMatch() {
                 const [card1, card2] = this.flippedCards;
                 const isMatch = card1.dataset.key === card2.dataset.key;
+                const maxMoves = parseInt(this.gameData?.age_config?.max_moves) || 0;
+                this.updateMovesHud();
 
                 if (isMatch) {
                     setTimeout(() => {
@@ -666,17 +668,20 @@
                         document.getElementById('hudPairsMatched').textContent = this.matchedPairs;
 
                         this.flippedCards = [];
-                        this.isBoardLocked = false;
 
                         // Check if all pairs matched in this round
                         if (this.matchedPairs >= this.gameData.age_config.pairs_count) {
                             this.handleRoundWon();
+                        } else if (maxMoves > 0 && this.moves >= maxMoves) {
+                            // Reached max moves without completing all pairs -> GAME OVER
+                            this.handleGameOverByMoves();
+                        } else {
+                            this.isBoardLocked = false;
                         }
                     }, 400);
                 } else {
                     this.mistakes++;
-                    const maxMistakes = parseInt(this.gameData?.age_config?.max_mistakes) || 0;
-                    this.updateMistakesHud();
+                    this.updateMovesHud();
 
                     setTimeout(() => {
                         card1.classList.add('wrong');
@@ -689,8 +694,8 @@
                         card2.classList.remove('flipped', 'wrong');
                         this.flippedCards = [];
 
-                        if (maxMistakes > 0 && this.mistakes >= maxMistakes) {
-                            this.handleGameOverByMistakes();
+                        if (maxMoves > 0 && this.moves >= maxMoves) {
+                            this.handleGameOverByMoves();
                         } else {
                             this.isBoardLocked = false;
                         }
@@ -721,7 +726,7 @@
                     // Proceed to next round with mini modal
                     SoundFX.playVictory();
                     setTimeout(() => {
-                        if (confirm(`🎉 Hoàn thành Lượt ${this.currentRound}/${this.totalRounds}!\n- Điểm lượt: ${roundScore} điểm\n- Thời gian: ${this.roundDurationSpent}s\n- Lỗi: ${this.mistakes}\n\nNhấn OK để tiếp tục Lượt ${this.currentRound + 1}!`)) {
+                        if (confirm(`🎉 Hoàn thành Lượt ${this.currentRound}/${this.totalRounds}!\n- Điểm lượt: ${roundScore} điểm\n- Thời gian: ${this.roundDurationSpent}s\n- Lượt mở: ${this.moves}\n- Lỗi: ${this.mistakes}\n\nNhấn OK để tiếp tục Lượt ${this.currentRound + 1}!`)) {
                             this.currentRound++;
                             this.startRound();
                         } else {
@@ -752,12 +757,12 @@
                 this.finishGameSession();
             },
 
-            handleGameOverByMistakes() {
+            handleGameOverByMoves() {
                 clearInterval(this.timerInterval);
                 this.isBoardLocked = true;
                 SoundFX.playWrong();
 
-                const maxMistakes = parseInt(this.gameData?.age_config?.max_mistakes) || 0;
+                const maxMoves = parseInt(this.gameData?.age_config?.max_moves) || 0;
                 // Calculate round score based on pairs matched before Game Over
                 const roundScore = Math.round((this.matchedPairs / this.gameData.age_config.pairs_count) * 40);
                 this.roundsHistory.push({
@@ -770,7 +775,7 @@
                 this.totalDurationSpent += this.roundDurationSpent;
 
                 setTimeout(() => {
-                    alert(`💥 GAME OVER!\n\nBạn đã lật sai ${this.mistakes}/${maxMistakes} lần ở Lượt ${this.currentRound}!\nVán đấu đã dừng lại.`);
+                    alert(`💥 GAME OVER!\n\nBạn đã dùng hết số lượt mở (${this.moves}/${maxMoves} lượt) ở Lượt ${this.currentRound}!\nVán đấu đã dừng lại.`);
 
                     if (this.currentRound < this.totalRounds) {
                         if (confirm(`Bạn có muốn tiếp tục thử sức với Lượt ${this.currentRound + 1}/${this.totalRounds} tiếp theo không?`)) {
@@ -785,14 +790,15 @@
                 }, 400);
             },
 
-            updateMistakesHud() {
-                const hud = document.getElementById('hudMistakes');
-                if (!hud) return;
-                const maxMistakes = parseInt(this.gameData?.age_config?.max_mistakes) || 0;
-                if (maxMistakes > 0) {
-                    hud.innerHTML = `${this.mistakes}/<span class="text-muted fs-11">${maxMistakes}</span>`;
-                } else {
-                    hud.textContent = this.mistakes;
+            updateMovesHud() {
+                const hud = document.getElementById('hudMoves');
+                const maxMoves = parseInt(this.gameData?.age_config?.max_moves) || 0;
+                if (hud) {
+                    if (maxMoves > 0) {
+                        hud.innerHTML = `${this.moves}/<span class="text-muted fs-11">${maxMoves}</span>`;
+                    } else {
+                        hud.textContent = this.moves;
+                    }
                 }
             },
 

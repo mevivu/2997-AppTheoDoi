@@ -2237,8 +2237,8 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
-        'max_mistakes' => [
-            'title' => '<div class="header-cell-content"><i class="ti ti-alert-triangle"></i><span>Giới hạn sai</span></div>',
+        'max_moves' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-hand-click"></i><span>Giới hạn lượt</span></div>',
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],

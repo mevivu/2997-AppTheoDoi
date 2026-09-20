@@ -472,39 +472,40 @@
                 </div>
             </div>
 
-            <!-- 4. Giới hạn số lần lật sai (Game Over) -->
+            <!-- 4. Giới hạn số lượt mở thẻ (Game Over) -->
             <div class="mt-4 pt-3 border-top">
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-                    <label class="form-label fw-bold mb-0 fs-14 text-danger">
-                        <i class="ti ti-alert-triangle text-danger me-1"></i>
-                        {{ __('Số lần lật sai tối đa (Game Over):') }}
+                    <label class="form-label fw-bold mb-0 fs-14 text-dark">
+                        <i class="ti ti-hand-click text-warning me-1"></i>
+                        {{ __('Số lượt mở tối đa (cả đúng & sai - Game Over):') }}
                     </label>
-                    <span id="mistakesConvertedBadge" class="badge bg-secondary-lt text-secondary px-2 py-1 fs-12 fw-semibold">
-                        {{ old('max_mistakes', 0) > 0 ? __('Tối đa :count lần sai / ván', ['count' => old('max_mistakes')]) : __('Không giới hạn') }}
+                    <span id="movesConvertedBadge" class="badge bg-secondary-lt text-secondary px-2 py-1 fs-12 fw-semibold">
+                        {{ old('max_moves', 0) > 0 ? __('Tối đa :count lượt mở / ván', ['count' => old('max_moves')]) : __('Không giới hạn') }}
                     </span>
                 </div>
 
-                <!-- Presets chọn nhanh max mistakes -->
+                <!-- Presets chọn nhanh max moves -->
                 <div class="d-flex flex-wrap gap-1.5 mb-2.5">
                     <span class="fs-12 text-muted align-self-center me-1">{{ __('Chọn nhanh:') }}</span>
-                    <button type="button" class="btn memo-preset-btn rounded-pill btn-mistakes-preset px-2.5 py-0.5" data-mistakes="0">0 (Không giới hạn)</button>
-                    <button type="button" class="btn memo-preset-btn rounded-pill btn-mistakes-preset px-2.5 py-0.5" data-mistakes="3">3 lần</button>
-                    <button type="button" class="btn memo-preset-btn rounded-pill btn-mistakes-preset px-2.5 py-0.5" data-mistakes="5">⭐ 5 lần (Chuẩn)</button>
-                    <button type="button" class="btn memo-preset-btn rounded-pill btn-mistakes-preset px-2.5 py-0.5" data-mistakes="8">8 lần</button>
-                    <button type="button" class="btn memo-preset-btn rounded-pill btn-mistakes-preset px-2.5 py-0.5" data-mistakes="10">10 lần</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-moves-preset px-2.5 py-0.5" data-moves="0">0 (Không giới hạn)</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-moves-preset px-2.5 py-0.5" data-moves="15">15 lượt</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-moves-preset px-2.5 py-0.5" data-moves="20">20 lượt</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-moves-preset px-2.5 py-0.5" data-moves="30">⭐ 30 lượt (Chuẩn)</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-moves-preset px-2.5 py-0.5" data-moves="45">45 lượt</button>
+                    <button type="button" class="btn memo-preset-btn rounded-pill btn-moves-preset px-2.5 py-0.5" data-moves="60">60 lượt</button>
                 </div>
 
                 <div class="row align-items-center g-2">
                     <div class="col-12 col-sm-6 col-md-4">
                         <div class="input-group">
-                            <span class="input-group-text bg-light text-muted fs-12">{{ __('Số lần:') }}</span>
-                            <input type="number" name="max_mistakes" id="inputMaxMistakes" class="form-control fw-bold" value="{{ old('max_mistakes', 0) }}" min="0" max="100">
-                            <span class="input-group-text bg-light">lần</span>
+                            <span class="input-group-text bg-light text-muted fs-12">{{ __('Số lượt:') }}</span>
+                            <input type="number" name="max_moves" id="inputMaxMoves" class="form-control fw-bold" value="{{ old('max_moves', 0) }}" min="0" max="300">
+                            <span class="input-group-text bg-light">lượt</span>
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-md-8">
                         <small class="text-muted fs-12 d-block">
-                            <i class="ti ti-info-circle me-1"></i> {{ __('Đặt 0 để không giới hạn. Nếu đặt > 0, bé lật sai đạt số lần này sẽ bị Game Over ở ván đó.') }}
+                            <i class="ti ti-info-circle me-1"></i> {{ __('Đặt 0 để không giới hạn. Nếu đặt > 0 (VD: 30 lượt), bé mở tới 30 lượt (tính cả lật đúng và sai) hoặc hết thời gian (tùy điều kiện nào đến trước) mà chưa xong thì sẽ bị Game Over.') }}
                         </small>
                     </div>
                 </div>
@@ -524,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const inputDuration = document.getElementById('inputDuration');
     const inputRounds = document.getElementById('inputRounds');
     const inputPeekTime = document.getElementById('inputPeekTime');
-    const inputMaxMistakes = document.getElementById('inputMaxMistakes');
+    const inputMaxMoves = document.getElementById('inputMaxMoves');
 
     // Badges & Previews
     const ageRangeBadge = document.getElementById('ageRangeBadge');
@@ -535,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const durationConvertedBadge = document.getElementById('durationConvertedBadge');
     const roundsConvertedBadge = document.getElementById('roundsConvertedBadge');
     const peekConvertedBadge = document.getElementById('peekConvertedBadge');
-    const mistakesConvertedBadge = document.getElementById('mistakesConvertedBadge');
+    const movesConvertedBadge = document.getElementById('movesConvertedBadge');
 
     // Phone Mockup Elements
     const phoneStatRound = document.getElementById('phoneStatRound');
@@ -548,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const simGrid = document.getElementById('simGrid');
     const simDuration = document.getElementById('simDuration');
     const simRounds = document.getElementById('simRounds');
-    const simMistakes = document.getElementById('simMistakes');
+    const simMoves = document.getElementById('simMoves');
     const simTotalGame = document.getElementById('simTotalGame');
     const simGameMinutes = document.getElementById('simGameMinutes');
     const simTotalAssessment = document.getElementById('simTotalAssessment');
@@ -561,7 +562,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const totalDuration = parseInt(inputDuration?.value || 180);
         const totalRounds = parseInt(inputRounds?.value || 3);
         const peekTime = parseInt(inputPeekTime?.value || 0);
-        const maxMistakes = parseInt(inputMaxMistakes?.value || 0);
+        const maxMoves = parseInt(inputMaxMoves?.value || 0);
 
         // 1. Age Range
         const ageText = `Trẻ từ ${minAge} đến ${maxAge} tuổi`;
@@ -671,26 +672,26 @@ document.addEventListener('DOMContentLoaded', function () {
             peekConvertedBadge.textContent = peekTime > 0 ? `${peekTime} giây quan sát` : 'Không mở trước';
         }
 
-        // 9. Mistakes Badge & Simulation
-        if (mistakesConvertedBadge) {
-            if (maxMistakes > 0) {
-                mistakesConvertedBadge.className = 'badge bg-danger-lt text-danger px-2 py-1 fs-12 fw-semibold';
-                mistakesConvertedBadge.textContent = `Tối đa ${maxMistakes} lần sai / ván`;
+        // 9. Moves Badge & Simulation
+        if (movesConvertedBadge) {
+            if (maxMoves > 0) {
+                movesConvertedBadge.className = 'badge bg-warning-lt text-warning-emphasis px-2 py-1 fs-12 fw-semibold';
+                movesConvertedBadge.textContent = `Tối đa ${maxMoves} lượt mở / ván`;
             } else {
-                mistakesConvertedBadge.className = 'badge bg-secondary-lt text-secondary px-2 py-1 fs-12 fw-semibold';
-                mistakesConvertedBadge.textContent = 'Không giới hạn';
+                movesConvertedBadge.className = 'badge bg-secondary-lt text-secondary px-2 py-1 fs-12 fw-semibold';
+                movesConvertedBadge.textContent = 'Không giới hạn';
             }
         }
-        if (simMistakes) {
-            simMistakes.textContent = maxMistakes > 0 ? `Tối đa ${maxMistakes} lần / ván` : 'Không giới hạn';
-            simMistakes.className = maxMistakes > 0 ? 'fw-bold text-danger fs-13 mt-0.5' : 'fw-bold text-secondary fs-13 mt-0.5';
+        if (simMoves) {
+            simMoves.textContent = maxMoves > 0 ? `Tối đa ${maxMoves} lượt / ván` : 'Không giới hạn';
+            simMoves.className = maxMoves > 0 ? 'fw-bold text-warning-emphasis fs-13 mt-0.5' : 'fw-bold text-secondary fs-13 mt-0.5';
         }
 
         // Highlight active presets (100% Ocean Blue & Emerald, NO PURPLE)
-        highlightActivePresets(rows, cols, totalDuration, totalRounds, peekTime, maxMistakes);
+        highlightActivePresets(rows, cols, totalDuration, totalRounds, peekTime, maxMoves);
     }
 
-    function highlightActivePresets(rows, cols, duration, rounds, peek, mistakes) {
+    function highlightActivePresets(rows, cols, duration, rounds, peek, moves) {
         // Grid presets
         document.querySelectorAll('.btn-grid-preset').forEach(btn => {
             const r = parseInt(btn.dataset.rows);
@@ -735,10 +736,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Mistakes presets
-        document.querySelectorAll('.btn-mistakes-preset').forEach(btn => {
-            const m = parseInt(btn.dataset.mistakes);
-            if (m === mistakes) {
+        // Moves presets
+        document.querySelectorAll('.btn-moves-preset').forEach(btn => {
+            const m = parseInt(btn.dataset.moves);
+            if (m === moves) {
                 btn.classList.add('active-preset');
             } else {
                 btn.classList.remove('active-preset');
@@ -776,15 +777,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    document.querySelectorAll('.btn-mistakes-preset').forEach(btn => {
+    document.querySelectorAll('.btn-moves-preset').forEach(btn => {
         btn.addEventListener('click', function () {
-            if (inputMaxMistakes) inputMaxMistakes.value = this.dataset.mistakes;
+            if (inputMaxMoves) inputMaxMoves.value = this.dataset.moves;
             updateSimulation();
         });
     });
 
     // Inputs change listeners
-    [inputMinAge, inputMaxAge, inputRows, inputCols, inputDuration, inputRounds, inputPeekTime, inputMaxMistakes].forEach(input => {
+    [inputMinAge, inputMaxAge, inputRows, inputCols, inputDuration, inputRounds, inputPeekTime, inputMaxMoves].forEach(input => {
         input?.addEventListener('input', updateSimulation);
         input?.addEventListener('change', updateSimulation);
     });

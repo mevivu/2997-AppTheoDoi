@@ -25,7 +25,8 @@ class MemoAgeConfigResource extends JsonResource
             'total_duration' => (int) ($this->total_duration ?: 540),
             'total_rounds' => (int) ($this->total_rounds ?: 3),
             'peek_time' => (int) ($this->peek_time ?: 3),
-            'max_mistakes' => (int) ($this->max_mistakes ?? 0),
+            'max_moves' => (int) ($this->max_moves ?? 0),
+            'max_mistakes' => (int) ($this->max_moves ?? 0),
         ];
     }
 }

@@ -23,7 +23,7 @@ class MemoAgeConfigService implements MemoAgeConfigServiceInterface
         $cols = (int) $data['columns'];
         $data['total_cards'] = $rows * $cols;
         $data['pairs_count'] = (int) ($data['total_cards'] / 2);
-        $data['max_mistakes'] = (int) ($data['max_mistakes'] ?? 0);
+        $data['max_moves'] = (int) ($data['max_moves'] ?? 0);
         return $this->repository->create($data);
     }
 
@@ -34,7 +34,7 @@ class MemoAgeConfigService implements MemoAgeConfigServiceInterface
         $cols = (int) $data['columns'];
         $data['total_cards'] = $rows * $cols;
         $data['pairs_count'] = (int) ($data['total_cards'] / 2);
-        $data['max_mistakes'] = (int) ($data['max_mistakes'] ?? 0);
+        $data['max_moves'] = (int) ($data['max_moves'] ?? 0);
         return $this->repository->update($data['id'], $data);
     }
 
