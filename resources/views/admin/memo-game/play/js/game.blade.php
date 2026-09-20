@@ -116,6 +116,21 @@
                     osc.stop(time + n.d);
                     time += n.d * 0.8;
                 });
+            },
+
+            voiceAudio: null,
+            playVoice(audioUrl) {
+                if (!this.enabled || !audioUrl) return;
+                try {
+                    if (this.voiceAudio) {
+                        this.voiceAudio.pause();
+                        this.voiceAudio.currentTime = 0;
+                    }
+                    this.voiceAudio = new Audio(audioUrl);
+                    this.voiceAudio.play().catch(e => console.log('playVoice caught error:', e));
+                } catch (e) {
+                    console.error('playVoice error:', e);
+                }
             }
         };
 
@@ -453,6 +468,9 @@
                 wrap.dataset.index = index;
                 wrap.dataset.key = card.key;
                 wrap.dataset.id = card.id;
+                if (card.audio) {
+                    wrap.dataset.audio = card.audio;
+                }
 
                 let frontContentHtml = '';
                 if (card.image) {
@@ -618,6 +636,9 @@
 
                 cardEl.classList.add('flipped');
                 SoundFX.playFlip();
+                if (cardEl.dataset.audio) {
+                    SoundFX.playVoice(cardEl.dataset.audio);
+                }
                 this.flippedCards.push(cardEl);
 
                 if (this.flippedCards.length === 2) {
