@@ -27,7 +27,7 @@ class MemoGameController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api');
+        $this->middleware('auth:api')->except(['getGuestGameData', 'getAgeConfigs']);
     }
 
     /**
@@ -45,6 +45,14 @@ class MemoGameController extends Controller
             $this->logError('Lỗi lấy danh sách cấu hình độ tuổi memo', $e);
             return $this->jsonResponseError('Lỗi hệ thống khi lấy cấu hình độ tuổi.', 500);
         }
+    }
+
+    /**
+     * Lấy dữ liệu trò chơi cho khách vãng lai / chơi thử (không cần đăng nhập, không cần child_id)
+     */
+    public function getGuestGameData(Request $request): JsonResponse
+    {
+        return $this->getGameData($request);
     }
 
     /**

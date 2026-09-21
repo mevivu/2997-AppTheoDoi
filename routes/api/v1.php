@@ -195,6 +195,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Memo\MemoGameController::class)
     ->group(function () {
         Route::get('/age-configs', 'getAgeConfigs');
         Route::get('/data', 'getGameData');
+        Route::get('/guest-data', 'getGuestGameData');
     });
 
 // Rating PQ
