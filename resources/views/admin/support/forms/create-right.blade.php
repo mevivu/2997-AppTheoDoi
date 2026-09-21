@@ -10,7 +10,23 @@
         <div class="card-body p-4">
             <x-select name="status" :required="true">
                 @foreach ($status as $key => $value)
-                    <x-select-option :value="$key" :title="$value" />
+                    <x-select-option :value="$key" :title="$value" :selected="old('status', \App\Enums\ActiveStatus::Active->value) == $key" />
+                @endforeach
+            </x-select>
+        </div>
+    </div>
+
+    <div class="card border-0 custom-shadow rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom px-4 py-3">
+            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.05rem;">
+                <i class="ti ti-category text-primary me-2 fs-4"></i>
+                {{ __('Loại hỗ trợ') }} <span class="text-danger ms-1">*</span>
+            </h5>
+        </div>
+        <div class="card-body p-4">
+            <x-select name="type" :required="true">
+                @foreach ($type as $key => $value)
+                    <x-select-option :value="$key" :title="$value" :selected="old('type', request()->back == 'guide' ? \App\Enums\Support\SupportType::Guide->value : \App\Enums\Support\SupportType::HelpCenter->value) == $key" />
                 @endforeach
             </x-select>
         </div>
