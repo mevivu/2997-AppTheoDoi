@@ -37,8 +37,6 @@ use App\Models\VaccinationSchedule;
 
 class DashboardController extends Controller
 {
-    //
-
     public function getView(): array
     {
         return [

@@ -275,6 +275,179 @@ class FirebaseAnalyticsService
     }
 
     /**
+     * Lấy thống kê phân bố hệ điều hành thiết bị (Android vs iOS).
+     */
+    public function getDeviceOsStats(string $period = '30d'): array
+    {
+        $cacheKey = 'firebase_device_os_stats_' . $period;
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addMinutes(15), function () use ($period) {
+            $days = 30;
+            if ($period === '7d') {
+                $days = 7;
+            } elseif ($period === '1d') {
+                $days = 1;
+            } elseif ($period === '90d' || $period === '3m') {
+                $days = 90;
+            }
+
+            $httpClient = $this->getAuthorizedClient();
+            if (empty($this->propertyId) || !$httpClient) {
+                return $this->getFallbackDeviceOsStats();
+            }
+
+            try {
+                $url = "https://analyticsdata.googleapis.com/v1beta/properties/{$this->propertyId}:runReport";
+
+                $response = $httpClient->post($url, [
+                    'json' => [
+                        'dateRanges' => [
+                            ['startDate' => "{$days}daysAgo", 'endDate' => 'today']
+                        ],
+                        'dimensions' => [
+                            ['name' => 'operatingSystem']
+                        ],
+                        'metrics' => [
+                            ['name' => 'activeUsers']
+                        ],
+                        'orderBys' => [
+                            [
+                                'metric' => ['metricName' => 'activeUsers'],
+                                'desc' => true
+                            ]
+                        ]
+                    ]
+                ]);
+
+                if ($response->getStatusCode() === 200) {
+                    $data = json_decode($response->getBody()->getContents(), true);
+                    return $this->parseDeviceOsData($data, $period);
+                }
+            } catch (\Exception $e) {
+                Log::warning('Firebase getDeviceOsStats API error: ' . $e->getMessage());
+            }
+
+            return $this->getFallbackDeviceOsStats();
+        });
+    }
+
+    /**
+     * Phân tích và chuẩn hóa dữ liệu hệ điều hành thiết bị.
+     */
+    protected function parseDeviceOsData(array $data, string $period = '30d'): array
+    {
+        $iosUsers = 0;
+        $androidUsers = 0;
+        $otherUsers = 0;
+
+        if (isset($data['rows']) && is_array($data['rows'])) {
+            foreach ($data['rows'] as $row) {
+                $osName = trim($row['dimensionValues'][0]['value'] ?? '');
+                $count = (int)($row['metricValues'][0]['value'] ?? 0);
+
+                if (strcasecmp($osName, 'iOS') === 0) {
+                    $iosUsers += $count;
+                } elseif (strcasecmp($osName, 'Android') === 0) {
+                    $androidUsers += $count;
+                } else {
+                    $otherUsers += $count;
+                }
+            }
+        }
+
+        $totalUsers = $iosUsers + $androidUsers + $otherUsers;
+        $effectiveTotal = ($iosUsers + $androidUsers) > 0 ? ($iosUsers + $androidUsers) : ($totalUsers > 0 ? $totalUsers : 1);
+
+        $iosPercent = round(($iosUsers / $effectiveTotal) * 100, 1);
+        $androidPercent = round(($androidUsers / $effectiveTotal) * 100, 1);
+
+        if ($iosUsers > 0 || $androidUsers > 0) {
+            $androidPercent = round(100 - $iosPercent, 1);
+        }
+
+        $topPlatform = $iosUsers >= $androidUsers ? 'iOS' : 'Android';
+        $topPercent = max($iosPercent, $androidPercent);
+
+        return [
+            'period' => $period,
+            'total' => $totalUsers,
+            'ios' => [
+                'name' => 'Apple iOS',
+                'short_name' => 'iOS',
+                'users' => $iosUsers,
+                'percent' => $iosPercent,
+                'is_top' => $topPlatform === 'iOS',
+            ],
+            'android' => [
+                'name' => 'Google Android',
+                'short_name' => 'Android',
+                'users' => $androidUsers,
+                'percent' => $androidPercent,
+                'is_top' => $topPlatform === 'Android',
+            ],
+            'top_platform' => $topPlatform,
+            'top_percent' => $topPercent,
+            'has_data' => $totalUsers > 0,
+        ];
+    }
+
+    /**
+     * Dữ liệu dự phòng từ database user_devices khi không có mạng Firebase
+     */
+    protected function getFallbackDeviceOsStats(): array
+    {
+        $iosCount = 0;
+        $androidCount = 0;
+
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('user_devices')) {
+                $devices = \Illuminate\Support\Facades\DB::table('user_devices')
+                    ->where('is_active', true)
+                    ->pluck('device_name');
+
+                foreach ($devices as $deviceName) {
+                    $lower = strtolower($deviceName ?? '');
+                    if (str_contains($lower, 'iphone') || str_contains($lower, 'ipad') || str_contains($lower, 'ios') || str_contains($lower, 'apple')) {
+                        $iosCount++;
+                    } else {
+                        $androidCount++;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('Fallback user_devices stats failed: ' . $e->getMessage());
+        }
+
+        $total = $iosCount + $androidCount;
+        $effectiveTotal = $total > 0 ? $total : 1;
+        $iosPercent = round(($iosCount / $effectiveTotal) * 100, 1);
+        $androidPercent = round(100 - $iosPercent, 1);
+        $topPlatform = $iosCount >= $androidCount ? 'iOS' : 'Android';
+
+        return [
+            'period' => 'all',
+            'total' => $total,
+            'ios' => [
+                'name' => 'Apple iOS',
+                'short_name' => 'iOS',
+                'users' => $iosCount,
+                'percent' => $iosPercent,
+                'is_top' => $topPlatform === 'iOS',
+            ],
+            'android' => [
+                'name' => 'Google Android',
+                'short_name' => 'Android',
+                'users' => $androidCount,
+                'percent' => $androidPercent,
+                'is_top' => $topPlatform === 'Android',
+            ],
+            'top_platform' => $topPlatform,
+            'top_percent' => max($iosPercent, $androidPercent),
+            'has_data' => $total > 0,
+            'is_fallback' => true,
+        ];
+    }
+
+    /**
      * Elegant Mock data for Version distributions.
      */
     protected function getMockActiveUsersByVersion(): array

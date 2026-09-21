@@ -24,6 +24,9 @@ class RouteAdminSystem
     /** FIREBASE REPORT */
     const FIREBASE_REPORT = 'admin.firebase.report';
 
+    /** DEVICE STATISTICS */
+    const DEVICE_STATISTICS_INDEX = 'admin.device.statistics.index';
+
     /** FEATURE STATISTICS */
     const FEATURE_STATISTICS_INDEX = 'admin.feature.statistics.index';
     const FEATURE_STATISTICS_EXPORT = 'admin.feature.statistics.export';

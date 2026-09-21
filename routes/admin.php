@@ -25,6 +25,14 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
     Route::get('/thong-ke-firebase', [App\Admin\Http\Controllers\FirebaseReport\FirebaseReportController::class, 'index'])->name('firebase.report');
 
+    // Thống kê thiết bị (Hệ điều hành Android vs iOS)
+    Route::controller(\App\Admin\Http\Controllers\DeviceStatistics\DeviceStatisticsController::class)
+        ->prefix('/thong-ke-thiet-bi')
+        ->as('device.statistics.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+        });
+
     // Thống kê chức năng (Đánh giá toàn diện & Tiện ích)
     Route::controller(\App\Admin\Http\Controllers\FeatureStatistics\FeatureStatisticsController::class)
         ->prefix('/thong-ke-chuc-nang')

@@ -27,6 +27,12 @@
                             <span>{{ __('Báo cáo Firebase') }}</span>
                         </a>
                     @endif
+                    @if (Route::has(RouteAdminSystem::DEVICE_STATISTICS_INDEX))
+                        <a href="{{ route(RouteAdminSystem::DEVICE_STATISTICS_INDEX) }}" class="btn btn-outline-primary d-flex align-items-center gap-2 shadow-sm fw-bold px-3 py-2 bg-white">
+                            <i class="ti ti-devices fs-4"></i>
+                            <span>{{ __('Thống kê thiết bị') }}</span>
+                        </a>
+                    @endif
                 </div>
             </div>
 
@@ -49,7 +55,7 @@
                             <div class="kpi-subtitle">{{ __('Tài khoản phụ huynh đang hoạt động') }}</div>
                         </div>
                         <div>
-                            <a href="{{ route('admin.user.index') }}" class="kpi-action-link w-100 justify-content-between">
+                            <a href="{{ route(RouteAdminSystem::USER_INDEX) }}" class="kpi-action-link w-100 justify-content-between">
                                 <span>{{ __('Quản lý khách hàng') }}</span>
                                 <i class="ti ti-arrow-right"></i>
                             </a>
@@ -74,7 +80,7 @@
                             <div class="kpi-subtitle">{{ __('Hồ sơ trẻ đang được theo dõi phát triển') }}</div>
                         </div>
                         <div>
-                            <a href="{{ route('admin.children.index') }}" class="kpi-action-link w-100 justify-content-between">
+                            <a href="{{ route(RouteAdminSystem::CHILDREN_INDEX) }}" class="kpi-action-link w-100 justify-content-between">
                                 <span>{{ __('Danh sách trẻ em') }}</span>
                                 <i class="ti ti-arrow-right"></i>
                             </a>
@@ -99,7 +105,7 @@
                             <div class="kpi-subtitle">{{ __('Tổng đơn thanh toán dịch vụ / gói') }}</div>
                         </div>
                         <div>
-                            <a href="{{ route('admin.transaction.index') }}" class="kpi-action-link w-100 justify-content-between">
+                            <a href="{{ route(RouteAdminSystem::TRANSACTION_INDEX) }}" class="kpi-action-link w-100 justify-content-between">
                                 <span>{{ __('Quản lý giao dịch') }}</span>
                                 <i class="ti ti-arrow-right"></i>
                             </a>
@@ -124,7 +130,7 @@
                             <div class="kpi-subtitle">{{ __('Đang có ') }} <strong>{{ number_format($rowCountQuestion) }}</strong> {{ __('câu hỏi trong kho') }}</div>
                         </div>
                         <div>
-                            <a href="{{ route('admin.quiz.iq') }}" class="kpi-action-link w-100 justify-content-between">
+                            <a href="{{ route(RouteAdminSystem::QUIZ_IQ) }}" class="kpi-action-link w-100 justify-content-between">
                                 <span>{{ __('Quản lý bài test IQ') }}</span>
                                 <i class="ti ti-arrow-right"></i>
                             </a>
@@ -148,7 +154,7 @@
             <div class="row g-3 mb-4">
                 <!-- Lịch tiêm chủng -->
                 <div class="col-12 col-sm-6 col-lg-4">
-                    <a href="{{ route('admin.vaccination.admin') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::VACCINATION_ADMIN) }}" class="dashboard-module-card">
                         <div class="module-icon bg-success-lt text-success">
                             <i class="ti ti-vaccine"></i>
                         </div>
@@ -162,7 +168,7 @@
 
                 <!-- Đánh giá BMI -->
                 <div class="col-12 col-sm-6 col-lg-4">
-                    <a href="{{ route('admin.bmi.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::BMI_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-primary-lt text-primary">
                             <i class="ti ti-scale"></i>
                         </div>
@@ -176,7 +182,7 @@
 
                 <!-- Theo dõi Thai kỳ -->
                 <div class="col-12 col-sm-6 col-lg-4">
-                    <a href="{{ route('admin.pregnancy.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::PREGNANCY_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-pink-lt text-pink">
                             <i class="ti ti-flower"></i>
                         </div>
@@ -190,7 +196,7 @@
 
                 <!-- Nhật ký & Đơn thuốc -->
                 <div class="col-12 col-sm-6 col-lg-6 col-xl-6">
-                    <a href="{{ route('admin.journal.prescription') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::JOURNAL_PRESCRIPTION) }}" class="dashboard-module-card">
                         <div class="module-icon bg-cyan-lt text-cyan">
                             <i class="ti ti-notebook"></i>
                         </div>
@@ -204,7 +210,7 @@
 
                 <!-- Phòng khám -->
                 <div class="col-12 col-sm-6 col-lg-6 col-xl-6">
-                    <a href="{{ route('admin.clinic.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::CLINIC_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-azure-lt text-azure">
                             <i class="ti ti-building-hospital"></i>
                         </div>
@@ -228,7 +234,7 @@
             <div class="row g-3 mb-4">
                 <!-- Học lực GPA -->
                 <div class="col-12 col-sm-6 col-lg-4">
-                    <a href="{{ route('admin.gpa.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::GPA_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-indigo-lt text-indigo">
                             <i class="ti ti-certificate"></i>
                         </div>
@@ -242,7 +248,7 @@
 
                 <!-- Bài kiểm tra IQ -->
                 <div class="col-12 col-sm-6 col-lg-4">
-                    <a href="{{ route('admin.quiz.iq') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::QUIZ_IQ) }}" class="dashboard-module-card">
                         <div class="module-icon bg-blue-lt text-blue">
                             <i class="ti ti-brain"></i>
                         </div>
@@ -256,7 +262,7 @@
 
                 <!-- Ngân hàng câu hỏi -->
                 <div class="col-12 col-sm-6 col-lg-4">
-                    <a href="{{ route('admin.question.iq') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::QUESTION_IQ) }}" class="dashboard-module-card">
                         <div class="module-icon bg-teal-lt text-teal">
                             <i class="ti ti-help-circle"></i>
                         </div>
@@ -270,7 +276,7 @@
 
                 <!-- Bài tập phát triển -->
                 <div class="col-12 col-sm-6 col-lg-6 col-xl-6">
-                    <a href="{{ route('admin.exercise.physical') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::EXERCISE_PHYSICAL) }}" class="dashboard-module-card">
                         <div class="module-icon bg-orange-lt text-orange">
                             <i class="ti ti-run"></i>
                         </div>
@@ -284,7 +290,7 @@
 
                 <!-- Khung giáo dục chuẩn -->
                 <div class="col-12 col-sm-6 col-lg-6 col-xl-6">
-                    <a href="{{ route('admin.quality.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::QUALITY_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-yellow-lt text-yellow">
                             <i class="ti ti-star"></i>
                         </div>
@@ -308,7 +314,7 @@
             <div class="row g-3 mb-4">
                 <!-- Gói dịch vụ -->
                 <div class="col-12 col-sm-6 col-md-4">
-                    <a href="{{ route('admin.package.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::PACKAGE_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-purple-lt text-purple">
                             <i class="ti ti-package"></i>
                         </div>
@@ -322,7 +328,7 @@
 
                 <!-- Sản phẩm -->
                 <div class="col-12 col-sm-6 col-md-4">
-                    <a href="{{ route('admin.product.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::PRODUCT_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-cyan-lt text-cyan">
                             <i class="ti ti-shopping-bag"></i>
                         </div>
@@ -336,7 +342,7 @@
 
                 <!-- Bài viết tin tức -->
                 <div class="col-12 col-sm-6 col-md-4">
-                    <a href="{{ route('admin.post.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::POST_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-blue-lt text-blue">
                             <i class="ti ti-article"></i>
                         </div>
@@ -350,7 +356,7 @@
 
                 <!-- Hướng dẫn phụ huynh -->
                 <div class="col-12 col-sm-6 col-md-4">
-                    <a href="{{ route('admin.guide.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::GUIDE_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-green-lt text-green">
                             <i class="ti ti-compass"></i>
                         </div>
@@ -364,7 +370,7 @@
 
                 <!-- Slider & Banner -->
                 <div class="col-12 col-sm-6 col-md-4">
-                    <a href="{{ route('admin.slider.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::SLIDER_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-azure-lt text-azure">
                             <i class="ti ti-slideshow"></i>
                         </div>
@@ -378,7 +384,7 @@
 
                 <!-- Thông báo đẩy -->
                 <div class="col-12 col-sm-6 col-md-4">
-                    <a href="{{ route('admin.notification.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::NOTIFICATION_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-amber-lt text-amber">
                             <i class="ti ti-bell-ringing"></i>
                         </div>
@@ -402,7 +408,7 @@
             <div class="row g-3">
                 <!-- Quản trị viên -->
                 <div class="col-12 col-sm-6 col-lg-4">
-                    <a href="{{ route('admin.admin.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::ADMIN_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-dark-lt text-dark">
                             <i class="ti ti-user-shield"></i>
                         </div>
@@ -416,7 +422,7 @@
 
                 <!-- Vai trò & Phân quyền -->
                 <div class="col-12 col-sm-6 col-lg-4">
-                    <a href="{{ route('admin.role.index') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::ROLE_INDEX) }}" class="dashboard-module-card">
                         <div class="module-icon bg-purple-lt text-purple">
                             <i class="ti ti-shield-check"></i>
                         </div>
@@ -430,7 +436,7 @@
 
                 <!-- Trung tâm hỗ trợ khách hàng -->
                 <div class="col-12 col-sm-6 col-lg-4">
-                    <a href="{{ route('admin.support.help-center') }}" class="dashboard-module-card">
+                    <a href="{{ route(RouteAdminSystem::SUPPORT_HELP_CENTER) }}" class="dashboard-module-card">
                         <div class="module-icon bg-danger-lt text-danger">
                             <i class="ti ti-headset"></i>
                         </div>
