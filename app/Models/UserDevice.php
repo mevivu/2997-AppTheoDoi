@@ -17,6 +17,9 @@ class UserDevice extends Model
 
     protected $table = 'user_devices';
 
+    const PLATFORM_IOS = 'ios';
+    const PLATFORM_ANDROID = 'android';
+
     protected $fillable = [
         /** ID người dùng */
         'user_id',
@@ -24,6 +27,8 @@ class UserDevice extends Model
         'device_id',
         /** Tên dòng máy (iPhone 15, Samsung S24...) */
         'device_name',
+        /** Hệ điều hành thiết bị: ios, android, web */
+        'platform',
         /** Token thiết bị dùng nhận thông báo Firebase (FCM) */
         'device_token',
         /** Địa chỉ IP đăng nhập */

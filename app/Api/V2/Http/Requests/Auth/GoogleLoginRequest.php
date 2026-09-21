@@ -22,6 +22,7 @@ class GoogleLoginRequest extends BaseRequest
             'device_token' => 'nullable|string',
             'device_id' => 'nullable|string|max:191',
             'device_name' => 'nullable|string|max:191',
+            'platform' => 'nullable|string|max:30',
             'referral_code' => 'nullable|string|max:50',
         ];
     }

@@ -186,6 +186,7 @@ trait JwtService
                 'device_id' => $this->login['device_id'] ?? null,
                 'device_token' => $this->login['device_token'] ?? null,
                 'device_name' => $this->login['device_name'] ?? null,
+                'platform' => $this->login['platform'] ?? null,
             ]);
         }
 
@@ -295,6 +296,7 @@ trait JwtService
             'device_id' => $data['device_id'] ?? null,
             'device_token' => $data['device_token'] ?? null,
             'device_name' => $data['device_name'] ?? null,
+            'platform' => $data['platform'] ?? null,
         ], $isNewUser);
     }
 
@@ -417,6 +419,7 @@ trait JwtService
             'device_id' => $data['device_id'] ?? null,
             'device_token' => $data['device_token'] ?? null,
             'device_name' => $data['device_name'] ?? null,
+            'platform' => $data['platform'] ?? 'ios',
         ], $isNewUser);
     }
 
@@ -429,6 +432,27 @@ trait JwtService
         $deviceId = $deviceData['device_id'] ?? $deviceData['device_token'] ?? ('web_' . md5($request->ip() . ($request->userAgent() ?? '')));
         $deviceName = $deviceData['device_name'] ?? null;
         $deviceToken = $deviceData['device_token'] ?? null;
+        $platform = $deviceData['platform'] ?? null;
+
+        // Tự động chuẩn hoá / phát hiện platform nếu client chưa gửi
+        if (empty($platform)) {
+            $name = strtolower($deviceName ?? '');
+            $ua = strtolower($request->userAgent() ?? '');
+            if (str_contains($name, 'iphone') || str_contains($name, 'ipad') || str_contains($name, 'ipod') || str_contains($name, 'ios') || str_contains($name, 'apple') || str_contains($ua, 'iphone') || str_contains($ua, 'ipad') || str_contains($ua, 'ios')) {
+                $platform = \App\Models\UserDevice::PLATFORM_IOS;
+            } elseif (!empty($deviceName) || str_contains($ua, 'android')) {
+                $platform = \App\Models\UserDevice::PLATFORM_ANDROID;
+            } else {
+                $platform = 'other';
+            }
+        } else {
+            $platform = strtolower(trim($platform));
+            if ($platform === 'ios' || str_contains($platform, 'apple')) {
+                $platform = \App\Models\UserDevice::PLATFORM_IOS;
+            } elseif ($platform === 'android') {
+                $platform = \App\Models\UserDevice::PLATFORM_ANDROID;
+            }
+        }
 
         // Kiểm tra thiết bị trong user_devices
         $userDevice = \App\Models\UserDevice::where('user_id', $user->id)
@@ -440,6 +464,7 @@ trait JwtService
             $userDevice->update([
                 'device_name' => $deviceName ?? $userDevice->device_name,
                 'device_token' => $deviceToken ?? $userDevice->device_token,
+                'platform' => $platform ?? $userDevice->platform,
                 'ip_address' => $request->ip(),
                 'last_active_at' => now(),
             ]);
@@ -476,6 +501,7 @@ trait JwtService
                     'is_active' => true,
                     'device_name' => $deviceName ?? $userDevice->device_name,
                     'device_token' => $deviceToken ?? $userDevice->device_token,
+                    'platform' => $platform ?? $userDevice->platform,
                     'ip_address' => $request->ip(),
                     'last_active_at' => now(),
                 ]);
@@ -484,6 +510,7 @@ trait JwtService
                     'user_id' => $user->id,
                     'device_id' => $deviceId,
                     'device_name' => $deviceName ?? 'Thiết bị di động',
+                    'platform' => $platform,
                     'device_token' => $deviceToken,
                     'ip_address' => $request->ip(),
                     'is_active' => true,

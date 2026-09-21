@@ -64,12 +64,23 @@
                     <tr id="device-row-{{ $device->id }}">
                         <td>
                             <div class="d-flex align-items-center gap-2">
-                                <div id="device-avatar-{{ $device->id }}" class="avatar avatar-sm {{ $device->is_active ? 'bg-primary-lt text-primary' : 'bg-secondary-lt text-secondary' }} rounded-circle">
-                                    <i class="ti ti-device-mobile fs-3"></i>
+                                <div id="device-avatar-{{ $device->id }}" class="avatar avatar-sm {{ $device->is_active ? ($device->platform === 'ios' ? 'bg-dark-lt text-dark' : 'bg-success-lt text-success') : 'bg-secondary-lt text-secondary' }} rounded-circle">
+                                    @if($device->platform === 'ios')
+                                        <i class="ti ti-brand-apple fs-3"></i>
+                                    @elseif($device->platform === 'android')
+                                        <i class="ti ti-brand-android fs-3"></i>
+                                    @else
+                                        <i class="ti ti-device-mobile fs-3"></i>
+                                    @endif
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-dark fs-13">
+                                    <div class="fw-bold text-dark fs-13 d-flex align-items-center gap-1">
                                         {{ $device->device_name ?: __('Thiết bị di động') }}
+                                        @if($device->platform === 'ios')
+                                            <span class="badge bg-dark-lt fs-10 px-1 py-0">iOS</span>
+                                        @elseif($device->platform === 'android')
+                                            <span class="badge bg-green-lt fs-10 px-1 py-0">Android</span>
+                                        @endif
                                     </div>
                                     <div class="text-muted fs-11">
                                         {{ __('Liên kết:') }} {{ format_datetime($device->created_at) }}

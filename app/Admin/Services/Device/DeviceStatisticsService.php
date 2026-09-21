@@ -3,6 +3,7 @@
 namespace App\Admin\Services\Device;
 
 use App\Models\UserDevice;
+use Illuminate\Support\Facades\DB;
 
 class DeviceStatisticsService
 {
@@ -13,24 +14,21 @@ class DeviceStatisticsService
      */
     public function getPlatformStats(): array
     {
-        $devices = UserDevice::select('id', 'device_name')->get();
+        // Truy vấn trực tiếp theo cột platform (có đánh index)
+        $counts = UserDevice::select('platform', DB::raw('count(*) as aggregate'))
+            ->whereNotNull('platform')
+            ->groupBy('platform')
+            ->pluck('aggregate', 'platform')
+            ->toArray();
 
-        $iosKeywords = ['iphone', 'ipad', 'ipod', 'ios', 'apple'];
-        $iosCount = 0;
-        $androidCount = 0;
+        $iosCount = (int)($counts[UserDevice::PLATFORM_IOS] ?? 0);
+        $androidCount = (int)($counts[UserDevice::PLATFORM_ANDROID] ?? 0);
 
-        foreach ($devices as $device) {
-            $name = strtolower(trim($device->device_name ?? ''));
-            $isIos = false;
-
-            foreach ($iosKeywords as $kw) {
-                if (str_contains($name, $kw)) {
-                    $isIos = true;
-                    break;
-                }
-            }
-
-            if ($isIos) {
+        // Dự phòng cho bất kỳ bản ghi nào chưa có platform
+        $unassigned = UserDevice::whereNull('platform')->select('device_name')->get();
+        foreach ($unassigned as $d) {
+            $name = strtolower(trim($d->device_name ?? ''));
+            if (str_contains($name, 'iphone') || str_contains($name, 'ipad') || str_contains($name, 'ipod') || str_contains($name, 'ios') || str_contains($name, 'apple')) {
                 $iosCount++;
             } else {
                 $androidCount++;
