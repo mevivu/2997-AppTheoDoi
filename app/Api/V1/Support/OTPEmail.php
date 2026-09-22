@@ -25,7 +25,7 @@ trait OTPEmail
         if ($otpResponse->status) {
             $otpCode = $otpResponse->token;
 
-            Mail::to($email)->send(new OtpMail($otpCode));
+            Mail::to($email)->send(new OtpMail($otpCode, $validity));
             return $otpResponse;
         }
 

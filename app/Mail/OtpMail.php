@@ -14,13 +14,13 @@ class OtpMail extends Mailable
     use Queueable, SerializesModels;
 
     public $otp;
+    public $validity;
 
-    public function __construct($otp)
+    public function __construct($otp, $validity = 15)
     {
         $this->otp = $otp;
+        $this->validity = $validity;
     }
-
-
 
     /**
      * Get the message envelope.
@@ -30,7 +30,7 @@ class OtpMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Otp Mail',
+            subject: 'Mã xác thực OTP - Chăm Con 360',
         );
     }
 
@@ -43,6 +43,10 @@ class OtpMail extends Mailable
     {
         return new Content(
             view: 'mails.otp',
+            with: [
+                'otp' => $this->otp,
+                'validity' => $this->validity,
+            ],
         );
     }
     /**
