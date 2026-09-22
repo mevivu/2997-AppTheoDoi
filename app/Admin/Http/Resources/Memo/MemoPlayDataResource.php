@@ -26,13 +26,17 @@ class MemoPlayDataResource extends JsonResource
         $ageConfig = $this['age_config'];
         $cards = $this['cards'] ?? [];
 
+        $cardBackType = $theme->card_back_type ?? 'theme';
+        $cardBack = ($cardBackType === 'logo') ? null : ($theme->card_back ? asset($theme->card_back) : null);
+
         return [
             'success' => true,
             'theme' => [
                 'id' => $theme->id,
                 'name' => $theme->name,
                 'code' => $theme->code,
-                'card_back' => $theme->card_back ? asset($theme->card_back) : null,
+                'card_back_type' => $cardBackType,
+                'card_back' => $cardBack,
             ],
             'age_config' => [
                 'id' => $ageConfig->id,

@@ -30,6 +30,8 @@ class MemoTheme extends Model
         'icon',
         /** Đường dẫn hình ảnh mặt sau thẻ bài (mặt úp) */
         'card_back',
+        /** Loại ảnh mặt úp ban đầu trên app: 'theme' (ảnh chủ đề), 'logo' (ảnh logo) */
+        'card_back_type',
         /** Mô tả chi tiết về chủ đề */
         'description',
         /** Thứ tự hiển thị / sắp xếp */

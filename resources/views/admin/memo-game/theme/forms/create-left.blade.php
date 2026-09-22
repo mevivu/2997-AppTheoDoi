@@ -37,8 +37,19 @@
 
                 <div class="col-12 col-md-6">
                     <div class="mb-3">
+                        <label class="form-label fw-bold">{{ __('Loại ảnh mặt úp ban đầu trên app') }}: <span class="text-danger">*</span></label>
+                        <select name="card_back_type" class="form-select">
+                            <option value="theme" {{ old('card_back_type', 'theme') === 'theme' ? 'selected' : '' }}>🎨 {{ __('Ảnh chủ đề (Dùng ảnh mặt sau bên dưới)') }}</option>
+                            <option value="logo" {{ old('card_back_type') === 'logo' ? 'selected' : '' }}>🏷️ {{ __('Ảnh logo (Dùng logo mặc định của app)') }}</option>
+                        </select>
+                        <small class="text-muted fs-12">{{ __('Chọn hiển thị ảnh Logo hay ảnh Chủ đề khi thẻ ở trạng thái úp') }}</small>
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-12">
+                    <div class="mb-3">
                         <label class="form-label fw-bold">{{ __('Ảnh mặt sau thẻ mặc định (Card Back)') }}:</label>
-                        <x-input-image name="card_back" :value="old('card_back')" sub="{{ __('Tùy chọn: Dùng làm hình mặt sau của mọi thẻ trong chủ đề') }}" />
+                        <x-input-image name="card_back" :value="old('card_back')" sub="{{ __('Tùy chọn: Dùng làm hình mặt sau của mọi thẻ khi chọn loại Ảnh chủ đề') }}" />
                     </div>
                 </div>
 

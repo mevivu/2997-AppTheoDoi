@@ -19,6 +19,7 @@ class MemoThemeRequest extends BaseRequest
             'status' => ['required', new Enum(ActiveStatus::class)],
             'icon' => ['nullable'],
             'card_back' => ['nullable'],
+            'card_back_type' => ['nullable', 'string', 'in:theme,logo'],
         ];
     }
 
@@ -34,6 +35,7 @@ class MemoThemeRequest extends BaseRequest
             'status' => ['required', new Enum(ActiveStatus::class)],
             'icon' => ['nullable'],
             'card_back' => ['nullable'],
+            'card_back_type' => ['nullable', 'string', 'in:theme,logo'],
         ];
     }
 

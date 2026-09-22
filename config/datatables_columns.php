@@ -2128,6 +2128,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
+        'card_back_type' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-layers-intersect"></i><span>Mặt úp thẻ</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
         'age' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Độ tuổi</span></div>',
             'orderable' => true,

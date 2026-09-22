@@ -22,6 +22,7 @@ class MemoThemeDataTable extends BaseDataTable
             'action' => 'admin.memo-game.theme.datatable.action',
             'status' => 'admin.memo-game.theme.datatable.status',
             'icon' => 'admin.memo-game.theme.datatable.icon',
+            'card_back_type' => 'admin.memo-game.theme.datatable.card-back-type',
             'age' => 'admin.memo-game.theme.datatable.age',
             'checkbox' => 'admin.common.checkbox',
             'cards_count' => 'admin.memo-game.theme.datatable.cards-count',
@@ -30,10 +31,17 @@ class MemoThemeDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [2, 6];
+        $this->columnAllSearch = [2, 3];
         $this->columnSearchSelect = [
             [
-                'column' => 6,
+                'column' => 4,
+                'data' => [
+                    'theme' => 'Ảnh chủ đề',
+                    'logo' => 'Ảnh logo',
+                ],
+            ],
+            [
+                'column' => 8,
                 'data' => ActiveStatus::asSelectArray(),
             ],
         ];
@@ -54,7 +62,7 @@ class MemoThemeDataTable extends BaseDataTable
             ->columns($this->getColumns())
             ->minifiedAjax()
             ->dom('Bfrtip')
-            ->orderBy(5, 'asc')
+            ->orderBy(7, 'asc')
             ->selectStyleSingle();
 
         $this->htmlParameters();
@@ -71,6 +79,7 @@ class MemoThemeDataTable extends BaseDataTable
     {
         $this->customEditColumns = [
             'icon' => $this->view['icon'],
+            'card_back_type' => $this->view['card_back_type'],
             'age' => $this->view['age'],
             'status' => $this->view['status'],
             'cards_count' => $this->view['cards_count'],
@@ -88,6 +97,6 @@ class MemoThemeDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['checkbox', 'icon', 'age', 'status', 'cards_count', 'action'];
+        $this->customRawColumns = ['checkbox', 'icon', 'card_back_type', 'age', 'status', 'cards_count', 'action'];
     }
 }
