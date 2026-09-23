@@ -145,6 +145,24 @@
                 </div>
             </div>
 
+            <!-- is_sale -->
+            <div class="col-md-6 col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('Phân loại gói') <span class="text-danger">*</span></label>
+                    <select name="is_sale" class="form-select" required>
+                        <option value="0" {{ old('is_sale', '0') == '0' ? 'selected' : '' }}>
+                            @lang('Gói thường (Tiêu chuẩn)')
+                        </option>
+                        <option value="1" {{ old('is_sale') == '1' ? 'selected' : '' }}>
+                            @lang('Gói sale (Ưu đãi / Khuyến mãi)')
+                        </option>
+                    </select>
+                    <small class="text-muted d-block mt-1">
+                        <i class="ti ti-info-circle"></i> @lang('Phân biệt gói tiêu chuẩn thường hoặc gói ưu đãi sale cho chiến dịch.')
+                    </small>
+                </div>
+            </div>
+
             <!-- days -->
             <div class="col-md-6 col-12">
                 <div class="mb-3">
@@ -158,7 +176,7 @@
             </div>
 
             <!-- max_devices -->
-            <div class="col-md-6 col-12">
+            <div class="col-12">
                 <div class="mb-3">
                     <label class="control-label">@lang('Số thiết bị tối đa') <span class="text-danger">*</span></label>
                     <x-input name="max_devices"

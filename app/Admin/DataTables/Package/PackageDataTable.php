@@ -31,6 +31,7 @@ class PackageDataTable extends BaseDataTable
             'status' => 'admin.package.datatable.status',
             'type' => 'admin.package.datatable.type',
             'is_auto_renew' => 'admin.package.datatable.is_auto_renew',
+            'is_sale' => 'admin.package.datatable.is_sale',
             'max_devices' => 'admin.package.datatable.max_devices',
             'checkbox' => 'admin.common.checkbox',
         ];
@@ -57,8 +58,8 @@ class PackageDataTable extends BaseDataTable
             })
             ->all();
 
-        $this->columnAllSearch = [ 1, 2, 3, 4, 5, 6 ];
-        $this->columnSearchDate = [ 6 ];
+        $this->columnAllSearch = [ 1, 2, 3, 4, 5, 6, 7 ];
+        $this->columnSearchDate = [ 7 ];
         $this->columnSearchSelect = [
             [
                 'column' => 2,
@@ -73,10 +74,17 @@ class PackageDataTable extends BaseDataTable
             ],
             [
                 'column' => 4,
-                'data' => $deviceOptions
+                'data' => [
+                    '0' => 'Gói thường',
+                    '1' => 'Gói sale',
+                ]
             ],
             [
                 'column' => 5,
+                'data' => $deviceOptions
+            ],
+            [
+                'column' => 6,
                 'data' => PackageStatus::asSelectArray()
             ],
         ];
@@ -95,6 +103,7 @@ class PackageDataTable extends BaseDataTable
             'status' => $this->view['status'],
             'type' => $this->view['type'],
             'is_auto_renew' => $this->view['is_auto_renew'],
+            'is_sale' => $this->view['is_sale'],
             'max_devices' => $this->view['max_devices'],
         ];
     }
@@ -104,6 +113,9 @@ class PackageDataTable extends BaseDataTable
         $this->customFilterColumns = [
             'is_auto_renew' => function ($query, $keyword) {
                 $query->where('is_auto_renew', (int) $keyword);
+            },
+            'is_sale' => function ($query, $keyword) {
+                $query->where('is_sale', (int) $keyword);
             },
             'max_devices' => function ($query, $keyword) {
                 $query->where('max_devices', $keyword);
@@ -121,6 +133,6 @@ class PackageDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['action', 'name', 'status', 'checkbox', 'type', 'is_auto_renew', 'max_devices'];
+        $this->customRawColumns = ['action', 'name', 'status', 'checkbox', 'type', 'is_auto_renew', 'is_sale', 'max_devices'];
     }
 }

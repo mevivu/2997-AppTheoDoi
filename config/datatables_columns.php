@@ -1105,6 +1105,12 @@ return [
             'width' => '150px',
             'addClass' => 'text-center align-middle',
         ],
+        'is_sale' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-flame"></i><span>Phân loại</span></div>',
+            'orderable' => false,
+            'width' => '140px',
+            'addClass' => 'text-center align-middle',
+        ],
         'max_devices' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-devices"></i><span>Số thiết bị</span></div>',
             'orderable' => true,

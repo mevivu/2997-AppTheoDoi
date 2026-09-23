@@ -40,6 +40,8 @@ class Package extends Model
         'max_devices',
         /* Gói tự động gia hạn (true) hoặc một lần / không gia hạn (false) */
         'is_auto_renew',
+        /* Phân loại: Gói sale (true) hoặc Gói thường (false) */
+        'is_sale',
     ];
     protected $casts = [
         'price' => 'float',
@@ -49,6 +51,7 @@ class Package extends Model
         'discount_value' => 'float',
         'max_devices' => 'integer',
         'is_auto_renew' => 'boolean',
+        'is_sale' => 'boolean',
     ];
 
     protected $appends = [
