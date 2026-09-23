@@ -1111,6 +1111,12 @@ return [
             'width' => '140px',
             'addClass' => 'text-center align-middle',
         ],
+        'sale_dates' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar-time"></i><span>Thời gian sale</span></div>',
+            'orderable' => false,
+            'width' => '190px',
+            'addClass' => 'text-center align-middle',
+        ],
         'max_devices' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-devices"></i><span>Số thiết bị</span></div>',
             'orderable' => true,

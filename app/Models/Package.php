@@ -42,6 +42,10 @@ class Package extends Model
         'is_auto_renew',
         /* Phân loại: Gói sale (true) hoặc Gói thường (false) */
         'is_sale',
+        /* Thời gian bắt đầu sale */
+        'sale_start_at',
+        /* Thời gian kết thúc sale */
+        'sale_end_at',
     ];
     protected $casts = [
         'price' => 'float',
@@ -52,6 +56,8 @@ class Package extends Model
         'max_devices' => 'integer',
         'is_auto_renew' => 'boolean',
         'is_sale' => 'boolean',
+        'sale_start_at' => 'datetime',
+        'sale_end_at' => 'datetime',
     ];
 
     protected $appends = [
@@ -59,6 +65,7 @@ class Package extends Model
         'discount_amount',
         'has_discount',
         'discount_display',
+        'is_sale_active',
     ];
 
     /**
@@ -119,6 +126,74 @@ class Package extends Model
         }
 
         return '';
+    }
+
+    /**
+     * Kiểm tra đợt sale có đang hiệu lực không
+     */
+    public function getIsSaleActiveAttribute(): bool
+    {
+        if (!$this->is_sale) {
+            return false;
+        }
+
+        $now = now();
+
+        if ($this->sale_start_at && $now->lt($this->sale_start_at)) {
+            return false;
+        }
+
+        if ($this->sale_end_at && $now->gt($this->sale_end_at)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Trạng thái sale: none, upcoming, active, expired
+     */
+    public function getSaleStatusAttribute(): string
+    {
+        if (!$this->is_sale) {
+            return 'none';
+        }
+
+        $now = now();
+
+        if ($this->sale_start_at && $now->lt($this->sale_start_at)) {
+            return 'upcoming';
+        }
+
+        if ($this->sale_end_at && $now->gt($this->sale_end_at)) {
+            return 'expired';
+        }
+
+        return 'active';
+    }
+
+    /**
+     * Chuỗi hiển thị khoảng thời gian sale trực quan
+     */
+    public function getSalePeriodDisplayAttribute(): string
+    {
+        if (!$this->is_sale) {
+            return '';
+        }
+
+        if ($this->sale_start_at && $this->sale_end_at) {
+            return $this->sale_start_at->format('d/m/Y H:i') . ' - ' . $this->sale_end_at->format('d/m/Y H:i');
+        }
+
+        if ($this->sale_start_at) {
+            return 'Từ ' . $this->sale_start_at->format('d/m/Y H:i');
+        }
+
+        if ($this->sale_end_at) {
+            return 'Đến ' . $this->sale_end_at->format('d/m/Y H:i');
+        }
+
+        return 'Không giới hạn';
     }
 
     public function userPackages(): HasMany

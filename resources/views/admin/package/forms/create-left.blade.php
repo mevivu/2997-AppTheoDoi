@@ -163,6 +163,44 @@
                 </div>
             </div>
 
+            <!-- Sale Date Range (Hiển thị khi chọn Gói sale) -->
+            <div class="col-12" id="sale_dates_wrapper" style="{{ old('is_sale', '0') == '1' ? '' : 'display: none;' }}">
+                <div class="card border rounded-3 mb-3 p-3" style="background-color: #f0fdf4; border-color: #bbf7d0 !important;">
+                    <h6 class="fw-bold text-success mb-2 d-flex align-items-center">
+                        <i class="ti ti-calendar-time me-2 fs-3"></i> @lang('Thời gian áp dụng Sale')
+                    </h6>
+                    <p class="text-muted small mb-3">@lang('Chỉ định thời gian bắt đầu và kết thúc chương trình sale cho gói dịch vụ này.')</p>
+                    <div class="row g-3">
+                        <div class="col-md-6 col-12">
+                            <label class="control-label fw-semibold text-dark">
+                                @lang('Sale từ ngày') <span class="text-danger">*</span>
+                            </label>
+                            <input type="datetime-local" 
+                                   name="sale_start_at" 
+                                   id="sale_start_at" 
+                                   class="form-control @error('sale_start_at') is-invalid @enderror" 
+                                   value="{{ old('sale_start_at') }}">
+                            @error('sale_start_at')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <label class="control-label fw-semibold text-dark">
+                                @lang('Sale đến ngày') <span class="text-danger">*</span>
+                            </label>
+                            <input type="datetime-local" 
+                                   name="sale_end_at" 
+                                   id="sale_end_at" 
+                                   class="form-control @error('sale_end_at') is-invalid @enderror" 
+                                   value="{{ old('sale_end_at') }}">
+                            @error('sale_end_at')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- days -->
             <div class="col-md-6 col-12">
                 <div class="mb-3">

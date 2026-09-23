@@ -32,6 +32,7 @@ class PackageDataTable extends BaseDataTable
             'type' => 'admin.package.datatable.type',
             'is_auto_renew' => 'admin.package.datatable.is_auto_renew',
             'is_sale' => 'admin.package.datatable.is_sale',
+            'sale_dates' => 'admin.package.datatable.sale_dates',
             'max_devices' => 'admin.package.datatable.max_devices',
             'checkbox' => 'admin.common.checkbox',
         ];
@@ -58,8 +59,8 @@ class PackageDataTable extends BaseDataTable
             })
             ->all();
 
-        $this->columnAllSearch = [ 1, 2, 3, 4, 5, 6, 7 ];
-        $this->columnSearchDate = [ 7 ];
+        $this->columnAllSearch = [ 1, 2, 3, 4, 6, 7, 8 ];
+        $this->columnSearchDate = [ 8 ];
         $this->columnSearchSelect = [
             [
                 'column' => 2,
@@ -80,11 +81,11 @@ class PackageDataTable extends BaseDataTable
                 ]
             ],
             [
-                'column' => 5,
+                'column' => 6,
                 'data' => $deviceOptions
             ],
             [
-                'column' => 6,
+                'column' => 7,
                 'data' => PackageStatus::asSelectArray()
             ],
         ];
@@ -128,11 +129,12 @@ class PackageDataTable extends BaseDataTable
         $this->customAddColumns = [
             'action' => $this->view['action'],
             'checkbox' => $this->view['checkbox'],
+            'sale_dates' => $this->view['sale_dates'],
         ];
     }
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['action', 'name', 'status', 'checkbox', 'type', 'is_auto_renew', 'is_sale', 'max_devices'];
+        $this->customRawColumns = ['action', 'name', 'status', 'checkbox', 'type', 'is_auto_renew', 'is_sale', 'sale_dates', 'max_devices'];
     }
 }

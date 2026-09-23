@@ -60,6 +60,14 @@ class PackageService implements PackageServiceInterface
         $data['is_auto_renew'] = filter_var($data['is_auto_renew'] ?? false, FILTER_VALIDATE_BOOLEAN);
         $data['is_sale'] = filter_var($data['is_sale'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
+        if ($data['is_sale']) {
+            $data['sale_start_at'] = !empty($data['sale_start_at']) ? $data['sale_start_at'] : null;
+            $data['sale_end_at'] = !empty($data['sale_end_at']) ? $data['sale_end_at'] : null;
+        } else {
+            $data['sale_start_at'] = null;
+            $data['sale_end_at'] = null;
+        }
+
         return $data;
     }
 

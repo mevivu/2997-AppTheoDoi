@@ -173,5 +173,22 @@
         });
 
         updateActiveDevicePreset();
+
+        // ==========================================
+        // Sale Date Range Toggle Logic
+        // ==========================================
+        const $isSaleSelect = $('select[name="is_sale"]');
+        const $saleDatesWrapper = $('#sale_dates_wrapper');
+
+        function toggleSaleDates() {
+            const isSale = String($isSaleSelect.val()) === '1';
+            if (isSale) {
+                $saleDatesWrapper.slideDown(200);
+            } else {
+                $saleDatesWrapper.slideUp(200);
+            }
+        }
+
+        $isSaleSelect.on('change', toggleSaleDates);
     });
 </script>

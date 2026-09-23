@@ -29,6 +29,8 @@ class PackageRequest extends BaseRequest
             'max_devices' => ['required', 'integer', 'min:1'],
             'is_auto_renew' => ['required', 'boolean'],
             'is_sale' => ['required', 'boolean'],
+            'sale_start_at' => ['nullable', 'date'],
+            'sale_end_at' => ['nullable', 'date', 'after_or_equal:sale_start_at'],
             'discount_type' => ['nullable', new Enum(PackageDiscountType::class)],
             'discount_value' => ['nullable', 'numeric', 'min:0'],
             'discount_code' => ['nullable', 'string', 'max:50'],
@@ -49,6 +51,8 @@ class PackageRequest extends BaseRequest
             'max_devices' => ['required', 'integer', 'min:1'],
             'is_auto_renew' => ['required', 'boolean'],
             'is_sale' => ['required', 'boolean'],
+            'sale_start_at' => ['nullable', 'date'],
+            'sale_end_at' => ['nullable', 'date', 'after_or_equal:sale_start_at'],
             'discount_type' => ['nullable', new Enum(PackageDiscountType::class)],
             'discount_value' => ['nullable', 'numeric', 'min:0'],
             'discount_code' => ['nullable', 'string', 'max:50'],
@@ -63,7 +67,32 @@ class PackageRequest extends BaseRequest
             if ($discountType === PackageDiscountType::Percent->value && $discountValue > 100) {
                 $validator->errors()->add('discount_value', __('Mức giảm theo phần trăm không được vượt quá 100%.'));
             }
+
+            $isSale = filter_var($this->input('is_sale'), FILTER_VALIDATE_BOOLEAN);
+            if ($isSale) {
+                if (empty($this->input('sale_start_at'))) {
+                    $validator->errors()->add('sale_start_at', __('Vui lòng chọn thời gian bắt đầu sale.'));
+                }
+                if (empty($this->input('sale_end_at'))) {
+                    $validator->errors()->add('sale_end_at', __('Vui lòng chọn thời gian kết thúc sale.'));
+                }
+            }
         });
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'sale_start_at' => __('Thời gian bắt đầu sale'),
+            'sale_end_at' => __('Thời gian kết thúc sale'),
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'sale_end_at.after_or_equal' => __('Thời gian kết thúc sale phải sau hoặc bằng thời gian bắt đầu sale.'),
+        ];
     }
 }
 
