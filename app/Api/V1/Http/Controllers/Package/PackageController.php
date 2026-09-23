@@ -71,14 +71,23 @@ class PackageController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $response = $this->repository->getByQueryBuilder(
+            $packages = $this->repository->getByQueryBuilder(
                 [
                     'status' => ActiveStatus::Active->value,
                     ['type', '!=', PackageType::Normal->value],
                     ['type', '!=', PackageType::Trial->value],
                 ]
             )->get();
-            return $this->jsonResponseSuccess(PackageResource::collection($response));
+
+            $normalPackages = $packages->where('is_sale', false)->values();
+            $salePackages = $packages->where('is_sale', true)->values();
+
+            return response()->json([
+                'status' => 200,
+                'message' => __('Thực hiện thành công.'),
+                'data' => PackageResource::collection($normalPackages),
+                'sales' => PackageResource::collection($salePackages),
+            ], 200);
         } catch (Exception $exception) {
             $this->logError(MessageSystem::SERVER_ERROR, $exception);
             return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
