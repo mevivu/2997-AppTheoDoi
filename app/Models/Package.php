@@ -66,8 +66,8 @@ class Package extends Model
         'has_discount',
         'discount_display',
         'is_sale_active',
-        'saleStartTime',
-        'adDurationHours',
+        'sale_start_time',
+        'ad_duration_hours',
     ];
 
     /**
@@ -199,7 +199,7 @@ class Package extends Model
     }
 
     /**
-     * Thời gian bắt đầu sale theo chuẩn ISO (saleStartTime)
+     * Thời gian bắt đầu sale theo chuẩn ISO (sale_start_time)
      */
     public function getSaleStartTimeAttribute(): ?string
     {
@@ -211,7 +211,7 @@ class Package extends Model
     }
 
     /**
-     * Thời lượng sale tính theo giờ (adDurationHours)
+     * Thời lượng sale tính theo giờ (ad_duration_hours)
      * Ví dụ: 6 tiếng
      */
     public function getAdDurationHoursAttribute(): int|float|null

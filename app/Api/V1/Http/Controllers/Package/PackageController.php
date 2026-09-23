@@ -83,12 +83,12 @@ class PackageController extends Controller
             $salePackages = $packages->where('is_sale', true)->values();
 
             $earliestSalePackage = $salePackages->whereNotNull('sale_start_at')->sortBy('sale_start_at')->first();
-            $saleStartTime = $earliestSalePackage?->saleStartTime;
+            $saleStartTime = $earliestSalePackage?->sale_start_time;
 
             return response()->json([
                 'status' => 200,
                 'message' => __('Thực hiện thành công.'),
-                'saleStartTime' => $saleStartTime,
+                'sale_start_time' => $saleStartTime,
                 'data' => PackageResource::collection($normalPackages),
                 'sales' => PackageResource::collection($salePackages),
             ], 200);
