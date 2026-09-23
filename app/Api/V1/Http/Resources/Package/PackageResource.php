@@ -36,9 +36,8 @@ class PackageResource extends JsonResource
             'sale_start_at' => $this->sale_start_at?->format('Y-m-d H:i:s'),
             'sale_end_at' => $this->sale_end_at?->format('Y-m-d H:i:s'),
             'is_sale_active' => (bool) $this->is_sale_active,
-            'sale_remaining_seconds' => $this->sale_remaining_seconds,
-            'sale_remaining_time' => $this->sale_remaining_time,
-            'sale_countdown' => $this->sale_countdown,
+            'saleStartTime' => $this->saleStartTime,
+            'adDurationHours' => $this->adDurationHours,
             'final_price' => (float) $this->final_price,
             'has_discount' => (bool) $this->has_discount,
         ];

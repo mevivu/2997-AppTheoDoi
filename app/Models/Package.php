@@ -66,9 +66,8 @@ class Package extends Model
         'has_discount',
         'discount_display',
         'is_sale_active',
-        'sale_remaining_seconds',
-        'sale_remaining_time',
-        'sale_countdown',
+        'saleStartTime',
+        'adDurationHours',
     ];
 
     /**
@@ -200,99 +199,31 @@ class Package extends Model
     }
 
     /**
-     * Số giây còn lại của đợt sale (tính từ now đến sale_end_at)
-     * Trả về int số giây, hoặc 0 nếu đã hết hạn, null nếu không phải gói sale hoặc không giới hạn.
+     * Thời gian bắt đầu sale theo chuẩn ISO (saleStartTime)
      */
-    public function getSaleRemainingSecondsAttribute(): ?int
+    public function getSaleStartTimeAttribute(): ?string
     {
-        if (!$this->is_sale) {
+        if (!$this->is_sale || !$this->sale_start_at) {
             return null;
         }
 
-        if (!$this->sale_end_at) {
-            return null; // Không giới hạn
-        }
-
-        $now = now();
-        if ($now->gte($this->sale_end_at)) {
-            return 0;
-        }
-
-        return max(0, (int) $now->diffInSeconds($this->sale_end_at, false));
+        return $this->sale_start_at->format('Y-m-d\TH:i:s.u');
     }
 
     /**
-     * Chuỗi thời gian còn lại của đợt sale trực quan
-     * Dưới 24h: "05:59:48" (Giờ:Phút:Giây)
-     * Từ 24h trở lên: "17 ngày 01:01:00"
+     * Thời lượng sale tính theo giờ (adDurationHours)
+     * Ví dụ: 6 tiếng
      */
-    public function getSaleRemainingTimeAttribute(): ?string
+    public function getAdDurationHoursAttribute(): int|float|null
     {
-        if (!$this->is_sale) {
+        if (!$this->is_sale || !$this->sale_start_at || !$this->sale_end_at) {
             return null;
         }
 
-        if (!$this->sale_end_at) {
-            return 'Không giới hạn';
-        }
+        $diffSeconds = max(0, $this->sale_start_at->diffInSeconds($this->sale_end_at, false));
+        $hours = $diffSeconds / 3600;
 
-        $now = now();
-        if ($now->gte($this->sale_end_at)) {
-            return '00:00:00';
-        }
-
-        if ($this->sale_start_at && $now->lt($this->sale_start_at)) {
-            return 'Chưa bắt đầu';
-        }
-
-        $totalSeconds = max(0, (int) $now->diffInSeconds($this->sale_end_at, false));
-        $days = intdiv($totalSeconds, 86400);
-        $hours = intdiv($totalSeconds % 86400, 3600);
-        $minutes = intdiv($totalSeconds % 3600, 60);
-        $seconds = $totalSeconds % 60;
-
-        if ($days > 0) {
-            return sprintf('%d ngày %02d:%02d:%02d', $days, $hours, $minutes, $seconds);
-        }
-
-        return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-    }
-
-    /**
-     * Dữ liệu countdown chi tiết cho giao diện đồng hồ đếm ngược (Giờ, Phút, Giây)
-     */
-    public function getSaleCountdownAttribute(): ?array
-    {
-        if (!$this->is_sale) {
-            return null;
-        }
-
-        if (!$this->sale_end_at) {
-            return null;
-        }
-
-        $now = now();
-        $isExpired = $now->gte($this->sale_end_at);
-        $totalSeconds = $isExpired ? 0 : max(0, (int) $now->diffInSeconds($this->sale_end_at, false));
-
-        $days = intdiv($totalSeconds, 86400);
-        $hours = intdiv($totalSeconds % 86400, 3600);
-        $totalHours = intdiv($totalSeconds, 3600);
-        $minutes = intdiv($totalSeconds % 3600, 60);
-        $seconds = $totalSeconds % 60;
-
-        return [
-            'days' => $days,
-            'hours' => $hours,
-            'total_hours' => $totalHours,
-            'minutes' => $minutes,
-            'seconds' => $seconds,
-            'total_seconds' => $totalSeconds,
-            'formatted' => $days > 0 
-                ? sprintf('%d ngày %02d:%02d:%02d', $days, $hours, $minutes, $seconds)
-                : sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds),
-            'formatted_hms' => sprintf('%02d:%02d:%02d', $totalHours, $minutes, $seconds),
-        ];
+        return ($diffSeconds % 3600 === 0) ? (int) $hours : round($hours, 2);
     }
 
     public function userPackages(): HasMany
