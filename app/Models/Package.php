@@ -38,6 +38,8 @@ class Package extends Model
         'discount_code',
         /* Số thiết bị đăng nhập tối đa */
         'max_devices',
+        /* Gói tự động gia hạn (true) hoặc một lần / không gia hạn (false) */
+        'is_auto_renew',
     ];
     protected $casts = [
         'price' => 'float',
@@ -46,6 +48,7 @@ class Package extends Model
         'discount_type' => PackageDiscountType::class,
         'discount_value' => 'float',
         'max_devices' => 'integer',
+        'is_auto_renew' => 'boolean',
     ];
 
     protected $appends = [

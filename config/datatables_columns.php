@@ -1099,6 +1099,12 @@ return [
             'width' => '150px',
             'addClass' => 'text-center align-middle',
         ],
+        'is_auto_renew' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-refresh"></i><span>Gia hạn</span></div>',
+            'orderable' => false,
+            'width' => '150px',
+            'addClass' => 'text-center align-middle',
+        ],
         'max_devices' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-devices"></i><span>Số thiết bị</span></div>',
             'orderable' => true,

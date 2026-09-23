@@ -121,14 +121,32 @@
                 </div>
             </div>
 
-            <div class="col-12">
+            <!-- type & is_auto_renew -->
+            <div class="col-md-6 col-12">
                 <div class="mb-3">
-                    <label class="control-label">@lang('type') <span class="text-danger">*</span></label>
+                    <label class="control-label">@lang('Loại gói') <span class="text-danger">*</span></label>
                     <x-select name="type" :required="true">
                         @foreach ($type as $key => $value)
                             <x-select-option :value="$key" :title="$value" :selected="$instance->type->value == $key" />
                         @endforeach
                     </x-select>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-12">
+                <div class="mb-3">
+                    <label class="control-label">@lang('Hình thức gia hạn') <span class="text-danger">*</span></label>
+                    <select name="is_auto_renew" class="form-select" required>
+                        <option value="0" {{ old('is_auto_renew', (int)($instance->is_auto_renew ? 1 : 0)) == 0 ? 'selected' : '' }}>
+                            @lang('Một lần (Không tự động gia hạn)')
+                        </option>
+                        <option value="1" {{ old('is_auto_renew', (int)($instance->is_auto_renew ? 1 : 0)) == 1 ? 'selected' : '' }}>
+                            @lang('Tự động gia hạn (Subscription)')
+                        </option>
+                    </select>
+                    <small class="text-muted d-block mt-1">
+                        <i class="ti ti-info-circle"></i> @lang('Gói tự động trừ phí định kỳ qua Google Play / App Store hoặc chỉ mua dùng 1 lần.')
+                    </small>
                 </div>
             </div>
 
