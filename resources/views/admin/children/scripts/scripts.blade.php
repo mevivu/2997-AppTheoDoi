@@ -830,6 +830,284 @@
                     }, 2000);
                 });
             });
+
+            // 9. Debug Dữ Liệu & Công Thức Thể Chất (PQ Radar) Handlers
+            var latestPqDebugData = null;
+
+            $('#btn-open-pq-debug-modal').on('click', function() {
+                var childId = '{{ $children->id ?? "" }}';
+                if (!childId) return;
+
+                $('#debug-pq-steps-loading').removeClass('d-none');
+                $('#debug-pq-steps-content').addClass('d-none');
+
+                $.ajax({
+                    url: "{{ route('admin.children.debugPQ') }}",
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        child_id: childId
+                    },
+                    success: function(res) {
+                        if (res.status === 200 && res.data) {
+                            latestPqDebugData = res.data;
+                            renderPqDebugModal(latestPqDebugData);
+                        } else {
+                            $('#debug-pq-steps-content').html(`
+                                <div class="alert alert-warning py-3 mb-0">
+                                    <i class="ti ti-alert-triangle me-1"></i> ${res.message || 'Không thể lấy dữ liệu chẩn đoán thể chất PQ'}
+                                </div>
+                            `);
+                        }
+                    },
+                    error: function(err) {
+                        var msg = err.responseJSON && err.responseJSON.message ? err.responseJSON.message : 'Lỗi kết nối máy chủ.';
+                        $('#debug-pq-steps-content').html(`
+                            <div class="alert alert-danger py-3 mb-0">
+                                <i class="ti ti-alert-circle me-1"></i> ${msg}
+                            </div>
+                        `);
+                    },
+                    complete: function() {
+                        $('#debug-pq-steps-loading').addClass('d-none');
+                        $('#debug-pq-steps-content').removeClass('d-none');
+                    }
+                });
+            });
+
+            function renderPqDebugModal(data) {
+                if (!data || !data.has_data) {
+                    $('#debug-pq-steps-content').html(`
+                        <div class="text-center py-5 text-muted">
+                            <i class="ti ti-alert-circle fs-1 text-warning mb-2 d-block"></i>
+                            <h6 class="fw-bold">${data.message || 'Trẻ chưa có dữ liệu đo thể chất PQ nào trên hệ thống'}</h6>
+                        </div>
+                    `);
+                    $('#debug-tbody-pq-history-all').html('<tr><td colspan="10" class="text-muted py-3">Chưa có bản ghi PQ</td></tr>');
+                    $('#debug-pq-json-viewer').text(JSON.stringify(data, null, 2));
+                    return;
+                }
+
+                var c = data.child_info;
+                var l = data.latest_pq;
+                var m = data.metrics_breakdown;
+                var h = m.current_height;
+                var a = m.adulthood_height;
+                var b = m.bmi;
+                var s = m.strength;
+                var e = m.endurance;
+                var o = m.overall_pq;
+
+                var htmlSteps = `
+                    <div class="row g-3">
+                        <!-- Header tóm tắt thông tin bé & đợt đo -->
+                        <div class="col-12">
+                            <div class="card p-3 border border-light-subtle rounded-3 bg-white">
+                                <div class="row align-items-center g-2">
+                                    <div class="col-12 col-md-6">
+                                        <div class="fs-14 fw-bold text-dark mb-1">
+                                            <i class="ti ti-user text-primary me-1"></i> ${c.name} (#${c.id}) - Giới tính: <span class="badge bg-light text-dark">${c.gender}</span>
+                                        </div>
+                                        <div class="fs-12 text-muted">
+                                            Ngày sinh: <strong>${c.birthday}</strong> • Tuổi chính xác: <strong>${c.years_lived} tuổi</strong> (${c.days_lived} ngày sống / ${c.months_lived} tháng)
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 text-md-end">
+                                        <div class="fs-12 text-muted mb-1">Đợt đo PQ gần nhất: <strong>${l.assessment_date}</strong> (ID #${l.id})</div>
+                                        <div class="d-flex align-items-center justify-content-md-end gap-2 flex-wrap">
+                                            <span class="badge bg-light text-dark">Cao: <strong>${l.height} cm</strong></span>
+                                            <span class="badge bg-light text-dark">Nặng: <strong>${l.weight} kg</strong></span>
+                                            <span class="badge bg-light text-dark">BMI: <strong>${l.bmi}</strong></span>
+                                            <span class="badge bg-success-lt text-success fw-semibold">Điểm DB: <strong>${l.db_score ? l.db_score + ' / 10' : '--'}</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 1. Chiều cao hiện tại -->
+                        <div class="col-12 col-md-6">
+                            <div class="card p-3 border border-primary-subtle rounded-3 bg-white h-100 shadow-none">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-primary text-white fw-semibold">1. CHIỀU CAO HIỆN TẠI</span>
+                                    <span class="badge bg-primary-lt text-primary fs-14 fw-bold px-2 py-1">${h.score} / 10</span>
+                                </div>
+                                <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12 mb-2">
+                                    <div>• Chiều cao đo thực tế: <strong class="text-primary">${h.actual_height} cm</strong></div>
+                                    <div>• Chuẩn WHO tháng tuổi (${h.who_month} th): <strong>${h.who_standard_height} cm</strong></div>
+                                    <div>• Độ lệch so với WHO: <span class="badge ${h.delta >= 0 ? 'bg-success-lt' : 'bg-warning-lt'} fw-bold">${h.delta > 0 ? '+' : ''}${h.delta} cm</span></div>
+                                </div>
+                                <div class="fs-11 text-muted mb-1">CÔNG THỨC ÁNH XẠ CỘT R EXCEL:</div>
+                                <div class="p-2 rounded-2 bg-light text-dark font-monospace fs-11 mb-2 border">
+                                    ${h.excel_formula}
+                                </div>
+                                <div class="fs-12 text-slate fw-semibold">
+                                    <i class="ti ti-check text-success me-1"></i> ${h.rule_applied}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Chiều cao trưởng thành -->
+                        <div class="col-12 col-md-6">
+                            <div class="card p-3 border border-info-subtle rounded-3 bg-white h-100 shadow-none">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-info text-white fw-semibold">2. CHIỀU CAO TRƯỞNG THÀNH (V2)</span>
+                                    <span class="badge bg-info-lt text-info fs-14 fw-bold px-2 py-1">${a.score} / 10</span>
+                                </div>
+                                <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12 mb-2">
+                                    <div>• Dự báo 19 tuổi (Thuật toán V2): <strong class="text-info">${a.predicted_height} cm</strong></div>
+                                    <div>• Chuẩn WHO 19 tuổi (${a.who_month} th): <strong>${a.who_adult_standard} cm</strong></div>
+                                    <div>• Độ lệch so với WHO 19t: <span class="badge ${a.delta >= 0 ? 'bg-info-lt' : 'bg-warning-lt'} fw-bold">${a.delta > 0 ? '+' : ''}${a.delta} cm</span></div>
+                                </div>
+                                <div class="fs-11 text-muted mb-1">CÔNG THỨC ÁNH XẠ CỘT R EXCEL:</div>
+                                <div class="p-2 rounded-2 bg-light text-dark font-monospace fs-11 mb-2 border">
+                                    ${a.excel_formula}
+                                </div>
+                                <div class="fs-12 text-slate fw-semibold">
+                                    <i class="ti ti-check text-info me-1"></i> ${a.rule_applied}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. BMI / Cân nặng -->
+                        <div class="col-12 col-md-6">
+                            <div class="card p-3 border border-warning-subtle rounded-3 bg-white h-100 shadow-none">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-warning text-white fw-semibold">3. BMI / CÂN NẶNG</span>
+                                    <span class="badge bg-warning-lt text-warning fs-14 fw-bold px-2 py-1">${b.score} / 10</span>
+                                </div>
+                                <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12 mb-2">
+                                    <div>• Cân nặng / Chiều cao: <strong>${b.actual_weight} kg</strong> / <strong>${b.actual_height} cm</strong></div>
+                                    <div>• BMI thực tế: <strong class="text-warning">BMI ${b.bmi_value}</strong> - Thể trạng: <span class="badge bg-light text-dark">${b.classification}</span></div>
+                                    <div>• Mốc WHO chuẩn theo tuổi (${b.target_age}t): <strong>Z-Score 0 = ${b.who_z_score_0}</strong></div>
+                                </div>
+                                <div class="fs-11 text-muted mb-1">CÔNG THỨC QUY ĐỔI HIỆU SUẤT THANG 10:</div>
+                                <div class="p-2 rounded-2 bg-light text-dark font-monospace fs-11 mb-2 border">
+                                    ${b.formula}
+                                </div>
+                                <div class="fs-12 text-slate fw-semibold">
+                                    <i class="ti ti-calculator text-warning me-1"></i> ${b.calc_details} => <strong class="text-warning">${b.score} điểm</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Sức mạnh cơ bắp -->
+                        <div class="col-12 col-md-6">
+                            <div class="card p-3 border border-danger-subtle rounded-3 bg-white h-100 shadow-none">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-danger text-white fw-semibold">4. SỨC MẠNH CƠ BẮP</span>
+                                    <span class="badge bg-danger-lt text-danger fs-14 fw-bold px-2 py-1">${s.score !== null ? s.score + ' / 10' : '--'}</span>
+                                </div>
+                                <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12 mb-2">
+                                    <div>• Giá trị đợt đo gần nhất: <strong class="text-danger">${s.current_value !== null ? s.current_value : 'Chưa có số đo'}</strong></div>
+                                    <div>• Bản ghi đối chiếu 1 năm trước: <strong>${s.past_value !== null ? s.past_value + ' (Ngày ' + s.past_record_date + ')' : 'Chưa có bản ghi cũ'}</strong></div>
+                                    <div>• Kỳ vọng tăng trưởng 1 năm (x1.25): <strong>${s.expected_growth_1_year !== null ? s.expected_growth_1_year : '--'}</strong></div>
+                                </div>
+                                <div class="fs-11 text-muted mb-1">CÔNG THỨC TÍNH HIỆU SUẤT TĂNG TRƯỞNG:</div>
+                                <div class="p-2 rounded-2 bg-light text-dark font-monospace fs-11 mb-2 border">
+                                    ${s.formula}
+                                </div>
+                                <div class="fs-12 text-slate fw-semibold">
+                                    <i class="ti ti-calculator text-danger me-1"></i> ${s.calc_details} => <strong class="text-danger">${s.score !== null ? s.score + ' điểm' : '--'}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Sức bền vận động -->
+                        <div class="col-12 col-md-6">
+                            <div class="card p-3 border border-primary-subtle rounded-3 bg-white h-100 shadow-none">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-primary text-white fw-semibold">5. SỨC BỀN VẬN ĐỘNG</span>
+                                    <span class="badge bg-primary-lt text-primary fs-14 fw-bold px-2 py-1">${e.score !== null ? e.score + ' / 10' : '--'}</span>
+                                </div>
+                                <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12 mb-2">
+                                    <div>• Giá trị đợt đo gần nhất: <strong class="text-primary">${e.current_value !== null ? e.current_value : 'Chưa có số đo'}</strong></div>
+                                    <div>• Bản ghi đối chiếu 1 năm trước: <strong>${e.past_value !== null ? e.past_value + ' (Ngày ' + e.past_record_date + ')' : 'Chưa có bản ghi cũ'}</strong></div>
+                                    <div>• Số ngày giữa 2 kỳ đo: <strong>${e.days_between} ngày</strong> (Tỷ lệ: <strong>${e.performance_ratio}</strong>)</div>
+                                    <div>• Mẫu số kỳ vọng (past x 1.25 x ratio): <strong>${e.denominator}</strong></div>
+                                </div>
+                                <div class="fs-11 text-muted mb-1">CÔNG THỨC HIỆU SUẤT TIM MẠCH:</div>
+                                <div class="p-2 rounded-2 bg-light text-dark font-monospace fs-11 mb-2 border">
+                                    ${e.formula}
+                                </div>
+                                <div class="fs-12 text-slate fw-semibold">
+                                    <i class="ti ti-calculator text-primary me-1"></i> ${e.calc_details} => <strong class="text-primary">${e.score !== null ? e.score + ' điểm' : '--'}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Điểm tổng hợp PQ -->
+                        <div class="col-12 col-md-6">
+                            <div class="card p-3 border border-success rounded-3 bg-success-lt h-100 shadow-none">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <span class="badge bg-success text-white fw-semibold">6. ĐIỂM TỔNG HỢP THỂ CHẤT PQ</span>
+                                    <span class="badge bg-success text-white fs-14 fw-bold px-2 py-1">${o.calculated_score !== null ? o.calculated_score + ' / 10' : '--'}</span>
+                                </div>
+                                <div class="p-2 rounded-2 bg-white border border-success-subtle fs-12 mb-2">
+                                    <div>• Số thuộc tính hợp lệ (khác 0 & null): <strong class="text-success">${o.valid_count} / 5</strong></div>
+                                    <div>• Điểm các thành phần: 
+                                        <strong>[CC Hiện tại: ${o.components.current_height}, CC Trưởng thành: ${o.components.adulthood_height}, BMI: ${o.components.bmi}, Sức mạnh: ${o.components.strength ?? '--'}, Sức bền: ${o.components.endurance ?? '--'}]</strong>
+                                    </div>
+                                    <div>• Điểm lưu trong Database: <strong>${o.stored_score ? o.stored_score + ' / 10' : '--'}</strong></div>
+                                </div>
+                                <div class="fs-11 text-muted mb-1">CÔNG THỨC TÍNH TRUNG BÌNH CỘNG:</div>
+                                <div class="p-2 rounded-2 bg-white text-dark font-monospace fs-12 mb-2 border border-success-subtle">
+                                    PQ = ${o.formula}
+                                </div>
+                                <div class="fs-12 text-success fw-bold">
+                                    <i class="ti ti-activity me-1"></i> Điểm tổng hợp tính được: ${o.calculated_score !== null ? o.calculated_score : '--'} / 10
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                $('#debug-pq-steps-content').html(htmlSteps);
+
+                // Render Tab 2: Lịch sử đo PQ
+                var tbodyPq = $('#debug-tbody-pq-history-all');
+                tbodyPq.empty();
+                var historyList = data.history_records || [];
+                if (historyList.length === 0) {
+                    tbodyPq.html('<tr><td colspan="10" class="text-muted py-3">Chưa có bản ghi PQ nào</td></tr>');
+                } else {
+                    var rowsHtml = '';
+                    historyList.forEach(function(rec, idx) {
+                        var isLatest = (idx === 0);
+                        rowsHtml += `
+                            <tr class="${isLatest ? 'table-success' : ''}">
+                                <td><span class="badge ${isLatest ? 'bg-success' : 'bg-light text-muted'}">#${rec.id}</span></td>
+                                <td class="fw-semibold">${rec.assessment_date} ${isLatest ? '<span class="badge bg-success-lt fs-10 ms-1">Mới nhất</span>' : ''}</td>
+                                <td>${rec.age_month ? rec.age_month + ' th' : '--'}</td>
+                                <td class="fw-bold text-primary">${rec.height ? rec.height + ' cm' : '--'}</td>
+                                <td class="fw-bold text-dark">${rec.weight ? rec.weight + ' kg' : '--'}</td>
+                                <td>${rec.bmi ? 'BMI ' + rec.bmi : '--'}</td>
+                                <td><span class="badge bg-light text-muted">${rec.bmi_result || '--'}</span></td>
+                                <td class="text-danger fw-semibold">${rec.strength !== null ? rec.strength : '--'}</td>
+                                <td class="text-primary fw-semibold">${rec.endurance !== null ? rec.endurance : '--'}</td>
+                                <td><span class="badge bg-success-lt text-success fw-bold fs-12">${rec.score ? rec.score + ' / 10' : '--'}</span></td>
+                            </tr>
+                        `;
+                    });
+                    tbodyPq.html(rowsHtml);
+                }
+
+                // Render Tab 3: JSON Viewer
+                $('#debug-pq-json-viewer').text(JSON.stringify(data, null, 2));
+            }
+
+            // Copy JSON PQ handler
+            $('#btn-copy-pq-debug-json').on('click', function() {
+                if (!latestPqDebugData) return;
+                var jsonStr = JSON.stringify(latestPqDebugData, null, 2);
+                navigator.clipboard.writeText(jsonStr).then(function() {
+                    var $text = $('#btn-copy-pq-text');
+                    $text.text('Đã chép!');
+                    setTimeout(function() {
+                        $text.text('Sao chép JSON');
+                    }, 2000);
+                });
+            });
         @endif
     });
 </script>

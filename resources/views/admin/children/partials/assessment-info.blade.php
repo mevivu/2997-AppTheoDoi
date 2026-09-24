@@ -223,6 +223,9 @@
                             <i class="ti ti-activity me-1"></i>
                             {{ __('Điểm Tổng Hợp PQ:') }} <strong>{{ $latestPq?->score ? $latestPq->score . ' / 10' : ($pqOverall['score'] ?? '--') }}</strong>
                         </span>
+                        <button type="button" class="btn btn-outline-success btn-sm rounded-2 px-3 fw-normal" id="btn-open-pq-debug-modal" data-bs-toggle="modal" data-bs-target="#modal-debug-pq">
+                            <i class="ti ti-bug me-1"></i> {{ __('Debug Dữ Liệu & Công Thức PQ') }}
+                        </button>
                     </div>
                 @endif
             </div>
@@ -372,3 +375,5 @@
         </div>
     </div>
 </div>
+
+@include('admin.children.partials.pq-debug-modal')

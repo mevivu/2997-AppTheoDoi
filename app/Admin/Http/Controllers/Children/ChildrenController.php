@@ -277,6 +277,41 @@ class ChildrenController extends Controller
         }
     }
 
+    public function ajaxDebugPQ(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $childId = $request->input('child_id');
+
+            $validator = validator([
+                'child_id' => $childId,
+            ], [
+                'child_id' => 'required|numeric',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 422,
+                    'message' => $validator->errors()->first(),
+                ], 422);
+            }
+
+            $pqService = app(\App\Api\V1\Services\RatingPQ\RatingPQServiceInterface::class);
+            $debugData = $pqService->debugPqCalculation((int)$childId);
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Lấy dữ liệu chẩn đoán thể chất PQ thành công.',
+                'data' => $debugData,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('ajaxDebugPQ error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 500,
+                'message' => 'Lỗi khi lấy dữ liệu chẩn đoán thể chất PQ: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function update(ChildrenRequest $request): RedirectResponse
     {
         return $this->handleUpdateResponse($request, function ($request) {
