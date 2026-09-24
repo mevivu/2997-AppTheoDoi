@@ -126,12 +126,21 @@ class ChildrenController extends Controller
             Log::warning('Error calculating height prediction/chart V2 for child ' . $id . ': ' . $e->getMessage());
         }
 
+        $pqOverall = null;
+        try {
+            $pqService = app(\App\Api\V1\Services\RatingPQ\RatingPQServiceInterface::class);
+            $pqOverall = $pqService->getOverallStats(new \Illuminate\Http\Request(['child_id' => $id]), (int)$id);
+        } catch (\Exception $e) {
+            Log::warning('Error calculating PQ overall for child ' . $id . ': ' . $e->getMessage());
+        }
+
         return view(
             $this->view['edit'],
             [
                 'children' => $instance,
                 'heightPrediction' => $heightPrediction,
                 'heightChart' => $heightChart,
+                'pqOverall' => $pqOverall,
                 'gender' => Gender::asSelectArray(),
                 'birthday' => $instance->birthday,
                 'dueDate' => $instance->due_date,

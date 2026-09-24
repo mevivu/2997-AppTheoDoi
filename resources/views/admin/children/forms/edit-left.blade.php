@@ -45,7 +45,7 @@
 
                 <!-- Tab 3: Thống kê đánh giá -->
                 <div class="tab-pane fade" id="content-child-assessment" role="tabpanel" aria-labelledby="tab-child-assessment">
-                    @include('admin.children.partials.assessment-info', ['children' => $children])
+                    @include('admin.children.partials.assessment-info', ['children' => $children, 'pqOverall' => $pqOverall ?? null])
                 </div>
 
                 <!-- Tab 4: Tiêm chủng -->

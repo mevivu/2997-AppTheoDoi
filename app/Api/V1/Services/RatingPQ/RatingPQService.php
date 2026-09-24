@@ -183,7 +183,7 @@ class RatingPQService implements RatingPQServiceInterface
      */
     public function getOverallStats(Request $request, $optionChildId = null): ?array
     {
-        $data = $request->validated();
+        $data = method_exists($request, 'validated') ? $request->validated() : $request->all();
         $childId = $data['child_id'] ?? $optionChildId;
         $ratingLasted = $this->repository->getLatestByChildId($childId);
 

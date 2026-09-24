@@ -285,6 +285,128 @@
                 }
             });
 
+            // ==========================================
+            // PQ 5-ATTRIBUTE RADAR CHART (ApexCharts)
+            // ==========================================
+            var initialPqData = @json($pqOverall ?? null);
+            var pqRadarChart = null;
+
+            function renderPqRadarChart(pqData) {
+                if (!pqData) return;
+                var container = document.querySelector("#pq-radar-chart");
+                if (!container) return;
+
+                var currentHeightScore = parseFloat(pqData.current_height_percent) || 0;
+                var adultHeightScore = parseFloat(pqData.height_adulthood) || 0;
+                var bmiScore = parseFloat(pqData.bmi_percent) || 0;
+                var strengthScore = parseFloat(pqData.strength_percent) || 0;
+                var enduranceScore = parseFloat(pqData.endurance_percent) || 0;
+
+                var options = {
+                    series: [{
+                        name: 'Điểm thể chất',
+                        data: [currentHeightScore, adultHeightScore, bmiScore, strengthScore, enduranceScore]
+                    }],
+                    chart: {
+                        height: 350,
+                        type: 'radar',
+                        toolbar: { show: false },
+                        dropShadow: {
+                            enabled: true,
+                            blur: 4,
+                            left: 1,
+                            top: 1,
+                            opacity: 0.1
+                        }
+                    },
+                    colors: ['#16a34a'],
+                    stroke: {
+                        width: 2.5,
+                        colors: ['#16a34a']
+                    },
+                    fill: {
+                        opacity: 0.25,
+                        colors: ['#22c55e']
+                    },
+                    markers: {
+                        size: 4,
+                        colors: ['#16a34a'],
+                        strokeColors: '#ffffff',
+                        strokeWidth: 2,
+                        hover: { size: 6 }
+                    },
+                    xaxis: {
+                        categories: [
+                            'Chiều cao hiện tại (' + currentHeightScore + ')',
+                            'Chiều cao trưởng thành (' + adultHeightScore + ')',
+                            'BMI / Cân nặng (' + bmiScore + ')',
+                            'Sức mạnh (' + strengthScore + ')',
+                            'Sức bền (' + enduranceScore + ')'
+                        ],
+                        labels: {
+                            show: true,
+                            style: {
+                                colors: ['#0f172a', '#0f172a', '#0f172a', '#0f172a', '#0f172a'],
+                                fontSize: '11px',
+                                fontWeight: 600
+                            }
+                        }
+                    },
+                    yaxis: {
+                        min: 0,
+                        max: 10,
+                        tickAmount: 5,
+                        labels: {
+                            formatter: function(val) {
+                                return Math.round(val);
+                            },
+                            style: {
+                                colors: '#94a3b8',
+                                fontSize: '10px'
+                            }
+                        }
+                    },
+                    plotOptions: {
+                        radar: {
+                            polygons: {
+                                strokeColors: '#e2e8f0',
+                                fill: {
+                                    colors: ['#f8fafc', '#ffffff']
+                                }
+                            }
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function(val) {
+                                return val + ' / 10 điểm';
+                            }
+                        }
+                    }
+                };
+
+                if (pqRadarChart) {
+                    pqRadarChart.destroy();
+                }
+                container.innerHTML = '';
+                pqRadarChart = new ApexCharts(container, options);
+                pqRadarChart.render();
+            }
+
+            // Render on page load if initialPqData is present
+            if (initialPqData) {
+                renderPqRadarChart(initialPqData);
+            }
+
+            // Render / Resize Radar Chart when switching to Assessment Tab
+            $('button[data-bs-target="#content-child-assessment"]').on('shown.bs.tab', function() {
+                if (pqRadarChart) {
+                    pqRadarChart.render();
+                } else if (initialPqData) {
+                    renderPqRadarChart(initialPqData);
+                }
+            });
+
             // 4. Puberty Chips selection
             $('.puberty-chip').on('click', function() {
                 $('.puberty-chip').removeClass('active');
