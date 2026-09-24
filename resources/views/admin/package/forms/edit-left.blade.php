@@ -184,7 +184,7 @@
                     <div class="row g-3">
                         <div class="col-12">
                             <label class="control-label fw-semibold text-dark">
-                                @lang('Tiêu đề Flash Sale')
+                                @lang('Tiêu đề phụ / Slogan Flash Sale')
                             </label>
                             <input type="text" 
                                    name="sale_title" 
@@ -192,11 +192,11 @@
                                    class="form-control text-dark @error('sale_title') is-invalid @enderror" 
                                    value="{{ $currentSaleTitle }}" 
                                    maxlength="255"
-                                   placeholder="Ví dụ: ⚡ FLASH SALE ⚡ hoặc KHUYẾN MÃI ĐẶC BIỆT">
+                                   placeholder="Ví dụ: CƠ HỘI DUY NHẤT TRONG NGÀY hoặc ƯU ĐÃI ĐẶC BIỆT">
                             @error('sale_title')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
-                            <small class="text-muted">@lang('Tiêu đề hiển thị trên banner hoặc màn hình Flash Sale của ứng dụng (tối đa 255 ký tự).')</small>
+                            <small class="text-muted">@lang('Khẩu hiệu / tiêu đề phụ hiển thị dưới chữ FLASH SALE trên màn hình ứng dụng (tối đa 255 ký tự).')</small>
                         </div>
                         <div class="col-md-6 col-12">
                             <label class="control-label fw-semibold text-dark">
