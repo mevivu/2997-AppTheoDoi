@@ -163,14 +163,30 @@
                 </div>
             </div>
 
-            <!-- Sale Date Range (Hiển thị khi chọn Gói sale) -->
+            <!-- Sale Date Range & Title (Hiển thị khi chọn Gói sale) -->
             <div class="col-12" id="sale_dates_wrapper" style="{{ old('is_sale', '0') == '1' ? '' : 'display: none;' }}">
                 <div class="card border rounded-3 mb-3 p-3" style="background-color: #f0fdf4; border-color: #bbf7d0 !important;">
                     <h6 class="fw-bold text-success mb-2 d-flex align-items-center">
-                        <i class="ti ti-calendar-time me-2 fs-3"></i> @lang('Thời gian áp dụng Sale')
+                        <i class="ti ti-calendar-time me-2 fs-3"></i> @lang('Cấu hình Khuyến mãi & Flash Sale')
                     </h6>
-                    <p class="text-muted small mb-3">@lang('Chỉ định thời gian bắt đầu và kết thúc chương trình sale cho gói dịch vụ này.')</p>
+                    <p class="text-muted small mb-3">@lang('Chỉ định tiêu đề nổi bật và thời gian áp dụng chương trình sale cho gói dịch vụ này.')</p>
                     <div class="row g-3">
+                        <div class="col-12">
+                            <label class="control-label fw-semibold text-dark">
+                                @lang('Tiêu đề Flash Sale')
+                            </label>
+                            <input type="text" 
+                                   name="sale_title" 
+                                   id="sale_title" 
+                                   class="form-control text-dark @error('sale_title') is-invalid @enderror" 
+                                   value="{{ old('sale_title') }}" 
+                                   maxlength="255"
+                                   placeholder="Ví dụ: ⚡ FLASH SALE ⚡ hoặc KHUYẾN MÃI ĐẶC BIỆT">
+                            @error('sale_title')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <small class="text-muted">@lang('Tiêu đề hiển thị trên banner hoặc màn hình Flash Sale của ứng dụng (tối đa 255 ký tự).')</small>
+                        </div>
                         <div class="col-md-6 col-12">
                             <label class="control-label fw-semibold text-dark">
                                 @lang('Sale từ ngày') <span class="text-danger">*</span>

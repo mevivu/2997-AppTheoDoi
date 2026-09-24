@@ -33,6 +33,7 @@ class PackageResource extends JsonResource
             'max_devices' => (int) ($this->max_devices ?? 1),
             'is_auto_renew' => (bool) ($this->is_auto_renew ?? false),
             'is_sale' => (bool) ($this->is_sale ?? false),
+            'sale_title' => $this->sale_title,
             'sale_start_at' => $this->sale_start_at?->format('Y-m-d H:i:s'),
             'sale_end_at' => $this->sale_end_at?->format('Y-m-d H:i:s'),
             'is_sale_active' => (bool) $this->is_sale_active,

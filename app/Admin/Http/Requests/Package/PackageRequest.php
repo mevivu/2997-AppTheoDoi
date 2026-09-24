@@ -29,6 +29,7 @@ class PackageRequest extends BaseRequest
             'max_devices' => ['required', 'integer', 'min:1'],
             'is_auto_renew' => ['required', 'boolean'],
             'is_sale' => ['required', 'boolean'],
+            'sale_title' => ['nullable', 'string', 'max:255'],
             'sale_start_at' => ['nullable', 'date'],
             'sale_end_at' => ['nullable', 'date', 'after_or_equal:sale_start_at'],
             'discount_type' => ['nullable', new Enum(PackageDiscountType::class)],
@@ -51,6 +52,7 @@ class PackageRequest extends BaseRequest
             'max_devices' => ['required', 'integer', 'min:1'],
             'is_auto_renew' => ['required', 'boolean'],
             'is_sale' => ['required', 'boolean'],
+            'sale_title' => ['nullable', 'string', 'max:255'],
             'sale_start_at' => ['nullable', 'date'],
             'sale_end_at' => ['nullable', 'date', 'after_or_equal:sale_start_at'],
             'discount_type' => ['nullable', new Enum(PackageDiscountType::class)],
@@ -83,6 +85,7 @@ class PackageRequest extends BaseRequest
     public function attributes(): array
     {
         return [
+            'sale_title' => __('Tiêu đề Flash Sale'),
             'sale_start_at' => __('Thời gian bắt đầu sale'),
             'sale_end_at' => __('Thời gian kết thúc sale'),
         ];
@@ -91,6 +94,7 @@ class PackageRequest extends BaseRequest
     public function messages(): array
     {
         return [
+            'sale_title.max' => __('Tiêu đề Flash Sale không được vượt quá 255 ký tự.'),
             'sale_end_at.after_or_equal' => __('Thời gian kết thúc sale phải sau hoặc bằng thời gian bắt đầu sale.'),
         ];
     }

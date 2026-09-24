@@ -42,6 +42,8 @@ class Package extends Model
         'is_auto_renew',
         /* Phân loại: Gói sale (true) hoặc Gói thường (false) */
         'is_sale',
+        /* Tiêu đề Flash Sale */
+        'sale_title',
         /* Thời gian bắt đầu sale */
         'sale_start_at',
         /* Thời gian kết thúc sale */
