@@ -40,12 +40,17 @@ class RatingPQLastedResource extends JsonResource
             ->first();
         $currentHeight = $latestRecord ? $latestRecord->height : 0;
         $latestDate = $latestRecord ? $latestRecord->assessment_date : Carbon::now();
-        $predictingAdultHeight = $this->calculateMatureHeight($child, $currentHeight, $latestDate);
-        $heightMature = ($predictingAdultHeight / $height) /0.1;
+        $heightService = app(\App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface::class);
+        $predictingAdultHeight = $heightService->calculateMatureHeightAt19($child, $currentHeight, $latestDate);
+        $who228 = $this->getWho(228, $gender);
+        $whoAdultHeight = $who228 && $who228->height > 0 ? $who228->height : ($gender == Gender::Male ? 176.5 : 163.0);
+        $heightMature = $this->mapHeightDeltaToScore((float)$predictingAdultHeight, (float)$whoAdultHeight);
+        $heightScore = $height > 0 ? $this->mapHeightDeltaToScore((float)$this->height, (float)$height) : 1;
+
         return [
             'id' => $this->id,
             'assessment_date' => format_date($this->assessment_date),
-            'height' => min(10, round($this->height / 0.1, 1)),
+            'height' => $heightScore,
             'weight' => min(10, round($this->weight / 0.1, 1)),
             'strength' => min(10, round($this->strength / 0.1, 1)),
             'endurance' => min(10, round($this->endurance / 0.1, 1)),
@@ -54,9 +59,7 @@ class RatingPQLastedResource extends JsonResource
             'height_result' => $this->height_result,
             'height_change' => round($this->height_change, 2),
             'weight_change' => $this->weight_change !== null ? round((float)$this->weight_change, 2) : null,
-            'height_mature' => min(10, round($heightMature, 1)),
-
-
+            'height_mature' => $heightMature,
         ];
     }
 
@@ -119,5 +122,25 @@ class RatingPQLastedResource extends JsonResource
         return $CurrentHeightAttainmentForecast;
     }
 
+    public function mapHeightDeltaToScore(float $actualHeight, float $whoHeight): int
+    {
+        if ($whoHeight <= 0 || $actualHeight <= 0) {
+            return 1;
+        }
 
+        $delta = round($actualHeight - $whoHeight, 1);
+
+        return match (true) {
+            $delta >= 6.0   => 10,
+            $delta >= 3.0   => 9,
+            $delta >= 0.0   => 8,
+            $delta >= -2.0  => 7,
+            $delta >= -4.0  => 6,
+            $delta >= -7.0  => 5,
+            $delta >= -9.0  => 4,
+            $delta >= -11.0 => 3,
+            $delta >= -13.0 => 2,
+            default         => 1,
+        };
+    }
 }

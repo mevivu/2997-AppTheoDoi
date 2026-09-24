@@ -208,16 +208,14 @@ class RatingPQService implements RatingPQServiceInterface
         $currentStrength = $ratingLasted->strength;
         $currentWeight = $ratingLasted->weight;
 
-        $predictingAdultHeight = $this->heightPredictionService->calculateMatureHeight($child, $currenHeight, $latestRecordDateCopy);
+        $predictingAdultHeight = $this->heightPredictionService->calculateMatureHeightAt19($child, $currenHeight, $latestRecordDateCopy);
         $bmiPercent = $this->getBmiPercent($bmi, $currentBmi, $child, $latestRecordDateCopy, $currentWeight);
         $currentEndurancePercent = $this->getEndurance($childId, $currentEndurance, $latestRecordDateCopy);
         $currentStrengthPercent = $this->getStrength($childId, $currentStrength, $latestRecordDateCopy);
         $heightAdulthoodPercent = $this->getHeightAdulthoodChart($gender, $predictingAdultHeight);
-        $heightWhoCurrent = round($currenHeight - $who->height, 2);
+        $heightWhoCurrent = $who ? round($currenHeight - $who->height, 2) : 0;
 
-        $heightCalculate = $currenHeight / $who->height / 0.1;
-
-        $currentHeightPercent = min($heightCalculate, 10);
+        $currentHeightPercent = $who ? $this->mapHeightDeltaToScore((float)$currenHeight, (float)$who->height) : 1;
 
         return [
             'height' => $currenHeight,
@@ -327,13 +325,12 @@ class RatingPQService implements RatingPQServiceInterface
         $bmi = $this->getBmi($ageCalculate, $gender);
         $who = $this->getWho($monthCalculate, $gender);
         $child = $this->childRepository->findOrFail($childId);
-        $predictingAdultHeight = $this->heightPredictionService->calculateMatureHeight($child, $currenHeight, $assessmentDate);
+        $predictingAdultHeight = $this->heightPredictionService->calculateMatureHeightAt19($child, $currenHeight, $assessmentDate);
         $bmiPercent = $this->getBmiPercent($bmi, $currentBmi, $child, $assessmentDate, $currentWeight);
         $currentEndurancePercent = $this->getEndurance($childId, $currentEndurance, $assessmentDate);
         $currentStrengthPercent = $this->getStrength($childId, $currentStrength, $assessmentDate);
         $heightAdulthoodPercent = $this->getHeightAdulthoodChart($gender, $predictingAdultHeight);
-        $heightCalculate = $currenHeight / $who->height / 0.1;
-        $currentHeightPercent = min($heightCalculate, 10);
+        $currentHeightPercent = $who ? $this->mapHeightDeltaToScore((float)$currenHeight, (float)$who->height) : 1;
 
         $pqComponents = [
             $currentHeightPercent,
@@ -348,16 +345,51 @@ class RatingPQService implements RatingPQServiceInterface
     }
 
     /**
-     * param float| int currenHeight người dùng nhập
+     * Tính điểm chiều cao trưởng thành dựa trên độ lệch so với chuẩn WHO mốc 19 tuổi (tháng 228)
+     *
+     * @param int|Gender $gender Giới tính
+     * @param float|int $predictingAdultHeight Chiều cao trưởng thành dự đoán (cm)
+     * @return int Điểm số thang 1 - 10
      */
-    public function getHeightAdulthoodChart($gender, $predictingAdultHeight)
+    public function getHeightAdulthoodChart($gender, $predictingAdultHeight): int
     {
         $who228 = $this->getWho(228, $gender);
-        if(!$who228) return 0;
-        $heightWho = $who228->height;
-        $result = ($predictingAdultHeight / $heightWho) / 0.1;
-        return min($result, 10);
+        if (!$who228 || $who228->height <= 0) {
+            $fallbackWho = ($gender == Gender::Male || (is_object($gender) && $gender->value == Gender::Male->value)) ? 176.5 : 163.0;
+            return $this->mapHeightDeltaToScore((float)$predictingAdultHeight, (float)$fallbackWho);
+        }
+        return $this->mapHeightDeltaToScore((float)$predictingAdultHeight, (float)$who228->height);
+    }
 
+    /**
+     * Quy đổi độ lệch chiều cao so với chuẩn WHO (+/- CM) sang thang điểm 1 - 10
+     * Công thức Cột R từ file Excel Diem CC.xlsx:
+     * IF(Q>=6,10,IF(Q>=3,9,IF(Q>=0,8,IF(Q>=-2,7,IF(Q>=-4,6,IF(Q>=-7,5,IF(Q>=-9,4,IF(Q>=-11,3,IF(Q>=-13,2,1)))))))))
+     *
+     * @param float $actualHeight Chiều cao thực tế hoặc chiều cao dự đoán (cm)
+     * @param float $whoHeight Chiều cao chuẩn WHO tương ứng (cm)
+     * @return int Điểm số thang 1 - 10
+     */
+    public function mapHeightDeltaToScore(float $actualHeight, float $whoHeight): int
+    {
+        if ($whoHeight <= 0 || $actualHeight <= 0) {
+            return 1;
+        }
+
+        $delta = round($actualHeight - $whoHeight, 1);
+
+        return match (true) {
+            $delta >= 6.0   => 10,
+            $delta >= 3.0   => 9,
+            $delta >= 0.0   => 8,
+            $delta >= -2.0  => 7,
+            $delta >= -4.0  => 6,
+            $delta >= -7.0  => 5,
+            $delta >= -9.0  => 4,
+            $delta >= -11.0 => 3,
+            $delta >= -13.0 => 2,
+            default         => 1,
+        };
     }
 
     private function findRatingPQ($childId, $currentDate, $oneYearAgo)
