@@ -230,7 +230,71 @@
     border-radius: 50px;
 }
 
-/* 4. Table Ranking Badges */
+/* 4. Table Ranking Badges & Leaderboard Table */
+.table-leaderboard {
+    margin-bottom: 0;
+}
+.table-leaderboard th {
+    white-space: nowrap;
+    vertical-align: middle;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #475569;
+    padding: 12px 14px;
+    background-color: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+}
+.table-leaderboard td {
+    vertical-align: middle;
+    padding: 12px 14px;
+}
+.phone-badge {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+    border-radius: 50px;
+    padding: 2.5px 8px;
+    font-size: 12px;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s ease;
+}
+.phone-badge:hover {
+    background: #d1fae5;
+    color: #047857;
+    border-color: #6ee7b7;
+    text-decoration: none;
+}
+.btn-copy-phone {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+.btn-copy-phone:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+    border-color: #cbd5e1;
+}
+.btn-copy-phone.copied {
+    background: #dcfce7 !important;
+    color: #16a34a !important;
+    border-color: #86efac !important;
+}
 .rank-badge {
     width: 34px;
     height: 34px;
@@ -556,6 +620,14 @@
                                     <div class="podium-stat-pill">
                                         <i class="ti ti-hand-click"></i>{{ $second->total_moves }} lần lật
                                     </div>
+                                    @if ($second->child?->user)
+                                        <div class="text-muted fs-11 mt-1 text-truncate" style="max-width: 190px;" title="PH: {{ $second->child->user->fullname }} ({{ $second->child->user->decrypted_phone }})">
+                                            <i class="ti ti-user me-0.5"></i>{{ $second->child->user->fullname }}
+                                            @if ($second->child->user->decrypted_phone)
+                                                • <span class="text-success font-monospace">{{ $second->child->user->decrypted_phone }}</span>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             @endif
 
@@ -578,6 +650,14 @@
                                     <div class="podium-stat-pill bg-warning-lt text-warning fw-bold">
                                         <i class="ti ti-hand-click"></i>{{ $first->total_moves }} lần lật
                                     </div>
+                                    @if ($first->child?->user)
+                                        <div class="text-dark fs-11 mt-1 text-truncate fw-medium" style="max-width: 200px;" title="PH: {{ $first->child->user->fullname }} ({{ $first->child->user->decrypted_phone }})">
+                                            <i class="ti ti-user me-0.5 text-warning"></i>{{ $first->child->user->fullname }}
+                                            @if ($first->child->user->decrypted_phone)
+                                                • <span class="text-success font-monospace fw-bold">{{ $first->child->user->decrypted_phone }}</span>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             @endif
 
@@ -597,6 +677,14 @@
                                     <div class="podium-stat-pill">
                                         <i class="ti ti-hand-click"></i>{{ $third->total_moves }} lần lật
                                     </div>
+                                    @if ($third->child?->user)
+                                        <div class="text-muted fs-11 mt-1 text-truncate" style="max-width: 190px;" title="PH: {{ $third->child->user->fullname }} ({{ $third->child->user->decrypted_phone }})">
+                                            <i class="ti ti-user me-0.5"></i>{{ $third->child->user->fullname }}
+                                            @if ($third->child->user->decrypted_phone)
+                                                • <span class="text-success font-monospace">{{ $third->child->user->decrypted_phone }}</span>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             @endif
                         </div>
@@ -648,19 +736,19 @@
 
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover table-vcenter card-table" id="leaderboardTable">
+                        <table class="table table-hover table-vcenter card-table table-leaderboard" id="leaderboardTable">
                             <thead class="bg-light">
                                 <tr>
-                                    <th class="w-1 text-center">{{ __('Hạng') }}</th>
-                                    <th>{{ __('Thí Sinh') }}</th>
-                                    <th>{{ __('Phụ Huynh') }}</th>
-                                    <th class="text-center">{{ __('Lần Thi') }}</th>
-                                    <th class="text-center">{{ __('Tiến Trình 4 Ván') }}</th>
-                                    <th class="text-center">{{ __('Tổng Thời Gian') }}</th>
-                                    <th class="text-center">{{ __('Lượt Lật (Tiebreaker)') }}</th>
-                                    <th class="text-center">{{ __('Trạng Thái') }}</th>
-                                    <th class="text-end">{{ __('Thời Điểm Nộp') }}</th>
-                                    <th class="text-center w-1">{{ __('Thao Tác') }}</th>
+                                    <th class="text-center" style="width: 70px; min-width: 70px;">{{ __('Hạng') }}</th>
+                                    <th style="min-width: 220px;">{{ __('Thí Sinh') }}</th>
+                                    <th style="min-width: 240px;">{{ __('Phụ Huynh') }}</th>
+                                    <th class="text-center" style="width: 90px; min-width: 90px;">{{ __('Lần Thi') }}</th>
+                                    <th class="text-center" style="width: 140px; min-width: 140px;">{{ __('Tiến Trình 4 Ván') }}</th>
+                                    <th class="text-center" style="width: 120px; min-width: 120px;">{{ __('Tổng Thời Gian') }}</th>
+                                    <th class="text-center" style="width: 110px; min-width: 110px;">{{ __('Lượt Lật') }}</th>
+                                    <th class="text-center" style="width: 130px; min-width: 130px;">{{ __('Trạng Thái') }}</th>
+                                    <th class="text-end" style="width: 140px; min-width: 140px;">{{ __('Thời Điểm Nộp') }}</th>
+                                    <th class="text-center" style="width: 100px; min-width: 100px;">{{ __('Thao Tác') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -668,7 +756,18 @@
                                     @php
                                         $childName = $entry->child?->fullname ?? 'Thí sinh';
                                         $parentName = $entry->child?->user?->fullname ?? '--';
-                                        $parentPhone = $entry->child?->user?->phone ?? $entry->child?->user?->email ?? '--';
+                                        $rawPhone = $entry->child?->user?->decrypted_phone;
+                                        $parentEmail = $entry->child?->user?->decrypted_email;
+
+                                        $cleanPhone = $rawPhone ? preg_replace('/[^0-9]/', '', $rawPhone) : '';
+                                        if (strlen($cleanPhone) === 10) {
+                                            $formattedPhone = substr($cleanPhone, 0, 4) . ' ' . substr($cleanPhone, 4, 3) . ' ' . substr($cleanPhone, 7);
+                                        } else {
+                                            $formattedPhone = $rawPhone;
+                                        }
+
+                                        $isMale = ($entry->child?->gender === 'male' || (is_object($entry->child?->gender) && isset($entry->child->gender->value) && $entry->child->gender->value === 'male'));
+
                                         $roundsData = $entry->rounds->sortBy('game_number')->values();
                                         $roundsList = [];
                                         foreach ($roundsData as $rnd) {
@@ -686,7 +785,7 @@
                                     @endphp
                                     <tr class="entry-row" 
                                         data-valid="{{ $entry->is_valid ? 'valid' : 'invalid' }}"
-                                        data-search="{{ strtolower($childName . ' ' . $parentName . ' ' . $parentPhone) }}">
+                                        data-search="{{ strtolower($childName . ' ' . $parentName . ' ' . ($rawPhone ?? '') . ' ' . ($cleanPhone ?? '') . ' ' . ($parentEmail ?? '')) }}">
                                         
                                         <!-- Thứ hạng -->
                                         <td class="text-center">
@@ -707,15 +806,19 @@
                                         <td>
                                             <div class="d-flex align-items-center gap-2.5">
                                                 <img src="{{ $entry->child?->avatar ? asset($entry->child->avatar) : asset('images/avatar-default.png') }}" 
-                                                     alt="{{ $childName }}" class="avatar avatar-md rounded-circle border shadow-2xs">
-                                                <div>
-                                                    <div class="fw-bold text-dark fs-13">{{ $childName }}</div>
-                                                    <div class="text-muted fs-11 d-flex align-items-center gap-1">
-                                                        @if ($entry->child?->age)
-                                                            <span class="badge bg-light text-muted border py-0 px-1" style="font-size: 10px;">{{ $entry->child->age }} tuổi</span>
-                                                        @endif
+                                                     alt="{{ $childName }}" class="avatar avatar-md rounded-circle border shadow-2xs flex-shrink-0" style="width: 42px; height: 42px; object-fit: cover;">
+                                                <div class="min-w-0">
+                                                    <div class="fw-bold text-dark fs-13 text-truncate" title="{{ $childName }}">{{ $childName }}</div>
+                                                    <div class="text-muted fs-11 d-flex align-items-center gap-1 mt-0.5 flex-wrap">
                                                         @if ($entry->child?->gender)
-                                                            <span class="badge bg-light text-muted border py-0 px-1" style="font-size: 10px;">{{ $entry->child->gender === 'male' ? 'Bé trai' : 'Bé gái' }}</span>
+                                                            <span class="badge {{ $isMale ? 'bg-blue-lt border border-blue-subtle text-blue' : 'bg-pink-lt border border-pink-subtle text-pink' }} py-0.5 px-1.5" style="font-size: 10px;">
+                                                                <i class="ti {{ $isMale ? 'ti-gender-male' : 'ti-gender-female' }} me-0.5"></i>{{ $isMale ? 'Bé trai' : 'Bé gái' }}
+                                                            </span>
+                                                        @endif
+                                                        @if ($entry->child?->age)
+                                                            <span class="badge bg-light text-muted border py-0.5 px-1.5" style="font-size: 10px;">
+                                                                {{ $entry->child->age }} tuổi
+                                                            </span>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -724,15 +827,35 @@
 
                                         <!-- Phụ huynh -->
                                         <td>
-                                            <div class="fs-12">
-                                                <div class="fw-semibold text-dark">{{ $parentName }}</div>
-                                                <div class="text-muted"><i class="ti ti-phone fs-11 me-0.5"></i>{{ $parentPhone }}</div>
+                                            <div class="d-flex flex-column gap-1">
+                                                <div class="fw-bold text-dark fs-13 d-flex align-items-center gap-1">
+                                                    <i class="ti ti-user text-muted fs-13"></i>
+                                                    <span class="text-truncate" style="max-width: 190px;" title="{{ $parentName }}">{{ $parentName }}</span>
+                                                </div>
+                                                @if ($formattedPhone)
+                                                    <div class="d-flex align-items-center gap-1">
+                                                        <a href="tel:{{ $cleanPhone ?: $rawPhone }}" class="phone-badge" title="{{ __('Bấm để gọi: :p', ['p' => $formattedPhone]) }}">
+                                                            <i class="ti ti-phone-call fs-12"></i>
+                                                            <span>{{ $formattedPhone }}</span>
+                                                        </a>
+                                                        <button type="button" class="btn btn-copy-phone" data-phone="{{ $cleanPhone ?: $rawPhone }}" title="{{ __('Sao chép số điện thoại') }}">
+                                                            <i class="ti ti-copy fs-12"></i>
+                                                        </button>
+                                                    </div>
+                                                @elseif ($parentEmail)
+                                                    <div class="text-muted fs-11 d-flex align-items-center gap-1">
+                                                        <i class="ti ti-mail fs-12"></i>
+                                                        <span class="text-truncate" style="max-width: 170px;" title="{{ $parentEmail }}">{{ $parentEmail }}</span>
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted fs-11">--</span>
+                                                @endif
                                             </div>
                                         </td>
 
                                         <!-- Lần thi -->
                                         <td class="text-center">
-                                            <span class="badge bg-light text-dark border">
+                                            <span class="badge bg-light text-dark border fw-medium px-2 py-1">
                                                 Lần {{ $entry->attempt_number }}
                                             </span>
                                         </td>
@@ -759,14 +882,14 @@
                                                     @endif
                                                 @endfor
                                             </div>
-                                            <div class="text-muted mt-0.5" style="font-size: 10px;">
+                                            <div class="text-muted mt-1 fw-medium" style="font-size: 11px;">
                                                 {{ $entry->games_won }}/{{ $competition->total_games }} ván thắng
                                             </div>
                                         </td>
 
                                         <!-- Tổng thời gian -->
                                         <td class="text-center">
-                                            <span class="fw-bold text-primary fs-15">
+                                            <span class="fw-extrabold text-primary fs-15">
                                                 {{ $entry->total_time }}s
                                             </span>
                                             <div class="text-muted fs-11 fw-medium">({{ gmdate("i:s", $entry->total_time) }})</div>
@@ -784,17 +907,19 @@
                                                 $entryStatusVal = $entry->status instanceof \App\Enums\Memo\MemoCompetitionEntryStatus ? $entry->status->value : (string) $entry->status;
                                             @endphp
                                             @if ($entry->is_valid)
-                                                <span class="badge bg-success-lt fw-bold px-2 py-1"><i class="ti ti-check me-1"></i>{{ __('Hợp lệ (4/4)') }}</span>
+                                                <span class="badge bg-success-lt text-success border border-success-subtle fw-bold px-2 py-1"><i class="ti ti-check me-1"></i>{{ __('Đủ điều kiện') }}</span>
                                             @elseif ($entryStatusVal === 'completed')
-                                                <span class="badge bg-danger-lt fw-bold px-2 py-1"><i class="ti ti-x me-1"></i>{{ __('Chưa thắng 4/4') }}</span>
+                                                <span class="badge bg-danger-lt text-danger border border-danger-subtle fw-bold px-2 py-1"><i class="ti ti-x me-1"></i>{{ __('Chưa đạt (4/4)') }}</span>
+                                            @elseif ($entryStatusVal === 'abandoned')
+                                                <span class="badge bg-secondary-lt text-secondary border border-secondary-subtle fw-bold px-2 py-1"><i class="ti ti-door-exit me-1"></i>{{ __('Bỏ cuộc') }}</span>
                                             @else
-                                                <span class="badge bg-warning-lt fw-bold px-2 py-1"><i class="ti ti-clock me-1"></i>{{ __('Đang thi') }}</span>
+                                                <span class="badge bg-warning-lt text-warning border border-warning-subtle fw-bold px-2 py-1"><i class="ti ti-clock me-1"></i>{{ __('Đang thi') }}</span>
                                             @endif
                                         </td>
 
                                         <!-- Thời điểm nộp -->
                                         <td class="text-end">
-                                            <span class="text-muted fs-12">
+                                            <span class="text-muted fs-12 fw-medium">
                                                 {{ $entry->completed_at ? format_datetime($entry->completed_at) : ($entry->started_at ? format_datetime($entry->started_at) : '--') }}
                                             </span>
                                         </td>
@@ -802,10 +927,12 @@
                                         <!-- Thao tác xem chi tiết -->
                                         <td class="text-center">
                                             <button type="button" 
-                                                    class="btn btn-sm btn-outline-primary rounded-pill px-2.5 btn-view-rounds d-inline-flex align-items-center gap-1"
+                                                    class="btn btn-sm btn-outline-primary rounded-pill px-2.5 btn-view-rounds d-inline-flex align-items-center gap-1 shadow-none"
                                                     style="border-radius: 50px !important;"
                                                     data-child="{{ $childName }}"
                                                     data-avatar="{{ $entry->child?->avatar ? asset($entry->child->avatar) : asset('images/avatar-default.png') }}"
+                                                    data-parent-name="{{ $parentName }}"
+                                                    data-parent-phone="{{ $formattedPhone ?: ($rawPhone ?: '--') }}"
                                                     data-rank="{{ $entry->ranking ?: '--' }}"
                                                     data-time="{{ $entry->total_time }}s ({{ gmdate('i:s', $entry->total_time) }})"
                                                     data-moves="{{ $entry->total_moves }}"
@@ -855,15 +982,21 @@
     <div class="modal modal-blur fade" id="modalRoundDetails" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content border-0 shadow-lg overflow-hidden">
-                <div class="modal-header py-3 px-4 bg-light border-bottom">
+                <div class="modal-header py-3 px-4 bg-light border-bottom d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center gap-3">
-                        <img id="mChildAvatar" src="" class="avatar avatar-md rounded-circle border shadow-xs" alt="">
+                        <img id="mChildAvatar" src="" class="avatar avatar-md rounded-circle border shadow-xs" alt="" style="width: 44px; height: 44px; object-fit: cover;">
                         <div>
                             <h5 class="modal-title fw-bold mb-0 text-dark" id="mChildName">Thí sinh</h5>
                             <div class="text-muted fs-11" id="mChildMeta">Lần thi • Hạng #--</div>
                         </div>
                     </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="d-flex align-items-center gap-3 me-2">
+                        <div class="text-end d-none d-sm-block">
+                            <div class="fw-bold text-dark fs-12" id="mParentName"><i class="ti ti-user me-1 text-muted"></i>--</div>
+                            <div class="fs-11 mt-0.5" id="mParentPhone">--</div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
                 </div>
                 
                 <div class="modal-body p-4 bg-light">
@@ -932,7 +1065,7 @@ $(document).ready(function () {
     function applyFilters(filter, query) {
         $('.entry-row').each(function () {
             const rowValid = $(this).data('valid');
-            const rowSearch = $(this).data('search');
+            const rowSearch = $(this).data('search') || '';
 
             let matchFilter = (filter === 'all') || (filter === rowValid);
             let matchSearch = !query || rowSearch.indexOf(query) !== -1;
@@ -949,6 +1082,8 @@ $(document).ready(function () {
     $('.btn-view-rounds').on('click', function () {
         const childName = $(this).data('child');
         const childAvatar = $(this).data('avatar');
+        const parentName = $(this).data('parent-name') || '--';
+        const parentPhone = $(this).data('parent-phone') || '--';
         const rank = $(this).data('rank');
         const time = $(this).data('time');
         const moves = $(this).data('moves');
@@ -957,7 +1092,16 @@ $(document).ready(function () {
 
         $('#mChildName').text(childName);
         $('#mChildAvatar').attr('src', childAvatar);
-        $('#mChildMeta').text('Lần thi ' + attempt + ' • Hạng: ' + rank);
+        $('#mChildMeta').text('Lần thi ' + attempt + ' • Hạng: ' + (rank !== '--' ? '#' + rank : 'Chưa xếp hạng'));
+        
+        $('#mParentName').html('<i class="ti ti-user me-1 text-muted"></i>' + parentName);
+        if (parentPhone && parentPhone !== '--') {
+            const cleanPhone = parentPhone.replace(/\s+/g, '');
+            $('#mParentPhone').html('<a href="tel:' + cleanPhone + '" class="phone-badge" style="font-size: 11px;"><i class="ti ti-phone-call fs-11"></i>' + parentPhone + '</a>');
+        } else {
+            $('#mParentPhone').html('<span class="text-muted fs-11">Chưa có SĐT</span>');
+        }
+
         $('#mTotalTime').text(time);
         $('#mTotalMoves').text(moves + ' lượt');
         $('#mRanking').text(rank !== '--' ? '#' + rank : 'Chưa xếp hạng');
@@ -996,6 +1140,7 @@ $(document).ready(function () {
                                 '<div class="min-w-0">' +
                                     '<div class="fw-bold text-dark fs-13 text-truncate">' + rnd.theme_name + '</div>' +
                                     '<div class="text-muted fs-11">Thời gian: <strong class="text-primary">' + rnd.duration_spent + 's</strong></div>' +
+                                    (rnd.mistakes > 0 ? '<div class="text-muted fs-11">Lật sai: <strong class="text-danger">' + rnd.mistakes + '</strong></div>' : '') +
                                 '</div>' +
                             '</div>' +
                             '<div class="d-flex align-items-center justify-content-between pt-2 border-top fs-11 text-muted">' +
@@ -1010,6 +1155,41 @@ $(document).ready(function () {
 
         const modal = new bootstrap.Modal(document.getElementById('modalRoundDetails'));
         modal.show();
+    });
+
+    // 4. Sao chép số điện thoại nhanh 1-chạm
+    $(document).on('click', '.btn-copy-phone', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const phone = $(this).data('phone');
+        if (!phone) return;
+
+        const $btn = $(this);
+        const originalHtml = $btn.html();
+
+        function showCopied() {
+            $btn.addClass('copied').html('<i class="ti ti-check fs-12"></i>');
+            setTimeout(function () {
+                $btn.removeClass('copied').html(originalHtml);
+            }, 1600);
+        }
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(phone).then(showCopied).catch(function () {
+                fallbackCopy(phone);
+            });
+        } else {
+            fallbackCopy(phone);
+        }
+
+        function fallbackCopy(text) {
+            const $temp = $('<input>');
+            $('body').append($temp);
+            $temp.val(text).select();
+            document.execCommand('copy');
+            $temp.remove();
+            showCopied();
+        }
     });
 });
 </script>

@@ -387,4 +387,36 @@ class User extends Authenticatable implements JWTSubject
     {
         return !empty($this->affiliate_terms_accepted_at);
     }
+
+    /**
+     * Lấy số điện thoại đã giải mã AES an toàn
+     */
+    public function getDecryptedPhoneAttribute(): ?string
+    {
+        if (empty($this->phone)) {
+            return null;
+        }
+        try {
+            $decrypted = \App\AES\AESHelper::decrypt($this->phone);
+            return ($decrypted !== false && !empty($decrypted)) ? $decrypted : $this->phone;
+        } catch (\Throwable $e) {
+            return $this->phone;
+        }
+    }
+
+    /**
+     * Lấy email đã giải mã AES an toàn
+     */
+    public function getDecryptedEmailAttribute(): ?string
+    {
+        if (empty($this->email)) {
+            return null;
+        }
+        try {
+            $decrypted = \App\AES\AESHelper::decrypt($this->email);
+            return ($decrypted !== false && !empty($decrypted)) ? $decrypted : $this->email;
+        } catch (\Throwable $e) {
+            return $this->email;
+        }
+    }
 }
