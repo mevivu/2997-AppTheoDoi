@@ -213,6 +213,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Memo\MemoCompetitionApiController
     ->as('memoCompetition.')
     ->group(function () {
         Route::get('/', 'index');
+        Route::get('/featured', 'featured');
         Route::get('/{id}', 'show')->whereNumber('id');
         Route::post('/{id}/start', 'start')->whereNumber('id');
         Route::post('/{id}/submit-round', 'submitRound')->whereNumber('id');

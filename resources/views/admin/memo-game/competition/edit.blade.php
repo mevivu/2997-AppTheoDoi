@@ -330,9 +330,20 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-0">
-                                    <label class="form-label fw-bold">{{ __('Mô tả & Quy định giải đấu') }}</label>
-                                    <textarea id="inputDescription" name="description" rows="3" class="form-control">{{ old('description', $competition->description) }}</textarea>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">{{ __('Mô tả ngắn giải đấu') }}</label>
+                                    <textarea id="inputDescription" name="description" rows="2" class="form-control">{{ old('description', $competition->description) }}</textarea>
+                                </div>
+
+                                <div class="row g-3 mb-0">
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-bold">{{ __('Thể lệ chi tiết giải đấu (Rules)') }}</label>
+                                        <textarea id="inputRules" name="rules" rows="3" class="form-control" placeholder="{{ __('Quy định thi đấu, cách thức xếp hạng...') }}">{{ old('rules', $competition->rules) }}</textarea>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-bold">{{ __('Cơ cấu giải thưởng (Prizes)') }}</label>
+                                        <textarea id="inputPrizes" name="prizes" rows="3" class="form-control" placeholder="{{ __('Giải Nhất, Nhì, Ba, quà tặng...') }}">{{ old('prizes', $competition->prizes) }}</textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -540,12 +551,15 @@
 
                                 <div class="mb-3">
                                     <label class="form-label required fw-bold">{{ __('Trạng thái mở giải') }}</label>
+                                    @php
+                                        $currentStatus = $competition->status instanceof \App\Enums\Memo\MemoCompetitionStatus ? $competition->status->value : (string) $competition->status;
+                                    @endphp
                                     <select name="status" class="form-select" required>
-                                        <option value="draft" {{ old('status', $competition->status) === 'draft' ? 'selected' : '' }}>⚪ {{ __('Bản nháp (Draft)') }}</option>
-                                        <option value="upcoming" {{ old('status', $competition->status) === 'upcoming' ? 'selected' : '' }}>🟡 {{ __('Sắp diễn ra (Upcoming)') }}</option>
-                                        <option value="active" {{ old('status', $competition->status) === 'active' ? 'selected' : '' }}>🟢 {{ __('Đang mở (Active)') }}</option>
-                                        <option value="ended" {{ old('status', $competition->status) === 'ended' ? 'selected' : '' }}>🔴 {{ __('Đã kết thúc (Ended)') }}</option>
-                                        <option value="cancelled" {{ old('status', $competition->status) === 'cancelled' ? 'selected' : '' }}>⚫ {{ __('Đã hủy (Cancelled)') }}</option>
+                                        <option value="draft" {{ old('status', $currentStatus) === 'draft' ? 'selected' : '' }}>⚪ {{ __('Bản nháp (Draft)') }}</option>
+                                        <option value="upcoming" {{ old('status', $currentStatus) === 'upcoming' ? 'selected' : '' }}>🟡 {{ __('Sắp diễn ra (Upcoming)') }}</option>
+                                        <option value="active" {{ old('status', $currentStatus) === 'active' ? 'selected' : '' }}>🟢 {{ __('Đang mở (Active)') }}</option>
+                                        <option value="ended" {{ old('status', $currentStatus) === 'ended' ? 'selected' : '' }}>🔴 {{ __('Đã kết thúc (Ended)') }}</option>
+                                        <option value="cancelled" {{ old('status', $currentStatus) === 'cancelled' ? 'selected' : '' }}>⚫ {{ __('Đã hủy (Cancelled)') }}</option>
                                     </select>
                                 </div>
 

@@ -25,8 +25,25 @@ class MemoCompetitionApiController extends Controller
 
     public function __construct(MemoCompetitionService $competitionService)
     {
-        $this->middleware('auth:api')->except(['index', 'show', 'leaderboard']);
+        $this->middleware('auth:api')->except(['index', 'featured', 'show', 'leaderboard']);
         $this->competitionService = $competitionService;
+    }
+
+    /**
+     * Giải đấu nổi bật hiển thị ở trang chủ ứng dụng (Banner Home)
+     * GET /api/v1/memo-competitions/featured
+     */
+    public function featured(Request $request): JsonResponse
+    {
+        try {
+            $childId = $request->query('child_id') ? (int) $request->query('child_id') : null;
+            $data = $this->competitionService->getFeatured($childId);
+
+            return $this->jsonResponseSuccess($data);
+        } catch (Exception $e) {
+            $this->logError('Lỗi lấy giải đấu nổi bật Memo Game', $e);
+            return $this->jsonResponseError('Lỗi hệ thống khi lấy thông tin giải đấu.', 500);
+        }
     }
 
     /**

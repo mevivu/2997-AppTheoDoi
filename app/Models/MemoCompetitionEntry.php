@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Memo\MemoCompetitionEntryStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -66,6 +67,7 @@ class MemoCompetitionEntry extends Model
         'ranking' => 'integer',
         'started_at' => 'datetime',
         'completed_at' => 'datetime',
+        'status' => MemoCompetitionEntryStatus::class,
     ];
 
     /**
@@ -97,6 +99,6 @@ class MemoCompetitionEntry extends Model
      */
     public function scopeCompletedWins(Builder $query): Builder
     {
-        return $query->where('status', 'completed')->where('is_valid', true);
+        return $query->where('status', MemoCompetitionEntryStatus::Completed)->where('is_valid', true);
     }
 }

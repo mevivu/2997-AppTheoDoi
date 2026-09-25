@@ -780,9 +780,12 @@
 
                                         <!-- Trạng thái -->
                                         <td class="text-center">
+                                            @php
+                                                $entryStatusVal = $entry->status instanceof \App\Enums\Memo\MemoCompetitionEntryStatus ? $entry->status->value : (string) $entry->status;
+                                            @endphp
                                             @if ($entry->is_valid)
                                                 <span class="badge bg-success-lt fw-bold px-2 py-1"><i class="ti ti-check me-1"></i>{{ __('Hợp lệ (4/4)') }}</span>
-                                            @elseif ($entry->status === 'completed')
+                                            @elseif ($entryStatusVal === 'completed')
                                                 <span class="badge bg-danger-lt fw-bold px-2 py-1"><i class="ti ti-x me-1"></i>{{ __('Chưa thắng 4/4') }}</span>
                                             @else
                                                 <span class="badge bg-warning-lt fw-bold px-2 py-1"><i class="ti ti-clock me-1"></i>{{ __('Đang thi') }}</span>

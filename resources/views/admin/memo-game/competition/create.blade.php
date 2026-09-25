@@ -362,10 +362,23 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-0">
-                                    <label class="form-label fw-bold">{{ __('Mô tả & Phần thưởng giải đấu') }}</label>
-                                    <textarea id="inputDescription" name="description" rows="3" class="form-control" 
-                                              placeholder="Nhập quy chế, phần thưởng và hướng dẫn phụ huynh đồng hành cùng bé...">{{ old('description') }}</textarea>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">{{ __('Mô tả ngắn giải đấu') }}</label>
+                                    <textarea id="inputDescription" name="description" rows="2" class="form-control" 
+                                              placeholder="Nhập thông tin giới thiệu giải đấu...">{{ old('description') }}</textarea>
+                                </div>
+
+                                <div class="row g-3 mb-0">
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-bold">{{ __('Thể lệ chi tiết giải đấu (Rules)') }}</label>
+                                        <textarea id="inputRules" name="rules" rows="3" class="form-control" 
+                                                  placeholder="{{ __('Quy định thi đấu, cách thức xếp hạng...') }}">{{ old('rules') }}</textarea>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <label class="form-label fw-bold">{{ __('Cơ cấu giải thưởng (Prizes)') }}</label>
+                                        <textarea id="inputPrizes" name="prizes" rows="3" class="form-control" 
+                                                  placeholder="{{ __('Giải Nhất, Nhì, Ba, quà tặng...') }}">{{ old('prizes') }}</textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>

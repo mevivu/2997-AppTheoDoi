@@ -3,6 +3,8 @@
 namespace App\Api\V1\Services\Memo;
 
 use App\Api\V1\Http\Resources\Memo\MemoGameDataResource;
+use App\Enums\Memo\MemoCompetitionEntryStatus;
+use App\Enums\Memo\MemoCompetitionStatus;
 use App\Models\Child;
 use App\Models\MemoCompetition;
 use App\Models\MemoCompetitionEntry;
@@ -24,7 +26,11 @@ class MemoCompetitionService
         $now = Carbon::now();
 
         $competitions = MemoCompetition::with(['ageConfig', 'themes'])
-            ->whereIn('status', ['active', 'upcoming', 'ended'])
+            ->whereIn('status', [
+                MemoCompetitionStatus::Active,
+                MemoCompetitionStatus::Upcoming,
+                MemoCompetitionStatus::Ended,
+            ])
             ->orderByRaw("
                 CASE 
                     WHEN status = 'active' AND start_at <= '{$now}' AND end_at >= '{$now}' THEN 1
@@ -76,7 +82,8 @@ class MemoCompetitionService
                     return [
                         'entry_id' => $e->id,
                         'attempt_number' => $e->attempt_number,
-                        'status' => $e->status,
+                        'status' => $e->status instanceof MemoCompetitionEntryStatus ? $e->status->value : $e->status,
+                        'status_label' => $e->status instanceof MemoCompetitionEntryStatus ? $e->status->label() : null,
                         'is_valid' => (bool) $e->is_valid,
                         'total_time' => (int) $e->total_time,
                         'total_moves' => (int) $e->total_moves,
@@ -100,10 +107,10 @@ class MemoCompetitionService
         $now = Carbon::now();
 
         // 1. Kiểm tra thời gian giải đấu
-        if ($comp->status === 'cancelled') {
+        if ($comp->status === MemoCompetitionStatus::Cancelled) {
             return ['can' => false, 'reason' => 'Giải đấu đã bị hủy bỏ.'];
         }
-        if ($comp->status === 'draft') {
+        if ($comp->status === MemoCompetitionStatus::Draft) {
             return ['can' => false, 'reason' => 'Giải đấu chưa được mở.'];
         }
         if ($comp->hasEnded()) {
@@ -121,7 +128,7 @@ class MemoCompetitionService
         // Kiểm tra xem có ván thi đang dở dang (in_progress) không
         $inProgressEntry = MemoCompetitionEntry::where('memo_competition_id', $comp->id)
             ->where('child_id', $childId)
-            ->where('status', 'in_progress')
+            ->where('status', MemoCompetitionEntryStatus::InProgress)
             ->first();
 
         if ($inProgressEntry) {
@@ -181,7 +188,7 @@ class MemoCompetitionService
                     'memo_competition_id' => $comp->id,
                     'child_id' => $childId,
                     'attempt_number' => $eligibility['attempt_number'],
-                    'status' => 'in_progress',
+                    'status' => MemoCompetitionEntryStatus::InProgress,
                     'started_at' => $now,
                 ]);
             }
@@ -243,11 +250,11 @@ class MemoCompetitionService
     public function submitRound(int $competitionId, int $childId, array $data): array
     {
         $entryId = (int) ($data['entry_id'] ?? 0);
-        $gameNumber = (int) ($data['game_number'] ?? 1);
-        $duration = (int) ($data['duration_spent'] ?? 0);
+        $gameNumber = (int) ($data['game_number'] ?? $data['round_order'] ?? 1);
+        $duration = (int) ($data['duration_spent'] ?? $data['time_spent_seconds'] ?? 0);
         $pairsMatched = (int) ($data['pairs_matched'] ?? 0);
-        $totalMoves = (int) ($data['total_moves'] ?? 0);
-        $mistakes = (int) ($data['mistakes'] ?? 0);
+        $totalMoves = (int) ($data['total_moves'] ?? $data['moves_count'] ?? 0);
+        $mistakes = (int) ($data['mistakes'] ?? $data['mistakes_count'] ?? 0);
         $isWon = (bool) ($data['is_won'] ?? false);
         $themeId = !empty($data['theme_id']) ? (int) $data['theme_id'] : null;
 
@@ -260,8 +267,13 @@ class MemoCompetitionService
             throw new Exception('Lượt thi không hợp lệ hoặc không thuộc về bé.', 404);
         }
 
-        if ($entry->status !== 'in_progress') {
+        if ($entry->status !== MemoCompetitionEntryStatus::InProgress) {
             throw new Exception('Lượt thi này đã kết thúc hoặc không còn hiệu lực.', 400);
+        }
+
+        // Anti-cheat cơ bản: Không thể hoàn thành 1 ván 15 cặp thẻ dưới 5 giây nếu là thắng
+        if ($isWon && $duration < 5) {
+            throw new Exception('Thời gian hoàn thành ván thi không hợp lệ.', 400);
         }
 
         // Lưu / cập nhật bản ghi round
@@ -326,7 +338,7 @@ class MemoCompetitionService
             'total_pairs_matched' => $totalPairs,
             'games_won' => $gamesWon,
             'is_valid' => $isValid,
-            'status' => 'completed',
+            'status' => MemoCompetitionEntryStatus::Completed,
             'completed_at' => $now,
         ]);
 
@@ -344,7 +356,8 @@ class MemoCompetitionService
             'total_mistakes' => (int) $entry->total_mistakes,
             'games_won' => (int) $entry->games_won,
             'ranking' => $entry->ranking,
-            'status' => $entry->status,
+            'status' => $entry->status instanceof MemoCompetitionEntryStatus ? $entry->status->value : $entry->status,
+            'status_label' => $entry->status instanceof MemoCompetitionEntryStatus ? $entry->status->label() : null,
             'message' => $isValid
                 ? 'Chúc mừng bé đã xuất sắc hoàn thành và chiến thắng cả 4 thử thách!'
                 : "Bé đã hoàn thành lượt thi với {$gamesWon}/{$requiredGames} ván thắng. Cố gắng hơn ở lần sau nhé!",
@@ -370,7 +383,7 @@ class MemoCompetitionService
         // Lấy tất cả lượt thi đã hoàn thành của giải đấu
         // Nếu bé thi nhiều lần (nếu cho phép thi lại), chỉ lấy lượt thi tốt nhất của mỗi bé để xếp hạng
         $entries = MemoCompetitionEntry::where('memo_competition_id', $competitionId)
-            ->where('status', 'completed')
+            ->where('status', MemoCompetitionEntryStatus::Completed)
             ->orderBy('is_valid', 'desc')
             ->orderBy('total_time', 'asc')
             ->orderBy('total_moves', 'asc')
@@ -400,8 +413,8 @@ class MemoCompetitionService
         }
 
         $comp->ranking_calculated_at = Carbon::now();
-        if ($comp->end_at <= Carbon::now() && $comp->status !== 'ended') {
-            $comp->status = 'ended';
+        if ($comp->end_at <= Carbon::now() && $comp->status !== MemoCompetitionStatus::Ended) {
+            $comp->status = MemoCompetitionStatus::Ended;
         }
         $comp->save();
     }
@@ -429,7 +442,7 @@ class MemoCompetitionService
         // fallback sắp xếp theo thời gian & moves nếu chưa kết thúc giải
         $query = MemoCompetitionEntry::with('child')
             ->where('memo_competition_id', $competitionId)
-            ->where('status', 'completed');
+            ->where('status', MemoCompetitionEntryStatus::Completed);
 
         if ($comp->ranking_calculated_at) {
             $query->whereNotNull('ranking')->orderBy('ranking', 'asc');
@@ -522,10 +535,13 @@ class MemoCompetitionService
             'name' => $comp->name,
             'slug' => $comp->slug,
             'description' => $comp->description,
+            'rules' => $comp->rules,
+            'prizes' => $comp->prizes,
             'banner_image' => $comp->banner_image ? asset($comp->banner_image) : null,
             'start_at' => $comp->start_at->toIso8601String(),
             'end_at' => $comp->end_at->toIso8601String(),
-            'status' => $comp->status,
+            'status' => $comp->status instanceof MemoCompetitionStatus ? $comp->status->value : $comp->status,
+            'status_label' => $comp->status instanceof MemoCompetitionStatus ? $comp->status->label() : null,
             'is_happening' => $isHappening,
             'has_ended' => $hasEnded,
             'total_games' => (int) $comp->total_games,
@@ -537,6 +553,48 @@ class MemoCompetitionService
             'eligibility_reason' => $eligibility['reason'] ?? null,
             'attempts_used' => $eligibility['attempts_used'] ?? 0,
             'is_ranking_calculated' => (bool) $comp->ranking_calculated_at,
+            'countdown' => [
+                'type' => $isHappening ? 'ending' : ($comp->start_at > $now ? 'starting' : null),
+                'target_at' => $isHappening
+                    ? $comp->end_at->toIso8601String()
+                    : ($comp->start_at > $now ? $comp->start_at->toIso8601String() : null),
+                'remaining_seconds' => $isHappening
+                    ? max(0, $now->diffInSeconds($comp->end_at, false))
+                    : ($comp->start_at > $now ? max(0, $now->diffInSeconds($comp->start_at, false)) : 0),
+            ],
         ];
+    }
+
+    /**
+     * Lấy giải đấu nổi bật nhất cho trang chủ (App Home Banner)
+     * Ưu tiên 1: Đang diễn ra (Active)
+     * Ưu tiên 2: Sắp diễn ra gần nhất (Upcoming)
+     */
+    public function getFeatured(?int $childId = null): ?array
+    {
+        $now = Carbon::now();
+
+        // Ưu tiên 1: Giải đang diễn ra
+        $comp = MemoCompetition::with(['ageConfig', 'themes'])
+            ->where('status', MemoCompetitionStatus::Active)
+            ->where('start_at', '<=', $now)
+            ->where('end_at', '>=', $now)
+            ->orderBy('start_at', 'desc')
+            ->first();
+
+        // Ưu tiên 2: Giải sắp diễn ra gần nhất
+        if (!$comp) {
+            $comp = MemoCompetition::with(['ageConfig', 'themes'])
+                ->where('status', MemoCompetitionStatus::Upcoming)
+                ->where('start_at', '>', $now)
+                ->orderBy('start_at', 'asc')
+                ->first();
+        }
+
+        if (!$comp) {
+            return null;
+        }
+
+        return $this->formatCompetitionSummary($comp, $childId);
     }
 }

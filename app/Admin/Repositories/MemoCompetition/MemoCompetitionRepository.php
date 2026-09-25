@@ -3,6 +3,7 @@
 namespace App\Admin\Repositories\MemoCompetition;
 
 use App\Admin\Repositories\EloquentRepository;
+use App\Enums\Memo\MemoCompetitionEntryStatus;
 use App\Models\MemoCompetition;
 use App\Models\MemoCompetitionEntry;
 use App\Models\MemoCompetitionTheme;
@@ -41,7 +42,7 @@ class MemoCompetitionRepository extends EloquentRepository implements MemoCompet
     {
         return MemoCompetitionEntry::with(['child.user'])
             ->where('memo_competition_id', $competitionId)
-            ->where('status', 'completed')
+            ->where('status', MemoCompetitionEntryStatus::Completed)
             ->where('is_valid', true)
             ->orderBy('total_time', 'asc')
             ->orderBy('total_moves', 'asc')

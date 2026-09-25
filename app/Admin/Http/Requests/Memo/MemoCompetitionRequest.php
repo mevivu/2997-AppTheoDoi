@@ -22,6 +22,8 @@ class MemoCompetitionRequest extends BaseRequest
             'status' => ['required', 'string', 'in:draft,upcoming,active,ended,cancelled'],
             'banner_image' => ['nullable', 'image', 'max:4096'],
             'description' => ['nullable', 'string'],
+            'rules' => ['nullable', 'string'],
+            'prizes' => ['nullable', 'string'],
         ];
     }
 
@@ -42,6 +44,8 @@ class MemoCompetitionRequest extends BaseRequest
             'status' => ['required', 'string', 'in:draft,upcoming,active,ended,cancelled'],
             'banner_image' => ['nullable', 'image', 'max:4096'],
             'description' => ['nullable', 'string'],
+            'rules' => ['nullable', 'string'],
+            'prizes' => ['nullable', 'string'],
         ];
     }
 

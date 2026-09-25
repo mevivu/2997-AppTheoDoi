@@ -4,6 +4,7 @@ namespace App\Admin\Services\MemoCompetition;
 
 use App\Admin\Repositories\MemoCompetition\MemoCompetitionRepositoryInterface;
 use App\Admin\Services\File\FileService;
+use App\Enums\Memo\MemoCompetitionEntryStatus;
 use App\Models\MemoCompetition;
 use App\Models\MemoCompetitionEntry;
 use Carbon\Carbon;
@@ -44,6 +45,8 @@ class MemoCompetitionService implements MemoCompetitionServiceInterface
                 'name' => $data['name'],
                 'slug' => Str::slug($data['name']) . '-' . time(),
                 'description' => $data['description'] ?? null,
+                'rules' => $data['rules'] ?? null,
+                'prizes' => $data['prizes'] ?? null,
                 'banner_image' => $bannerPath,
                 'start_at' => $data['start_at'],
                 'end_at' => $data['end_at'],
@@ -75,6 +78,8 @@ class MemoCompetitionService implements MemoCompetitionServiceInterface
             $updateData = [
                 'name' => $data['name'],
                 'description' => $data['description'] ?? null,
+                'rules' => $data['rules'] ?? null,
+                'prizes' => $data['prizes'] ?? null,
                 'start_at' => $data['start_at'],
                 'end_at' => $data['end_at'],
                 'memo_age_config_id' => $data['memo_age_config_id'],
@@ -125,7 +130,7 @@ class MemoCompetitionService implements MemoCompetitionServiceInterface
 
         // Lấy tất cả lượt thi hợp lệ (hoàn thành xuất sắc cả 4 ván)
         $entries = MemoCompetitionEntry::where('memo_competition_id', $competitionId)
-            ->where('status', 'completed')
+            ->where('status', MemoCompetitionEntryStatus::Completed)
             ->where('is_valid', true)
             ->orderBy('total_time', 'asc')
             ->orderBy('total_moves', 'asc')

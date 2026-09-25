@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Memo\MemoCompetitionStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -28,8 +29,12 @@ class MemoCompetition extends Model
         'name',
         /** Đường dẫn thân thiện URL (slug) */
         'slug',
-        /** Mô tả chi tiết, thể lệ và phần thưởng giải đấu */
+        /** Mô tả chi tiết giải đấu */
         'description',
+        /** Thể lệ chi tiết của giải đấu (HTML/markdown) */
+        'rules',
+        /** Cơ cấu giải thưởng (HTML/markdown) */
+        'prizes',
         /** Đường dẫn hình ảnh banner giải đấu */
         'banner_image',
         /** Thời gian bắt đầu mở giải đấu */
@@ -67,6 +72,7 @@ class MemoCompetition extends Model
         'end_at' => 'datetime',
         'ranking_calculated_at' => 'datetime',
         'created_by' => 'integer',
+        'status' => MemoCompetitionStatus::class,
     ];
 
     /**
@@ -118,7 +124,7 @@ class MemoCompetition extends Model
     public function scopeActive(Builder $query): Builder
     {
         $now = Carbon::now();
-        return $query->where('status', 'active')
+        return $query->where('status', MemoCompetitionStatus::Active)
             ->where('start_at', '<=', $now)
             ->where('end_at', '>=', $now);
     }
@@ -130,9 +136,9 @@ class MemoCompetition extends Model
     {
         $now = Carbon::now();
         return $query->where(function ($q) use ($now) {
-            $q->where('status', 'upcoming')
+            $q->where('status', MemoCompetitionStatus::Upcoming)
               ->orWhere(function ($q2) use ($now) {
-                  $q2->where('status', 'active')->where('start_at', '>', $now);
+                  $q2->where('status', MemoCompetitionStatus::Active)->where('start_at', '>', $now);
               });
         });
     }
@@ -143,10 +149,12 @@ class MemoCompetition extends Model
     public function scopeEnded(Builder $query): Builder
     {
         $now = Carbon::now();
-        return $query->where('status', 'ended')
-            ->orWhere(function ($q) use ($now) {
-                $q->where('status', 'active')->where('end_at', '<', $now);
-            });
+        return $query->where(function ($q) use ($now) {
+            $q->where('status', MemoCompetitionStatus::Ended)
+              ->orWhere(function ($q2) use ($now) {
+                  $q2->where('status', MemoCompetitionStatus::Active)->where('end_at', '<', $now);
+              });
+        });
     }
 
     /**
@@ -155,7 +163,7 @@ class MemoCompetition extends Model
     public function isHappening(): bool
     {
         $now = Carbon::now();
-        return $this->status === 'active' && $this->start_at <= $now && $this->end_at >= $now;
+        return $this->status === MemoCompetitionStatus::Active && $this->start_at <= $now && $this->end_at >= $now;
     }
 
     /**
@@ -163,7 +171,7 @@ class MemoCompetition extends Model
      */
     public function hasEnded(): bool
     {
-        return $this->status === 'ended' || ($this->end_at && $this->end_at < Carbon::now());
+        return $this->status === MemoCompetitionStatus::Ended || ($this->end_at && $this->end_at < Carbon::now());
     }
 
     /**
