@@ -21,7 +21,7 @@ class MemoCompetitionService
     /**
      * Lấy danh sách các giải đấu đang diễn ra hoặc sắp diễn ra
      */
-    public function getActiveAndUpcoming(?int $childId = null): array
+    public function getActiveAndUpcoming(?int $childId = null, $user = null): array
     {
         $now = Carbon::now();
 
@@ -41,22 +41,22 @@ class MemoCompetitionService
             ->orderBy('start_at', 'desc')
             ->get();
 
-        return $competitions->map(function ($comp) use ($childId) {
-            return $this->formatCompetitionSummary($comp, $childId);
+        return $competitions->map(function ($comp) use ($childId, $user) {
+            return $this->formatCompetitionSummary($comp, $childId, $user);
         })->toArray();
     }
 
     /**
      * Lấy thông tin chi tiết giải đấu
      */
-    public function getDetail(int $competitionId, ?int $childId = null): ?array
+    public function getDetail(int $competitionId, ?int $childId = null, $user = null): ?array
     {
         $comp = MemoCompetition::with(['ageConfig', 'themes', 'competitionThemes.theme'])->find($competitionId);
         if (!$comp) {
             return null;
         }
 
-        $summary = $this->formatCompetitionSummary($comp, $childId);
+        $summary = $this->formatCompetitionSummary($comp, $childId, $user);
 
         // Chi tiết danh sách 4 chủ đề
         $themesList = $comp->competitionThemes->map(function ($ct) {
@@ -534,9 +534,66 @@ class MemoCompetitionService
     }
 
     /**
+     * Lấy danh sách bé của người dùng hiện tại kèm trạng thái tham gia giải đấu
+     */
+    public function getUserChildrenEligibility(MemoCompetition $comp, $user = null): array
+    {
+        if (!$user) {
+            $user = request()->user('api') ?? auth('api')->user();
+        }
+
+        if (!$user) {
+            return [];
+        }
+
+        $children = Child::where('user_id', $user->id)
+            ->where(function ($q) {
+                $q->whereNull('status')
+                  ->orWhere('status', '!=', 'deleted');
+            })
+            ->get();
+
+        if ($children->isEmpty()) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($children as $child) {
+            $eligibility = $this->checkEligibility($comp, (int) $child->id);
+
+            $bestEntry = MemoCompetitionEntry::where('memo_competition_id', $comp->id)
+                ->where('child_id', $child->id)
+                ->where('is_valid', true)
+                ->orderBy('total_time', 'asc')
+                ->first();
+
+            $attemptsUsed = (int) ($eligibility['attempts_used'] ?? 0);
+            $hasParticipated = $attemptsUsed > 0;
+            $canParticipate = (bool) ($eligibility['can'] ?? false);
+
+            $result[] = [
+                'id' => (int) $child->id,
+                'fullname' => $child->fullname ?? 'Bé',
+                'avatar' => $child->avatar ? asset($child->avatar) : null,
+                'is_born' => $child->is_born?->value ?? (string) ($child->is_born ?? 'born'),
+                'can_participate' => $canParticipate,
+                'has_participated' => $hasParticipated,
+                'attempts_used' => $attemptsUsed,
+                'max_attempts' => (int) ($eligibility['max_attempts'] ?? ($comp->max_attempts ?? 1)),
+                'eligibility_reason' => $eligibility['reason'] ?? null,
+                'is_resuming' => (bool) ($eligibility['is_resuming'] ?? false),
+                'best_time' => $bestEntry ? (int) $bestEntry->total_time : null,
+                'ranking' => $bestEntry?->ranking,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
      * Helper format thông tin tóm tắt giải đấu
      */
-    protected function formatCompetitionSummary(MemoCompetition $comp, ?int $childId = null): array
+    protected function formatCompetitionSummary(MemoCompetition $comp, ?int $childId = null, $user = null): array
     {
         $now = Carbon::now();
         $isHappening = $comp->isHappening();
@@ -547,6 +604,7 @@ class MemoCompetitionService
             ->count('child_id');
 
         $eligibility = $childId ? $this->checkEligibility($comp, $childId) : null;
+        $userChildren = $this->getUserChildrenEligibility($comp, $user);
 
         return [
             'id' => $comp->id,
@@ -571,6 +629,7 @@ class MemoCompetitionService
             'eligibility_reason' => $eligibility['reason'] ?? null,
             'attempts_used' => $eligibility['attempts_used'] ?? 0,
             'is_ranking_calculated' => (bool) $comp->ranking_calculated_at,
+            'user_children' => $userChildren,
             'countdown' => [
                 'type' => $isHappening ? 'ending' : ($comp->start_at > $now ? 'starting' : null),
                 'target_at' => $isHappening
@@ -588,7 +647,7 @@ class MemoCompetitionService
      * Ưu tiên 1: Đang diễn ra (Active)
      * Ưu tiên 2: Sắp diễn ra gần nhất (Upcoming)
      */
-    public function getFeatured(?int $childId = null): ?array
+    public function getFeatured(?int $childId = null, $user = null): ?array
     {
         $now = Carbon::now();
 
@@ -613,6 +672,6 @@ class MemoCompetitionService
             return null;
         }
 
-        return $this->formatCompetitionSummary($comp, $childId);
+        return $this->formatCompetitionSummary($comp, $childId, $user);
     }
 }

@@ -37,7 +37,8 @@ class MemoCompetitionApiController extends Controller
     {
         try {
             $childId = $request->query('child_id') ? (int) $request->query('child_id') : null;
-            $data = $this->competitionService->getFeatured($childId);
+            $user = $request->user('api') ?? auth('api')->user();
+            $data = $this->competitionService->getFeatured($childId, $user);
 
             return $this->jsonResponseSuccess($data);
         } catch (Exception $e) {
@@ -53,7 +54,8 @@ class MemoCompetitionApiController extends Controller
     {
         try {
             $childId = $request->query('child_id') ? (int) $request->query('child_id') : null;
-            $data = $this->competitionService->getActiveAndUpcoming($childId);
+            $user = $request->user('api') ?? auth('api')->user();
+            $data = $this->competitionService->getActiveAndUpcoming($childId, $user);
 
             return $this->jsonResponseSuccess($data);
         } catch (Exception $e) {
@@ -69,7 +71,8 @@ class MemoCompetitionApiController extends Controller
     {
         try {
             $childId = $request->query('child_id') ? (int) $request->query('child_id') : null;
-            $data = $this->competitionService->getDetail($id, $childId);
+            $user = $request->user('api') ?? auth('api')->user();
+            $data = $this->competitionService->getDetail($id, $childId, $user);
 
             if (!$data) {
                 return $this->jsonResponseError('Không tìm thấy giải đấu.', 404);
