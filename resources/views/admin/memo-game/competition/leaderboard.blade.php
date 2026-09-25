@@ -339,26 +339,89 @@
 .round-lost { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 .round-pending { background: #f1f5f9; color: #94a3b8; border: 1px solid #cbd5e1; }
 
-/* 6. Filter Tabs */
-.filter-tab-btn {
-    border-radius: 50px !important;
-    padding: 6px 16px;
+/* 6. Modern Segmented Filter Group & Toolbar */
+.filter-segmented-group {
+    display: inline-flex;
+    align-items: center;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 50px;
+    padding: 3px;
+    gap: 3px;
+    flex-shrink: 0;
+}
+.filter-segmented-btn {
+    border: none;
+    background: transparent;
+    border-radius: 50px;
+    padding: 6px 14px;
     font-size: 13px;
     font-weight: 600;
-    transition: all 0.2s ease;
-    border: 1px solid #cbd5e1;
-    background: #ffffff;
-    color: #475569;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.18s ease;
+    cursor: pointer;
+    white-space: nowrap;
+    line-height: 1.2;
 }
-.filter-tab-btn:hover {
-    background: #f1f5f9;
+.filter-segmented-btn:hover {
     color: #0f172a;
+    background: rgba(255, 255, 255, 0.7);
 }
-.filter-tab-btn.active {
-    background: #0284c7 !important;
-    color: #ffffff !important;
-    border-color: #0284c7 !important;
-    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+.filter-segmented-btn.active {
+    background: #ffffff;
+    color: #0284c7;
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+.filter-segmented-btn .count-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #e2e8f0;
+    color: #475569;
+    transition: all 0.18s ease;
+}
+.filter-segmented-btn.active .count-pill {
+    background: #0284c7;
+    color: #ffffff;
+}
+
+.header-icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #0284c7;
+    flex-shrink: 0;
+}
+
+.search-box-wrapper {
+    min-width: 260px;
+    max-width: 330px;
+    flex-grow: 1;
+}
+@media (max-width: 768px) {
+    .search-box-wrapper {
+        min-width: 100%;
+        max-width: 100%;
+    }
+    .filter-segmented-group {
+        width: 100%;
+        overflow-x: auto;
+    }
 }
 
 /* 7. Modal Round Cards */
@@ -697,41 +760,60 @@
 
             <!-- 4. Danh Sách Toàn Bộ Lượt Thi & Bảng Xếp Hạng -->
             <div class="card custom-shadow border-0">
-                <div class="card-header bg-white py-3 border-bottom">
-                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 w-100">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="ti ti-list-numbers fs-3 text-primary"></i>
-                            <div>
-                                <h5 class="card-title mb-0 fw-bold">{{ __('Danh Sách Kết Quả Toàn Bộ Lượt Thi') }}</h5>
-                                <div class="text-muted fs-11">{{ __('Cập nhật tự động theo tiêu chí xếp hạng chính thức') }}</div>
-                            </div>
+                <!-- Header: Tiêu đề + Ghi chú hướng dẫn -->
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2.5">
+                        <div class="header-icon-box">
+                            <i class="ti ti-trophy fs-3"></i>
                         </div>
-
-                        <!-- Bộ lọc Tab (Pills) -->
-                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                            <button type="button" class="filter-tab-btn active" data-filter="all">
-                                {{ __('Tất cả') }} <span class="badge bg-light text-dark ms-1 rounded-pill" id="countAll">{{ $totalAttempts }}</span>
-                            </button>
-                            <button type="button" class="filter-tab-btn" data-filter="valid">
-                                <i class="ti ti-check me-1 text-success"></i>{{ __('Đủ điều kiện (4/4 ván)') }} <span class="badge bg-light text-dark ms-1 rounded-pill" id="countValid">{{ $completedCount }}</span>
-                            </button>
-                            <button type="button" class="filter-tab-btn" data-filter="invalid">
-                                <i class="ti ti-x me-1 text-danger"></i>{{ __('Chưa đạt') }} <span class="badge bg-light text-dark ms-1 rounded-pill" id="countInvalid">{{ max(0, $totalAttempts - $completedCount) }}</span>
-                            </button>
+                        <div>
+                            <h5 class="card-title mb-0 fw-bold text-dark fs-15">{{ __('Danh Sách Toàn Bộ Lượt Thi') }}</h5>
+                            <div class="text-muted fs-11 mt-0.5">{{ __('Tự động xếp hạng theo ván thắng, thời gian và số lượt lật') }}</div>
                         </div>
                     </div>
 
-                    <!-- Thanh tìm kiếm nhanh thời gian thực -->
-                    <div class="mt-3 pt-3 border-top">
-                        <div class="row g-2 align-items-center">
-                            <div class="col-12 col-md-5">
-                                <div class="input-icon">
-                                    <span class="input-icon-addon"><i class="ti ti-search text-muted"></i></span>
-                                    <input type="text" id="leaderboardSearch" class="form-control rounded-pill" placeholder="{{ __('Tìm theo tên bé, phụ huynh, số điện thoại...') }}" style="border-radius: 50px !important;">
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-7 text-md-end text-muted fs-12">
-                                <i class="ti ti-info-circle me-1"></i>{{ __('Bấm vào nút "Chi tiết" ở mỗi dòng để xem số giây và lượt lật của từng ván') }}
+                    <div class="text-muted fs-12 d-none d-md-flex align-items-center gap-1.5 bg-light px-3 py-1.5 rounded-pill border">
+                        <i class="ti ti-info-circle text-primary"></i>
+                        <span>{{ __('Bấm "Chi tiết" ở mỗi dòng để xem số giây và lượt lật 4 ván') }}</span>
+                    </div>
+                </div>
+
+                <!-- Toolbar: Bộ lọc trạng thái Segmented & Ô tìm kiếm nhanh -->
+                <div class="card-body py-2.5 px-3 bg-light-subtle border-bottom">
+                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2.5">
+                        <!-- Bộ lọc Segmented Tabs: Gọn gàng, hiện đại, không bao giờ bị rớt dòng -->
+                        <div class="filter-segmented-group">
+                            <button type="button" class="filter-segmented-btn active" data-filter="all">
+                                <span>{{ __('Tất cả') }}</span>
+                                <span class="count-pill" id="countAll">{{ $totalAttempts }}</span>
+                            </button>
+                            <button type="button" class="filter-segmented-btn" data-filter="valid">
+                                <i class="ti ti-check text-success"></i>
+                                <span>{{ __('Đủ điều kiện (4/4)') }}</span>
+                                <span class="count-pill text-success" id="countValid">{{ $completedCount }}</span>
+                            </button>
+                            <button type="button" class="filter-segmented-btn" data-filter="invalid">
+                                <i class="ti ti-x text-danger"></i>
+                                <span>{{ __('Chưa đạt') }}</span>
+                                <span class="count-pill text-danger" id="countInvalid">{{ max(0, $totalAttempts - $completedCount) }}</span>
+                            </button>
+                        </div>
+
+                        <!-- Ô tìm kiếm realtime đồng bộ DataTable -->
+                        <div class="search-box-wrapper ms-md-auto">
+                            <div class="input-icon">
+                                <span class="input-icon-addon">
+                                    <i class="ti ti-search text-muted"></i>
+                                </span>
+                                <input type="text" 
+                                       id="leaderboardSearch" 
+                                       class="form-control rounded-pill pe-4" 
+                                       placeholder="{{ __('Tìm thí sinh, phụ huynh, SĐT...') }}" 
+                                       autocomplete="off"
+                                       style="height: 36px; font-size: 13px;">
+                                <span class="input-icon-addon end-0 pe-2.5 d-none cursor-pointer" id="clearSearchBtn" style="cursor: pointer;">
+                                    <i class="ti ti-x text-muted fs-12"></i>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -827,9 +909,9 @@
 $(document).ready(function () {
     const tableId = '{{ $dataTable->getTableAttribute("id") }}';
 
-    // 1. Bộ lọc Tab (Tất cả / Đủ điều kiện / Chưa đạt)
-    $('.filter-tab-btn').on('click', function () {
-        $('.filter-tab-btn').removeClass('active');
+    // 1. Bộ lọc Tab Segmented (Tất cả / Đủ điều kiện / Chưa đạt)
+    $(document).on('click', '.filter-segmented-btn, .filter-tab-btn', function () {
+        $('.filter-segmented-btn, .filter-tab-btn').removeClass('active');
         $(this).addClass('active');
 
         const filter = $(this).data('filter');
@@ -847,10 +929,20 @@ $(document).ready(function () {
 
     // 2. Tìm kiếm nhanh thời gian thực theo tên, SĐT đồng bộ với DataTable
     $('#leaderboardSearch').on('keyup input', function () {
+        const val = $(this).val().trim();
+        if (val.length > 0) {
+            $('#clearSearchBtn').removeClass('d-none');
+        } else {
+            $('#clearSearchBtn').addClass('d-none');
+        }
         const table = window.LaravelDataTables[tableId];
         if (table) {
-            table.search($(this).val().trim()).draw();
+            table.search(val).draw();
         }
+    });
+
+    $('#clearSearchBtn').on('click', function () {
+        $('#leaderboardSearch').val('').trigger('input').focus();
     });
 
     // 3. Modal xem chi tiết 4 ván thi của thí sinh (Sự kiện uỷ quyền cho Ajax DataTable)
