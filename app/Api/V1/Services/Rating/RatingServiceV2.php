@@ -162,7 +162,7 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
                 $duration = (int) ($data['game_duration_spent'] ?? 0);
                 $feedback = $this->getMemoFeedback($memoScorePercent, $mistakes, $duration);
 
-                MemoRating::create([
+                $createdMemoRating = MemoRating::create([
                     'child_id' => $childId,
                     'memo_theme_id' => $data['memo_theme_id'] ?? (!empty($memoGames[0]['theme']['id']) ? $memoGames[0]['theme']['id'] : null),
                     'memo_age_config_id' => $data['memo_age_config_id'] ?? ($ageConfig->id ?? null),
@@ -175,6 +175,24 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
                     'feedback' => $feedback,
                     'status' => 'completed',
                 ]);
+
+                // Tự động ghi nhận thành tích cá nhân (Personal Best)
+                $configId = $data['memo_age_config_id'] ?? ($ageConfig->id ?? null);
+                if ($configId) {
+                    $isWin = $gameScore > 0 && ($gameScore >= $gamePlays || $memoScorePercent >= 70);
+                    $moves = (int) ($data['game_moves'] ?? (((int) ($data['game_pairs_matched'] ?? 0)) * 2 + $mistakes));
+                    app(\App\Api\V1\Services\Memo\MemoPersonalBestService::class)->recordGameResult(
+                        $childId,
+                        $configId,
+                        $duration,
+                        $moves,
+                        $mistakes,
+                        $memoScorePercent,
+                        $createdMemoRating->memo_theme_id,
+                        $createdMemoRating->id,
+                        $isWin
+                    );
+                }
             } catch (\Throwable $e) {
                 Log::warning('Không thể tạo memo_ratings từ storeIQV2: ' . $e->getMessage());
             }

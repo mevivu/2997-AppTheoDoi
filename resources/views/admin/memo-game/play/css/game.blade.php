@@ -365,7 +365,7 @@
     /* Game Board Grid */
     .memo-grid {
         display: grid;
-        gap: 16px;
+        gap: 14px;
         width: 100%;
         max-width: 900px;
         margin: 0 auto;
@@ -377,25 +377,77 @@
     /* Responsive Grid setups */
     .memo-grid-2x3 {
         grid-template-columns: repeat(3, minmax(110px, 180px));
+        max-width: 600px;
     }
     .memo-grid-3x4 {
         grid-template-columns: repeat(4, minmax(90px, 150px));
+        max-width: 680px;
     }
     .memo-grid-4x4 {
         grid-template-columns: repeat(4, minmax(85px, 140px));
+        max-width: 640px;
     }
     .memo-grid-4x5 {
         grid-template-columns: repeat(5, minmax(75px, 125px));
+        max-width: 720px;
+    }
+    .memo-grid-5x5 {
+        grid-template-columns: repeat(5, minmax(70px, 120px));
+        max-width: 720px;
+    }
+    .memo-grid-5x6 {
+        grid-template-columns: repeat(6, minmax(65px, 115px));
+        max-width: 820px;
+        gap: 10px;
+    }
+    .memo-grid-6x5 {
+        grid-template-columns: repeat(5, minmax(70px, 120px));
+        max-width: 720px;
+    }
+    .memo-grid-6x6 {
+        grid-template-columns: repeat(6, minmax(65px, 115px));
+        max-width: 820px;
+        gap: 10px;
     }
 
     /* 3D Card Architecture */
     .memo-card-wrapper {
         position: relative;
         aspect-ratio: 1 / 1.18;
+        width: 100%;
+        min-width: 50px;
         perspective: 1000px;
         cursor: pointer;
         user-select: none;
         outline: none;
+    }
+
+    /* Compact adjustments for dense grids (5x6, 6x6) */
+    .memo-grid-5x6 .memo-card-face,
+    .memo-grid-6x6 .memo-card-face {
+        padding: 6px;
+    }
+
+    .memo-grid-5x6 .memo-card-back-icon,
+    .memo-grid-6x6 .memo-card-back-icon {
+        font-size: 22px;
+    }
+
+    .memo-grid-5x6 .memo-card-front img,
+    .memo-grid-6x6 .memo-card-front img {
+        width: 80%;
+        height: 68%;
+    }
+
+    .memo-grid-5x6 .memo-card-front-icon,
+    .memo-grid-6x6 .memo-card-front-icon {
+        font-size: 28px;
+    }
+
+    .memo-grid-5x6 .memo-card-name,
+    .memo-grid-6x6 .memo-card-name {
+        font-size: 11px;
+        margin-top: 4px;
     }
 
     .memo-card-inner {

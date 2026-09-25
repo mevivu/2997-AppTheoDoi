@@ -85,4 +85,9 @@ class MemoTheme extends Model
     {
         return $this->hasMany(MemoRating::class, 'memo_theme_id', 'id');
     }
+
+    public function competitions()
+    {
+        return $this->belongsToMany(MemoCompetition::class, 'memo_competition_themes', 'memo_theme_id', 'memo_competition_id');
+    }
 }

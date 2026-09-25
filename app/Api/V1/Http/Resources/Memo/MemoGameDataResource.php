@@ -54,7 +54,7 @@ class MemoGameDataResource extends JsonResource
                 'pairs_count' => (int) ($this['needed_pairs'] ?? $ageConfig->pairs_count),
                 'total_duration' => (int) ($ageConfig->total_duration ?: 180),
                 'total_rounds' => (int) ($ageConfig->total_rounds ?: 3),
-                'peek_time' => (int) ($ageConfig->peek_time ?: 3),
+                'peek_time' => (int) (isset($ageConfig->peek_time) ? $ageConfig->peek_time : 3),
                 'max_moves' => (int) ($ageConfig->max_moves ?? 0),
                 'max_mistakes' => (int) ($ageConfig->max_moves ?? 0),
             ],

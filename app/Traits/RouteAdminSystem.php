@@ -389,6 +389,14 @@ class RouteAdminSystem
     const MEMO_PLAY_DATA = 'admin.memo-game.play.data';
     const MEMO_PLAY_SUBMIT = 'admin.memo-game.play.submit';
 
+    const MEMO_COMPETITION_INDEX = 'admin.memo-game.competition.index';
+    const MEMO_COMPETITION_CREATE = 'admin.memo-game.competition.create';
+    const MEMO_COMPETITION_EDIT = 'admin.memo-game.competition.edit';
+    const MEMO_COMPETITION_SHOW = 'admin.memo-game.competition.show';
+    const MEMO_COMPETITION_DELETE = 'admin.memo-game.competition.delete';
+    const MEMO_COMPETITION_LEADERBOARD = 'admin.memo-game.competition.leaderboard';
+    const MEMO_COMPETITION_CALCULATE = 'admin.memo-game.competition.calculate';
+
     /**
      * Helper URL dẫn đến trang chi tiết trẻ em tại tab #childrenInfo trong trang sửa thông tin phụ huynh
      * Fallback sang route sửa trẻ em nếu không có thông tin phụ huynh

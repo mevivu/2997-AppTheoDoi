@@ -139,6 +139,63 @@
         border-color: #94a3b8 !important;
     }
 
+    /* NÚT XÓA TRONG FLOATING ACTIONS (ĐỒNG BỘ BORDER PILL) */
+    .btn-delete-settings {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 50px !important;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
+        padding: 9px 18px !important;
+        box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25) !important;
+        white-space: nowrap !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        transition: all 0.2s ease !important;
+        text-decoration: none !important;
+    }
+
+    .btn-delete-settings:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+        color: #ffffff !important;
+        box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35) !important;
+        transform: translateY(-1px);
+    }
+
+    /* NÚT XEM BẢNG XẾP HẠNG TRONG FLOATING ACTIONS */
+    .btn-leaderboard-settings {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 50px !important;
+        font-weight: 600 !important;
+        font-size: 0.88rem !important;
+        padding: 9px 18px !important;
+        box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25) !important;
+        white-space: nowrap !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        transition: all 0.2s ease !important;
+        text-decoration: none !important;
+    }
+
+    .btn-leaderboard-settings:hover {
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+        color: #ffffff !important;
+        box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35) !important;
+        transform: translateY(-1px);
+    }
+
+    /* Đảm bảo toàn bộ button bên trong floating-bottom-actions đồng bộ border-radius */
+    .floating-bottom-actions .btn,
+    .floating-bottom-actions button,
+    .floating-bottom-actions a {
+        border-radius: 50px !important;
+    }
+
     /* ============================================
        MOBILE - Enhanced Bottom Sheet
        ============================================ */

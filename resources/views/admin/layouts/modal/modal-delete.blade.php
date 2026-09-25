@@ -1,12 +1,12 @@
 <div class="modal modal-blur fade" id="modalDelete" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;" role="document">
         <div class="modal-content custom-confirm-modal">
             <div class="modal-body">
                 <div class="modal-icon-badge badge-danger">
                     <i class="ti ti-trash"></i>
                 </div>
                 <div class="modal-title">{{ __('Bạn có chắc?') }}</div>
-                <p class="modal-desc">{{ __('Nếu bạn tiếp tục, dữ liệu này sẽ bị xóa khỏi hệ thống.') }}</p>
+                <div class="modal-desc">{{ __('Nếu bạn tiếp tục, dữ liệu này sẽ bị xóa khỏi hệ thống.') }}</div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">{{ __('Hủy') }}</button>

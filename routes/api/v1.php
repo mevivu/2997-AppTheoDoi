@@ -196,6 +196,28 @@ Route::controller(\App\Api\V1\Http\Controllers\Memo\MemoGameController::class)
         Route::get('/age-configs', 'getAgeConfigs');
         Route::get('/data', 'getGameData');
         Route::get('/guest-data', 'getGuestGameData');
+        Route::post('/submit', 'submitGame');
+    });
+
+// Memo Personal Best (Thành tích cá nhân)
+Route::controller(\App\Api\V1\Http\Controllers\Memo\MemoPersonalBestController::class)
+    ->prefix('/memo-game/personal-bests')
+    ->as('memoPersonalBest.')
+    ->group(function () {
+        Route::get('/{child_id}', 'show')->whereNumber('child_id');
+    });
+
+// Memo Competitions (Giải đấu)
+Route::controller(\App\Api\V1\Http\Controllers\Memo\MemoCompetitionApiController::class)
+    ->prefix('/memo-competitions')
+    ->as('memoCompetition.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show')->whereNumber('id');
+        Route::post('/{id}/start', 'start')->whereNumber('id');
+        Route::post('/{id}/submit-round', 'submitRound')->whereNumber('id');
+        Route::post('/{id}/complete', 'complete')->whereNumber('id');
+        Route::get('/{id}/leaderboard', 'leaderboard')->whereNumber('id');
     });
 
 // Rating PQ

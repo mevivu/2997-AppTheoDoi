@@ -1107,6 +1107,21 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::get('/data', 'getGameData')->name('data');
                 Route::post('/submit', 'submitResult')->name('submit');
             });
+
+        // Giải đấu (Competitions)
+        Route::controller(App\Admin\Http\Controllers\Memo\MemoCompetitionController::class)
+            ->prefix('/competition')
+            ->as('competition.')
+            ->group(function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+                Route::put('/edit', 'update')->name('update');
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+                Route::get('/leaderboard/{id}', 'leaderboard')->name('leaderboard');
+                Route::post('/calculate-rankings/{id}', 'calculateRankings')->name('calculate');
+            });
     });
 
     //auth

@@ -169,7 +169,7 @@ class MemoPlayController extends Controller
         DB::beginTransaction();
         try {
             $rating = MemoRating::create([
-                'child_id' => null, // Bài chơi thử của quản trị viên
+                'child_id' => $request->filled('child_id') ? (int) $request->child_id : null,
                 'memo_theme_id' => $theme ? $theme->id : null,
                 'memo_age_config_id' => $ageConfig ? $ageConfig->id : null,
                 'age' => $ageConfig ? $ageConfig->min_age : 5,
@@ -193,6 +193,25 @@ class MemoPlayController extends Controller
                         'score' => (float) ($roundData['score'] ?? 0),
                     ]);
                 }
+            }
+
+            // Tự động ghi nhận thành tích cá nhân nếu có child_id
+            if ($request->filled('child_id') && $ageConfig) {
+                $neededPairs = $ageConfig->pairs_count ?: (int) floor(($ageConfig->rows * $ageConfig->columns) / 2);
+                $isWin = (int) $request->total_pairs_matched >= $neededPairs;
+                $moves = (int) ($request->total_moves ?? (((int) $request->total_pairs_matched) * 2 + ((int) $request->total_mistakes)));
+
+                app(\App\Api\V1\Services\Memo\MemoPersonalBestService::class)->recordGameResult(
+                    (int) $request->child_id,
+                    $ageConfig->id,
+                    (int) $request->total_duration_spent,
+                    $moves,
+                    (int) $request->total_mistakes,
+                    (float) $request->score,
+                    $theme ? $theme->id : null,
+                    $rating->id,
+                    $isWin
+                );
             }
 
             DB::commit();

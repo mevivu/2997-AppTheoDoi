@@ -69,6 +69,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\MemoCard\MemoCardRepositoryInterface' => 'App\Admin\Repositories\MemoCard\MemoCardRepository',
         'App\Admin\Repositories\MemoAgeConfig\MemoAgeConfigRepositoryInterface' => 'App\Admin\Repositories\MemoAgeConfig\MemoAgeConfigRepository',
         'App\Admin\Repositories\MemoRating\MemoRatingRepositoryInterface' => 'App\Admin\Repositories\MemoRating\MemoRatingRepository',
+        'App\Admin\Repositories\MemoCompetition\MemoCompetitionRepositoryInterface' => 'App\Admin\Repositories\MemoCompetition\MemoCompetitionRepository',
     ];
 
     /**

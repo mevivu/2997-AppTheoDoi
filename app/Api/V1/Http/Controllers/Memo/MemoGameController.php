@@ -12,7 +12,9 @@ use App\Enums\ActiveStatus;
 use App\Models\Child;
 use App\Models\MemoAgeConfig;
 use App\Models\MemoCard;
+use App\Models\MemoRating;
 use App\Models\MemoTheme;
+use App\Api\V1\Services\Memo\MemoPersonalBestService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -255,5 +257,74 @@ class MemoGameController extends Controller
             ['name' => 'Quốc kỳ Nga', 'icon' => 'ti ti-building-castle', 'color' => '#0284c7'],
             ['name' => 'Quốc kỳ Lào', 'icon' => 'ti ti-world', 'color' => '#0891b2'],
         ];
+    }
+
+    /**
+     * Submit kết quả ván chơi Memo Game trực tiếp từ App và tự động cập nhật Personal Best
+     */
+    public function submitGame(Request $request): JsonResponse
+    {
+        try {
+            $childId = (int) $request->input('child_id');
+            $themeId = (int) $request->input('memo_theme_id');
+            $configId = (int) $request->input('memo_age_config_id');
+            $duration = (int) $request->input('duration_spent', 0);
+            $pairsMatched = (int) $request->input('pairs_matched', 0);
+            $mistakes = (int) $request->input('mistakes', 0);
+            $moves = (int) $request->input('moves', ($pairsMatched * 2 + $mistakes));
+            $score = (float) $request->input('score', 0);
+            $isWon = (bool) $request->input('is_won', false);
+
+            if (!$childId || !$configId) {
+                return $this->jsonResponseError('Thiếu child_id hoặc memo_age_config_id.', 422);
+            }
+
+            $child = Child::find($childId);
+            $ageConfig = MemoAgeConfig::find($configId);
+            if (!$child || !$ageConfig) {
+                return $this->jsonResponseError('Hồ sơ bé hoặc cấu hình độ tuổi không tồn tại.', 404);
+            }
+
+            $neededPairs = $ageConfig->pairs_count ?: (int) floor(($ageConfig->rows * $ageConfig->columns) / 2);
+            if ($pairsMatched >= $neededPairs) {
+                $isWon = true;
+            }
+
+            $rating = MemoRating::create([
+                'child_id' => $childId,
+                'memo_theme_id' => $themeId ?: null,
+                'memo_age_config_id' => $configId,
+                'age' => $child->age ?: $ageConfig->min_age,
+                'total_duration_spent' => $duration,
+                'total_pairs_matched' => $pairsMatched,
+                'total_mistakes' => $mistakes,
+                'score' => $score,
+                'evaluation_label' => $isWon ? 'Xuất sắc' : 'Hoàn thành',
+                'feedback' => $isWon ? 'Bé đã hoàn thành ván game xuất sắc!' : 'Bé đã hoàn thành bài tập trí nhớ.',
+                'status' => 'completed',
+            ]);
+
+            // Cập nhật Personal Best
+            $pb = app(MemoPersonalBestService::class)->recordGameResult(
+                $childId,
+                $configId,
+                $duration,
+                $moves,
+                $mistakes,
+                $score,
+                $themeId ?: null,
+                $rating->id,
+                $isWon
+            );
+
+            return $this->jsonResponseSuccess([
+                'rating_id' => $rating->id,
+                'is_won' => $isWon,
+                'personal_best' => $pb,
+            ]);
+        } catch (Exception $e) {
+            $this->logError('Lỗi submit kết quả Memo Game', $e);
+            return $this->jsonResponseError('Lỗi khi lưu kết quả trò chơi.', 500);
+        }
     }
 }

@@ -73,6 +73,16 @@ class MemoAgeConfig extends Model
         return $this->hasMany(MemoRating::class, 'memo_age_config_id', 'id');
     }
 
+    public function personalBests(): HasMany
+    {
+        return $this->hasMany(MemoPersonalBest::class, 'memo_age_config_id', 'id');
+    }
+
+    public function competitions(): HasMany
+    {
+        return $this->hasMany(MemoCompetition::class, 'memo_age_config_id', 'id');
+    }
+
     /**
      * Scope tìm kiếm cấu hình phù hợp với độ tuổi của bé
      */

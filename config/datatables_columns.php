@@ -2340,5 +2340,52 @@ return [
             'addClass' => 'text-center align-middle',
         ],
     ],
+    'memo_competitions' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'banner_image' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-photo"></i><span>Ảnh / Banner</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'name' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-trophy"></i><span>Tên giải đấu</span></div>',
+            'orderable' => true,
+            'addClass' => 'align-middle',
+        ],
+        'timeline' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar-time"></i><span>Thời gian diễn ra</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'themes' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-cards"></i><span>4 Chủ đề thi</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'stats' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-users"></i><span>Lượt thi</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
 ];
 

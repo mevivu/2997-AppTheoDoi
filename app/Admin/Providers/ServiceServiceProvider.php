@@ -49,6 +49,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\MemoCard\MemoCardServiceInterface' => 'App\Admin\Services\MemoCard\MemoCardService',
         'App\Admin\Services\MemoAgeConfig\MemoAgeConfigServiceInterface' => 'App\Admin\Services\MemoAgeConfig\MemoAgeConfigService',
         'App\Admin\Services\MemoRating\MemoRatingServiceInterface' => 'App\Admin\Services\MemoRating\MemoRatingService',
+        'App\Admin\Services\MemoCompetition\MemoCompetitionServiceInterface' => 'App\Admin\Services\MemoCompetition\MemoCompetitionService',
     ];
 
     /**

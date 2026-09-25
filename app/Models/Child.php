@@ -77,6 +77,21 @@ class Child extends Model
         return $this->hasMany(RatingPQ::class, 'child_id');
     }
 
+    public function memoRatings(): HasMany
+    {
+        return $this->hasMany(MemoRating::class, 'child_id');
+    }
+
+    public function memoPersonalBests(): HasMany
+    {
+        return $this->hasMany(MemoPersonalBest::class, 'child_id');
+    }
+
+    public function memoCompetitionEntries(): HasMany
+    {
+        return $this->hasMany(MemoCompetitionEntry::class, 'child_id');
+    }
+
     protected static function boot(): void
     {
         parent::boot();

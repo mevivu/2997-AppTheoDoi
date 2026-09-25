@@ -839,11 +839,15 @@
             }
         });
 
-        if ($bestMatch) {
+        const $sidebarMenu = $('.sidebar-menu');
+        let $activeTarget = null;
+
+        if ($bestMatch && $bestMatch.length) {
             $bestMatch.addClass('active');
             const $menuItem = $bestMatch.closest('.menu-item');
             $menuItem.addClass('open');
             $menuItem.find('> .menu-link').addClass('active');
+            $activeTarget = $bestMatch; // Cuộn trực tiếp đến submenu link đang active
         } else {
             $('.menu-link').each(function () {
                 if ($(this).hasClass('active')) return;
@@ -852,9 +856,47 @@
                     const linkUrl = href.split(/[?#]/)[0];
                     if (currentUrl === linkUrl || currentUrl.startsWith(linkUrl + '/')) {
                         $(this).addClass('active');
+                        $activeTarget = $(this);
                     }
                 }
             });
         }
+
+        // Tự động cuộn sidebar đến đúng vị trí menu đang active (khắc phục bị nhảy lên đầu trang)
+        function scrollToActiveMenu() {
+            if (!$sidebarMenu.length) return;
+
+            if ($activeTarget && $activeTarget.length) {
+                // Đợi một khoảng ngắn để DOM render xong chiều cao accordion submenu
+                setTimeout(function () {
+                    try {
+                        const containerHeight = $sidebarMenu.height();
+                        const containerTop = $sidebarMenu.offset().top;
+                        const itemTop = $activeTarget.offset().top;
+                        const currentScroll = $sidebarMenu.scrollTop();
+
+                        // Căn menu đang active nằm ở khoảng 1/3 phía trên tầm mắt
+                        const targetScroll = currentScroll + (itemTop - containerTop) - (containerHeight / 3);
+
+                        $sidebarMenu.scrollTop(Math.max(0, targetScroll));
+                        sessionStorage.setItem('admin_sidebar_scroll', Math.max(0, targetScroll));
+                    } catch (err) {
+                        console.error('Lỗi cuộn sidebar:', err);
+                    }
+                }, 60);
+            } else {
+                const savedScroll = sessionStorage.getItem('admin_sidebar_scroll');
+                if (savedScroll !== null) {
+                    $sidebarMenu.scrollTop(parseInt(savedScroll, 10));
+                }
+            }
+        }
+
+        scrollToActiveMenu();
+
+        // Ghi nhớ vị trí scroll khi người dùng tự cuộn sidebar
+        $sidebarMenu.on('scroll', function () {
+            sessionStorage.setItem('admin_sidebar_scroll', $(this).scrollTop());
+        });
     });
 </script>

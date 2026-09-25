@@ -526,8 +526,15 @@ $(document).on('click', '.open-modal-delete', function () {
     form.attr('action', action);
 
     var modal = $("#modalDelete");
-    modal.find(".modal-title").text("Bạn có chắc?");
-    modal.find(".modal-desc").text("Nếu bạn tiếp tục, dữ liệu này sẽ bị xóa khỏi hệ thống.");
+    var customTitle = $(this).data('modal-title') || $(this).data('title');
+    var customDesc = $(this).data('modal-desc') || $(this).data('desc');
+
+    modal.find(".modal-title").text(customTitle || "Bạn có chắc?");
+    if (customDesc) {
+        modal.find(".modal-desc").html(customDesc);
+    } else {
+        modal.find(".modal-desc").text("Nếu bạn tiếp tục, dữ liệu này sẽ bị xóa khỏi hệ thống.");
+    }
     
     var submitBtn = modal.find("#modalFormDelete button[type='submit']");
     submitBtn.text("Xác nhận xóa");
@@ -540,6 +547,11 @@ $(document).on('click', '.open-modal-delete', function () {
     iconElement.attr("class", "ti ti-trash");
 
     $("#modalFormDelete").off("submit.bulkSubmit");
+});
+
+$(document).on('hidden.bs.modal', '#modalDelete', function () {
+    $(this).find(".modal-title").text("Bạn có chắc?");
+    $(this).find(".modal-desc").text("Nếu bạn tiếp tục, dữ liệu này sẽ bị xóa khỏi hệ thống.");
 });
 
 $(document).on('click', '.open-modal-force-delete', function () {

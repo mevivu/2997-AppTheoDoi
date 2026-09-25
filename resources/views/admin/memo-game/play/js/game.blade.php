@@ -424,7 +424,7 @@
                 // Update HUD placeholders
                 document.getElementById('hudPairsTotal').textContent = data.age_config.pairs_count;
                 document.getElementById('hudPairsMatched').textContent = '0';
-                this.updateMistakesHud();
+                this.updateMovesHud();
                 document.getElementById('hudTimer').textContent = this.formatTime(data.age_config.total_duration);
                 document.getElementById('hudRound').textContent = `1/${this.gameMode === 'multi' ? (data.age_config.total_rounds || 3) : 1}`;
 
@@ -440,7 +440,11 @@
                 const board = document.getElementById('memoGameBoard');
                 if (!board || !data) return;
 
-                board.className = `memo-grid memo-grid-${data.age_config.rows}x${data.age_config.columns}`;
+                const rows = parseInt(data.age_config ? data.age_config.rows : 4) || 4;
+                const cols = parseInt(data.age_config ? data.age_config.columns : 4) || 4;
+
+                board.className = 'memo-grid memo-grid-' + rows + 'x' + cols;
+                board.style.gridTemplateColumns = 'repeat(' + cols + ', minmax(0, 1fr))';
                 board.innerHTML = '';
 
                 // Get array of cards safely
@@ -547,6 +551,10 @@
                 this.cards = this.shuffleArray(rawPairs);
 
                 const board = document.getElementById('memoGameBoard');
+                const rows = parseInt(data.age_config ? data.age_config.rows : 4) || 4;
+                const cols = parseInt(data.age_config ? data.age_config.columns : 4) || 4;
+                board.className = 'memo-grid memo-grid-' + rows + 'x' + cols;
+                board.style.gridTemplateColumns = 'repeat(' + cols + ', minmax(0, 1fr))';
                 board.innerHTML = '';
                 this.cards.forEach((card, index) => {
                     const cardEl = this.createCardElement(card, index);
@@ -800,6 +808,10 @@
                         hud.textContent = this.moves;
                     }
                 }
+            },
+
+            updateMistakesHud() {
+                this.updateMovesHud();
             },
 
             finishGameSession() {

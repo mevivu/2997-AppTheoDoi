@@ -584,6 +584,13 @@ return [
                 'roles' => [],
                 'permissions' => ['viewQuiz', 'createQuiz', 'mevivuDev'],
             ],
+            [
+                'title' => 'Giải đấu & Cuộc thi',
+                'routeName' => RouteAdminSystem::MEMO_COMPETITION_INDEX,
+                'icon' => '<i class="ti ti-trophy"></i>',
+                'roles' => [],
+                'permissions' => ['viewQuiz', 'createQuiz', 'mevivuDev'],
+            ],
         ],
     ],
     [

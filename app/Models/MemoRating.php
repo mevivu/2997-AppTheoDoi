@@ -91,4 +91,9 @@ class MemoRating extends Model
     {
         return $this->hasMany(MemoRatingRound::class, 'memo_rating_id', 'id');
     }
+
+    public function personalBest()
+    {
+        return $this->hasOne(MemoPersonalBest::class, 'memo_rating_id', 'id');
+    }
 }
