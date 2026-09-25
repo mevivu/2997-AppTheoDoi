@@ -52,12 +52,16 @@ class MemoCompetitionController extends Controller
      */
     public function index(MemoCompetitionDataTable $dataTable)
     {
+        $blockingCompetition = $this->service->getBlockingCompetition();
+
         return $dataTable->render(
             $this->view['index'],
             [
                 'breadcrumbs' => $this->crums
                     ->add('Memo Game (Trí nhớ)', route(RouteAdminSystem::MEMO_THEME_INDEX))
                     ->add('Giải đấu & Cuộc thi'),
+                'blockingCompetition' => $blockingCompetition,
+                'canCreateCompetition' => $blockingCompetition === null,
             ]
         );
     }
@@ -67,6 +71,14 @@ class MemoCompetitionController extends Controller
      */
     public function create()
     {
+        $blockingCompetition = $this->service->getBlockingCompetition();
+        if ($blockingCompetition) {
+            return redirect()->route($this->route['index'])->with(
+                'error',
+                "Không thể tạo giải mới khi giải \"{$blockingCompetition->name}\" chưa kết thúc."
+            );
+        }
+
         $themes = MemoTheme::where('status', ActiveStatus::Active->value)
             ->with(['activeCards'])
             ->withCount(['cards' => function ($q) {

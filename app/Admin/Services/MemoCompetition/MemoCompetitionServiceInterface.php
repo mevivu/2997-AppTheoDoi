@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 interface MemoCompetitionServiceInterface
 {
+    public function getBlockingCompetition(?int $excludeId = null): ?\App\Models\MemoCompetition;
+
     /**
      * Tạo mới giải đấu và lưu cấu hình 4 chủ đề
      */

@@ -5,6 +5,7 @@ namespace App\Admin\Services\MemoCompetition;
 use App\Admin\Repositories\MemoCompetition\MemoCompetitionRepositoryInterface;
 use App\Admin\Services\File\FileService;
 use App\Enums\Memo\MemoCompetitionEntryStatus;
+use App\Enums\Memo\MemoCompetitionStatus;
 use App\Models\MemoCompetition;
 use App\Models\MemoCompetitionEntry;
 use Carbon\Carbon;
@@ -25,6 +26,34 @@ class MemoCompetitionService implements MemoCompetitionServiceInterface
         $this->fileService = $fileService;
     }
 
+    public function getBlockingCompetition(?int $excludeId = null): ?MemoCompetition
+    {
+        return MemoCompetition::query()
+            ->when($excludeId, fn ($query) => $query->where('id', '!=', $excludeId))
+            ->whereIn('status', [
+                MemoCompetitionStatus::Draft->value,
+                MemoCompetitionStatus::Upcoming->value,
+                MemoCompetitionStatus::Active->value,
+            ])
+            ->where('end_at', '>=', Carbon::now())
+            ->orderBy('start_at')
+            ->first();
+    }
+
+    private function ensureCanOpenCompetition(?int $excludeId = null): void
+    {
+        $blockingCompetition = $this->getBlockingCompetition($excludeId);
+        if (!$blockingCompetition) {
+            return;
+        }
+
+        throw new \DomainException(
+            "Chỉ được phép có một giải đấu chưa kết thúc. " .
+            "Giải \"{$blockingCompetition->name}\" kết thúc lúc " .
+            $blockingCompetition->end_at->format('d/m/Y H:i') . '.'
+        );
+    }
+
     /**
      * Tạo mới giải đấu và cấu hình 4 ván thi
      */
@@ -33,6 +62,8 @@ class MemoCompetitionService implements MemoCompetitionServiceInterface
         $data = $request->validated();
 
         return DB::transaction(function () use ($request, $data) {
+            $this->ensureCanOpenCompetition();
+
             $bannerPath = null;
             if ($request->hasFile('banner_image')) {
                 $bannerPath = $this->fileService->setFolder('images/memo/competitions')
@@ -73,6 +104,14 @@ class MemoCompetitionService implements MemoCompetitionServiceInterface
     {
         $data = $request->validated();
         $competition = $this->repository->findOrFail($data['id']);
+
+        if (in_array($data['status'], [
+            MemoCompetitionStatus::Draft->value,
+            MemoCompetitionStatus::Upcoming->value,
+            MemoCompetitionStatus::Active->value,
+        ], true) && Carbon::parse($data['end_at'])->isFuture()) {
+            $this->ensureCanOpenCompetition($competition->id);
+        }
 
         return DB::transaction(function () use ($request, $data, $competition) {
             $updateData = [
