@@ -3,6 +3,7 @@
 namespace App\Admin\Http\Controllers\Memo;
 
 use App\Admin\DataTables\Memo\MemoCompetitionDataTable;
+use App\Admin\DataTables\Memo\MemoCompetitionLeaderboardDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Memo\MemoCompetitionRequest;
 use App\Admin\Repositories\MemoCompetition\MemoCompetitionRepositoryInterface;
@@ -182,18 +183,10 @@ class MemoCompetitionController extends Controller
     /**
      * Bảng xếp hạng chi tiết của giải đấu
      */
-    public function leaderboard(int $id)
+    public function leaderboard(int $id, MemoCompetitionLeaderboardDataTable $dataTable)
     {
         $competition = $this->repository->findWithThemes($id);
         $leaderboard = $this->repository->getLeaderboard($id, 100);
-
-        // Chi tiết danh sách toàn bộ các lượt thi
-        $allEntries = MemoCompetitionEntry::with(['child.user', 'rounds.theme'])
-            ->where('memo_competition_id', $id)
-            ->orderBy('is_valid', 'desc')
-            ->orderBy('total_time', 'asc')
-            ->orderBy('total_moves', 'asc')
-            ->paginate(25);
 
         $totalUniqueChildren = MemoCompetitionEntry::where('memo_competition_id', $id)
             ->distinct('child_id')
@@ -207,7 +200,7 @@ class MemoCompetitionController extends Controller
 
         $bestRecord = $leaderboard->first();
 
-        return view($this->view['leaderboard'], [
+        return $dataTable->with('competitionId', $id)->render($this->view['leaderboard'], [
             'competition' => $competition,
             'leaderboard' => $leaderboard,
             'totalParticipants' => $totalUniqueChildren,
@@ -215,7 +208,6 @@ class MemoCompetitionController extends Controller
             'completedCount' => $completedCount,
             'bestRecord' => $bestRecord,
             'isFinal' => (bool) $competition->ranking_calculated_at,
-            'allEntries' => $allEntries,
             'breadcrumbs' => $this->crums
                 ->add('Memo Game (Trí nhớ)', route(RouteAdminSystem::MEMO_THEME_INDEX))
                 ->add('Giải đấu', route(RouteAdminSystem::MEMO_COMPETITION_INDEX))

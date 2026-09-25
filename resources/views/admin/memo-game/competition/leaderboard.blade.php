@@ -707,7 +707,7 @@
                         <!-- Bộ lọc Tab (Pills) -->
                         <div class="d-flex align-items-center gap-2 flex-wrap">
                             <button type="button" class="filter-tab-btn active" data-filter="all">
-                                {{ __('Tất cả') }} <span class="badge bg-light text-dark ms-1 rounded-pill" id="countAll">{{ $allEntries->total() }}</span>
+                                {{ __('Tất cả') }} <span class="badge bg-light text-dark ms-1 rounded-pill" id="countAll">{{ $totalAttempts }}</span>
                             </button>
                             <button type="button" class="filter-tab-btn" data-filter="valid">
                                 <i class="ti ti-check me-1 text-success"></i>{{ __('Đủ điều kiện (4/4 ván)') }} <span class="badge bg-light text-dark ms-1 rounded-pill" id="countValid">{{ $completedCount }}</span>
@@ -734,246 +734,12 @@
                     </div>
                 </div>
 
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-vcenter card-table table-leaderboard" id="leaderboardTable">
-                            <thead class="bg-light">
-                                <tr>
-                                    <th class="text-center" style="width: 70px; min-width: 70px;">{{ __('Hạng') }}</th>
-                                    <th style="min-width: 220px;">{{ __('Thí Sinh') }}</th>
-                                    <th style="min-width: 240px;">{{ __('Phụ Huynh') }}</th>
-                                    <th class="text-center" style="width: 90px; min-width: 90px;">{{ __('Lần Thi') }}</th>
-                                    <th class="text-center" style="width: 140px; min-width: 140px;">{{ __('Tiến Trình 4 Ván') }}</th>
-                                    <th class="text-center" style="width: 120px; min-width: 120px;">{{ __('Tổng Thời Gian') }}</th>
-                                    <th class="text-center" style="width: 110px; min-width: 110px;">{{ __('Lượt Lật') }}</th>
-                                    <th class="text-center" style="width: 130px; min-width: 130px;">{{ __('Trạng Thái') }}</th>
-                                    <th class="text-end" style="width: 140px; min-width: 140px;">{{ __('Thời Điểm Nộp') }}</th>
-                                    <th class="text-center" style="width: 100px; min-width: 100px;">{{ __('Thao Tác') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($allEntries as $entry)
-                                    @php
-                                        $childName = $entry->child?->fullname ?? 'Thí sinh';
-                                        $parentName = $entry->child?->user?->fullname ?? '--';
-                                        $rawPhone = $entry->child?->user?->decrypted_phone;
-                                        $parentEmail = $entry->child?->user?->decrypted_email;
-
-                                        $cleanPhone = $rawPhone ? preg_replace('/[^0-9]/', '', $rawPhone) : '';
-                                        if (strlen($cleanPhone) === 10) {
-                                            $formattedPhone = substr($cleanPhone, 0, 4) . ' ' . substr($cleanPhone, 4, 3) . ' ' . substr($cleanPhone, 7);
-                                        } else {
-                                            $formattedPhone = $rawPhone;
-                                        }
-
-                                        $isMale = ($entry->child?->gender === 'male' || (is_object($entry->child?->gender) && isset($entry->child->gender->value) && $entry->child->gender->value === 'male'));
-
-                                        $roundsData = $entry->rounds->sortBy('game_number')->values();
-                                        $roundsList = [];
-                                        foreach ($roundsData as $rnd) {
-                                            $roundsList[] = [
-                                                'game_number' => $rnd->game_number,
-                                                'theme_name' => $rnd->theme?->name ?? 'Chủ đề',
-                                                'theme_icon' => $rnd->theme?->icon ? asset($rnd->theme->icon) : null,
-                                                'is_won' => (bool) $rnd->is_won,
-                                                'duration_spent' => $rnd->duration_spent,
-                                                'total_moves' => $rnd->total_moves,
-                                                'mistakes' => $rnd->mistakes,
-                                            ];
-                                        }
-                                        $roundsJson = json_encode($roundsList, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
-                                    @endphp
-                                    <tr class="entry-row" 
-                                        data-valid="{{ $entry->is_valid ? 'valid' : 'invalid' }}"
-                                        data-search="{{ strtolower($childName . ' ' . $parentName . ' ' . ($rawPhone ?? '') . ' ' . ($cleanPhone ?? '') . ' ' . ($parentEmail ?? '')) }}">
-                                        
-                                        <!-- Thứ hạng -->
-                                        <td class="text-center">
-                                            @if ($entry->ranking === 1)
-                                                <span class="rank-badge rank-1" title="Quán Quân">🥇</span>
-                                            @elseif ($entry->ranking === 2)
-                                                <span class="rank-badge rank-2" title="Á Quân">🥈</span>
-                                            @elseif ($entry->ranking === 3)
-                                                <span class="rank-badge rank-3" title="Quý Quân">🥉</span>
-                                            @elseif ($entry->ranking)
-                                                <span class="rank-badge rank-other">#{{ $entry->ranking }}</span>
-                                            @else
-                                                <span class="text-muted fs-12">--</span>
-                                            @endif
-                                        </td>
-
-                                        <!-- Thí sinh -->
-                                        <td>
-                                            <div class="d-flex align-items-center gap-2.5">
-                                                <img src="{{ $entry->child?->avatar ? asset($entry->child->avatar) : asset('images/avatar-default.png') }}" 
-                                                     alt="{{ $childName }}" class="avatar avatar-md rounded-circle border shadow-2xs flex-shrink-0" style="width: 42px; height: 42px; object-fit: cover;">
-                                                <div class="min-w-0">
-                                                    <div class="fw-bold text-dark fs-13 text-truncate" title="{{ $childName }}">{{ $childName }}</div>
-                                                    <div class="text-muted fs-11 d-flex align-items-center gap-1 mt-0.5 flex-wrap">
-                                                        @if ($entry->child?->gender)
-                                                            <span class="badge {{ $isMale ? 'bg-blue-lt border border-blue-subtle text-blue' : 'bg-pink-lt border border-pink-subtle text-pink' }} py-0.5 px-1.5" style="font-size: 10px;">
-                                                                <i class="ti {{ $isMale ? 'ti-gender-male' : 'ti-gender-female' }} me-0.5"></i>{{ $isMale ? 'Bé trai' : 'Bé gái' }}
-                                                            </span>
-                                                        @endif
-                                                        @if ($entry->child?->age)
-                                                            <span class="badge bg-light text-muted border py-0.5 px-1.5" style="font-size: 10px;">
-                                                                {{ $entry->child->age }} tuổi
-                                                            </span>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-
-                                        <!-- Phụ huynh -->
-                                        <td>
-                                            <div class="d-flex flex-column gap-1">
-                                                <div class="fw-bold text-dark fs-13 d-flex align-items-center gap-1">
-                                                    <i class="ti ti-user text-muted fs-13"></i>
-                                                    <span class="text-truncate" style="max-width: 190px;" title="{{ $parentName }}">{{ $parentName }}</span>
-                                                </div>
-                                                @if ($formattedPhone)
-                                                    <div class="d-flex align-items-center gap-1">
-                                                        <a href="tel:{{ $cleanPhone ?: $rawPhone }}" class="phone-badge" title="{{ __('Bấm để gọi: :p', ['p' => $formattedPhone]) }}">
-                                                            <i class="ti ti-phone-call fs-12"></i>
-                                                            <span>{{ $formattedPhone }}</span>
-                                                        </a>
-                                                        <button type="button" class="btn btn-copy-phone" data-phone="{{ $cleanPhone ?: $rawPhone }}" title="{{ __('Sao chép số điện thoại') }}">
-                                                            <i class="ti ti-copy fs-12"></i>
-                                                        </button>
-                                                    </div>
-                                                @elseif ($parentEmail)
-                                                    <div class="text-muted fs-11 d-flex align-items-center gap-1">
-                                                        <i class="ti ti-mail fs-12"></i>
-                                                        <span class="text-truncate" style="max-width: 170px;" title="{{ $parentEmail }}">{{ $parentEmail }}</span>
-                                                    </div>
-                                                @else
-                                                    <span class="text-muted fs-11">--</span>
-                                                @endif
-                                            </div>
-                                        </td>
-
-                                        <!-- Lần thi -->
-                                        <td class="text-center">
-                                            <span class="badge bg-light text-dark border fw-medium px-2 py-1">
-                                                Lần {{ $entry->attempt_number }}
-                                            </span>
-                                        </td>
-
-                                        <!-- Tiến trình 4 ván (Mini Round Indicators) -->
-                                        <td class="text-center">
-                                            <div class="mini-rounds-strip justify-content-center">
-                                                @for ($g = 1; $g <= 4; $g++)
-                                                    @php
-                                                        $r = $roundsData->firstWhere('game_number', $g);
-                                                    @endphp
-                                                    @if ($r && $r->is_won)
-                                                        <span class="mini-round-chip round-won" title="Ván {{ $g }}: Thắng ({{ $r->duration_spent }}s, {{ $r->total_moves }} lật)">
-                                                            ✓
-                                                        </span>
-                                                    @elseif ($r)
-                                                        <span class="mini-round-chip round-lost" title="Ván {{ $g }}: Chưa hoàn thành">
-                                                            ✕
-                                                        </span>
-                                                    @else
-                                                        <span class="mini-round-chip round-pending" title="Ván {{ $g }}: Chưa thi">
-                                                            {{ $g }}
-                                                        </span>
-                                                    @endif
-                                                @endfor
-                                            </div>
-                                            <div class="text-muted mt-1 fw-medium" style="font-size: 11px;">
-                                                {{ $entry->games_won }}/{{ $competition->total_games }} ván thắng
-                                            </div>
-                                        </td>
-
-                                        <!-- Tổng thời gian -->
-                                        <td class="text-center">
-                                            <span class="fw-extrabold text-primary fs-15">
-                                                {{ $entry->total_time }}s
-                                            </span>
-                                            <div class="text-muted fs-11 fw-medium">({{ gmdate("i:s", $entry->total_time) }})</div>
-                                        </td>
-
-                                        <!-- Lượt lật (Tiebreaker) -->
-                                        <td class="text-center">
-                                            <span class="fw-bold text-dark fs-13">{{ $entry->total_moves }}</span>
-                                            <div class="text-muted fs-10">lần lật</div>
-                                        </td>
-
-                                        <!-- Trạng thái -->
-                                        <td class="text-center">
-                                            @php
-                                                $entryStatusVal = $entry->status instanceof \App\Enums\Memo\MemoCompetitionEntryStatus ? $entry->status->value : (string) $entry->status;
-                                            @endphp
-                                            @if ($entry->is_valid)
-                                                <span class="badge bg-success-lt text-success border border-success-subtle fw-bold px-2 py-1"><i class="ti ti-check me-1"></i>{{ __('Đủ điều kiện') }}</span>
-                                            @elseif ($entryStatusVal === 'completed')
-                                                <span class="badge bg-danger-lt text-danger border border-danger-subtle fw-bold px-2 py-1"><i class="ti ti-x me-1"></i>{{ __('Chưa đạt (4/4)') }}</span>
-                                            @elseif ($entryStatusVal === 'abandoned')
-                                                <span class="badge bg-secondary-lt text-secondary border border-secondary-subtle fw-bold px-2 py-1"><i class="ti ti-door-exit me-1"></i>{{ __('Bỏ cuộc') }}</span>
-                                            @else
-                                                <span class="badge bg-warning-lt text-warning border border-warning-subtle fw-bold px-2 py-1"><i class="ti ti-clock me-1"></i>{{ __('Đang thi') }}</span>
-                                            @endif
-                                        </td>
-
-                                        <!-- Thời điểm nộp -->
-                                        <td class="text-end">
-                                            <span class="text-muted fs-12 fw-medium">
-                                                {{ $entry->completed_at ? format_datetime($entry->completed_at) : ($entry->started_at ? format_datetime($entry->started_at) : '--') }}
-                                            </span>
-                                        </td>
-
-                                        <!-- Thao tác xem chi tiết -->
-                                        <td class="text-center">
-                                            <button type="button" 
-                                                    class="btn btn-sm btn-outline-primary rounded-pill px-2.5 btn-view-rounds d-inline-flex align-items-center gap-1 shadow-none"
-                                                    style="border-radius: 50px !important;"
-                                                    data-child="{{ $childName }}"
-                                                    data-avatar="{{ $entry->child?->avatar ? asset($entry->child->avatar) : asset('images/avatar-default.png') }}"
-                                                    data-parent-name="{{ $parentName }}"
-                                                    data-parent-phone="{{ $formattedPhone ?: ($rawPhone ?: '--') }}"
-                                                    data-rank="{{ $entry->ranking ?: '--' }}"
-                                                    data-time="{{ $entry->total_time }}s ({{ gmdate('i:s', $entry->total_time) }})"
-                                                    data-moves="{{ $entry->total_moves }}"
-                                                    data-attempt="{{ $entry->attempt_number }}"
-                                                    data-rounds="{{ $roundsJson }}">
-                                                <i class="ti ti-eye"></i>
-                                                <span>{{ __('Chi tiết') }}</span>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="10" class="text-center py-5">
-                                            <div class="text-muted">
-                                                <div class="p-3 bg-light rounded-circle d-inline-flex mb-3">
-                                                    <i class="ti ti-trophy fs-1 text-primary opacity-60"></i>
-                                                </div>
-                                                <h5 class="fw-bold text-dark">{{ __('Chưa có thí sinh nào tham gia giải đấu này') }}</h5>
-                                                <p class="fs-12 mb-3 text-muted">{{ __('Khi các bé bắt đầu thi đấu trên ứng dụng, danh sách kết quả và thứ hạng sẽ tự động cập nhật tại đây.') }}</p>
-                                                <a href="{{ route(RouteAdminSystem::MEMO_PLAY_INDEX) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3" style="border-radius: 50px !important;">
-                                                    <i class="ti ti-player-play me-1"></i>{{ __('Chơi thử bàn thi mẫu') }}
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                <div class="card-body">
+                    <div class="table-responsive position-relative">
+                        <x-admin.partials.toggle-column-datatable />
+                        {{ $dataTable->table(['class' => 'table table-bordered align-middle'], true) }}
                     </div>
                 </div>
-
-                @if ($allEntries->hasPages())
-                    <div class="card-footer d-flex align-items-center justify-content-between">
-                        <div class="text-muted fs-12">
-                            Hiển thị <strong>{{ $allEntries->firstItem() }}</strong> đến <strong>{{ $allEntries->lastItem() }}</strong> trên tổng số <strong>{{ $allEntries->total() }}</strong> lượt thi
-                        </div>
-                        <div>
-                            {{ $allEntries->links() }}
-                        </div>
-                    </div>
-                @endif
             </div>
         </div>
     </div>
@@ -1043,43 +809,49 @@
     </div>
 @endsection
 
+@push('libs-js')
+    <script src="{{ asset('/public/vendor/datatables/buttons.server-side.js') }}"></script>
+@endpush
+
 @push('custom-js')
+    {{ $dataTable->scripts() }}
+
+    @include('admin.scripts.datatable-toggle-columns', [
+        'id_table' => $dataTable->getTableAttribute('id'),
+    ])
+
 <script>
 $(document).ready(function () {
-    // 1. Bộ lọc Tab (Tất cả / Hợp lệ / Chưa đạt)
+    const tableId = '{{ $dataTable->getTableAttribute("id") }}';
+
+    // 1. Bộ lọc Tab (Tất cả / Đủ điều kiện / Chưa đạt)
     $('.filter-tab-btn').on('click', function () {
         $('.filter-tab-btn').removeClass('active');
         $(this).addClass('active');
 
         const filter = $(this).data('filter');
-        applyFilters(filter, $('#leaderboardSearch').val().toLowerCase().trim());
-    });
-
-    // 2. Tìm kiếm nhanh thời gian thực theo tên, SĐT
-    $('#leaderboardSearch').on('input', function () {
-        const query = $(this).val().toLowerCase().trim();
-        const activeFilter = $('.filter-tab-btn.active').data('filter');
-        applyFilters(activeFilter, query);
-    });
-
-    function applyFilters(filter, query) {
-        $('.entry-row').each(function () {
-            const rowValid = $(this).data('valid');
-            const rowSearch = $(this).data('search') || '';
-
-            let matchFilter = (filter === 'all') || (filter === rowValid);
-            let matchSearch = !query || rowSearch.indexOf(query) !== -1;
-
-            if (matchFilter && matchSearch) {
-                $(this).show();
+        const table = window.LaravelDataTables[tableId];
+        if (table) {
+            let currentUrl = new URL(table.ajax.url() || window.location.href, window.location.origin);
+            if (filter && filter !== 'all') {
+                currentUrl.searchParams.set('filter_status', filter);
             } else {
-                $(this).hide();
+                currentUrl.searchParams.delete('filter_status');
             }
-        });
-    }
+            table.ajax.url(currentUrl.toString()).load();
+        }
+    });
 
-    // 3. Modal xem chi tiết 4 ván thi của thí sinh
-    $('.btn-view-rounds').on('click', function () {
+    // 2. Tìm kiếm nhanh thời gian thực theo tên, SĐT đồng bộ với DataTable
+    $('#leaderboardSearch').on('keyup input', function () {
+        const table = window.LaravelDataTables[tableId];
+        if (table) {
+            table.search($(this).val().trim()).draw();
+        }
+    });
+
+    // 3. Modal xem chi tiết 4 ván thi của thí sinh (Sự kiện uỷ quyền cho Ajax DataTable)
+    $(document).on('click', '.btn-view-rounds', function () {
         const childName = $(this).data('child');
         const childAvatar = $(this).data('avatar');
         const parentName = $(this).data('parent-name') || '--';
