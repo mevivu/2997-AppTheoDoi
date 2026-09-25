@@ -4,7 +4,7 @@
     $childName = is_object($childObj) ? ($childObj->fullname ?? 'Thí sinh') : ($childObj['fullname'] ?? 'Thí sinh');
     $avatar = is_object($childObj) ? ($childObj->avatar ? asset($childObj->avatar) : asset('images/avatar-default.png')) : asset('images/avatar-default.png');
     $parentName = is_object($userObj) ? ($userObj->fullname ?? '--') : ($userObj['fullname'] ?? '--');
-    $rawPhone = is_object($userObj) ? ($userObj->decrypted_phone ?? $userObj->phone) : ($userObj['phone'] ?? null);
+    $rawPhone = is_object($userObj) ? ($userObj->decrypted_phone ?? $userObj->phone ?? null) : ($userObj['phone'] ?? null);
     $cleanPhone = $rawPhone ? preg_replace('/[^0-9]/', '', $rawPhone) : '';
     $formattedPhone = (strlen($cleanPhone) === 10) ? substr($cleanPhone, 0, 4) . ' ' . substr($cleanPhone, 4, 3) . ' ' . substr($cleanPhone, 7) : $rawPhone;
 
@@ -15,7 +15,8 @@
         $theme = is_object($rnd) ? ($rnd->theme ?? null) : ($rnd['theme'] ?? null);
         $themeName = is_object($theme) ? ($theme->name ?? 'Chủ đề') : ($theme['name'] ?? 'Chủ đề');
         $themeIcon = is_object($theme) ? ($theme->icon ? asset($theme->icon) : null) : (!empty($theme['icon']) ? asset($theme['icon']) : null);
-        $isWon = is_object($rnd) ? (bool) $rnd->is_won : (bool) ($rnd['is_won'] ?? false);
+        $rawWon = is_object($rnd) ? $rnd->is_won : ($rnd['is_won'] ?? false);
+        $isWon = filter_var($rawWon, FILTER_VALIDATE_BOOLEAN);
         $duration = is_object($rnd) ? ($rnd->duration_spent ?? 0) : ($rnd['duration_spent'] ?? 0);
         $moves = is_object($rnd) ? ($rnd->total_moves ?? 0) : ($rnd['total_moves'] ?? 0);
         $mistakes = is_object($rnd) ? ($rnd->mistakes ?? 0) : ($rnd['mistakes'] ?? 0);

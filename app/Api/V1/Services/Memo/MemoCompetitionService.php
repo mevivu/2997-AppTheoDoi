@@ -293,6 +293,24 @@ class MemoCompetitionService
             ]
         );
 
+        // Tự động đồng bộ các chỉ số tổng hợp của entry ngay khi có round mới (tránh race condition với completeEntry)
+        $allRounds = MemoCompetitionRound::where('memo_competition_entry_id', $entry->id)->get();
+        $gamesWon = $allRounds->where('is_won', true)->count();
+        $requiredGames = $entry->competition?->total_games ?: 4;
+        $isValid = ($gamesWon >= $requiredGames);
+
+        $entrySyncData = [
+            'total_time' => $allRounds->sum('duration_spent'),
+            'total_moves' => $allRounds->sum('total_moves'),
+            'total_mistakes' => $allRounds->sum('mistakes'),
+            'total_pairs_matched' => $allRounds->sum('pairs_matched'),
+            'games_won' => $gamesWon,
+        ];
+        if ($entry->status === MemoCompetitionEntryStatus::Completed || $allRounds->count() >= $requiredGames) {
+            $entrySyncData['is_valid'] = $isValid;
+        }
+        $entry->update($entrySyncData);
+
         return [
             'entry_id' => $entry->id,
             'game_number' => $gameNumber,
@@ -309,8 +327,7 @@ class MemoCompetitionService
     public function completeEntry(int $competitionId, int $childId, int $entryId): array
     {
         $comp = MemoCompetition::find($competitionId);
-        $entry = MemoCompetitionEntry::with('rounds')
-            ->where('id', $entryId)
+        $entry = MemoCompetitionEntry::where('id', $entryId)
             ->where('memo_competition_id', $competitionId)
             ->where('child_id', $childId)
             ->first();
@@ -319,7 +336,8 @@ class MemoCompetitionService
             throw new Exception('Không tìm thấy lượt thi giải đấu.', 404);
         }
 
-        $rounds = $entry->rounds;
+        // Tải danh sách round mới nhất trực tiếp từ cơ sở dữ liệu
+        $rounds = MemoCompetitionRound::where('memo_competition_entry_id', $entry->id)->get();
         $totalDuration = $rounds->sum('duration_spent');
         $totalMoves = $rounds->sum('total_moves');
         $totalMistakes = $rounds->sum('mistakes');

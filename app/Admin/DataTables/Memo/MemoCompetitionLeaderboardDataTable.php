@@ -28,8 +28,37 @@ class MemoCompetitionLeaderboardDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        // Cột 1 (Thí sinh), Cột 2 (Phụ huynh)
-        $this->columnAllSearch = [1, 2];
+        // Ẩn hàng input lọc phụ dưới header để giao diện sạch đẹp, dùng ô tìm kiếm chung
+        $this->columnAllSearch = [];
+    }
+
+    protected function syncEntryIfNeeded($entry): void
+    {
+        if (!$entry->relationLoaded('rounds')) {
+            $entry->load('rounds');
+        }
+
+        $actualWon = $entry->rounds->filter(function ($r) {
+            $val = is_object($r) ? $r->is_won : ($r['is_won'] ?? false);
+            return filter_var($val, FILTER_VALIDATE_BOOLEAN);
+        })->count();
+
+        // Tự động đồng bộ và khắc phục (self-heal) nếu entry thực tế đã thắng đủ 4 ván nhưng bị lệch do race condition
+        if ($actualWon >= 4 && (!$entry->is_valid || $entry->games_won < 4)) {
+            $totalDuration = $entry->rounds->sum('duration_spent');
+            $totalMoves = $entry->rounds->sum('total_moves');
+
+            $entry->update([
+                'is_valid' => true,
+                'games_won' => $actualWon,
+                'total_time' => $totalDuration,
+                'total_moves' => $totalMoves,
+            ]);
+            $entry->is_valid = true;
+            $entry->games_won = $actualWon;
+            $entry->total_time = $totalDuration;
+            $entry->total_moves = $totalMoves;
+        }
     }
 
     public function query()
@@ -99,6 +128,7 @@ class MemoCompetitionLeaderboardDataTable extends BaseDataTable
                 ])->render();
             },
             'total_time' => function ($entry) {
+                $this->syncEntryIfNeeded($entry);
                 return view($this->view['total_time'], [
                     'entry' => $entry,
                     'total_time' => $entry->total_time,
@@ -111,6 +141,7 @@ class MemoCompetitionLeaderboardDataTable extends BaseDataTable
                 ])->render();
             },
             'status' => function ($entry) {
+                $this->syncEntryIfNeeded($entry);
                 return view($this->view['status'], [
                     'entry' => $entry,
                     'is_valid' => $entry->is_valid,
@@ -137,6 +168,7 @@ class MemoCompetitionLeaderboardDataTable extends BaseDataTable
                 ])->render();
             },
             'rounds_progress' => function ($entry) {
+                $this->syncEntryIfNeeded($entry);
                 return view($this->view['rounds_progress'], [
                     'entry' => $entry,
                     'rounds' => $entry->rounds,

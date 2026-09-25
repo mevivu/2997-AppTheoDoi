@@ -233,6 +233,7 @@
 /* 4. Table Ranking Badges & Leaderboard Table */
 .table-leaderboard {
     margin-bottom: 0;
+    width: 100% !important;
 }
 .table-leaderboard th {
     white-space: nowrap;
@@ -242,20 +243,20 @@
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: #475569;
-    padding: 12px 14px;
+    padding: 10px 10px !important;
     background-color: #f8fafc;
     border-bottom: 2px solid #e2e8f0;
 }
 .table-leaderboard td {
     vertical-align: middle;
-    padding: 12px 14px;
+    padding: 10px 10px !important;
 }
 .phone-badge {
     background: #ecfdf5;
     color: #059669;
     border: 1px solid #a7f3d0;
     border-radius: 50px;
-    padding: 2.5px 8px;
+    padding: 3px 9px;
     font-size: 12px;
     font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     font-weight: 600;
@@ -263,6 +264,8 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+    white-space: nowrap !important;
+    flex-shrink: 0;
     transition: all 0.15s ease;
 }
 .phone-badge:hover {

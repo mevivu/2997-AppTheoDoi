@@ -2396,46 +2396,55 @@ return [
         'ranking' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-trophy"></i><span>Hạng</span></div>',
             'orderable' => true,
+            'width' => '65px',
             'addClass' => 'text-center align-middle',
         ],
         'child_id' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-mood-kid"></i><span>Thí sinh</span></div>',
             'orderable' => false,
+            'width' => '170px',
             'addClass' => 'align-middle',
         ],
         'parent_info' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-user"></i><span>Phụ huynh</span></div>',
             'orderable' => false,
+            'width' => '195px',
             'addClass' => 'align-middle',
         ],
         'attempt_number' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-rotate"></i><span>Lần thi</span></div>',
             'orderable' => true,
+            'width' => '85px',
             'addClass' => 'text-center align-middle',
         ],
         'rounds_progress' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-cards"></i><span>Tiến trình 4 ván</span></div>',
             'orderable' => false,
+            'width' => '140px',
             'addClass' => 'text-center align-middle',
         ],
         'total_time' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-clock"></i><span>Tổng thời gian</span></div>',
             'orderable' => true,
+            'width' => '115px',
             'addClass' => 'text-center align-middle',
         ],
         'total_moves' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-hand-click"></i><span>Lượt lật</span></div>',
             'orderable' => true,
+            'width' => '95px',
             'addClass' => 'text-center align-middle',
         ],
         'status' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
             'orderable' => false,
+            'width' => '125px',
             'addClass' => 'text-center align-middle',
         ],
         'completed_at' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-calendar-time"></i><span>Thời điểm nộp</span></div>',
             'orderable' => true,
+            'width' => '145px',
             'addClass' => 'text-end align-middle',
         ],
         'action' => [
@@ -2443,6 +2452,7 @@ return [
             'orderable' => false,
             'exportable' => false,
             'printable' => false,
+            'width' => '95px',
             'addClass' => 'text-center align-middle',
         ],
     ],
