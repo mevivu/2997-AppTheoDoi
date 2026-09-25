@@ -27,6 +27,7 @@ class MemoGameBuilderService
         if (!$ageConfig) {
             // Fallback nếu độ tuổi chưa có cấu hình riêng: lấy cấu hình thấp nhất nếu age nhỏ hoặc cao nhất nếu age lớn
             $ageConfig = MemoAgeConfig::where('status', ActiveStatus::Active->value)
+                ->iqTest()
                 ->orderBy('min_age', 'asc')
                 ->first();
         }

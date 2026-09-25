@@ -5,6 +5,7 @@ namespace App\Admin\DataTables\Memo;
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\MemoAgeConfig\MemoAgeConfigRepositoryInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Memo\MemoConfigType;
 
 class MemoAgeConfigDataTable extends BaseDataTable
 {
@@ -20,6 +21,7 @@ class MemoAgeConfigDataTable extends BaseDataTable
     {
         $this->view = [
             'action' => 'admin.memo-game.config.datatable.action',
+            'type' => 'admin.memo-game.config.datatable.type',
             'status' => 'admin.memo-game.config.datatable.status',
             'age_range' => 'admin.memo-game.config.datatable.age-range',
             'grid_size' => 'admin.memo-game.config.datatable.grid-size',
@@ -33,10 +35,14 @@ class MemoAgeConfigDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [1, 8];
+        $this->columnAllSearch = [1, 2, 9];
         $this->columnSearchSelect = [
             [
-                'column' => 8,
+                'column' => 2,
+                'data' => MemoConfigType::asSelectArray(),
+            ],
+            [
+                'column' => 9,
                 'data' => ActiveStatus::asSelectArray(),
             ],
         ];
@@ -70,6 +76,9 @@ class MemoAgeConfigDataTable extends BaseDataTable
             'name' => function ($query, $keyword) {
                 $query->where('name', 'like', "%{$keyword}%");
             },
+            'type' => function ($query, $keyword) {
+                $query->where('type', $keyword);
+            },
             'status' => function ($query, $keyword) {
                 $query->where('status', $keyword);
             },
@@ -84,6 +93,7 @@ class MemoAgeConfigDataTable extends BaseDataTable
     protected function setCustomEditColumns(): void
     {
         $this->customEditColumns = [
+            'type' => $this->view['type'],
             'age_range' => $this->view['age_range'],
             'grid_size' => $this->view['grid_size'],
             'total_cards' => $this->view['total_cards'],
@@ -105,6 +115,6 @@ class MemoAgeConfigDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['checkbox', 'age_range', 'grid_size', 'total_cards', 'total_duration', 'total_rounds', 'max_moves', 'status', 'action'];
+        $this->customRawColumns = ['checkbox', 'type', 'age_range', 'grid_size', 'total_cards', 'total_duration', 'total_rounds', 'max_moves', 'status', 'action'];
     }
 }

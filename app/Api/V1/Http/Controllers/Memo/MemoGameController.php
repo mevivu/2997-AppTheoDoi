@@ -33,12 +33,13 @@ class MemoGameController extends Controller
     }
 
     /**
-     * Lấy danh sách cấu hình độ tuổi cho Memo Game
+     * Lấy danh sách cấu hình độ tuổi cho Memo Game (Bài kiểm tra IQ / Luyện trí nhớ)
      */
     public function getAgeConfigs(): JsonResponse
     {
         try {
             $configs = MemoAgeConfig::where('status', ActiveStatus::Active->value)
+                ->iqTest()
                 ->orderBy('min_age', 'asc')
                 ->get();
 
@@ -83,7 +84,7 @@ class MemoGameController extends Controller
             }
 
             if (!$ageConfig) {
-                $ageConfig = MemoAgeConfig::where('status', ActiveStatus::Active->value)->first();
+                $ageConfig = MemoAgeConfig::where('status', ActiveStatus::Active->value)->iqTest()->first();
             }
 
             if (!$ageConfig) {

@@ -42,7 +42,7 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
             $ageConfig = MemoAgeConfig::forAge((int) ($quiz->age ?? 1))->first();
         }
         if (!$ageConfig) {
-            $ageConfig = MemoAgeConfig::where('status', ActiveStatus::Active->value)->orderBy('min_age', 'asc')->first();
+            $ageConfig = MemoAgeConfig::where('status', ActiveStatus::Active->value)->iqTest()->orderBy('min_age', 'asc')->first();
         }
 
         $memoGames = MemoGameBuilderService::buildRounds((int) ($quiz->age ?? 1));

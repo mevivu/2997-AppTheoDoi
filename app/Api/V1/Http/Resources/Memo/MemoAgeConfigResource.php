@@ -16,6 +16,7 @@ class MemoAgeConfigResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'type' => $this->type?->value ?? 'iq_test',
             'min_age' => (int) $this->min_age,
             'max_age' => (int) $this->max_age,
             'rows' => (int) $this->rows,

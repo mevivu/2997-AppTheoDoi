@@ -8,6 +8,7 @@ use App\Admin\Http\Requests\Memo\MemoAgeConfigRequest;
 use App\Admin\Repositories\MemoAgeConfig\MemoAgeConfigRepositoryInterface;
 use App\Admin\Services\MemoAgeConfig\MemoAgeConfigServiceInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Memo\MemoConfigType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
@@ -56,6 +57,7 @@ class MemoAgeConfigController extends Controller
     {
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
+            'types' => MemoConfigType::asSelectArray(),
             'breadcrumbs' => $this->crums->add('Memo Game: Cấu hình', route($this->route['index']))->add('Thêm mới'),
         ]);
     }
@@ -75,6 +77,7 @@ class MemoAgeConfigController extends Controller
         return view($this->view['edit'], [
             'response' => $response,
             'status' => ActiveStatus::asSelectArray(),
+            'types' => MemoConfigType::asSelectArray(),
             'breadcrumbs' => $this->crums->add('Memo Game: Cấu hình', route($this->route['index']))->add('Cập nhật'),
         ]);
     }

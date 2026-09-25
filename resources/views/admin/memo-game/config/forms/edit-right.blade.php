@@ -7,6 +7,15 @@
         </div>
         <div class="card-body">
             <div class="mb-3">
+                <label class="form-label fw-bold">{{ __('Loại cấu hình') }}: <span class="text-danger">*</span></label>
+                <x-select name="type" :required="true">
+                    @foreach ($types as $key => $value)
+                        <x-select-option :value="$key" :title="$value" :selected="($response->type?->value ?? old('type', \App\Enums\Memo\MemoConfigType::IqTest->value)) == $key" />
+                    @endforeach
+                </x-select>
+            </div>
+
+            <div class="mb-3">
                 <label class="form-label fw-bold">{{ __('Trạng thái') }}: <span class="text-danger">*</span></label>
                 <x-select name="status" :required="true">
                     @foreach ($status as $key => $value)

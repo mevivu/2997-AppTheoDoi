@@ -76,6 +76,7 @@ class MemoCompetitionController extends Controller
             ->get();
 
         $ageConfigs = MemoAgeConfig::where('status', ActiveStatus::Active->value)
+            ->competition()
             ->orderBy('rows', 'asc')
             ->orderBy('columns', 'asc')
             ->get();
@@ -132,6 +133,7 @@ class MemoCompetitionController extends Controller
             ->get();
 
         $ageConfigs = MemoAgeConfig::where('status', ActiveStatus::Active->value)
+            ->competition()
             ->orderBy('rows', 'asc')
             ->orderBy('columns', 'asc')
             ->get();

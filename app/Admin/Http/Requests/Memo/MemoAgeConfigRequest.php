@@ -4,14 +4,23 @@ namespace App\Admin\Http\Requests\Memo;
 
 use App\Api\V1\Http\Requests\BaseRequest;
 use App\Enums\ActiveStatus;
+use App\Enums\Memo\MemoConfigType;
 use Illuminate\Validation\Rules\Enum;
 
 class MemoAgeConfigRequest extends BaseRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if (!$this->has('type') || empty($this->input('type'))) {
+            $this->merge(['type' => MemoConfigType::IqTest->value]);
+        }
+    }
+
     protected function methodPost(): array
     {
         return [
             'name' => ['required', 'string', 'max:191'],
+            'type' => ['nullable', new Enum(MemoConfigType::class)],
             'min_age' => ['required', 'integer', 'min:1'],
             'max_age' => ['required', 'integer', 'gte:min_age'],
             'rows' => ['required', 'integer', 'min:2', 'max:10'],
@@ -29,6 +38,7 @@ class MemoAgeConfigRequest extends BaseRequest
         return [
             'id' => ['required', 'integer', 'exists:memo_age_configs,id'],
             'name' => ['required', 'string', 'max:191'],
+            'type' => ['nullable', new Enum(MemoConfigType::class)],
             'min_age' => ['required', 'integer', 'min:1'],
             'max_age' => ['required', 'integer', 'gte:min_age'],
             'rows' => ['required', 'integer', 'min:2', 'max:10'],

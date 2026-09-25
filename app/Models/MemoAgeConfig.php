@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\ActiveStatus;
+use App\Enums\Memo\MemoConfigType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,6 +23,8 @@ class MemoAgeConfig extends Model
     protected $fillable = [
         /** Tên mức độ cấu hình (Khởi động, Cơ bản, Nâng cao, Thử thách...) */
         'name',
+        /** Loại cấu hình: iq_test hoặc competition */
+        'type',
         /** Độ tuổi tối thiểu áp dụng */
         'min_age',
         /** Độ tuổi tối đa áp dụng */
@@ -62,6 +65,7 @@ class MemoAgeConfig extends Model
         'total_rounds' => 'integer',
         'peek_time' => 'integer',
         'max_moves' => 'integer',
+        'type' => MemoConfigType::class,
         'status' => ActiveStatus::class,
     ];
 
@@ -84,11 +88,28 @@ class MemoAgeConfig extends Model
     }
 
     /**
-     * Scope tìm kiếm cấu hình phù hợp với độ tuổi của bé
+     * Scope lọc cấu hình dành cho Bài kiểm tra IQ
      */
-    public function scopeForAge($query, int $age)
+    public function scopeIqTest($query)
+    {
+        return $query->where('type', MemoConfigType::IqTest->value);
+    }
+
+    /**
+     * Scope lọc cấu hình dành cho Giải đấu
+     */
+    public function scopeCompetition($query)
+    {
+        return $query->where('type', MemoConfigType::Competition->value);
+    }
+
+    /**
+     * Scope tìm kiếm cấu hình phù hợp với độ tuổi của bé (mặc định lấy loại Bài kiểm tra IQ)
+     */
+    public function scopeForAge($query, int $age, ?MemoConfigType $type = MemoConfigType::IqTest)
     {
         return $query->where('status', ActiveStatus::Active->value)
+            ->when($type, fn ($q) => $q->where('type', $type->value))
             ->where('min_age', '<=', $age)
             ->where('max_age', '>=', $age);
     }

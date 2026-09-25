@@ -2235,6 +2235,11 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
+        'type' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-category"></i><span>Loại cấu hình</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
         'age_range' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Độ tuổi</span></div>',
             'orderable' => false,
