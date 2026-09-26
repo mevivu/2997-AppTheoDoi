@@ -4,11 +4,13 @@ namespace App\Admin\Http\Controllers\Video;
 
 use App\Admin\DataTables\Video\VideoDataTable;
 use App\Admin\Http\Controllers\Controller;
-use App\Admin\Http\Requests\Video\VideoRequest;
+use App\Admin\Http\Requests\Video\CreateVideoRequest;
+use App\Admin\Http\Requests\Video\UpdateVideoRequest;
 use App\Admin\Repositories\Video\VideoRepositoryInterface;
 use App\Admin\Services\Video\VideoServiceInterface;
 use App\Enums\ActiveStatus;
 use App\Enums\Video\VideoAccessType;
+use App\Models\Video;
 use App\Models\VideoCategory;
 use App\Traits\ResponseController;
 use Illuminate\Contracts\Foundation\Application;
@@ -18,6 +20,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Throwable;
 
 class VideoController extends Controller
 {
@@ -75,7 +78,7 @@ class VideoController extends Controller
         ]);
     }
 
-    public function store(VideoRequest $request): RedirectResponse
+    public function store(CreateVideoRequest $request): RedirectResponse
     {
         return $this->handleResponse($request, function ($request) {
             return $this->service->store($request);
@@ -98,7 +101,7 @@ class VideoController extends Controller
         ]);
     }
 
-    public function update(VideoRequest $request): RedirectResponse
+    public function update(UpdateVideoRequest $request): RedirectResponse
     {
         return $this->handleUpdateResponse($request, function () use ($request) {
             return $this->service->update($request);
@@ -138,12 +141,12 @@ class VideoController extends Controller
             return response()->json(['status' => false, 'message' => __('Đường dẫn video không hợp lệ.')]);
         }
 
-        $ytId = \App\Models\Video::extractYouTubeId($url);
+        $ytId = Video::extractYouTubeId($url);
         if (!$ytId) {
             return response()->json(['status' => false, 'message' => __('Không thể nhận diện YouTube Video ID từ liên kết này.')]);
         }
 
-        $durationSeconds = \App\Models\Video::extractYouTubeDuration($url);
+        $durationSeconds = Video::extractYouTubeDuration($url);
 
         // Lấy tiêu đề và tác giả qua YouTube oEmbed (ưu tiên YouTube chính thức, dự phòng noembed)
         $title = '';
@@ -160,14 +163,14 @@ class VideoController extends Controller
                     $author = html_entity_decode($fallback->json('author_name') ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 }
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             try {
                 $fallback = Http::withoutVerifying()->timeout(6)->get("https://noembed.com/embed?url=https://www.youtube.com/watch?v={$ytId}");
                 if ($fallback->successful()) {
                     $title = html_entity_decode($fallback->json('title') ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
                     $author = html_entity_decode($fallback->json('author_name') ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 }
-            } catch (\Throwable $ex) {
+            } catch (Throwable $ex) {
                 // Ignore fallback error
             }
         }

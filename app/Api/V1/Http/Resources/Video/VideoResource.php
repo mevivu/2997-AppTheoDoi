@@ -27,6 +27,7 @@ class VideoResource extends JsonResource
             'youtube_id' => $isLocked ? null : $this->youtube_id,
             'video_url' => $isLocked ? null : $this->video_url,
             'thumbnail_url' => $this->thumbnail_url,
+            'video_type' => $this->video_type?->value ?? 'youtube',
             'duration_seconds' => $this->duration_seconds,
             'access_type' => $this->access_type?->value,
             'access_type_label' => $this->access_type ? VideoAccessType::getDescription($this->access_type->value) : null,

@@ -2,70 +2,76 @@
 
 namespace App\Admin\Services\File;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Throwable;
 
 class FileService
 {
-    private $disk = 'uploads';
+    private string $disk = 'uploads';
 
-    private $folder = '/';
+    private string $folder = '/';
 
-    private $folderPrefix = 'public/uploads/';
+    private string $folderPrefix = 'public/uploads/';
 
     private $file;
 
     private $instance;
 
-    private $status = true;
+    private bool $status = true;
 
-    public function setDisk($disk)
+    public function setDisk($disk): static
     {
         $this->disk = $disk;
         return $this;
     }
 
-    public function setFolder($folder)
+    public function setFolder($folder): static
     {
         $this->folder = Str::finish($folder, '/');
         return $this;
     }
 
-    public function setFolderForUser($path = '/')
+    public function setFolderForUser($path = '/'): FileService|static
     {
         $path = $path == '/' ? '/' : '/' . Str::finish($path, '/');
         return $this->setFolder('users/' . auth()->user()->id . $path);
     }
 
-    public function setFolderPrefix($folderPrefix)
+    public function setFolderPrefix($folderPrefix): static
     {
         $this->folderPrefix = Str::finish($folderPrefix, '/');
         return $this;
     }
 
-    public function setFile($file)
+    public function setFile($file): static
     {
         $this->file = $file;
         return $this;
     }
 
-    public function upload()
+    public function upload(): static
     {
         $path = $this->file->storeAs($this->folder, $this->file->hashName(), $this->disk);
         $this->instance = preg_replace('#/+#', '/', Str::finish($this->folderPrefix, '/') . ltrim($path, '/'));
         return $this;
     }
 
-    public function uploadFilepondEncode()
+    /**
+     * @throws Exception
+     */
+    public function uploadFilepondEncode(): FileService|static
     {
         $file = json_decode($this->file, true);
 
         return $this->uploadFileBase64($file);
     }
 
-    public function uploadCheckFilepondEncode($fileExists)
+    public function uploadCheckFilepondEncode($fileExists): FileService|static
     {
         $file = json_decode($this->file, true);
         if (array_key_exists($file['id'], $fileExists)) {
@@ -76,7 +82,10 @@ class FileService
 
     }
 
-    private function uploadFileBase64($file)
+    /**
+     * @throws Exception
+     */
+    private function uploadFileBase64($file): static
     {
         $fileContent = base64_decode($file['data']);
 
@@ -88,7 +97,7 @@ class FileService
         return $this;
     }
 
-    public function move($pathFile, $newPath)
+    public function move($pathFile, $newPath): static
     {
         $newPath = $newPath . basename($pathFile);
         Storage::disk($this->disk)->move($pathFile, $newPath . basename($pathFile));
@@ -96,7 +105,7 @@ class FileService
         return $this;
     }
 
-    public function delete($pathFile)
+    public function delete($pathFile): static
     {
         if ($pathFile != null && $pathFile != '') {
             Storage::disk($this->disk)->delete(Str::after($pathFile, $this->folderPrefix));
@@ -104,7 +113,7 @@ class FileService
         return $this;
     }
 
-    public function deleteSimpleFiles(array $files)
+    public function deleteSimpleFiles(array $files): static
     {
 
         $files = array_map(function ($value) {
@@ -215,6 +224,68 @@ class FileService
         return $this;
     }
 
+    /**
+     * Upload video lên Cloudflare R2
+     *
+     * @param UploadedFile $file File video cần upload
+     * @param string $folder Thư mục trên R2 (mặc định: videos/raw)
+     * @param string|null $oldPath Đường dẫn tương đối hoặc URL cũ để xóa nếu có
+     * @return array ['path' => 'videos/raw/...', 'url' => 'https://pub-xxx.r2.dev/videos/raw/...']
+     */
+    public function uploadVideoToR2(UploadedFile $file, string $folder = 'videos/raw', ?string $oldPath = null): array
+    {
+        if ($oldPath) {
+            $this->deleteR2File($oldPath);
+        }
 
+        $folder = trim($folder, '/');
+        $hashName = $file->hashName();
+        $relativePath = $folder . '/' . $hashName;
 
+        // Lưu trực tiếp vào disk r2
+        Storage::disk('r2')->putFileAs($folder, $file, $hashName);
+
+        $baseUrl = config('filesystems.disks.r2.url') ?: env('CLOUDFLARE_R2_PUBLIC_URL', '');
+        $publicUrl = rtrim($baseUrl, '/') . '/' . ltrim($relativePath, '/');
+
+        return [
+            'path' => $relativePath,
+            'url' => $publicUrl,
+        ];
+    }
+
+    /**
+     * Xóa file trên Cloudflare R2 an toàn
+     *
+     * @param string|null $path Hoặc relative path ('videos/raw/xxx.mp4') hoặc full public URL
+     * @return bool
+     */
+    public function deleteR2File(?string $path): bool
+    {
+        if (empty($path)) {
+            return false;
+        }
+
+        try {
+            $relativePath = $path;
+            $r2PublicUrl = rtrim(config('filesystems.disks.r2.url') ?: env('CLOUDFLARE_R2_PUBLIC_URL', ''), '/');
+
+            if ($r2PublicUrl && Str::startsWith($path, $r2PublicUrl)) {
+                $relativePath = ltrim(substr($path, strlen($r2PublicUrl)), '/');
+            } elseif (Str::contains($path, ['.r2.dev', '.r2.cloudflarestorage.com'])) {
+                $parsed = parse_url($path, PHP_URL_PATH);
+                if ($parsed) {
+                    $relativePath = ltrim($parsed, '/');
+                }
+            }
+
+            if (Storage::disk('r2')->exists($relativePath)) {
+                return Storage::disk('r2')->delete($relativePath);
+            }
+        } catch (Throwable $e) {
+            Log::warning('[FileService::deleteR2File] Failed: ' . $e->getMessage());
+        }
+
+        return false;
+    }
 }

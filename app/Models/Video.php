@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ActiveStatus;
 use App\Enums\Video\VideoAccessType;
+use App\Enums\Video\VideoType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * Mô hình Video
  *
- * Quản lý thông tin video giáo dục liên kết YouTube, phân quyền Free/VIP, xem thử và nhóm tuổi tương ứng.
+ * Quản lý thông tin video giáo dục liên kết YouTube hoặc tải lên Cloudflare R2, phân quyền Free/VIP, xem thử và nhóm tuổi tương ứng.
  */
 class Video extends Model
 {
@@ -22,12 +23,16 @@ class Video extends Model
     protected $fillable = [
         /** ID danh mục video */
         'video_category_id',
+        /** Nguồn video: youtube, r2 */
+        'video_type',
         /** Tiêu đề video */
         'title',
         /** Mô tả chi tiết nội dung video */
         'description',
-        /** Đường dẫn video YouTube */
+        /** Đường dẫn video (URL YouTube hoặc Public URL Cloudflare R2) */
         'video_url',
+        /** Đường dẫn file tương đối trên Cloudflare R2 */
+        'video_path',
         /** Ảnh đại diện (tùy chọn tải lên thủ công) */
         'thumbnail',
         /** Thời lượng video tính theo giây */
@@ -46,6 +51,7 @@ class Video extends Model
 
     protected $casts = [
         'video_category_id' => 'integer',
+        'video_type' => VideoType::class,
         'duration_seconds' => 'integer',
         'access_type' => VideoAccessType::class,
         'is_preview' => 'boolean',
@@ -57,11 +63,30 @@ class Video extends Model
     protected $appends = ['youtube_id', 'thumbnail_url', 'formatted_duration'];
 
     /**
+     * Kiểm tra video có nguồn từ YouTube hay không
+     */
+    public function isYouTube(): bool
+    {
+        return ($this->video_type ?? VideoType::YouTube) === VideoType::YouTube;
+    }
+
+    /**
+     * Kiểm tra video có nguồn từ Cloudflare R2 hay không
+     */
+    public function isR2(): bool
+    {
+        return ($this->video_type ?? null) === VideoType::R2;
+    }
+
+    /**
      * Trích xuất YouTube Video ID từ URL
      * Hỗ trợ: youtube.com/watch?v=X, youtu.be/X, youtube.com/embed/X, youtube.com/shorts/X
      */
     public function getYoutubeIdAttribute(): ?string
     {
+        if ($this->isR2()) {
+            return null;
+        }
         return self::extractYouTubeId($this->video_url);
     }
 

@@ -35,13 +35,13 @@ class Form extends Component
      *
      * @return void
      */
-    public function __construct($action = '', $type = 'GET', $validate = false, $hasFile = false)
+    public function __construct($action = '', $type = 'GET', $validate = false, $hasFile = false, $hasFiles = false)
     {
         //
         $this->type = strtoupper($type);
         $this->action = $action;
         $this->validate = $validate;
-        $this->hasFile = filter_var($hasFile, FILTER_VALIDATE_BOOLEAN);
+        $this->hasFile = filter_var($hasFile, FILTER_VALIDATE_BOOLEAN) || filter_var($hasFiles, FILTER_VALIDATE_BOOLEAN);
     }
     public function isValidate(){
         return $this->validate === true ? 'data-parsley-validate' : '';

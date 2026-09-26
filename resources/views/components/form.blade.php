@@ -1,6 +1,6 @@
 @php
     $formAttrs = ['action' => $action, 'method' => $marcoMethod()];
-    if ($hasFile || $attributes->get('has-file') || $attributes->get('has_file')) {
+    if ($hasFile || $attributes->get('has-file') || $attributes->get('has_file') || $attributes->get('has-files') || $attributes->get('has_files') || $attributes->get('enctype') === 'multipart/form-data') {
         $formAttrs['enctype'] = 'multipart/form-data';
     }
 @endphp

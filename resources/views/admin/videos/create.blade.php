@@ -91,7 +91,7 @@
                 </div>
             </div>
 
-            <x-form id="video_create_form" :action="route(RouteAdminSystem::VIDEO_STORE)" type="post" :validate="true" :has-files="true">
+            <x-form id="video_create_form" :action="route(RouteAdminSystem::VIDEO_STORE)" type="post" :validate="true" :has-file="true" enctype="multipart/form-data">
                 <div class="row g-4 justify-content-center">
                     @include('admin.videos.forms.create-left')
                     @include('admin.videos.forms.create-right')

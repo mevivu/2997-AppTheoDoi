@@ -27,12 +27,24 @@ class VideoService implements VideoServiceInterface
     {
         $data = $request->validated();
         $data['is_preview'] = $request->boolean('is_preview');
+        $videoType = $data['video_type'] ?? 'youtube';
 
-        // Tự động nhận diện thời lượng YouTube nếu chưa nhập
-        if (empty($data['duration_seconds']) && !empty($data['video_url'])) {
-            $detectedDuration = \App\Models\Video::extractYouTubeDuration($data['video_url']);
-            if ($detectedDuration) {
-                $data['duration_seconds'] = $detectedDuration;
+        if ($videoType === 'youtube') {
+            // Tự động nhận diện thời lượng YouTube nếu chưa nhập
+            if (empty($data['duration_seconds']) && !empty($data['video_url'])) {
+                $detectedDuration = \App\Models\Video::extractYouTubeDuration($data['video_url']);
+                if ($detectedDuration) {
+                    $data['duration_seconds'] = $detectedDuration;
+                }
+            }
+        } elseif ($videoType === 'r2') {
+            if ($request->hasFile('video_file')) {
+                $uploadResult = $this->fileService->uploadVideoToR2(
+                    $request->file('video_file'),
+                    'videos/raw'
+                );
+                $data['video_path'] = $uploadResult['path'];
+                $data['video_url'] = $uploadResult['url'];
             }
         }
 
@@ -52,12 +64,36 @@ class VideoService implements VideoServiceInterface
         $data = $request->validated();
         $data['is_preview'] = $request->boolean('is_preview');
         $video = $this->repository->findOrFail($data['id']);
+        $videoType = $data['video_type'] ?? ($video->video_type?->value ?? 'youtube');
 
-        // Tự động nhận diện thời lượng YouTube nếu chưa nhập hoặc để trống
-        if (empty($data['duration_seconds']) && !empty($data['video_url'])) {
-            $detectedDuration = \App\Models\Video::extractYouTubeDuration($data['video_url']);
-            if ($detectedDuration) {
-                $data['duration_seconds'] = $detectedDuration;
+        if ($videoType === 'youtube') {
+            // Nếu trước đó là R2 mà chuyển sang YouTube, xóa file cũ trên R2
+            if (($video->video_type?->value ?? '') === 'r2' && !empty($video->video_path)) {
+                $this->fileService->deleteR2File($video->video_path);
+                $data['video_path'] = null;
+            }
+
+            // Tự động nhận diện thời lượng YouTube nếu chưa nhập hoặc để trống
+            if (empty($data['duration_seconds']) && !empty($data['video_url'])) {
+                $detectedDuration = \App\Models\Video::extractYouTubeDuration($data['video_url']);
+                if ($detectedDuration) {
+                    $data['duration_seconds'] = $detectedDuration;
+                }
+            }
+        } elseif ($videoType === 'r2') {
+            if ($request->hasFile('video_file')) {
+                // Upload file mới và tự động dọn dẹp file cũ trên R2
+                $uploadResult = $this->fileService->uploadVideoToR2(
+                    $request->file('video_file'),
+                    'videos/raw',
+                    $video->video_path
+                );
+                $data['video_path'] = $uploadResult['path'];
+                $data['video_url'] = $uploadResult['url'];
+            } else {
+                // Giữ nguyên file video R2 hiện tại nếu không chọn file mới
+                $data['video_path'] = $video->video_path;
+                $data['video_url'] = $video->video_url;
             }
         }
 
@@ -80,6 +116,9 @@ class VideoService implements VideoServiceInterface
         $video = $this->repository->findOrFail($id);
         if (!empty($video->thumbnail)) {
             $this->fileService->delete($video->thumbnail);
+        }
+        if (!empty($video->video_path)) {
+            $this->fileService->deleteR2File($video->video_path);
         }
         return $this->repository->delete($id);
     }
