@@ -23,6 +23,7 @@ class VideoCategoryDataTable extends BaseDataTable
             'action' => 'admin.video_categories.datatable.action',
             'status' => 'admin.video_categories.datatable.status',
             'icon' => 'admin.video_categories.datatable.icon',
+            'videos_count' => 'admin.video_categories.datatable.videos-count',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
@@ -34,14 +35,14 @@ class VideoCategoryDataTable extends BaseDataTable
             ->pluck('name', 'id')
             ->all();
 
-        $this->columnAllSearch = [2, 3, 4, 5];
+        $this->columnAllSearch = [2, 3, 5, 6];
         $this->columnSearchSelect = [
             [
                 'column' => 3,
                 'data' => $ageGroupOptions,
             ],
             [
-                'column' => 5,
+                'column' => 6,
                 'data' => ActiveStatus::asSelectArray(),
             ],
         ];
@@ -50,6 +51,7 @@ class VideoCategoryDataTable extends BaseDataTable
     public function query()
     {
         return $this->repository->getQueryBuilderWithRelations(['ageGroup'])
+            ->withCount('videos')
             ->orderBy('sort_order', 'asc');
     }
 
@@ -63,6 +65,7 @@ class VideoCategoryDataTable extends BaseDataTable
         $this->customEditColumns = [
             'icon' => $this->view['icon'],
             'age_group' => fn($row) => $row->ageGroup?->name ?? '—',
+            'videos_count' => $this->view['videos_count'],
             'status' => $this->view['status'],
         ];
     }
@@ -86,6 +89,6 @@ class VideoCategoryDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['icon', 'action', 'status', 'checkbox'];
+        $this->customRawColumns = ['icon', 'action', 'status', 'checkbox', 'videos_count'];
     }
 }

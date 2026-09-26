@@ -2527,7 +2527,11 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false,
         ],
-
+        'videos_count' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-video"></i><span>Số video</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
         'sort_order' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-sort-ascending"></i><span>Thứ tự</span></div>',
             'addClass' => 'text-center align-middle',
