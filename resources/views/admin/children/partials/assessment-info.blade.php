@@ -1,5 +1,6 @@
 @php
     use App\Enums\Question\QuestionType;
+    use App\Traits\RouteAdminSystem;
     $latestIq = $children->ratings()->where('type', QuestionType::IQ)->latest()->first();
     $latestEq = $children->ratings()->where('type', QuestionType::EQ)->latest()->first();
     $latestAq = $children->ratings()->where('type', QuestionType::AQ)->latest()->first();
