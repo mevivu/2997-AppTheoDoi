@@ -85,15 +85,44 @@
                             </div>
 
                             <!-- Số lượng con -->
-                            <div class="user-stat-card">
-                                <div class="user-stat-icon icon-children">
-                                    <i class="ti ti-baby-carriage"></i>
+                            @php
+                                $firstChild = $user->children->first();
+                            @endphp
+                            @if($firstChild && $totalChildren == 1)
+                                <a href="{{ route(RouteAdminSystem::CHILDREN_EDIT, $firstChild->id) }}" class="user-stat-card text-decoration-none" title="{{ __('Xem hồ sơ bé: ') . $firstChild->fullname }}">
+                                    <div class="user-stat-icon icon-children">
+                                        <i class="ti ti-baby-carriage"></i>
+                                    </div>
+                                    <div class="flex-grow-1 min-w-0 pe-1">
+                                        <div class="text-muted fs-11 fw-bold text-uppercase text-truncate">{{ __('Trẻ Em') }}</div>
+                                        <div class="fw-bold fs-13 text-primary d-inline-flex align-items-center gap-1 text-truncate">
+                                            <span>{{ $firstChild->fullname }}</span> <i class="ti ti-arrow-right fs-12"></i>
+                                        </div>
+                                    </div>
+                                </a>
+                            @elseif($totalChildren > 1)
+                                <a href="#childrenInfo" onclick="document.getElementById('children-info-tab')?.click();" class="user-stat-card text-decoration-none" title="{{ __('Xem danh sách ') . $totalChildren . __(' bé') }}">
+                                    <div class="user-stat-icon icon-children">
+                                        <i class="ti ti-baby-carriage"></i>
+                                    </div>
+                                    <div class="flex-grow-1 min-w-0 pe-1">
+                                        <div class="text-muted fs-11 fw-bold text-uppercase text-truncate">{{ __('Trẻ Em') }}</div>
+                                        <div class="fw-bold fs-13 text-primary d-inline-flex align-items-center gap-1 text-truncate">
+                                            <span>{{ $totalChildren }} {{ __('bé') }}</span> <i class="ti ti-arrow-right fs-12"></i>
+                                        </div>
+                                    </div>
+                                </a>
+                            @else
+                                <div class="user-stat-card">
+                                    <div class="user-stat-icon icon-children">
+                                        <i class="ti ti-baby-carriage"></i>
+                                    </div>
+                                    <div class="flex-grow-1 min-w-0">
+                                        <div class="text-muted fs-11 fw-bold text-uppercase text-truncate">{{ __('Trẻ Em') }}</div>
+                                        <div class="fw-bold fs-13 text-dark text-truncate">{{ $totalChildren }} {{ __('bé') }}</div>
+                                    </div>
                                 </div>
-                                <div class="flex-grow-1 min-w-0">
-                                    <div class="text-muted fs-11 fw-bold text-uppercase text-truncate">{{ __('Trẻ Em') }}</div>
-                                    <div class="fw-bold fs-13 text-dark text-truncate">{{ $totalChildren }} {{ __('bé') }}</div>
-                                </div>
-                            </div>
+                            @endif
 
                             <!-- Lịch sử giao dịch -->
                             <a href="{{ route('admin.user.history', $user->id) }}" class="user-stat-card text-decoration-none" title="{{ __('Xem lịch sử giao dịch') }}">
