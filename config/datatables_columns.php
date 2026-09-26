@@ -2394,9 +2394,9 @@ return [
     ],
     'memo_competition_leaderboard' => [
         'ranking' => [
-            'title' => '<div class="header-cell-content"><i class="ti ti-trophy"></i><span>Hạng</span></div>',
+            'title' => '<div class="header-cell-content"><i class="ti ti-trophy"></i><span>Hạng</span><a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#modalScoringGuide" class="text-info ms-1" title="Xem cách tính điểm & quy tắc phân thứ hạng"><i class="ti ti-help fs-13"></i></a></div>',
             'orderable' => true,
-            'width' => '65px',
+            'width' => '75px',
             'addClass' => 'text-center align-middle',
         ],
         'child_id' => [

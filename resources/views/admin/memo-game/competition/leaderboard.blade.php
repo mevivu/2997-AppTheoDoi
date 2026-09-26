@@ -461,7 +461,13 @@
                 icon="trophy"
                 :back-route="route(RouteAdminSystem::MEMO_COMPETITION_INDEX)"
             >
-                <x-slot:actions>
+                    <!-- Nút xem Cách tính điểm & xếp hạng (?) -->
+                    <button type="button" class="btn btn-outline-info rounded-pill px-3 shadow-xs d-inline-flex align-items-center gap-1.5" 
+                            data-bs-toggle="modal" data-bs-target="#modalScoringGuide" style="border-radius: 50px !important;">
+                        <i class="ti ti-help fs-5"></i>
+                        <span class="fw-semibold">{{ __('Cách tính điểm') }}</span>
+                    </button>
+
                     <!-- Nút Tính & Chốt Thứ Hạng (Pill Xanh Lá Nổi Bật) -->
                     <form action="{{ route('admin.memo-game.competition.calculate', $competition->id) }}" method="POST" class="d-inline"
                           onsubmit="return confirm('{{ __('Bạn có chắc muốn tính toán và chốt thứ hạng chính thức cho toàn bộ giải đấu này?') }}')">
@@ -767,7 +773,15 @@
                             <i class="ti ti-trophy fs-3"></i>
                         </div>
                         <div>
-                            <h5 class="card-title mb-0 fw-bold text-dark fs-15">{{ __('Danh Sách Toàn Bộ Lượt Thi') }}</h5>
+                            <div class="d-flex align-items-center gap-1.5">
+                                <h5 class="card-title mb-0 fw-bold text-dark fs-15">{{ __('Danh Sách Toàn Bộ Lượt Thi') }}</h5>
+                                <button type="button" class="btn btn-sm btn-outline-info rounded-circle p-0 d-inline-flex align-items-center justify-content-center shadow-2xs" 
+                                        data-bs-toggle="modal" data-bs-target="#modalScoringGuide" 
+                                        title="{{ __('Xem cách tính điểm & quy tắc phân thứ hạng') }}" 
+                                        style="width: 22px; height: 22px; min-width: 22px; border-width: 1.5px;">
+                                    <i class="ti ti-help fs-13"></i>
+                                </button>
+                            </div>
                             <div class="text-muted fs-11 mt-0.5">{{ __('Tự động xếp hạng theo ván thắng, thời gian và số lượt lật') }}</div>
                         </div>
                     </div>
@@ -887,6 +901,156 @@
                     <span class="fs-12 text-muted"><i class="ti ti-lock me-1"></i>Lưới 5×6 (30 thẻ = 15 cặp thẻ) • Peek Time 0s</span>
                     <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal" style="border-radius: 50px !important;">
                         {{ __('Đóng') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Modal Hướng Dẫn Cách Tính Điểm & Quy Tắc Xếp Hạng Giải Đấu (?) -->
+    <div class="modal modal-blur fade" id="modalScoringGuide" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content border-0 shadow-lg overflow-hidden">
+                <!-- Modal Header -->
+                <div class="modal-header py-3 px-4 bg-white border-bottom d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="rounded-3 bg-info-lt p-2 d-flex align-items-center justify-content-center text-info" style="width: 44px; height: 44px;">
+                            <i class="ti ti-help fs-2"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0 text-dark fs-16">{{ __('Quy Tắc Tính Điểm & Phân Thứ Hạng') }}</h5>
+                            <div class="text-muted fs-12">{{ __('Cơ chế xếp hạng tự động & Lịch chạy cập nhật định kỳ') }}</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body p-4 bg-light">
+                    <!-- 1. Điều kiện tiên quyết: Thắng 4/4 ván -->
+                    <div class="card border-0 shadow-xs mb-3">
+                        <div class="card-body p-3.5">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-success-lt p-2 text-success mt-0.5 flex-shrink-0" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="ti ti-shield-check fs-3"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="fw-bold text-dark mb-1 fs-14 d-flex align-items-center gap-2">
+                                        {{ __('1. Điều Kiện Tiên Quyết Để Được Xếp Hạng') }}
+                                        <span class="badge bg-success-lt text-success fs-11">Bắt buộc</span>
+                                    </h6>
+                                    <p class="text-muted fs-13 mb-2">
+                                        Mỗi bài thi gồm <strong>4 ván liên tiếp</strong> (ma trận 5×6 = 30 thẻ, không xem trước). Thí sinh <strong>bắt buộc phải chiến thắng cả 4/4 ván</strong> để đạt chuẩn.
+                                    </p>
+                                    <div class="d-flex flex-wrap gap-2 pt-1">
+                                        <div class="px-2.5 py-1.5 rounded-2 bg-success-subtle text-success fs-12 fw-medium border border-success-subtle">
+                                            <i class="ti ti-check me-1"></i><strong>Thắng 4/4 ván:</strong> Đủ điều kiện $\rightarrow$ Được xếp hạng (🥇, 🥈, 🥉, #4...)
+                                        </div>
+                                        <div class="px-2.5 py-1.5 rounded-2 bg-danger-subtle text-danger fs-12 fw-medium border border-danger-subtle">
+                                            <i class="ti ti-x me-1"></i><strong>Thắng 0 đến 3 ván:</strong> Chưa đạt $\rightarrow$ Không xếp hạng (Hiển thị <code>--</code>)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Thứ tự ưu tiên 3 tiêu chí xếp hạng -->
+                    <div class="card border-0 shadow-xs mb-3">
+                        <div class="card-body p-3.5">
+                            <h6 class="fw-bold text-dark mb-2 fs-14 d-flex align-items-center gap-2">
+                                <i class="ti ti-trophy text-warning"></i>
+                                {{ __('2. Thứ Tự Ưu Tiên Phân Chia Thứ Hạng (Đủ điều kiện)') }}
+                            </h6>
+                            <p class="text-muted fs-13 mb-3">
+                                Hệ thống so sánh năng lực ghi nhớ và tốc độ thực tế của thí sinh theo 3 mức ưu tiên:
+                            </p>
+
+                            <div class="row g-2.5">
+                                <!-- Tiêu chí 1 -->
+                                <div class="col-12 col-md-4">
+                                    <div class="p-3 rounded-3 bg-white border border-primary-subtle h-100 position-relative">
+                                        <div class="d-flex align-items-center justify-content-between mb-1.5">
+                                            <span class="badge bg-primary text-white fw-bold fs-11">Ưu tiên 1 • Chính</span>
+                                            <span class="fs-18">🥇</span>
+                                        </div>
+                                        <div class="fw-bold text-primary fs-14 mb-1">{{ __('Tổng thời gian (s)') }}</div>
+                                        <div class="text-muted fs-12">
+                                            Tổng số giây hoàn thành 4 ván. Thời gian <strong>càng ngắn</strong> càng xếp hạng cao.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tiêu chí 2 -->
+                                <div class="col-12 col-md-4">
+                                    <div class="p-3 rounded-3 bg-white border h-100 position-relative">
+                                        <div class="d-flex align-items-center justify-content-between mb-1.5">
+                                            <span class="badge bg-secondary-lt text-secondary fw-bold fs-11">Ưu tiên 2 • Phụ</span>
+                                            <span class="fs-18">🥈</span>
+                                        </div>
+                                        <div class="fw-bold text-dark fs-14 mb-1">{{ __('Tổng số lượt lật') }}</div>
+                                        <div class="text-muted fs-12">
+                                            Nếu bằng thời gian: bé nào có <strong>tổng lượt lật ít hơn</strong> (trí nhớ tốt hơn) xếp trên.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tiêu chí 3 -->
+                                <div class="col-12 col-md-4">
+                                    <div class="p-3 rounded-3 bg-white border h-100 position-relative">
+                                        <div class="d-flex align-items-center justify-content-between mb-1.5">
+                                            <span class="badge bg-secondary-lt text-secondary fw-bold fs-11">Ưu tiên 3 • Phụ</span>
+                                            <span class="fs-18">🥉</span>
+                                        </div>
+                                        <div class="fw-bold text-dark fs-14 mb-1">{{ __('Thời điểm nộp bài') }}</div>
+                                        <div class="text-muted fs-12">
+                                            Nếu bằng cả thời gian và số lượt lật: thí sinh hoàn thành <strong>sớm hơn</strong> xếp trên.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Quy tắc chống chiếm bảng & Cơ chế Cronjob tự động -->
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div class="card border-0 shadow-xs h-100">
+                                <div class="card-body p-3.5">
+                                    <h6 class="fw-bold text-dark mb-1.5 fs-13 d-flex align-items-center gap-1.5">
+                                        <i class="ti ti-user-check text-success"></i>
+                                        {{ __('Mỗi bé chỉ nhận 1 thứ hạng tốt nhất') }}
+                                    </h6>
+                                    <p class="text-muted fs-12 mb-0">
+                                        Nếu giải đấu cho phép thi lại, hệ thống chỉ ghi nhận <strong>1 lượt thi xuất sắc nhất</strong> của bé lên bảng xếp hạng 1, 2, 3... Các lần thi khác của cùng bé đó hiển thị là lượt phụ, không chiếm chỗ của các bé khác.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <div class="card border-0 shadow-xs h-100">
+                                <div class="card-body p-3.5">
+                                    <h6 class="fw-bold text-dark mb-1.5 fs-13 d-flex align-items-center gap-1.5">
+                                        <i class="ti ti-clock-play text-info"></i>
+                                        {{ __('Tự động cập nhật thứ hạng (Cronjob)') }}
+                                    </h6>
+                                    <p class="text-muted fs-12 mb-0">
+                                        Hệ thống được lập lịch chạy <strong>tự động mỗi 2 tiếng</strong> (<code>memo:calculate-rankings</code>) để làm mới thứ hạng của tất cả giải đấu. Admin có thể bấm nút <strong>"Tính & Chốt Thứ Hạng"</strong> ở trên để cập nhật tức thì bất cứ lúc nào.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer py-2.5 px-4 bg-white border-top d-flex justify-content-between align-items-center">
+                    <span class="fs-12 text-muted">
+                        <i class="ti ti-info-circle me-1 text-primary"></i>{{ __('Quy chế áp dụng thống nhất cho cả App Người Dùng và Web Quản Trị') }}
+                    </span>
+                    <button type="button" class="btn btn-primary rounded-pill px-4" data-bs-dismiss="modal" style="border-radius: 50px !important;">
+                        {{ __('Đã hiểu') }}
                     </button>
                 </div>
             </div>

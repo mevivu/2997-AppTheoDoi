@@ -167,21 +167,35 @@ class MemoCompetitionService implements MemoCompetitionServiceInterface
     {
         $competition = $this->repository->findOrFail($competitionId);
 
-        // Lấy tất cả lượt thi hợp lệ (hoàn thành xuất sắc cả 4 ván)
+        // Lấy tất cả lượt thi đã hoàn thành của giải đấu
         $entries = MemoCompetitionEntry::where('memo_competition_id', $competitionId)
             ->where('status', MemoCompetitionEntryStatus::Completed)
-            ->where('is_valid', true)
+            ->orderBy('is_valid', 'desc')
             ->orderBy('total_time', 'asc')
             ->orderBy('total_moves', 'asc')
-            ->orderBy('id', 'asc')
+            ->orderBy('completed_at', 'asc')
             ->get();
 
+        $rankedChildren = [];
         $rank = 1;
         $updatedCount = 0;
+
         foreach ($entries as $entry) {
-            $entry->update(['ranking' => $rank]);
-            $rank++;
-            $updatedCount++;
+            if ($entry->is_valid) {
+                // Mỗi bé chỉ nhận 1 thứ hạng tốt nhất trên bảng xếp hạng
+                if (!isset($rankedChildren[$entry->child_id])) {
+                    $entry->ranking = $rank++;
+                    $entry->save();
+                    $rankedChildren[$entry->child_id] = true;
+                    $updatedCount++;
+                } else {
+                    $entry->ranking = null;
+                    $entry->save();
+                }
+            } else {
+                $entry->ranking = null;
+                $entry->save();
+            }
         }
 
         $competition->update([
