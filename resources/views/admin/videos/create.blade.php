@@ -99,6 +99,7 @@
             </x-form>
         </div>
     </div>
+    @include('admin.videos.partials.upload-progress')
 @endsection
 
 @push('libs-js')

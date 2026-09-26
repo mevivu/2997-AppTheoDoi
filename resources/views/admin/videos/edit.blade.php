@@ -17,7 +17,7 @@
                 :back-route="route(RouteAdminSystem::VIDEO_INDEX)"
             />
 
-            <x-form :action="route(RouteAdminSystem::VIDEO_UPDATE)" type="put" :validate="true" :has-file="true" enctype="multipart/form-data">
+            <x-form id="video_edit_form" :action="route(RouteAdminSystem::VIDEO_UPDATE)" type="put" :validate="true" :has-file="true" enctype="multipart/form-data">
                 <x-input type="hidden" name="id" :value="$instance->id" />
                 <div class="row g-4 justify-content-center">
                     @include('admin.videos.forms.edit-left')
@@ -26,6 +26,7 @@
             </x-form>
         </div>
     </div>
+    @include('admin.videos.partials.upload-progress')
 @endsection
 
 @push('libs-js')
