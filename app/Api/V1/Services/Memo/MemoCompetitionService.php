@@ -630,6 +630,7 @@ class MemoCompetitionService
             'attempts_used' => $eligibility['attempts_used'] ?? 0,
             'is_ranking_calculated' => (bool) $comp->ranking_calculated_at,
             'user_children' => $userChildren,
+            'top_leaderboard' => $this->getLeaderboard($comp->id, $childId, 5)['leaderboard'] ?? [],
             'countdown' => [
                 'type' => $isHappening ? 'ending' : ($comp->start_at > $now ? 'starting' : null),
                 'target_at' => $isHappening
