@@ -67,43 +67,6 @@ return [
         ]
     ],
     [
-        'title' => 'Video Giáo Dục',
-        'routeName' => null,
-        'icon' => '<i class="ti ti-video"></i>',
-        'roles' => [],
-        'permissions' => ['viewVideo', 'viewVideoCategory', 'viewAgeGroup'],
-        'sub' => [
-            [
-                'title' => 'Danh sách Video',
-                'routeName' => RouteAdminSystem::VIDEO_INDEX,
-                'icon' => '<i class="ti ti-player-play"></i>',
-                'roles' => [],
-                'permissions' => ['viewVideo'],
-            ],
-            [
-                'title' => 'Thêm Video',
-                'routeName' => RouteAdminSystem::VIDEO_CREATE,
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createVideo'],
-            ],
-            [
-                'title' => 'Danh mục Video',
-                'routeName' => RouteAdminSystem::VIDEO_CATEGORY_INDEX,
-                'icon' => '<i class="ti ti-folder"></i>',
-                'roles' => [],
-                'permissions' => ['viewVideoCategory'],
-            ],
-            [
-                'title' => 'Nhóm độ tuổi',
-                'routeName' => RouteAdminSystem::AGE_GROUP_INDEX,
-                'icon' => '<i class="ti ti-calendar"></i>',
-                'roles' => [],
-                'permissions' => ['viewAgeGroup'],
-            ],
-        ]
-    ],
-    [
         'title' => 'Quá trình phát triển',
         'routeName' => null,
         'icon' => '<i class="ti ti-writing"></i>',
