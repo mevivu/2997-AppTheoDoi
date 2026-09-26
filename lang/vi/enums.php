@@ -31,6 +31,12 @@ use App\Enums\VerifiedStatus;
 use App\Enums\Setting\SettingGroup;
 use App\Enums\ActiveStatus;
 use App\Enums\Exercise\ExerciseType;
+use App\Enums\Video\VideoAccessType;
+use App\Enums\Exercise\{
+    ExerciseDifficulty,
+    ExerciseTopic,
+    ExerciseMediaType
+};
 use App\Enums\Child\ChildStatus;
 use App\Enums\Support\SupportType;
 use App\Enums\Answser\AnswerType;
@@ -257,5 +263,26 @@ return [
         GroupType::LogicMath->value => 'Toán học & Logic',
         GroupType::Visual->value => 'Hình ảnh',
         GroupType::Memory->value => 'Trí nhớ',
-    ]
+    ],
+    VideoAccessType::class => [
+        VideoAccessType::FREE->value => 'Miễn phí',
+        VideoAccessType::VIP->value => 'VIP',
+    ],
+    ExerciseDifficulty::class => [
+        ExerciseDifficulty::EASY->value => 'Dễ',
+        ExerciseDifficulty::MEDIUM->value => 'Trung bình',
+        ExerciseDifficulty::HARD->value => 'Khó',
+        ExerciseDifficulty::ASSISTED->value => 'Có trợ giúp',
+    ],
+    ExerciseTopic::class => [
+        ExerciseTopic::PQ->value => 'PQ (Thể chất)',
+        ExerciseTopic::IQ->value => 'IQ (Trí tuệ)',
+        ExerciseTopic::EQ->value => 'EQ (Cảm xúc)',
+        ExerciseTopic::AQ->value => 'AQ (Vượt khó)',
+        ExerciseTopic::THAI_GIAO->value => 'Thai giáo',
+    ],
+    ExerciseMediaType::class => [
+        ExerciseMediaType::IMAGE->value => 'Hình ảnh',
+        ExerciseMediaType::VIDEO->value => 'Video',
+    ],
 ];

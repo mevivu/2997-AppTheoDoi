@@ -237,6 +237,15 @@ abstract class EloquentRepository implements EloquentRepositoryInterface
         return $this->instance;
     }
 
+    public function getQueryBuilderWithRelations(array $relations = [])
+    {
+        $this->getQueryBuilder();
+
+        $this->instance = $this->instance->with($relations);
+
+        return $this->instance;
+    }
+
     public function updateAttribute(mixed $id, string $attribute, mixed $value): void
     {
         $model = $this->find($id);

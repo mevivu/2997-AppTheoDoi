@@ -397,6 +397,39 @@ class RouteAdminSystem
     const MEMO_COMPETITION_LEADERBOARD = 'admin.memo-game.competition.leaderboard';
     const MEMO_COMPETITION_CALCULATE = 'admin.memo-game.competition.calculate';
 
+    /** AGE GROUP */
+
+    const AGE_GROUP_INDEX = 'admin.age_group.index';
+    const AGE_GROUP_CREATE = 'admin.age_group.create';
+    const AGE_GROUP_STORE = 'admin.age_group.store';
+    const AGE_GROUP_EDIT = 'admin.age_group.edit';
+    const AGE_GROUP_UPDATE = 'admin.age_group.update';
+    const AGE_GROUP_DELETE = 'admin.age_group.delete';
+
+    /** VIDEO CATEGORY */
+    const VIDEO_CATEGORY_INDEX = 'admin.video_category.index';
+    const VIDEO_CATEGORY_CREATE = 'admin.video_category.create';
+    const VIDEO_CATEGORY_STORE = 'admin.video_category.store';
+    const VIDEO_CATEGORY_EDIT = 'admin.video_category.edit';
+    const VIDEO_CATEGORY_UPDATE = 'admin.video_category.update';
+    const VIDEO_CATEGORY_DELETE = 'admin.video_category.delete';
+
+    /** VIDEO */
+    const VIDEO_INDEX = 'admin.video.index';
+    const VIDEO_CREATE = 'admin.video.create';
+    const VIDEO_STORE = 'admin.video.store';
+    const VIDEO_EDIT = 'admin.video.edit';
+    const VIDEO_UPDATE = 'admin.video.update';
+    const VIDEO_DELETE = 'admin.video.delete';
+
+    /** EXERCISE CATEGORY */
+    const EXERCISE_CATEGORY_INDEX = 'admin.exercise_category.index';
+    const EXERCISE_CATEGORY_CREATE = 'admin.exercise_category.create';
+    const EXERCISE_CATEGORY_STORE = 'admin.exercise_category.store';
+    const EXERCISE_CATEGORY_EDIT = 'admin.exercise_category.edit';
+    const EXERCISE_CATEGORY_UPDATE = 'admin.exercise_category.update';
+    const EXERCISE_CATEGORY_DELETE = 'admin.exercise_category.delete';
+
     /**
      * Helper URL dẫn đến trang chi tiết trẻ em tại tab #childrenInfo trong trang sửa thông tin phụ huynh
      * Fallback sang route sửa trẻ em nếu không có thông tin phụ huynh

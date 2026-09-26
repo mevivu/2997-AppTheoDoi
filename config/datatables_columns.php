@@ -2456,5 +2456,206 @@ return [
             'addClass' => 'text-center align-middle',
         ],
     ],
+    'age_group' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'name' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Tên nhóm tuổi</span></div>',
+            'addClass' => 'align-middle',
+            'orderable' => true,
+        ],
+        'min_months' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-arrow-bar-to-down"></i><span>Min (tháng)</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'max_months' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-arrow-bar-to-up"></i><span>Max (tháng)</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'sort_order' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-sort-ascending"></i><span>Thứ tự</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'created_at' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar-event"></i><span>Ngày tạo</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'video_category' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'icon' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-photo"></i><span>Icon</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'name' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-folder"></i><span>Tên danh mục</span></div>',
+            'addClass' => 'align-middle',
+            'orderable' => true,
+        ],
+        'age_group' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Nhóm tuổi</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+
+        'sort_order' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-sort-ascending"></i><span>Thứ tự</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'video' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'thumbnail' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-player-play"></i><span>Thumbnail</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'title' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-video"></i><span>Tiêu đề</span></div>',
+            'addClass' => 'align-middle',
+            'orderable' => true,
+        ],
+        'category' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-category"></i><span>Danh mục</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'access_type' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-lock-access"></i><span>Quyền xem</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'is_preview' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-eye"></i><span>Xem thử</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'duration_seconds' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-clock"></i><span>Thời lượng</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'view_count' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-chart-bar"></i><span>Lượt xem</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'sort_order' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-sort-ascending"></i><span>Thứ tự</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'exercise_category' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'icon' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-photo"></i><span>Icon</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'name' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-folder"></i><span>Tên danh mục</span></div>',
+            'addClass' => 'align-middle',
+            'orderable' => true,
+        ],
+        'topic' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-brain"></i><span>Chủ đề</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'age_group' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Nhóm tuổi</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+
+        'sort_order' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-sort-ascending"></i><span>Thứ tự</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
 ];
+
 

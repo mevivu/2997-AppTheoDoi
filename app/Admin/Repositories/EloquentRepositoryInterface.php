@@ -83,6 +83,8 @@ interface EloquentRepositoryInterface
 
     public function getQueryBuilderOrderBy();
 
+    public function getQueryBuilderWithRelations(array $relations = []);
+
     public function getBy(array $filter, array $relations = []);
     /**
      * make query

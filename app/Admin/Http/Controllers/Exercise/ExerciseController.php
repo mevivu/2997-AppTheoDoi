@@ -80,9 +80,14 @@ class ExerciseController extends Controller
 
     public function create(): Factory|View|Application
     {
+        $categories = \App\Models\ExerciseCategory::with('ageGroup')->active()->orderBy('sort_order')->get();
+
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
             'types' => ExerciseType::asSelectArray(),
+            'categories' => $categories,
+            'difficulties' => \App\Enums\Exercise\ExerciseDifficulty::asSelectArray(),
+            'accessTypes' => \App\Enums\Video\VideoAccessType::asSelectArray(),
             'breadcrumbs' => $this->crums->add('Bài tập')->add('Thêm mới'),
         ]);
     }
@@ -102,16 +107,21 @@ class ExerciseController extends Controller
     public function edit($id): Factory|View|Application
     {
         $response = $this->repository->findOrFail($id);
+        $response->load('media', 'category');
+        $categories = \App\Models\ExerciseCategory::with('ageGroup')->active()->orderBy('sort_order')->get();
+
         return view(
             $this->view['edit'],
             [
                 'response' => $response,
                 'status' => ActiveStatus::asSelectArray(),
                 'types' => ExerciseType::asSelectArray(),
+                'categories' => $categories,
+                'difficulties' => \App\Enums\Exercise\ExerciseDifficulty::asSelectArray(),
+                'accessTypes' => \App\Enums\Video\VideoAccessType::asSelectArray(),
                 'breadcrumbs' => $this->crums->add('Bài tập')->add('Cập nhật'),
             ]
         );
-
     }
 
     public function update(ExerciseRequest $request): RedirectResponse

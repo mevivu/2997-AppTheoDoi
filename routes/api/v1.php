@@ -259,6 +259,18 @@ Route::controller(\App\Api\V1\Http\Controllers\VaccinationSchedule\VaccinationSc
     });
 
 
+// Video Education
+Route::controller(\App\Api\V1\Http\Controllers\Video\VideoController::class)
+    ->prefix('/videos')
+    ->as('video.')
+    ->group(function () {
+        Route::get('/age-groups', 'getAgeGroups');
+        Route::get('/categories', 'getCategories');
+        Route::get('/list', 'getList');
+        Route::get('/{id}', 'show');
+        Route::post('/{id}/view', 'incrementView');
+    });
+
 // Exercise
 Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::class)
     ->prefix('/exercises')
@@ -266,6 +278,10 @@ Route::controller(\App\Api\V1\Http\Controllers\Exercise\ExerciseController::clas
     ->group(function () {
         Route::get('/', 'index');
         Route::get('/detail/{id}', 'detail');
+        Route::get('/categories', 'getCategories');
+        Route::get('/education/list', 'getEducationList');
+        Route::get('/education/{id}', 'getEducationDetail');
+        Route::post('/{id}/practice', 'incrementPractice');
     });
 
 //***** -- Clinic -- ******* //

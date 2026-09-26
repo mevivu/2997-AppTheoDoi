@@ -70,6 +70,11 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\MemoAgeConfig\MemoAgeConfigRepositoryInterface' => 'App\Admin\Repositories\MemoAgeConfig\MemoAgeConfigRepository',
         'App\Admin\Repositories\MemoRating\MemoRatingRepositoryInterface' => 'App\Admin\Repositories\MemoRating\MemoRatingRepository',
         'App\Admin\Repositories\MemoCompetition\MemoCompetitionRepositoryInterface' => 'App\Admin\Repositories\MemoCompetition\MemoCompetitionRepository',
+        'App\Admin\Repositories\AgeGroup\AgeGroupRepositoryInterface' => 'App\Admin\Repositories\AgeGroup\AgeGroupRepository',
+        'App\Admin\Repositories\VideoCategory\VideoCategoryRepositoryInterface' => 'App\Admin\Repositories\VideoCategory\VideoCategoryRepository',
+        'App\Admin\Repositories\Video\VideoRepositoryInterface' => 'App\Admin\Repositories\Video\VideoRepository',
+        'App\Admin\Repositories\ExerciseCategory\ExerciseCategoryRepositoryInterface' => 'App\Admin\Repositories\ExerciseCategory\ExerciseCategoryRepository',
+        'App\Admin\Repositories\ExerciseMedia\ExerciseMediaRepositoryInterface' => 'App\Admin\Repositories\ExerciseMedia\ExerciseMediaRepository',
     ];
 
     /**

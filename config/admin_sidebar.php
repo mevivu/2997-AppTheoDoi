@@ -64,8 +64,43 @@ return [
                 'roles' => [],
                 'permissions' => ['viewTransaction'],
             ],
-
-
+        ]
+    ],
+    [
+        'title' => 'Video Giáo Dục',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-video"></i>',
+        'roles' => [],
+        'permissions' => ['viewVideo', 'viewVideoCategory', 'viewAgeGroup'],
+        'sub' => [
+            [
+                'title' => 'Danh sách Video',
+                'routeName' => RouteAdminSystem::VIDEO_INDEX,
+                'icon' => '<i class="ti ti-player-play"></i>',
+                'roles' => [],
+                'permissions' => ['viewVideo'],
+            ],
+            [
+                'title' => 'Thêm Video',
+                'routeName' => RouteAdminSystem::VIDEO_CREATE,
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createVideo'],
+            ],
+            [
+                'title' => 'Danh mục Video',
+                'routeName' => RouteAdminSystem::VIDEO_CATEGORY_INDEX,
+                'icon' => '<i class="ti ti-folder"></i>',
+                'roles' => [],
+                'permissions' => ['viewVideoCategory'],
+            ],
+            [
+                'title' => 'Nhóm độ tuổi',
+                'routeName' => RouteAdminSystem::AGE_GROUP_INDEX,
+                'icon' => '<i class="ti ti-calendar"></i>',
+                'roles' => [],
+                'permissions' => ['viewAgeGroup'],
+            ],
         ]
     ],
     [
@@ -302,36 +337,80 @@ return [
             ],
         ]
     ],
-//    [
-//        'title' => 'Bài tập',
-//        'routeName' => null,
-//        'icon' => '<i class="ti ti-book"></i>',
-//        'roles' => [],
-//        'permissions' => ['createExercise', 'viewExercise', 'updateExercise', 'deleteExercise'],
-//        'sub' => [
-//            [
-//                'title' => 'Thêm Bài tập',
-//                'routeName' => RouteAdminSystem::EXERCISE_CREATE,
-//                'icon' => '<i class="ti ti-plus"></i>',
-//                'roles' => [],
-//                'permissions' => ['createExercise'],
-//            ],
-//            [
-//                'title' => 'Bài tập thể chất',
-//                'routeName' => RouteAdminSystem::EXERCISE_PHYSICAL,
-//                'icon' => '<i class="ti ti-swimming"></i>',
-//                'roles' => [],
-//                'permissions' => ['viewExercise'],
-//            ],
-//            [
-//                'title' => 'Bài tập sức mạnh',
-//                'routeName' => RouteAdminSystem::EXERCISE_POWER,
-//                'icon' => '<i class="ti ti-barbell"></i>',
-//                'roles' => [],
-//                'permissions' => ['viewExercise'],
-//            ],
-//        ]
-//    ],
+    [
+        'title' => 'Video Giáo dục',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-video"></i>',
+        'roles' => [],
+        'permissions' => ['viewVideo', 'createVideo', 'viewVideoCategory', 'createVideoCategory', 'viewAgeGroup', 'createAgeGroup'],
+        'sub' => [
+            [
+                'title' => 'Thêm Video',
+                'routeName' => RouteAdminSystem::VIDEO_CREATE,
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createVideo'],
+            ],
+            [
+                'title' => 'DS Video',
+                'routeName' => RouteAdminSystem::VIDEO_INDEX,
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewVideo'],
+            ],
+            [
+                'title' => 'Danh mục Video',
+                'routeName' => RouteAdminSystem::VIDEO_CATEGORY_INDEX,
+                'icon' => '<i class="ti ti-category"></i>',
+                'roles' => [],
+                'permissions' => ['viewVideoCategory'],
+            ],
+            [
+                'title' => 'Nhóm độ tuổi',
+                'routeName' => RouteAdminSystem::AGE_GROUP_INDEX,
+                'icon' => '<i class="ti ti-calendar"></i>',
+                'roles' => [],
+                'permissions' => ['viewAgeGroup'],
+            ],
+        ]
+    ],
+    [
+        'title' => 'Bài tập',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-stretching"></i>',
+        'roles' => [],
+        'permissions' => ['createExercise', 'viewExercise', 'updateExercise', 'deleteExercise', 'viewExerciseCategory', 'createExerciseCategory'],
+        'sub' => [
+            [
+                'title' => 'Thêm Bài tập',
+                'routeName' => RouteAdminSystem::EXERCISE_CREATE,
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createExercise'],
+            ],
+            [
+                'title' => 'Danh mục Bài tập',
+                'routeName' => RouteAdminSystem::EXERCISE_CATEGORY_INDEX,
+                'icon' => '<i class="ti ti-category"></i>',
+                'roles' => [],
+                'permissions' => ['viewExerciseCategory'],
+            ],
+            [
+                'title' => 'Bài tập thể chất',
+                'routeName' => RouteAdminSystem::EXERCISE_PHYSICAL,
+                'icon' => '<i class="ti ti-swimming"></i>',
+                'roles' => [],
+                'permissions' => ['viewExercise'],
+            ],
+            [
+                'title' => 'Bài tập sức mạnh',
+                'routeName' => RouteAdminSystem::EXERCISE_POWER,
+                'icon' => '<i class="ti ti-barbell"></i>',
+                'roles' => [],
+                'permissions' => ['viewExercise'],
+            ],
+        ]
+    ],
     [
         'title' => 'Bài viết',
         'routeName' => null,

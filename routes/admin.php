@@ -212,6 +212,98 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
+
+    // Age Groups
+    Route::controller(\App\Admin\Http\Controllers\AgeGroup\AgeGroupController::class)
+        ->prefix('/age-groups')
+        ->as('age_group.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:viewAgeGroup', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['permission:createAgeGroup', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:updateAgeGroup', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:deleteAgeGroup', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
+    // Video Categories
+    Route::controller(\App\Admin\Http\Controllers\Video\VideoCategoryController::class)
+        ->prefix('/video-categories')
+        ->as('video_category.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:viewVideoCategory', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['permission:createVideoCategory', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:updateVideoCategory', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:deleteVideoCategory', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
+    // Videos
+    Route::controller(\App\Admin\Http\Controllers\Video\VideoController::class)
+        ->prefix('/videos')
+        ->as('video.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:viewVideo', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['auth:admin']], function () {
+                Route::get('/fetch-youtube-info', 'fetchYouTubeInfo')->name('fetch_youtube_info');
+            });
+            Route::group(['middleware' => ['permission:createVideo', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:updateVideo', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:deleteVideo', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
+    // Exercise Categories
+    Route::controller(\App\Admin\Http\Controllers\ExerciseCategory\ExerciseCategoryController::class)
+        ->prefix('/exercise-categories')
+        ->as('exercise_category.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:viewExerciseCategory', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['permission:createExerciseCategory', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:updateExerciseCategory', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:deleteExerciseCategory', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
+
     //Classes
     Route::controller(\App\Admin\Http\Controllers\Classes\ClassesController::class)
         ->prefix('/lop')

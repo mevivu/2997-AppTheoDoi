@@ -17,7 +17,7 @@
                 :back-route="$response->exercise_type == \App\Enums\Exercise\ExerciseType::POWER ? route('admin.exercise.power') : route('admin.exercise.physical')"
             />
 
-            <x-form :action="route(RouteAdminSystem::EXERCISE_UPDATE)" type="put" :validate="true">
+            <x-form :action="route(RouteAdminSystem::EXERCISE_UPDATE)" type="put" :validate="true" :has-files="true">
                 <x-input type="hidden" name="id" :value="$response->id" />
                 <div class="row g-4 justify-content-center">
                     @include('admin.exercise.forms.edit-left')

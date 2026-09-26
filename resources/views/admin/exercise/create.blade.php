@@ -17,7 +17,7 @@
                 :back-route="request()->back == 'power' ? route('admin.exercise.power') : route('admin.exercise.physical')"
             />
 
-            <x-form :action="route(RouteAdminSystem::EXERCISE_STORE)" type="post" :validate="true">
+            <x-form :action="route(RouteAdminSystem::EXERCISE_STORE)" type="post" :validate="true" :has-files="true">
                 <div class="row g-4 justify-content-center">
                     @include('admin.exercise.forms.create-left')
                     @include('admin.exercise.forms.create-right')
