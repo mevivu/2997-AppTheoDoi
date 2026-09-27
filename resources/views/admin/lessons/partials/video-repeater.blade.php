@@ -32,6 +32,7 @@
         <input type="hidden" name="videos[0][id]" value="{{ $videoId }}">
         <input type="hidden" name="videos[0][sort_order]" value="1">
         <input type="hidden" name="videos[0][video_path]" id="single_r2_path" value="{{ $videoPath }}">
+        <input type="hidden" name="videos[0][video_url]" id="single_final_video_url" value="{{ $videoUrl }}">
 
         <div class="row g-3">
             {{-- 1. Nguồn phát video (YouTube / Cloudflare R2) - 2 Thẻ chọn hiện đại --}}
@@ -87,9 +88,10 @@
                     <span class="input-group-text bg-white text-danger border-end-0">
                         <i class="ti ti-link fs-2"></i>
                     </span>
-                    <input type="text" name="videos[0][video_url]" id="single_yt_url" class="form-control border-start-0 ps-0"
+                    <input type="text" id="single_yt_url" class="form-control border-start-0 ps-0"
                            value="{{ $videoType === 'youtube' ? $videoUrl : '' }}"
-                           placeholder="https://www.youtube.com/watch?v=... hoặc https://youtu.be/...">
+                           placeholder="https://www.youtube.com/watch?v=... hoặc https://youtu.be/..."
+                           autocomplete="off">
                     <button type="button" class="btn btn-danger fw-semibold px-3" id="btn_fetch_single_yt" title="Tự động nhận diện tiêu đề, thời lượng và ảnh bìa">
                         <i class="ti ti-sparkles me-1"></i>{{ __('Lấy thông tin') }}
                     </button>
@@ -174,7 +176,7 @@
                             <div class="overflow-hidden">
                                 <div class="fw-bold fs-13 text-success">{{ __('Video đã được lưu trữ an toàn trên Cloudflare R2!') }}</div>
                                 <div class="text-muted fs-11 text-truncate mt-1" id="single_r2_url_text">{{ $videoType === 'r2' ? $videoUrl : '' }}</div>
-                                <input type="hidden" name="videos[0][video_url]" id="single_r2_url" value="{{ $videoType === 'r2' ? $videoUrl : '' }}">
+                                <input type="hidden" id="single_r2_url" value="{{ $videoType === 'r2' ? $videoUrl : '' }}">
                             </div>
                         </div>
                         <a href="{{ $videoType === 'r2' ? $videoUrl : '#' }}" target="_blank" class="btn btn-success btn-sm flex-shrink-0 ms-2" id="single_r2_preview_link">
@@ -338,6 +340,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const ytUrlInput = document.getElementById('single_yt_url');
     const r2UrlInput = document.getElementById('single_r2_url');
     const r2PathInput = document.getElementById('single_r2_path');
+    const finalVideoUrlInput = document.getElementById('single_final_video_url');
     const btnFetchYt = document.getElementById('btn_fetch_single_yt');
     const titleInput = document.getElementById('single_video_title');
     const durationInput = document.getElementById('single_video_duration');
@@ -391,6 +394,13 @@ document.addEventListener('DOMContentLoaded', function () {
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
     }
 
+    function extractYouTubeId(url) {
+        if (!url) return null;
+        url = url.trim();
+        const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([a-zA-Z0-9_-]{11})/);
+        return m ? m[1] : null;
+    }
+
     // Toggle Loại video (YouTube / R2)
     function syncSourceCards() {
         sourceCards.forEach(card => {
@@ -414,7 +424,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 previewSource.textContent = 'Cloudflare R2';
                 previewSource.className = 'badge bg-warning text-dark px-2 py-0 fs-11 fw-bold';
                 
-                const currentR2Url = r2UrlInput ? r2UrlInput.value : '';
+                const currentR2Url = r2UrlInput ? r2UrlInput.value.trim() : '';
+                if (finalVideoUrlInput) finalVideoUrlInput.value = currentR2Url;
+
                 if (currentR2Url) {
                     previewLink.textContent = currentR2Url;
                     previewBtnOpen.href = currentR2Url;
@@ -430,11 +442,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 previewSource.textContent = 'YouTube';
                 previewSource.className = 'badge bg-danger text-white px-2 py-0 fs-11 fw-bold';
                 
-                const currentYtUrl = ytUrlInput ? ytUrlInput.value : '';
+                const currentYtUrl = ytUrlInput ? ytUrlInput.value.trim() : '';
+                if (finalVideoUrlInput) finalVideoUrlInput.value = currentYtUrl;
+
                 if (currentYtUrl) {
-                    previewLink.textContent = currentYtUrl;
-                    previewBtnOpen.href = currentYtUrl;
-                    previewBox.classList.remove('d-none');
+                    handleYouTubeUrlChange(true);
                 } else {
                     previewBox.classList.add('d-none');
                 }
@@ -456,38 +468,76 @@ document.addEventListener('DOMContentLoaded', function () {
         previewTitle.textContent = this.value || 'Video hướng dẫn bài học';
     });
 
-    // Cập nhật preview link khi gõ tay YouTube
-    ytUrlInput.addEventListener('input', function () {
-        if (this.value.trim()) {
-            previewLink.textContent = this.value.trim();
-            previewBtnOpen.href = this.value.trim();
-            previewBox.classList.remove('d-none');
-        }
-    });
+    // Xử lý thông minh: Load ngay YouTube URL khi gõ / dán link
+    let ytFetchTimeout = null;
+    let isFetchingYt = false;
 
-    // Lấy thông tin video YouTube tự động
-    btnFetchYt.addEventListener('click', function () {
+    function handleYouTubeUrlChange(immediate = false, forceRefresh = false) {
+        if (!ytUrlInput) return;
         const url = ytUrlInput.value.trim();
+        if (finalVideoUrlInput) finalVideoUrlInput.value = url;
+
         if (!url) {
-            alert('Vui lòng dán link YouTube trước khi bấm lấy thông tin.');
+            previewBox.classList.add('d-none');
             return;
         }
 
-        btnFetchYt.disabled = true;
-        btnFetchYt.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang quét...';
+        const ytId = extractYouTubeId(url);
+        if (ytId) {
+            // 1. TẢI NGAY LẬP TỨC (0ms latency): Hiển thị thumbnail và khung preview ngay
+            const instantThumb = 'https://img.youtube.com/vi/' + ytId + '/hqdefault.jpg';
+            previewThumb.src = instantThumb;
+            if (!thumbInput.value || thumbInput.value.includes('img.youtube.com') || thumbInput.value.includes('default.png') || forceRefresh) {
+                thumbInput.value = instantThumb;
+            }
+            previewLink.textContent = url;
+            previewBtnOpen.href = url;
+            previewSource.textContent = 'YouTube';
+            previewSource.className = 'badge bg-danger text-white px-2 py-0 fs-11 fw-bold';
+            previewBox.classList.remove('d-none');
+
+            // 2. Tự động gọi API lấy Tiêu đề & Thời lượng chính xác
+            clearTimeout(ytFetchTimeout);
+            if (immediate) {
+                fetchYouTubeInfoData(url);
+            } else {
+                ytFetchTimeout = setTimeout(() => {
+                    fetchYouTubeInfoData(url);
+                }, 400);
+            }
+        } else {
+            previewLink.textContent = url;
+            previewBtnOpen.href = url;
+            previewBox.classList.remove('d-none');
+        }
+    }
+
+    function fetchYouTubeInfoData(url, isManual = false) {
+        if (!url || isFetchingYt) return;
+        isFetchingYt = true;
+
+        if (btnFetchYt) {
+            btnFetchYt.disabled = true;
+            btnFetchYt.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{{ __("Đang quét...") }}';
+        }
 
         fetch('{{ route("admin.lesson.fetch_youtube_info") }}?url=' + encodeURIComponent(url))
             .then(res => res.json())
             .then(res => {
-                btnFetchYt.disabled = false;
-                btnFetchYt.innerHTML = '<i class="ti ti-sparkles me-1"></i>Lấy thông tin';
+                isFetchingYt = false;
+                if (btnFetchYt) {
+                    btnFetchYt.disabled = false;
+                    btnFetchYt.innerHTML = '<i class="ti ti-sparkles me-1"></i>{{ __("Lấy thông tin") }}';
+                }
 
                 if (res.status) {
-                    if (res.title && (!titleInput.value || titleInput.value.trim() === '')) {
-                        titleInput.value = res.title;
+                    if (res.title) {
+                        if (!titleInput.value || titleInput.value.trim() === '' || titleInput.value.startsWith('Video') || isManual) {
+                            titleInput.value = res.title;
+                        }
                         previewTitle.textContent = res.title;
                     }
-                    if (res.duration_seconds) {
+                    if (res.duration_seconds && res.duration_seconds > 0) {
                         durationInput.value = res.duration_seconds;
                         durationPreview.textContent = formatDuration(res.duration_seconds);
                         previewDuration.textContent = res.formatted_duration || formatDuration(res.duration_seconds);
@@ -500,16 +550,72 @@ document.addEventListener('DOMContentLoaded', function () {
                     previewBox.classList.remove('d-none');
                     previewLink.textContent = url;
                     previewBtnOpen.href = url;
-                } else {
+                } else if (isManual) {
                     alert(res.message || 'Không thể lấy thông tin video YouTube. Vui lòng kiểm tra lại đường dẫn.');
                 }
             })
             .catch(() => {
-                btnFetchYt.disabled = false;
-                btnFetchYt.innerHTML = '<i class="ti ti-sparkles me-1"></i>Lấy thông tin';
-                alert('Lỗi kết nối khi quét thông tin YouTube.');
+                isFetchingYt = false;
+                if (btnFetchYt) {
+                    btnFetchYt.disabled = false;
+                    btnFetchYt.innerHTML = '<i class="ti ti-sparkles me-1"></i>{{ __("Lấy thông tin") }}';
+                }
+                if (isManual) {
+                    alert('Lỗi kết nối khi quét thông tin YouTube.');
+                }
             });
+    }
+
+    // Sự kiện nhập link YouTube: Gõ phím, dán (paste), blur, change
+    ytUrlInput.addEventListener('input', function () {
+        handleYouTubeUrlChange(false);
     });
+
+    ytUrlInput.addEventListener('paste', function () {
+        setTimeout(function () {
+            handleYouTubeUrlChange(true);
+        }, 30);
+    });
+
+    ytUrlInput.addEventListener('change', function () {
+        handleYouTubeUrlChange(true);
+    });
+
+    ytUrlInput.addEventListener('blur', function () {
+        handleYouTubeUrlChange(true);
+    });
+
+    // Nút bấm thủ công
+    if (btnFetchYt) {
+        btnFetchYt.addEventListener('click', function () {
+            const url = ytUrlInput.value.trim();
+            if (!url) {
+                alert('Vui lòng dán link YouTube trước khi bấm lấy thông tin.');
+                return;
+            }
+            fetchYouTubeInfoData(url, true);
+        });
+    }
+
+    // Đảm bảo dữ liệu trước khi submit form
+    const parentForm = ytUrlInput.closest('form');
+    if (parentForm) {
+        parentForm.addEventListener('submit', function () {
+            const checkedRadio = document.querySelector('.single-video-type-radio:checked');
+            const vType = checkedRadio ? checkedRadio.value : 'youtube';
+            if (vType === 'youtube') {
+                if (finalVideoUrlInput) finalVideoUrlInput.value = ytUrlInput.value.trim();
+            } else {
+                if (finalVideoUrlInput) finalVideoUrlInput.value = r2UrlInput.value.trim();
+            }
+        });
+    }
+
+    // Tự động nhận diện ban đầu khi load trang (đặc biệt khi mở trang edit)
+    const initialVideoType = document.querySelector('.single-video-type-radio:checked')?.value || 'youtube';
+    if (initialVideoType === 'youtube' && ytUrlInput.value.trim()) {
+        handleYouTubeUrlChange(false, false);
+    }
 
     // Dropzone Interactivity
     btnBrowse.addEventListener('click', (e) => {
@@ -615,6 +721,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         // Update fields
                         r2ResultBox.classList.remove('d-none');
                         r2UrlInput.value = res.url;
+                        if (finalVideoUrlInput) finalVideoUrlInput.value = res.url;
                         r2PathInput.value = res.path;
                         r2UrlText.textContent = res.url;
                         r2PreviewLink.href = res.url;

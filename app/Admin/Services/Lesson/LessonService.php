@@ -42,9 +42,10 @@ class LessonService implements LessonServiceInterface
     public function update(Request $request)
     {
         $data = $request->validated();
+        $id = $data['id'] ?? $request->input('id');
 
-        return DB::transaction(function () use ($data, $request) {
-            $lesson = $this->repository->update($data['id'], $data);
+        return DB::transaction(function () use ($id, $data, $request) {
+            $lesson = $this->repository->update($id, $data);
 
             $this->syncVideos($lesson, $request);
 
@@ -89,15 +90,23 @@ class LessonService implements LessonServiceInterface
         $processedVideoIds = [];
 
         foreach ($videosData as $index => $item) {
-            if (empty($item['video_url']) && empty($item['video_file'])) {
+            $videoUrl = trim($item['video_url'] ?? '');
+            $videoPath = trim($item['video_path'] ?? '');
+            $fileKey = "videos.{$index}.video_file";
+            $hasFile = $request->hasFile($fileKey);
+
+            if (empty($videoUrl) && empty($videoPath) && !$hasFile) {
                 continue;
             }
 
             $videoId = !empty($item['id']) ? (int) $item['id'] : null;
+            // Nếu không có videoId từ form nhưng bài học đã có video trong DB -> gắn ID để cập nhật
+            if (!$videoId && !empty($existingVideoIds)) {
+                $videoId = $existingVideoIds[0];
+            }
+
             $videoType = $item['video_type'] ?? 'youtube';
             $durationSeconds = !empty($item['duration_seconds']) ? (int) $item['duration_seconds'] : 0;
-            $videoUrl = $item['video_url'] ?? '';
-            $videoPath = $item['video_path'] ?? null;
             $thumbnail = $item['thumbnail'] ?? null;
 
             // Xử lý tự động lấy thời lượng YouTube nếu thiếu
@@ -108,9 +117,16 @@ class LessonService implements LessonServiceInterface
                 }
             }
 
+            // Tự động bổ sung thumbnail YouTube nếu thiếu
+            if ($videoType === 'youtube' && !empty($videoUrl) && empty($thumbnail)) {
+                $ytId = LessonVideo::extractYouTubeId($videoUrl);
+                if ($ytId) {
+                    $thumbnail = "https://img.youtube.com/vi/{$ytId}/hqdefault.jpg";
+                }
+            }
+
             // Xử lý upload file video R2 từ form repeater (nếu có file gửi kèm)
-            $fileKey = "videos.{$index}.video_file";
-            if ($request->hasFile($fileKey)) {
+            if ($hasFile) {
                 $uploadResult = $this->fileService->uploadVideoToR2(
                     $request->file($fileKey),
                     'videos/lessons'
@@ -121,7 +137,7 @@ class LessonService implements LessonServiceInterface
 
             $payload = [
                 'lesson_id' => $lesson->id,
-                'title' => $item['title'] ?? ('Video ' . ($index + 1)),
+                'title' => !empty($item['title']) ? $item['title'] : ($lesson->name ?? ('Video ' . ($index + 1))),
                 'video_type' => $videoType,
                 'video_url' => $videoUrl,
                 'video_path' => $videoPath,

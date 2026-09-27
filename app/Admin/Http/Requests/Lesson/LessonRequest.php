@@ -25,7 +25,7 @@ class LessonRequest extends BaseRequest
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'status' => ['required', new Enum(ActiveStatus::class)],
             'videos' => ['nullable', 'array'],
-            'videos.*.id' => ['nullable', 'integer'],
+            'videos.*.id' => ['nullable'],
             'videos.*.title' => ['nullable', 'string', 'max:255'],
             'videos.*.video_type' => ['nullable', 'string', 'in:youtube,r2'],
             'videos.*.video_url' => ['nullable', 'string', 'max:500'],
