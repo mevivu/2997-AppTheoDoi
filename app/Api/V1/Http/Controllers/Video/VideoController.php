@@ -3,6 +3,9 @@
 namespace App\Api\V1\Http\Controllers\Video;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Api\V1\Http\Requests\Video\AgeGroupRequest;
+use App\Api\V1\Http\Requests\Video\VideoCategoryRequest;
+use App\Api\V1\Http\Requests\Video\VideoListRequest;
 use App\Api\V1\Http\Resources\Video\AgeGroupResource;
 use App\Api\V1\Http\Resources\Video\VideoCategoryResource;
 use App\Api\V1\Http\Resources\Video\VideoResource;
@@ -20,6 +23,7 @@ use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * @group Video Giáo dục
@@ -50,25 +54,32 @@ class VideoController extends Controller
      *
      * Hỗ trợ truyền ?child_id=X hoặc ?child_age_months=X để tự động lấy 3 nhóm tuổi gần nhất với tuổi của trẻ
      *
-     * @queryParam child_id integer ID của trẻ
-     * @queryParam child_age_months integer Tuổi của trẻ theo số tháng
+     * @queryParam child_id integer ID của trẻ (bắt buộc đăng nhập để xác thực quyền sở hữu)
+     * @queryParam child_age_months integer Tuổi của trẻ theo số tháng (0 - 240)
      *
      * @return JsonResponse
      */
-    public function getAgeGroups(Request $request): JsonResponse
+    public function getAgeGroups(AgeGroupRequest $request): JsonResponse
     {
         try {
             $childAgeMonths = null;
             $isUnborn = false;
 
             if ($request->filled('child_id')) {
-                $child = Child::find($request->input('child_id'));
-                if ($child) {
-                    if ($child->is_born == BornStatus::Unborn) {
-                        $isUnborn = true;
-                    } elseif ($child->birthday) {
-                        $childAgeMonths = Carbon::parse($child->birthday)->diffInMonths(now());
-                    }
+                $user = auth('api')->user();
+                if (!$user) {
+                    return $this->jsonResponseError('Vui lòng đăng nhập để chọn hồ sơ của trẻ.', 401);
+                }
+
+                $child = $user->children()->find($request->input('child_id'));
+                if (!$child) {
+                    return $this->jsonResponseError('Không tìm thấy thông tin của trẻ hoặc bạn không có quyền truy cập hồ sơ này.', 404);
+                }
+
+                if ($child->is_born == BornStatus::Unborn) {
+                    $isUnborn = true;
+                } elseif ($child->birthday) {
+                    $childAgeMonths = Carbon::parse($child->birthday)->diffInMonths(now());
                 }
             } elseif ($request->filled('child_age_months')) {
                 $childAgeMonths = (int) $request->input('child_age_months');
@@ -145,12 +156,16 @@ class VideoController extends Controller
      *
      * @return JsonResponse
      */
-    public function getCategories(Request $request): JsonResponse
+    public function getCategories(VideoCategoryRequest $request): JsonResponse
     {
         try {
             $query = VideoCategory::active()
                 ->with('ageGroup')
-                ->withCount('videos');
+                ->withCount([
+                    'videos as videos_count' => fn ($q) => $q->active(),
+                    'videos as free_videos_count' => fn ($q) => $q->active()->free(),
+                    'videos as vip_videos_count' => fn ($q) => $q->active()->vip(),
+                ]);
 
             if ($request->filled('age_group_id')) {
                 $query->where('age_group_id', $request->input('age_group_id'));
@@ -172,13 +187,13 @@ class VideoController extends Controller
      * @queryParam video_category_id integer ID danh mục video (alias)
      * @queryParam age_group_id integer ID nhóm tuổi
      * @queryParam access_type string 'free' hoặc 'vip'
-     * @queryParam keyword string Tìm kiếm theo tiêu đề
+     * @queryParam keyword string Tìm kiếm theo tiêu đề (tối đa 100 ký tự)
      * @queryParam page integer Trang hiện tại (mặc định 1)
-     * @queryParam limit integer Số lượng trên trang (mặc định 15)
+     * @queryParam limit integer Số lượng trên trang (1 - 50, mặc định 15)
      *
      * @return JsonResponse
      */
-    public function getList(Request $request): JsonResponse
+    public function getList(VideoListRequest $request): JsonResponse
     {
         try {
             $query = Video::active()->with('category');
@@ -239,7 +254,7 @@ class VideoController extends Controller
     }
 
     /**
-     * Chi tiết Video (kèm phân quyền Free/VIP)
+     * Chi tiết Video (kèm phân quyền Free/VIP và danh sách video liên quan)
      *
      * @param int $id
      * @return JsonResponse
@@ -262,7 +277,57 @@ class VideoController extends Controller
                 }
             }
 
-            return $this->jsonResponseSuccess(new VideoResource($video));
+            // Lấy 6 - 8 video liên quan trong cùng danh mục
+            $relatedQuery = Video::active()
+                ->where('id', '!=', $video->id);
+
+            if ($video->video_category_id) {
+                $relatedQuery->where('video_category_id', $video->video_category_id);
+            }
+
+            $relatedVideos = $relatedQuery->orderBy('sort_order', 'asc')
+                ->orderBy('created_at', 'desc')
+                ->take(8)
+                ->get();
+
+            // Nếu cùng danh mục có ít hơn 4 video, lấy bổ sung các video cùng nhóm tuổi
+            if ($relatedVideos->count() < 4 && $video->category?->age_group_id) {
+                $ageGroupId = $video->category->age_group_id;
+                $excludedIds = $relatedVideos->pluck('id')->push($video->id)->all();
+
+                $moreVideos = Video::active()
+                    ->whereNotIn('id', $excludedIds)
+                    ->whereHas('category', function ($q) use ($ageGroupId) {
+                        $q->where('age_group_id', $ageGroupId);
+                    })
+                    ->orderBy('sort_order', 'asc')
+                    ->orderBy('created_at', 'desc')
+                    ->take(8 - $relatedVideos->count())
+                    ->get();
+
+                $relatedVideos = $relatedVideos->concat($moreVideos);
+            }
+
+            // Áp dụng quyền Free / VIP cho danh sách video liên quan
+            $relatedVideos->transform(function ($item) use ($isVip) {
+                if ($isVip) {
+                    $item->is_locked = false;
+                } else {
+                    if ($item->access_type == VideoAccessType::FREE) {
+                        $item->is_locked = false;
+                    } elseif ($item->access_type == VideoAccessType::VIP && $item->is_preview) {
+                        $item->is_locked = false;
+                    } else {
+                        $item->is_locked = true;
+                    }
+                }
+                return $item;
+            });
+
+            return $this->jsonResponseSuccess([
+                'video' => new VideoResource($video),
+                'related_videos' => VideoResource::collection($relatedVideos),
+            ]);
         } catch (Exception $e) {
             $this->logError('Get Video detail failed:', $e);
             return $this->jsonResponseError('Không tìm thấy video hoặc video đã bị ẩn', 404);
@@ -270,16 +335,33 @@ class VideoController extends Controller
     }
 
     /**
-     * Tăng lượt xem video
+     * Tăng lượt xem video (kèm rate limit, deduplication và kiểm tra quyền VIP)
      *
+     * @param Request $request
      * @param int $id
      * @return JsonResponse
      */
-    public function incrementView($id): JsonResponse
+    public function incrementView(Request $request, $id): JsonResponse
     {
         try {
-            $video = Video::findOrFail($id);
-            $video->increment('view_count');
+            $video = Video::active()->findOrFail($id);
+
+            // Kiểm tra quyền xem nếu là video VIP
+            if ($video->access_type == VideoAccessType::VIP && !$video->is_preview) {
+                if (!$this->isVipUser()) {
+                    return $this->jsonResponseError('Bạn không có quyền xem video này.', 403);
+                }
+            }
+
+            // Deduplication theo Cache: 1 user/device chỉ được tính 1 view/video trong vòng 2 giờ
+            $user = auth('api')->user();
+            $identifier = $user ? "user_{$user->id}" : ('ip_' . md5($request->ip() . '_' . ($request->userAgent() ?? '')));
+            $cacheKey = "video_view:{$video->id}:{$identifier}";
+
+            if (!Cache::has($cacheKey)) {
+                $video->increment('view_count');
+                Cache::put($cacheKey, 1, now()->addHours(2));
+            }
 
             return $this->jsonResponseSuccess([
                 'id' => $video->id,
@@ -287,7 +369,7 @@ class VideoController extends Controller
             ], __('Cập nhật lượt xem thành công.'));
         } catch (Exception $e) {
             $this->logError('Increment video view failed:', $e);
-            return $this->jsonResponseError('Không thể cập nhật lượt xem', 404);
+            return $this->jsonResponseError('Không tìm thấy video hoặc video đã bị ẩn', 404);
         }
     }
 }

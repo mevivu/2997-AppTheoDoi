@@ -25,7 +25,9 @@ class VideoCategoryResource extends JsonResource
             'age_group_id' => $this->age_group_id,
             'age_group_name' => $this->ageGroup?->name,
             'sort_order' => (int) $this->sort_order,
-            'videos_count' => $this->whenCounted('videos'),
+            'videos_count' => (int) ($this->videos_count ?? 0),
+            'free_videos_count' => (int) ($this->free_videos_count ?? 0),
+            'vip_videos_count' => (int) ($this->vip_videos_count ?? 0),
         ];
     }
 }

@@ -268,7 +268,7 @@ Route::controller(\App\Api\V1\Http\Controllers\Video\VideoController::class)
         Route::get('/categories', 'getCategories');
         Route::get('/list', 'getList');
         Route::get('/{id}', 'show');
-        Route::post('/{id}/view', 'incrementView');
+        Route::post('/{id}/view', 'incrementView')->middleware('throttle:30,1');
     });
 
 // Exercise
