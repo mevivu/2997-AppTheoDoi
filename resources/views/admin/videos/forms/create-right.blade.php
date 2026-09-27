@@ -32,6 +32,40 @@
         border-color: #0284c7 !important;
         box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12) !important;
     }
+
+    /* Access Type Radio Active States */
+    .access-type-card {
+        border: 2px solid #e2e8f0 !important;
+        background-color: #ffffff !important;
+        transition: all 0.22s ease-in-out !important;
+        position: relative;
+    }
+    .access-type-card:hover {
+        border-color: #cbd5e1 !important;
+        transform: translateY(-1px);
+    }
+
+    /* Active: Miễn phí (Free) */
+    .access-type-radio[value="free"]:checked + .access-type-card {
+        border-color: #10b981 !important;
+        background-color: #f0fdf4 !important;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.20), 0 4px 12px rgba(16, 185, 129, 0.08) !important;
+    }
+    .access-type-radio[value="free"]:checked + .access-type-card .active-indicator-free {
+        opacity: 1 !important;
+        transform: scale(1) !important;
+    }
+
+    /* Active: Gói VIP */
+    .access-type-radio[value="vip"]:checked + .access-type-card {
+        border-color: #f59e0b !important;
+        background-color: #fffbeb !important;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25), 0 4px 12px rgba(245, 158, 11, 0.10) !important;
+    }
+    .access-type-radio[value="vip"]:checked + .access-type-card .active-indicator-vip {
+        opacity: 1 !important;
+        transform: scale(1) !important;
+    }
 </style>
 
 <div class="col-12 col-lg-4 settings-column">
@@ -51,10 +85,10 @@
             </label>
 
             {{-- Visual Choice Cards for Access Type --}}
-            <div class="d-flex flex-column gap-2 mb-3">
-                <label class="form-selectgroup-item flex-fill access-choice">
-                    <input type="radio" name="access_type" value="free" class="form-selectgroup-input" {{ old('access_type', 'free') == 'free' ? 'checked' : '' }} onchange="togglePreviewSwitch()">
-                    <div class="form-selectgroup-label d-flex align-items-center p-3 border rounded-3 text-start transition-all cursor-pointer">
+            <div class="d-flex flex-column gap-3 mb-3">
+                <label class="form-selectgroup-item flex-fill m-0 cursor-pointer">
+                    <input type="radio" name="access_type" value="free" class="form-selectgroup-input access-type-radio" {{ old('access_type', 'free') == 'free' ? 'checked' : '' }} onchange="togglePreviewSwitch()">
+                    <div class="form-selectgroup-label access-type-card d-flex align-items-center p-3 rounded-3 text-start cursor-pointer">
                         <div class="me-3">
                             <span class="avatar bg-success-lt rounded-circle" style="width: 46px; height: 46px;">
                                 <i class="ti ti-gift fs-2 text-success"></i>
@@ -67,12 +101,17 @@
                             </div>
                             <small class="text-muted d-block fs-14">{{ __('Mọi tài khoản phụ huynh đều được xem toàn bộ video này.') }}</small>
                         </div>
+                        <div class="ms-2">
+                            <span class="active-indicator-free d-inline-flex align-items-center justify-content-center rounded-circle text-white bg-success" style="width: 26px; height: 26px; opacity: 0; transform: scale(0.6); transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                                <i class="ti ti-check fs-15 fw-bold"></i>
+                            </span>
+                        </div>
                     </div>
                 </label>
 
-                <label class="form-selectgroup-item flex-fill access-choice">
-                    <input type="radio" name="access_type" value="vip" class="form-selectgroup-input" {{ old('access_type') == 'vip' ? 'checked' : '' }} onchange="togglePreviewSwitch()">
-                    <div class="form-selectgroup-label d-flex align-items-center p-3 border rounded-3 text-start transition-all cursor-pointer">
+                <label class="form-selectgroup-item flex-fill m-0 cursor-pointer">
+                    <input type="radio" name="access_type" value="vip" class="form-selectgroup-input access-type-radio" {{ old('access_type') == 'vip' ? 'checked' : '' }} onchange="togglePreviewSwitch()">
+                    <div class="form-selectgroup-label access-type-card d-flex align-items-center p-3 rounded-3 text-start cursor-pointer">
                         <div class="me-3">
                             <span class="avatar bg-warning-lt rounded-circle" style="width: 46px; height: 46px;">
                                 <i class="ti ti-crown fs-2 text-warning"></i>
@@ -81,9 +120,14 @@
                         <div class="flex-fill">
                             <div class="fw-bold text-dark d-flex align-items-center gap-2 fs-17 mb-1">
                                 <span>{{ __('Gói VIP') }}</span>
-                                <span class="badge bg-warning text-dark fs-12 px-2 py-1 fw-bold">VIP Only</span>
+                                <span class="badge bg-warning text-white fs-12 px-2 py-1 fw-bold shadow-sm" style="color: #ffffff !important;">VIP Only</span>
                             </div>
                             <small class="text-muted d-block fs-14">{{ __('Chỉ tài khoản đăng ký gói hội viên VIP mới được xem.') }}</small>
+                        </div>
+                        <div class="ms-2">
+                            <span class="active-indicator-vip d-inline-flex align-items-center justify-content-center rounded-circle text-white bg-warning" style="width: 26px; height: 26px; opacity: 0; transform: scale(0.6); transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);">
+                                <i class="ti ti-check fs-15 fw-bold"></i>
+                            </span>
                         </div>
                     </div>
                 </label>
