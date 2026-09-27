@@ -33,6 +33,7 @@ class VideoService implements VideoServiceInterface
 
     /**
      * Kiểm tra user hiện tại có gói VIP đang hoạt động hay không
+     * (Gói dùng thử - Trial và gói thường - Normal không được coi là VIP)
      */
     public function isVipUser(): bool
     {
@@ -44,7 +45,12 @@ class VideoService implements VideoServiceInterface
         return $user->userPackages()
             ->where('status', PackageUserStatus::Active)
             ->where('end_date', '>=', now())
-            ->where('current_type', '!=', PackageType::Normal)
+            ->whereNotIn('current_type', [
+                PackageType::Normal->value,
+                PackageType::Trial->value,
+                PackageType::Normal,
+                PackageType::Trial,
+            ])
             ->exists();
     }
 

@@ -137,7 +137,12 @@ class ExerciseController extends Controller
         return $user->userPackages()
             ->where('status', \App\Enums\Package\PackageUserStatus::Active)
             ->where('end_date', '>=', now())
-            ->where('current_type', '!=', \App\Enums\Package\PackageType::Normal)
+            ->whereNotIn('current_type', [
+                \App\Enums\Package\PackageType::Normal->value,
+                \App\Enums\Package\PackageType::Trial->value,
+                \App\Enums\Package\PackageType::Normal,
+                \App\Enums\Package\PackageType::Trial,
+            ])
             ->exists();
     }
 
