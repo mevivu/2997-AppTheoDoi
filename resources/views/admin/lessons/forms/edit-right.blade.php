@@ -9,8 +9,13 @@
             </h5>
         </div>
         <div class="card-body p-3 p-md-4">
+            @php
+                $lessonAvatarVal = old('image', !empty($instance->image) ? asset($instance->image) : ($instance->thumbnail_url ?? null));
+            @endphp
             <x-input-image name="image" 
-                           :value="$instance->image ?? old('image')" 
+                           :value="$lessonAvatarVal" 
+                           width="125px"
+                           height="75px"
                            sub="{{ __('Ảnh avatar/bìa đại diện bài học (khuyến nghị 16:9, tối đa 5MB)') }}" />
         </div>
     </div>

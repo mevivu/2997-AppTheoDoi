@@ -188,7 +188,7 @@
                                     <span>{{ __('Video đã được lưu trữ an toàn trên Cloudflare R2!') }}</span>
                                     <span class="badge bg-success-lt text-success fs-11">CDN Active</span>
                                 </div>
-                                <div class="text-muted fs-11 text-truncate mt-1" id="single_r2_url_text">{{ $videoType === 'r2' ? $videoUrl : '' }}</div>
+                                <div class="text-muted fs-11 text-truncate mt-1 d-none" id="single_r2_url_text">{{ $videoType === 'r2' ? $videoUrl : '' }}</div>
                                 <input type="hidden" id="single_r2_url" value="{{ $videoType === 'r2' ? $videoUrl : '' }}">
                             </div>
                         </div>
@@ -265,8 +265,11 @@
                                         {{ !empty($videoTitle) ? $videoTitle : __('Video hướng dẫn bài học') }}
                                     </div>
                                 </div>
-                                <div class="text-muted fs-12 text-truncate mt-1" id="single_preview_link">
-                                    {{ $videoUrl }}
+                                <div class="text-muted fs-12 mt-1 d-flex align-items-center gap-1" id="single_preview_link">
+                                    <span class="badge bg-danger-lt text-danger px-1.5 py-0 fs-11">
+                                        <i class="ti ti-brand-youtube me-0.5"></i>Online
+                                    </span>
+                                    <span class="text-secondary fs-11">{{ __('Video YouTube trực tuyến') }}</span>
                                 </div>
                             </div>
                             <div class="flex-shrink-0">
@@ -317,9 +320,19 @@
                                             {{ !empty($videoTitle) ? $videoTitle : __('Video hướng dẫn bài học') }}
                                         </h5>
                                         
-                                        <div class="text-muted fs-11 text-uppercase fw-bold mb-1 mt-3">{{ __('Đường dẫn Stream R2') }}</div>
-                                        <div class="text-break fs-11 text-muted p-2 rounded bg-light font-monospace" id="r2_preview_info_url" style="word-break: break-all; max-height: 70px; overflow-y: auto;">
-                                            {{ $videoType === 'r2' && !empty($videoUrl) ? $videoUrl : __('Chưa tải lên R2 (Đang xem file tạm từ máy)') }}
+                                        <div class="mt-3 p-2.5 rounded-3 bg-light border border-light-subtle">
+                                            <div class="text-muted fs-11 text-uppercase fw-bold mb-1">{{ __('Trạng thái lưu trữ') }}</div>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="avatar avatar-xs rounded-circle bg-success-lt text-success" id="r2_storage_icon">
+                                                    <i class="ti ti-cloud-check fs-14"></i>
+                                                </span>
+                                                <div class="overflow-hidden">
+                                                    <div class="fw-bold fs-12 text-dark" id="r2_storage_status_title">Cloudflare R2 Storage</div>
+                                                    <div class="text-muted fs-11 text-truncate" id="r2_storage_status_desc">
+                                                        {{ $videoType === 'r2' && !empty($videoUrl) ? __('Đã lưu trữ an toàn, CDN sẵn sàng') : __('Video cục bộ (chờ tải lên R2)') }}
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     
@@ -633,6 +646,39 @@ document.addEventListener('DOMContentLoaded', function () {
         if (r2PreviewInfoTitle) r2PreviewInfoTitle.textContent = val;
     });
 
+    // Đồng bộ ảnh preview ở phần chọn ảnh đại diện bài học
+    function updateLessonAvatarPreview(thumbUrl) {
+        if (!thumbUrl) return;
+        const avatarInput = document.querySelector('input[name="image"][type="file"]');
+        if (!avatarInput || (avatarInput.files && avatarInput.files.length > 0)) {
+            return;
+        }
+        const uploaderRoot = avatarInput.closest('.custom-image-uploader');
+        if (!uploaderRoot) return;
+
+        const previewImg = uploaderRoot.querySelector('.image-thumbnail-img');
+        const titleEl = uploaderRoot.querySelector('[id$="_title"]');
+        const btnView = uploaderRoot.querySelector('[id$="_btn_view"]');
+        const btnSelectText = uploaderRoot.querySelector('[id$="_btn_select_text"]');
+        const btnReset = uploaderRoot.querySelector('[id$="_btn_reset"]');
+
+        if (previewImg) {
+            previewImg.src = thumbUrl;
+        }
+        if (btnView) {
+            btnView.href = thumbUrl;
+        }
+        if (titleEl && (titleEl.textContent.trim() === 'Chưa có tệp nào được chọn' || titleEl.textContent.trim() === 'Tệp hiện tại')) {
+            titleEl.textContent = 'Ảnh từ video bài học';
+        }
+        if (btnSelectText) {
+            btnSelectText.textContent = 'Đổi tệp';
+        }
+        if (btnReset) {
+            btnReset.classList.remove('d-none');
+        }
+    }
+
     // Hiển thị Trình phát Video Cloudflare R2
     function showR2VideoPreview(srcUrl, isUploaded = false, originalFileName = '') {
         if (!r2PreviewBox || !r2VideoPlayer) return;
@@ -644,9 +690,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const titleVal = titleInput.value || originalFileName.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ") || '{{ __("Video bài học R2") }}';
         if (r2PreviewInfoTitle) r2PreviewInfoTitle.textContent = titleVal;
 
+        const r2StorageDesc = document.getElementById('r2_storage_status_desc');
+        const r2StorageIcon = document.getElementById('r2_storage_icon');
+
         if (isUploaded) {
             r2PreviewBadgeStatus.innerHTML = '<i class="ti ti-circle-check-filled text-success me-1"></i>{{ __("Đang phát từ Cloudflare R2") }}';
-            r2PreviewInfoUrl.textContent = srcUrl;
+            if (r2StorageDesc) r2StorageDesc.textContent = '{{ __("Đã lưu trữ an toàn, CDN sẵn sàng") }}';
+            if (r2StorageIcon) r2StorageIcon.innerHTML = '<i class="ti ti-cloud-check fs-14"></i>';
             if (btnR2OpenExternal) {
                 btnR2OpenExternal.classList.remove('disabled');
                 btnR2OpenExternal.href = srcUrl;
@@ -657,7 +707,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         } else {
             r2PreviewBadgeStatus.innerHTML = '<i class="ti ti-device-floppy text-warning me-1"></i>{{ __("Xem trước video từ máy tính (Chưa tải lên R2)") }}';
-            r2PreviewInfoUrl.textContent = 'File: ' + originalFileName + ' (Chờ bấm tải lên Cloudflare R2)';
+            if (r2StorageDesc) r2StorageDesc.textContent = 'File: ' + originalFileName + ' (Chờ bấm tải lên Cloudflare R2)';
+            if (r2StorageIcon) r2StorageIcon.innerHTML = '<i class="ti ti-clock-pause text-warning fs-14"></i>';
             if (btnR2OpenExternal) {
                 btnR2OpenExternal.classList.add('disabled');
                 btnR2OpenExternal.href = '#';
@@ -750,7 +801,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!thumbInput.value || thumbInput.value.includes('img.youtube.com') || forceRefresh) {
                 thumbInput.value = instantThumb;
             }
-            ytPreviewLink.textContent = url;
+            updateLessonAvatarPreview(instantThumb);
             ytPreviewBtnOpen.href = url;
             ytPreviewBox.classList.remove('d-none');
 
@@ -764,7 +815,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }, 400);
             }
         } else {
-            ytPreviewLink.textContent = url;
             ytPreviewBtnOpen.href = url;
             ytPreviewBox.classList.remove('d-none');
         }
@@ -803,10 +853,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (res.thumbnail_url) {
                         thumbInput.value = res.thumbnail_url;
                         ytPreviewThumb.src = res.thumbnail_url;
+                        updateLessonAvatarPreview(res.thumbnail_url);
                     }
 
                     ytPreviewBox.classList.remove('d-none');
-                    ytPreviewLink.textContent = url;
                     ytPreviewBtnOpen.href = url;
                 } else if (isManual) {
                     alert(res.message || '{{ __("Không thể lấy thông tin video YouTube. Vui lòng kiểm tra lại đường dẫn.") }}');
@@ -1236,6 +1286,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const initialVideoType = document.querySelector('.single-video-type-radio:checked')?.value || 'youtube';
     if (initialVideoType === 'youtube' && ytUrlInput.value.trim()) {
         handleYouTubeUrlChange(false, false);
+    }
+    if (thumbInput && thumbInput.value.trim()) {
+        updateLessonAvatarPreview(thumbInput.value.trim());
     }
 });
 </script>

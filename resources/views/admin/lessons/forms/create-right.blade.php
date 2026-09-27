@@ -11,6 +11,8 @@
         <div class="card-body p-3 p-md-4">
             <x-input-image name="image" 
                            :value="old('image')" 
+                           width="125px"
+                           height="75px"
                            sub="{{ __('Ảnh avatar/bìa đại diện bài học (khuyến nghị 16:9, tối đa 5MB)') }}" />
         </div>
     </div>

@@ -51,7 +51,7 @@
                         {{ __('Danh mục bài học') }}: <span class="text-danger">*</span>
                     </label>
                     <select name="lesson_category_id" id="lesson_category_id" class="form-select @error('lesson_category_id') is-invalid @enderror" required>
-                        <option value="">-- Chọn danh mục bài học từ /admin/lesson-categories --</option>
+                        <option value="">-- {{ __('Chọn danh mục bài học') }} --</option>
                         @foreach ($pillars as $p)
                             @php
                                 $pCats = $categories->where('pillar', $p);

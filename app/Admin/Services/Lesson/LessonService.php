@@ -32,6 +32,8 @@ class LessonService implements LessonServiceInterface
 
         if ($request->hasFile('image')) {
             $data['image'] = $this->fileService->uploadAvatar('images/lessons', $request->file('image'));
+        } else {
+            unset($data['image']);
         }
 
         return DB::transaction(function () use ($data, $request) {
@@ -51,6 +53,13 @@ class LessonService implements LessonServiceInterface
 
         if ($request->hasFile('image')) {
             $data['image'] = $this->fileService->uploadAvatar('images/lessons', $request->file('image'), $currentLesson->image);
+        } elseif ($request->input('reset_image') == '1') {
+            if (!empty($currentLesson->image)) {
+                $this->fileService->delete($currentLesson->image);
+            }
+            $data['image'] = null;
+        } else {
+            unset($data['image']);
         }
 
         return DB::transaction(function () use ($id, $data, $request) {
