@@ -21,9 +21,13 @@ class ExerciseMedia extends Model
     protected $fillable = [
         /** ID bài tập liên kết */
         'exercise_id',
+        /** Tiêu đề video con */
+        'title',
         /** Loại media: image (Hình ảnh), video (Video) */
         'media_type',
-        /** Đường dẫn tệp media được lưu trữ */
+        /** Nguồn video: youtube, r2 */
+        'video_type',
+        /** Đường dẫn tệp media được lưu trữ hoặc URL YouTube / Cloudflare R2 */
         'media_file',
         /** Đường dẫn ảnh thumbnail đại diện (cho video) */
         'thumbnail',
@@ -44,7 +48,13 @@ class ExerciseMedia extends Model
      */
     public function getMediaFileUrlAttribute(): ?string
     {
-        return $this->media_file ? asset($this->media_file) : null;
+        if (!$this->media_file) {
+            return null;
+        }
+        if (str_starts_with($this->media_file, 'http://') || str_starts_with($this->media_file, 'https://')) {
+            return $this->media_file;
+        }
+        return asset($this->media_file);
     }
 
     /**
@@ -52,7 +62,13 @@ class ExerciseMedia extends Model
      */
     public function getThumbnailUrlAttribute(): ?string
     {
-        return $this->thumbnail ? asset($this->thumbnail) : null;
+        if (!$this->thumbnail) {
+            return null;
+        }
+        if (str_starts_with($this->thumbnail, 'http://') || str_starts_with($this->thumbnail, 'https://')) {
+            return $this->thumbnail;
+        }
+        return asset($this->thumbnail);
     }
 
     /**

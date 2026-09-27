@@ -51,8 +51,9 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\MemoRating\MemoRatingServiceInterface' => 'App\Admin\Services\MemoRating\MemoRatingService',
         'App\Admin\Services\MemoCompetition\MemoCompetitionServiceInterface' => 'App\Admin\Services\MemoCompetition\MemoCompetitionService',
         'App\Admin\Services\AgeGroup\AgeGroupServiceInterface' => 'App\Admin\Services\AgeGroup\AgeGroupService',
-        'App\Admin\Services\VideoCategory\VideoCategoryServiceInterface' => 'App\Admin\Services\VideoCategory\VideoCategoryService',
         'App\Admin\Services\Video\VideoServiceInterface' => 'App\Admin\Services\Video\VideoService',
+        'App\Admin\Services\LessonCategory\LessonCategoryServiceInterface' => 'App\Admin\Services\LessonCategory\LessonCategoryService',
+        'App\Admin\Services\Lesson\LessonServiceInterface' => 'App\Admin\Services\Lesson\LessonService',
         'App\Admin\Services\ExerciseCategory\ExerciseCategoryServiceInterface' => 'App\Admin\Services\ExerciseCategory\ExerciseCategoryService',
         'App\Admin\Services\ExerciseMedia\ExerciseMediaServiceInterface' => 'App\Admin\Services\ExerciseMedia\ExerciseMediaService',
     ];

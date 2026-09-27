@@ -11,7 +11,6 @@ use App\Admin\Services\Video\VideoServiceInterface;
 use App\Enums\ActiveStatus;
 use App\Enums\Video\VideoAccessType;
 use App\Models\Video;
-use App\Models\VideoCategory;
 use App\Traits\ResponseController;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -66,8 +65,8 @@ class VideoController extends Controller
 
     public function create(): Factory|View|Application
     {
-        $categories = VideoCategory::with('ageGroup')->active()->orderBy('sort_order')->get();
-        $categoriesByAge = $categories->groupBy(fn($c) => $c->ageGroup?->name ?? __('Chung'));
+        $categories = collect();
+        $categoriesByAge = collect();
 
         return view($this->view['create'], [
             'categories' => $categories,
@@ -88,8 +87,8 @@ class VideoController extends Controller
     public function edit($id): Factory|View|Application
     {
         $instance = $this->repository->findOrFail($id);
-        $categories = VideoCategory::with('ageGroup')->active()->orderBy('sort_order')->get();
-        $categoriesByAge = $categories->groupBy(fn($c) => $c->ageGroup?->name ?? __('Chung'));
+        $categories = collect();
+        $categoriesByAge = collect();
 
         return view($this->view['edit'], [
             'instance' => $instance,

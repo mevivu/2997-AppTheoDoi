@@ -39,12 +39,21 @@ class AgeGroup extends Model
     ];
 
     /**
-     * Danh sách các danh mục video thuộc nhóm tuổi này
+     * Danh sách các danh mục bài học thuộc nhóm tuổi này
      */
-    public function videoCategories(): HasMany
+    public function lessonCategories(): HasMany
     {
-        return $this->hasMany(VideoCategory::class, 'age_group_id');
+        return $this->hasMany(LessonCategory::class, 'age_group_id')->orderBy('sort_order', 'asc');
     }
+
+    /**
+     * Danh sách tất cả bài học thuộc nhóm tuổi này
+     */
+    public function lessons(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    {
+        return $this->hasManyThrough(Lesson::class, LessonCategory::class, 'age_group_id', 'lesson_category_id');
+    }
+
 
     /**
      * Danh sách các danh mục bài tập thuộc nhóm tuổi này

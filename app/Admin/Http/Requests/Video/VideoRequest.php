@@ -19,7 +19,6 @@ class VideoRequest extends BaseRequest
         $isVideoR2 = $videoTypeInput === VideoType::R2->value || $videoTypeInput === 'r2';
 
         $rules = [
-            'video_category_id' => ['required', 'exists:App\Models\VideoCategory,id'],
             'video_type' => ['required', new Enum(VideoType::class)],
             'title' => ['required', 'string', 'max:300'],
             'description' => ['nullable', 'string'],
@@ -73,7 +72,6 @@ class VideoRequest extends BaseRequest
 
         $rules = [
             'id' => ['required', 'exists:App\Models\Video,id'],
-            'video_category_id' => ['required', 'exists:App\Models\VideoCategory,id'],
             'video_type' => ['required', new Enum(VideoType::class)],
             'title' => ['required', 'string', 'max:300'],
             'description' => ['nullable', 'string'],

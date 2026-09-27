@@ -21,8 +21,6 @@ class Video extends Model
     protected $table = 'videos';
 
     protected $fillable = [
-        /** ID danh mục video */
-        'video_category_id',
         /** Nguồn video: youtube, r2 */
         'video_type',
         /** Tiêu đề video */
@@ -50,7 +48,6 @@ class Video extends Model
     ];
 
     protected $casts = [
-        'video_category_id' => 'integer',
         'video_type' => VideoType::class,
         'duration_seconds' => 'integer',
         'access_type' => VideoAccessType::class,
@@ -180,12 +177,6 @@ class Video extends Model
     }
 
     /**
-     * Danh mục video liên kết
-     */
-    public function category(): BelongsTo
-    {
-        return $this->belongsTo(VideoCategory::class, 'video_category_id');
-    }
 
     /**
      * Phạm vi truy vấn video đang hoạt động

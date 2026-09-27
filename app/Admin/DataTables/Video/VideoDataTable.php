@@ -6,8 +6,6 @@ use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Video\VideoRepositoryInterface;
 use App\Enums\ActiveStatus;
 use App\Enums\Video\VideoAccessType;
-use App\Models\VideoCategory;
-
 class VideoDataTable extends BaseDataTable
 {
     protected $nameTable = 'videoTable';
@@ -32,10 +30,7 @@ class VideoDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $categoryOptions = VideoCategory::query()
-            ->orderBy('name')
-            ->pluck('name', 'id')
-            ->all();
+        $categoryOptions = [];
 
         $this->columnAllSearch = [2, 3, 4, 5, 6, 7, 8, 9];
         $this->columnSearchSelect = [
@@ -63,7 +58,7 @@ class VideoDataTable extends BaseDataTable
 
     public function query()
     {
-        return $this->repository->getQueryBuilderWithRelations(['category'])
+        return $this->repository->getQueryBuilder()
             ->orderBy('sort_order', 'asc');
     }
 
@@ -76,7 +71,7 @@ class VideoDataTable extends BaseDataTable
     {
         $this->customEditColumns = [
             'thumbnail' => $this->view['thumbnail'],
-            'category' => fn($row) => $row->category?->name ?? '—',
+            'category' => fn($row) => '—',
             'access_type' => $this->view['access_type'],
             'is_preview' => $this->view['is_preview'],
             'duration_seconds' => fn($row) => $row->duration_seconds ? gmdate('H:i:s', $row->duration_seconds) : '—',
@@ -87,9 +82,6 @@ class VideoDataTable extends BaseDataTable
     protected function setCustomFilterColumns(): void
     {
         $this->customFilterColumns = [
-            'category' => function ($query, $keyword) {
-                $query->where('video_category_id', $keyword);
-            },
             'is_preview' => function ($query, $keyword) {
                 $query->where('is_preview', (bool) $keyword);
             },

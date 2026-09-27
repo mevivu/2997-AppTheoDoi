@@ -26,6 +26,8 @@ class ExerciseCategory extends Model
         'age_group_id',
         /** Chủ đề lớn: pq, iq, eq, aq, thai_giao */
         'topic',
+        /** Key định danh chuẩn hóa theo Enum ExerciseSubCategoryKey */
+        'key',
         /** ID danh mục cha (nếu là danh mục con/sub-category) */
         'parent_id',
         /** Tên danh mục bài tập */

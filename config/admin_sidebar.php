@@ -160,6 +160,50 @@ return [
         ]
     ],
     [
+        'title' => 'Giáo dục & Bài học',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-school"></i>',
+        'roles' => [],
+        'permissions' => ['viewLesson', 'createLesson', 'viewLessonCategory', 'createLessonCategory', 'viewAgeGroup'],
+        'sub' => [
+            [
+                'title' => 'Thêm Bài học mới',
+                'routeName' => RouteAdminSystem::LESSON_CREATE,
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createLesson'],
+            ],
+            [
+                'title' => 'DS Bài học',
+                'routeName' => RouteAdminSystem::LESSON_INDEX,
+                'icon' => '<i class="ti ti-book"></i>',
+                'roles' => [],
+                'permissions' => ['viewLesson'],
+            ],
+            [
+                'title' => 'Thêm Danh mục',
+                'routeName' => RouteAdminSystem::LESSON_CATEGORY_CREATE,
+                'icon' => '<i class="ti ti-folder-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createLessonCategory'],
+            ],
+            [
+                'title' => 'DS Danh mục bài học',
+                'routeName' => RouteAdminSystem::LESSON_CATEGORY_INDEX,
+                'icon' => '<i class="ti ti-folders"></i>',
+                'roles' => [],
+                'permissions' => ['viewLessonCategory'],
+            ],
+            [
+                'title' => 'Nhóm độ tuổi',
+                'routeName' => RouteAdminSystem::AGE_GROUP_INDEX,
+                'icon' => '<i class="ti ti-calendar"></i>',
+                'roles' => [],
+                'permissions' => ['viewAgeGroup'],
+            ],
+        ]
+    ],
+    [
         'title' => 'Nhật ký',
         'routeName' => null,
         'icon' => '<i class="ti ti-external-link"></i>',
@@ -300,43 +344,7 @@ return [
             ],
         ]
     ],
-    [
-        'title' => 'Video Giáo dục',
-        'routeName' => null,
-        'icon' => '<i class="ti ti-video"></i>',
-        'roles' => [],
-        'permissions' => ['viewVideo', 'createVideo', 'viewVideoCategory', 'createVideoCategory', 'viewAgeGroup', 'createAgeGroup'],
-        'sub' => [
-            [
-                'title' => 'Thêm Video',
-                'routeName' => RouteAdminSystem::VIDEO_CREATE,
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createVideo'],
-            ],
-            [
-                'title' => 'DS Video',
-                'routeName' => RouteAdminSystem::VIDEO_INDEX,
-                'icon' => '<i class="ti ti-list"></i>',
-                'roles' => [],
-                'permissions' => ['viewVideo'],
-            ],
-            [
-                'title' => 'Danh mục Video',
-                'routeName' => RouteAdminSystem::VIDEO_CATEGORY_INDEX,
-                'icon' => '<i class="ti ti-category"></i>',
-                'roles' => [],
-                'permissions' => ['viewVideoCategory'],
-            ],
-            [
-                'title' => 'Nhóm độ tuổi',
-                'routeName' => RouteAdminSystem::AGE_GROUP_INDEX,
-                'icon' => '<i class="ti ti-calendar"></i>',
-                'roles' => [],
-                'permissions' => ['viewAgeGroup'],
-            ],
-        ]
-    ],
+
     [
         'title' => 'Bài tập',
         'routeName' => null,

@@ -406,14 +406,6 @@ class RouteAdminSystem
     const AGE_GROUP_UPDATE = 'admin.age_group.update';
     const AGE_GROUP_DELETE = 'admin.age_group.delete';
 
-    /** VIDEO CATEGORY */
-    const VIDEO_CATEGORY_INDEX = 'admin.video_category.index';
-    const VIDEO_CATEGORY_CREATE = 'admin.video_category.create';
-    const VIDEO_CATEGORY_STORE = 'admin.video_category.store';
-    const VIDEO_CATEGORY_EDIT = 'admin.video_category.edit';
-    const VIDEO_CATEGORY_UPDATE = 'admin.video_category.update';
-    const VIDEO_CATEGORY_DELETE = 'admin.video_category.delete';
-
     /** VIDEO */
     const VIDEO_INDEX = 'admin.video.index';
     const VIDEO_CREATE = 'admin.video.create';
@@ -421,6 +413,22 @@ class RouteAdminSystem
     const VIDEO_EDIT = 'admin.video.edit';
     const VIDEO_UPDATE = 'admin.video.update';
     const VIDEO_DELETE = 'admin.video.delete';
+
+    /** LESSON CATEGORY */
+    const LESSON_CATEGORY_INDEX = 'admin.lesson_category.index';
+    const LESSON_CATEGORY_CREATE = 'admin.lesson_category.create';
+    const LESSON_CATEGORY_STORE = 'admin.lesson_category.store';
+    const LESSON_CATEGORY_EDIT = 'admin.lesson_category.edit';
+    const LESSON_CATEGORY_UPDATE = 'admin.lesson_category.update';
+    const LESSON_CATEGORY_DELETE = 'admin.lesson_category.delete';
+
+    /** LESSON */
+    const LESSON_INDEX = 'admin.lesson.index';
+    const LESSON_CREATE = 'admin.lesson.create';
+    const LESSON_STORE = 'admin.lesson.store';
+    const LESSON_EDIT = 'admin.lesson.edit';
+    const LESSON_UPDATE = 'admin.lesson.update';
+    const LESSON_DELETE = 'admin.lesson.delete';
 
     /** EXERCISE CATEGORY */
     const EXERCISE_CATEGORY_INDEX = 'admin.exercise_category.index';
