@@ -142,6 +142,26 @@ class FeatureStatisticsService
                 'color' => '#64748b',
                 'badge_class' => 'bg-secondary-lt',
             ],
+
+            // Nhóm 3: Giáo dục
+            'memo_game' => [
+                'name' => 'Luyện trí nhớ (Memo Game)',
+                'short_name' => 'Luyện trí nhớ',
+                'category' => 'education',
+                'category_name' => 'Giáo dục',
+                'icon' => 'ti ti-brain',
+                'color' => '#f59e0b',
+                'badge_class' => 'bg-warning-lt',
+            ],
+            'video_education' => [
+                'name' => 'Video giáo dục',
+                'short_name' => 'Video giáo dục',
+                'category' => 'education',
+                'category_name' => 'Giáo dục',
+                'icon' => 'ti ti-video',
+                'color' => '#1F7A80',
+                'badge_class' => 'bg-teal-lt',
+            ],
         ];
     }
 
@@ -575,7 +595,32 @@ class FeatureStatisticsService
             }
         }
 
-        // 10. Tích hợp từ bảng feature_usages
+        // 10. Luyện trí nhớ (Memo Game) - memo_ratings
+        if (in_array('memo_game', $allowedCodes) && \Illuminate\Support\Facades\Schema::hasTable('memo_ratings')) {
+            $memoAgg = DB::table('memo_ratings')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->selectRaw('COUNT(*) as total')
+                ->first();
+            $stats['memo_game']['count'] += (int) ($memoAgg->total ?? 0);
+
+            $stats['memo_game']['children'] = DB::table('memo_ratings')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->whereNotNull('child_id')
+                ->distinct()
+                ->pluck('child_id')
+                ->toArray();
+
+            if (!empty($stats['memo_game']['children'])) {
+                $stats['memo_game']['users'] = DB::table('children')
+                    ->whereIn('id', $stats['memo_game']['children'])
+                    ->whereNotNull('user_id')
+                    ->distinct()
+                    ->pluck('user_id')
+                    ->toArray();
+            }
+        }
+
+        // 11. Tích hợp từ bảng feature_usages
         if (\Illuminate\Support\Facades\Schema::hasTable('feature_usages')) {
             $fuCounts = DB::table('feature_usages')
                 ->whereIn('feature_code', $allowedCodes)
@@ -587,7 +632,7 @@ class FeatureStatisticsService
 
             foreach ($fuCounts as $code => $cnt) {
                 if (isset($stats[$code])) {
-                    if (in_array($code, ['predict_height', 'develop', 'store', 'clinic'])) {
+                    if (in_array($code, ['predict_height', 'develop', 'store', 'clinic', 'video_education', 'memo_game'])) {
                         $stats[$code]['count'] += (int) $cnt;
                     }
                 }
@@ -710,6 +755,17 @@ class FeatureStatisticsService
             $featureTimeCounts[$code][$j->t_point] = ($featureTimeCounts[$code][$j->t_point] ?? 0) + (int) $j->cnt;
         }
 
+        // Memo Game
+        if (\Illuminate\Support\Facades\Schema::hasTable('memo_ratings')) {
+            $memoCounts = DB::table('memo_ratings')
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->selectRaw("DATE_FORMAT(created_at, '{$format}') as t_point, COUNT(*) as cnt")
+                ->groupBy('t_point')
+                ->pluck('cnt', 't_point')
+                ->toArray();
+            $featureTimeCounts['memo_game'] = $memoCounts;
+        }
+
         // Feature Usages
         if (\Illuminate\Support\Facades\Schema::hasTable('feature_usages')) {
             $fuCounts = DB::table('feature_usages')
@@ -718,7 +774,7 @@ class FeatureStatisticsService
                 ->groupBy('feature_code', 't_point')
                 ->get();
             foreach ($fuCounts as $fu) {
-                if (in_array($fu->feature_code, ['predict_height', 'develop', 'store', 'clinic'])) {
+                if (in_array($fu->feature_code, ['predict_height', 'develop', 'store', 'clinic', 'video_education', 'memo_game'])) {
                     $featureTimeCounts[$fu->feature_code][$fu->t_point] = ($featureTimeCounts[$fu->feature_code][$fu->t_point] ?? 0) + (int) $fu->cnt;
                 }
             }

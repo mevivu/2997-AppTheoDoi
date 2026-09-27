@@ -9,10 +9,12 @@ use App\Enums\Child\BornStatus;
 use App\Enums\Package\PackageType;
 use App\Enums\Package\PackageUserStatus;
 use App\Enums\Video\VideoAccessType;
+use App\Models\FeatureUsage;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Schema;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class VideoService implements VideoServiceInterface
@@ -228,6 +230,24 @@ class VideoService implements VideoServiceInterface
             $this->videoRepository->incrementViewCount($video);
             $video->refresh();
             Cache::put($cacheKey, 1, now()->addHours(2));
+
+            // Ghi nhận sự kiện thống kê chức năng Video giáo dục
+            if (Schema::hasTable('feature_usages')) {
+                FeatureUsage::create([
+                    'user_id' => $user?->id,
+                    'child_id' => $request->input('child_id'),
+                    'feature_code' => 'video_education',
+                    'feature_name' => 'Video giáo dục',
+                    'category' => 'education',
+                    'action' => 'watch_video',
+                    'metadata' => json_encode([
+                        'video_id' => $video->id,
+                        'title' => $video->title,
+                    ]),
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+            }
         }
 
         return [

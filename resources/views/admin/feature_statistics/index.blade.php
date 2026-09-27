@@ -185,13 +185,16 @@
                     <!-- Category Switcher -->
                     <div class="d-flex align-items-center gap-2 flex-wrap">
                         <span class="text-muted font-weight-semibold me-1 fs-13">Phân loại:</span>
-                        <button type="button" class="category-tab-btn btn-category active" data-category="evaluation">
+                        <button type="button" class="category-tab-btn btn-category {{ $currentCategory === 'evaluation' ? 'active' : '' }}" data-category="evaluation">
                             <i class="ti ti-brain me-1"></i>Đánh giá toàn diện
                         </button>
-                        <button type="button" class="category-tab-btn btn-category" data-category="utility">
+                        <button type="button" class="category-tab-btn btn-category {{ $currentCategory === 'education' ? 'active' : '' }}" data-category="education">
+                            <i class="ti ti-school me-1"></i>Giáo dục
+                        </button>
+                        <button type="button" class="category-tab-btn btn-category {{ $currentCategory === 'utility' ? 'active' : '' }}" data-category="utility">
                             <i class="ti ti-tool me-1"></i>Tiện ích
                         </button>
-                        <button type="button" class="category-tab-btn btn-category" data-category="all">
+                        <button type="button" class="category-tab-btn btn-category {{ $currentCategory === 'all' ? 'active' : '' }}" data-category="all">
                             <i class="ti ti-apps me-1"></i>Tất cả
                         </button>
                     </div>
@@ -666,6 +669,26 @@
                                         <td><code>feature_usages</code> (từ App)</td>
                                         <td>Đếm số lượt phụ huynh tra cứu bản đồ phòng khám & cơ sở y tế.</td>
                                         <td>Ghi nhận trực tiếp <code>user_id</code> của tài khoản đăng nhập.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-brain text-warning me-1"></i>Luyện trí nhớ (Memo Game)</div>
+                                            <span class="text-muted fs-11">Mã: <code>memo_game</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-warning-lt">Giáo dục</span></td>
+                                        <td><code>memo_ratings</code><br>+ <code>feature_usages</code></td>
+                                        <td>Đếm số lượt hoàn thành bài test / ván chơi luyện trí nhớ và trải nghiệm trò chơi.</td>
+                                        <td><code>child_id</code> từ bài test &rarr; tra cứu <code>user_id</code> phụ huynh từ bảng <code>children</code>.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-video text-teal me-1"></i>Video giáo dục</div>
+                                            <span class="text-muted fs-11">Mã: <code>video_education</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-teal-lt">Giáo dục</span></td>
+                                        <td><code>feature_usages</code><br>+ Lượt xem video</td>
+                                        <td>Đếm số lượt phụ huynh & bé xem video bài học giáo dục và truy cập thư viện.</td>
+                                        <td>Ghi nhận trực tiếp <code>user_id</code> và <code>child_id</code> khi mở và phát video trên App.</td>
                                     </tr>
                                 </tbody>
                             </table>
