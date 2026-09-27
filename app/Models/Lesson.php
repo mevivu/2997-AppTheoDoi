@@ -27,6 +27,7 @@ class Lesson extends Model
         'lesson_category_id',
         'name',
         'slug',
+        'image',
         'description',
         'content',
         'difficulty',
@@ -48,7 +49,7 @@ class Lesson extends Model
         'status' => ActiveStatus::class,
     ];
 
-    protected $appends = ['video_count', 'first_video_thumbnail'];
+    protected $appends = ['video_count', 'first_video_thumbnail', 'thumbnail_url'];
 
     /**
      * Danh mục con bài học
@@ -85,6 +86,18 @@ class Lesson extends Model
     public function getVideoCountAttribute(): int
     {
         return $this->videos()->count();
+    }
+
+    public function getThumbnailUrlAttribute(): string
+    {
+        if (!empty($this->image)) {
+            return asset($this->image);
+        }
+        $first = $this->videos->first();
+        if ($first) {
+            return $first->thumbnail_url;
+        }
+        return asset('assets/images/default.png');
     }
 
     public function getFirstVideoThumbnailAttribute(): string

@@ -15,6 +15,7 @@ class LessonRequest extends BaseRequest
         return [
             'lesson_category_id' => ['required', 'exists:App\Models\LessonCategory,id'],
             'name' => ['required', 'string', 'max:255'],
+            'image' => ['nullable'],
             'description' => ['nullable', 'string'],
             'content' => ['nullable', 'string'],
             'difficulty' => ['required', new Enum(LessonDifficulty::class)],

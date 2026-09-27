@@ -30,6 +30,10 @@ class LessonService implements LessonServiceInterface
     {
         $data = $request->validated();
 
+        if ($request->hasFile('image')) {
+            $data['image'] = $this->fileService->uploadAvatar('images/lessons', $request->file('image'));
+        }
+
         return DB::transaction(function () use ($data, $request) {
             $lesson = $this->repository->create($data);
 
@@ -43,6 +47,11 @@ class LessonService implements LessonServiceInterface
     {
         $data = $request->validated();
         $id = $data['id'] ?? $request->input('id');
+        $currentLesson = $this->repository->findOrFail($id);
+
+        if ($request->hasFile('image')) {
+            $data['image'] = $this->fileService->uploadAvatar('images/lessons', $request->file('image'), $currentLesson->image);
+        }
 
         return DB::transaction(function () use ($id, $data, $request) {
             $lesson = $this->repository->update($id, $data);
@@ -58,6 +67,11 @@ class LessonService implements LessonServiceInterface
         $lesson = $this->repository->findOrFail($id);
 
         return DB::transaction(function () use ($lesson, $id) {
+            // Dọn dẹp ảnh đại diện bài học
+            if (!empty($lesson->image)) {
+                $this->fileService->delete($lesson->image);
+            }
+
             // Dọn dẹp các video R2
             foreach ($lesson->videos as $video) {
                 if ($video->isR2() && !empty($video->video_path)) {

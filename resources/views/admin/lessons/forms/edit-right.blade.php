@@ -1,5 +1,20 @@
 @php use App\Traits\RouteAdminSystem; @endphp
 <div class="col-12 col-lg-4 col-xl-3">
+    {{-- Card 0: Ảnh đại diện bài học --}}
+    <div class="card border-0 custom-shadow rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom px-4 py-3">
+            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.05rem;">
+                <i class="ti ti-photo text-primary me-2 fs-4"></i>
+                {{ __('Ảnh đại diện bài học') }}
+            </h5>
+        </div>
+        <div class="card-body p-3 p-md-4">
+            <x-input-image name="image" 
+                           :value="$instance->image ?? old('image')" 
+                           sub="{{ __('Ảnh avatar/bìa đại diện bài học (khuyến nghị 16:9, tối đa 5MB)') }}" />
+        </div>
+    </div>
+
     {{-- Card 1: Phân quyền truy cập --}}
     <div class="card border-0 custom-shadow rounded-3 mb-4">
         <div class="card-header bg-white border-bottom px-4 py-3">

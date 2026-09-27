@@ -223,8 +223,8 @@
                 <div class="form-text text-muted fs-11">{{ __('Nhập số giây hoặc hệ thống tự động quét từ video.') }}</div>
             </div>
 
-            {{-- 5. Ảnh đại diện Thumbnail (tùy chọn) --}}
-            <div class="col-12" id="single_thumb_wrapper">
+            {{-- 5. Ảnh đại diện Thumbnail (tùy chọn - tạm thời ẩn theo yêu cầu) --}}
+            <div class="col-12 d-none" id="single_thumb_wrapper">
                 <label class="form-label fw-bold text-dark fs-13 mb-1">
                     {{ __('Ảnh bìa / Thumbnail video (Tùy chọn)') }}:
                 </label>
