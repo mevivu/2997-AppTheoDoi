@@ -907,14 +907,92 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Hàm thực hiện upload Cloudflare R2 qua AJAX với thanh tiến trình trực quan
-    function executeR2Upload(callback = null) {
+    function escapeHtml(text) {
+        if (!text) return '';
+        const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // Hiển thị Dialog Popup chứa thanh tiến trình Upload trực tiếp (SweetAlert2)
+    function openR2UploadProgressDialog(file, isAutoSubmit = false) {
+        if (typeof Swal === 'undefined') return;
+
+        const safeName = escapeHtml(file.name);
+        const sizeStr = formatBytes(file.size);
+        const subNotice = isAutoSubmit
+            ? '{{ __("Hệ thống đang tự động tải video của bạn lên Cloudflare R2 và sẽ lưu bài học ngay khi hoàn tất.") }}'
+            : '{{ __("Vui lòng giữ kết nối mạng trong quá trình tải video lên CDN Cloudflare R2.") }}';
+
+        Swal.fire({
+            title: '<div class="d-flex align-items-center justify-content-center gap-2 text-dark fs-16 fw-bold"><i class="ti ti-cloud-upload text-warning fs-1"></i><span>{{ __("Đang tải video lên Cloudflare R2...") }}</span></div>',
+            html: `
+                <div class="text-start px-1 py-1">
+                    <!-- Khối thông tin file video đang tải -->
+                    <div class="d-flex align-items-center gap-3 p-2 bg-light rounded-3 border mb-3">
+                        <span class="avatar avatar-md rounded-3 bg-warning text-white flex-shrink-0">
+                            <i class="ti ti-file-video fs-2"></i>
+                        </span>
+                        <div class="overflow-hidden flex-grow-1">
+                            <div class="fw-bold text-dark text-truncate fs-13" title="${safeName}">${safeName}</div>
+                            <div class="text-muted fs-11 mt-1 d-flex align-items-center gap-2">
+                                <span>${sizeStr}</span>
+                                <span class="badge bg-warning-lt text-warning fw-semibold">Cloudflare R2 CDN</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tiêu đề tiến trình & % hoàn thành -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fs-12 fw-bold text-dark d-flex align-items-center gap-1" id="swal_status_text">
+                            <span class="spinner-border spinner-border-sm text-warning" role="status"></span>
+                            <span>{{ __("Đang kết nối Cloudflare...") }}</span>
+                        </span>
+                        <span class="badge bg-warning text-dark fw-bold fs-12 px-2 py-1 shadow-xs" id="swal_percent_badge">0%</span>
+                    </div>
+
+                    <!-- Thanh Progress Bar lớn và rực rỡ TRỰC TIẾP TRONG DIALOG -->
+                    <div class="progress shadow-xs" style="height: 18px; border-radius: 9px; background-color: #e2e8f0; overflow: hidden;">
+                        <div id="swal_progress_bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning fw-bold text-dark"
+                             role="progressbar" style="width: 0%; font-size: 11px; line-height: 18px; transition: width 0.15s ease;">0%</div>
+                    </div>
+
+                    <!-- Chi tiết số MB đã tải và trạng thái mạng -->
+                    <div class="d-flex justify-content-between align-items-center mt-2 fs-11 text-muted">
+                        <span id="swal_bytes_text" class="fw-semibold">0 MB / ${sizeStr}</span>
+                        <span id="swal_speed_text"><i class="ti ti-arrow-up text-warning me-1"></i>{{ __("Đang truyền dữ liệu...") }}</span>
+                    </div>
+
+                    <!-- Ghi chú dưới dialog -->
+                    <div class="mt-3 p-2 rounded bg-warning-lt text-warning fs-11 text-center border border-warning-subtle">
+                        <i class="ti ti-info-circle me-1"></i>${subNotice}
+                    </div>
+                </div>
+            `,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            width: '490px',
+            customClass: {
+                popup: 'rounded-4 shadow-lg border-0'
+            }
+        });
+    }
+
+    // Hàm thực hiện upload Cloudflare R2 qua AJAX với thanh tiến trình trực quan (đồng bộ cả Page & Dialog)
+    function executeR2Upload(callback = null, showDialog = true) {
         if (!r2FileInput.files || r2FileInput.files.length === 0) {
             if (callback) callback(false, '{{ __("Vui lòng chọn file video.") }}');
             return;
         }
 
         const file = r2FileInput.files[0];
+        const isAutoSubmit = Boolean(callback);
+
+        // Mở Dialog Popup hiển thị thanh Progress ngay lập tức
+        if (showDialog) {
+            openR2UploadProgressDialog(file, isAutoSubmit);
+        }
+
         const formData = new FormData();
         formData.append('video_file', file);
         formData.append('_token', '{{ csrf_token() }}');
@@ -923,6 +1001,7 @@ document.addEventListener('DOMContentLoaded', function () {
         btnCancelFile.disabled = true;
         btnUploadR2.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{{ __("Đang tải lên...") }}';
 
+        // Cập nhật giao diện trên Dropzone của trang
         r2ProgressWrapper.classList.remove('d-none');
         r2ProgressBar.style.width = '0%';
         r2ProgressBar.textContent = '0%';
@@ -939,12 +1018,40 @@ document.addEventListener('DOMContentLoaded', function () {
         xhr.upload.onprogress = function (e) {
             if (e.lengthComputable) {
                 const percent = Math.min(Math.round((e.loaded / e.total) * 100), 99);
+                const loadedStr = formatBytes(e.loaded);
+                const totalStr = formatBytes(e.total);
+
+                // 1. Cập nhật Dropzone trên trang chính
                 r2ProgressBar.style.width = percent + '%';
                 r2ProgressBar.textContent = percent + '%';
                 r2UploadPercent.textContent = percent + '%';
-                r2BytesStatus.textContent = formatBytes(e.loaded) + ' / ' + formatBytes(e.total);
+                r2BytesStatus.textContent = loadedStr + ' / ' + totalStr;
                 r2UploadStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-warning" role="status"></span> {{ __("Đang tải lên Cloudflare R2: ") }}' + percent + '%';
                 r2SpeedStatus.innerHTML = '<i class="ti ti-arrow-up text-warning me-1"></i>{{ __("Đang đồng bộ dữ liệu lên CDN...") }}';
+
+                // 2. CẬP NHẬT TRỰC TIẾP TRONG SWEETALERT DIALOG
+                const swalBar = document.getElementById('swal_progress_bar');
+                const swalPercent = document.getElementById('swal_percent_badge');
+                const swalBytes = document.getElementById('swal_bytes_text');
+                const swalStatus = document.getElementById('swal_status_text');
+                const swalSpeed = document.getElementById('swal_speed_text');
+
+                if (swalBar) {
+                    swalBar.style.width = percent + '%';
+                    swalBar.textContent = percent + '%';
+                }
+                if (swalPercent) {
+                    swalPercent.textContent = percent + '%';
+                }
+                if (swalBytes) {
+                    swalBytes.textContent = loadedStr + ' / ' + totalStr;
+                }
+                if (swalStatus) {
+                    swalStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-warning me-1" role="status"></span> {{ __("Đang tải lên R2: ") }}' + percent + '%';
+                }
+                if (swalSpeed) {
+                    swalSpeed.innerHTML = '<i class="ti ti-arrow-up text-warning me-1"></i>{{ __("Đang truyền dữ liệu...") }}';
+                }
             }
         };
 
@@ -958,6 +1065,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     const res = JSON.parse(xhr.responseText);
                     if (res.status) {
                         isR2Uploaded = true;
+
+                        // 1. Cập nhật Dropzone trên trang chính
                         r2ProgressBar.className = 'progress-bar bg-success';
                         r2ProgressBar.style.width = '100%';
                         r2ProgressBar.textContent = '100%';
@@ -966,6 +1075,33 @@ document.addEventListener('DOMContentLoaded', function () {
                         r2UploadStatus.innerHTML = '<i class="ti ti-circle-check-filled text-success fs-3 me-1"></i> <strong>{{ __("Tải lên Cloudflare R2 thành công!") }}</strong>';
                         r2BytesStatus.textContent = formatBytes(file.size) + ' / ' + formatBytes(file.size);
                         r2SpeedStatus.innerHTML = '<i class="ti ti-check text-success me-1"></i>{{ __("Video đã sẵn sàng phát từ CDN") }}';
+
+                        // 2. CẬP NHẬT TRỰC TIẾP TRONG DIALOG POPUP SANG MÀU XANH 100%
+                        const swalBar = document.getElementById('swal_progress_bar');
+                        const swalPercent = document.getElementById('swal_percent_badge');
+                        const swalStatus = document.getElementById('swal_status_text');
+                        const swalSpeed = document.getElementById('swal_speed_text');
+                        const swalBytes = document.getElementById('swal_bytes_text');
+
+                        if (swalBar) {
+                            swalBar.className = 'progress-bar bg-success fw-bold text-white';
+                            swalBar.style.width = '100%';
+                            swalBar.textContent = '100%';
+                        }
+                        if (swalPercent) {
+                            swalPercent.className = 'badge bg-success text-white fw-bold fs-12 px-2 py-1';
+                            swalPercent.textContent = 'Hoàn tất 100%';
+                        }
+                        if (swalStatus) {
+                            swalStatus.innerHTML = '<i class="ti ti-circle-check-filled text-success fs-3 me-1"></i> <strong>' +
+                                (isAutoSubmit ? '{{ __("Tải lên R2 thành công! Đang lưu bài học...") }}' : '{{ __("Tải lên Cloudflare R2 thành công!") }}') + '</strong>';
+                        }
+                        if (swalBytes) {
+                            swalBytes.textContent = formatBytes(file.size) + ' / ' + formatBytes(file.size);
+                        }
+                        if (swalSpeed) {
+                            swalSpeed.innerHTML = '<i class="ti ti-check text-success me-1"></i>{{ __("File đã lưu trữ an toàn trên CDN") }}';
+                        }
 
                         // Cập nhật Hidden inputs
                         r2ResultBox.classList.remove('d-none');
@@ -978,31 +1114,61 @@ document.addEventListener('DOMContentLoaded', function () {
                         // Chuyển sang Preview Stream CDN trực tiếp
                         showR2VideoPreview(res.url, true, file.name);
 
-                        if (callback) callback(true, null);
+                        if (isAutoSubmit) {
+                            // Chờ 800ms để người dùng kịp nhìn thấy kết quả 100% hoàn tất rồi submit form
+                            setTimeout(() => {
+                                if (callback) callback(true, null);
+                            }, 800);
+                        } else {
+                            // Đóng dialog sau 1.2s nếu là thao tác upload thủ công
+                            setTimeout(() => {
+                                if (typeof Swal !== 'undefined') Swal.close();
+                            }, 1200);
+                            if (callback) callback(true, null);
+                        }
                     } else {
-                        r2ProgressBar.className = 'progress-bar bg-danger';
-                        r2UploadStatus.textContent = res.message || '{{ __("Lỗi tải lên Cloudflare R2.") }}';
-                        if (callback) callback(false, res.message);
+                        handleUploadError(res.message || '{{ __("Lỗi tải lên Cloudflare R2.") }}');
                     }
                 } catch (e) {
-                    r2ProgressBar.className = 'progress-bar bg-danger';
-                    r2UploadStatus.textContent = '{{ __("Lỗi xử lý phản hồi từ máy chủ.") }}';
-                    if (callback) callback(false, 'Lỗi JSON phản hồi');
+                    handleUploadError('{{ __("Lỗi xử lý phản hồi từ máy chủ.") }}');
                 }
             } else {
-                r2ProgressBar.className = 'progress-bar bg-danger';
-                r2UploadStatus.textContent = '{{ __("Lỗi máy chủ: ") }}' + xhr.status;
-                if (callback) callback(false, 'HTTP Error ' + xhr.status);
+                handleUploadError('{{ __("Lỗi máy chủ: ") }}' + xhr.status);
             }
         };
+
+        function handleUploadError(errMsg) {
+            r2ProgressBar.className = 'progress-bar bg-danger';
+            r2UploadStatus.textContent = errMsg;
+
+            const swalBar = document.getElementById('swal_progress_bar');
+            if (swalBar) {
+                swalBar.className = 'progress-bar bg-danger fw-bold text-white';
+            }
+            const swalStatus = document.getElementById('swal_status_text');
+            if (swalStatus) {
+                swalStatus.innerHTML = '<i class="ti ti-alert-circle text-danger me-1"></i> <span class="text-danger">' + errMsg + '</span>';
+            }
+
+            if (typeof Swal !== 'undefined') {
+                setTimeout(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{{ __("Tải video lên R2 thất bại") }}',
+                        text: errMsg,
+                        confirmButtonText: '{{ __("Đóng") }}'
+                    });
+                }, 800);
+            }
+
+            if (callback) callback(false, errMsg);
+        }
 
         xhr.onerror = function () {
             btnUploadR2.disabled = false;
             btnCancelFile.disabled = false;
             btnUploadR2.innerHTML = '<i class="ti ti-cloud-upload me-1"></i>{{ __("Tải lên Cloudflare R2 ngay") }}';
-            r2ProgressBar.className = 'progress-bar bg-danger';
-            r2UploadStatus.textContent = '{{ __("Lỗi kết nối mạng khi tải lên R2.") }}';
-            if (callback) callback(false, 'Network Error');
+            handleUploadError('{{ __("Lỗi kết nối mạng khi tải lên R2.") }}');
         };
 
         xhr.send(formData);
@@ -1010,7 +1176,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     btnUploadR2.addEventListener('click', function (e) {
         e.stopPropagation();
-        executeR2Upload();
+        executeR2Upload(null, true);
     });
 
     // BẢO VỆ TIẾN TRÌNH LƯU BÀI HỌC (Pre-submit Auto-Upload Guard)
@@ -1030,34 +1196,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     e.preventDefault();
                     e.stopPropagation();
 
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            title: '{{ __("Đang tải video lên Cloudflare R2...") }}',
-                            html: '{{ __("Hệ thống đang tự động tải video của bạn lên Cloudflare R2 và sẽ lưu bài học ngay khi hoàn tất.") }}',
-                            icon: 'info',
-                            allowOutsideClick: false,
-                            showConfirmButton: false,
-                            didOpen: () => Swal.showLoading()
-                        });
-                    }
-
+                    // Tự động mở Dialog có Progress Bar và upload R2, hoàn tất thì submit form
                     executeR2Upload(function (success, errorMsg) {
                         if (success) {
                             isSubmittingForm = true;
                             if (typeof Swal !== 'undefined') Swal.close();
                             parentForm.submit();
-                        } else {
-                            if (typeof Swal !== 'undefined') {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: '{{ __("Tải video lên R2 thất bại") }}',
-                                    text: errorMsg || '{{ __("Vui lòng thử lại hoặc kiểm tra file video.") }}'
-                                });
-                            } else {
-                                alert(errorMsg || 'Lỗi tải video lên R2.');
-                            }
                         }
-                    });
+                    }, true);
                     return false;
                 }
 
