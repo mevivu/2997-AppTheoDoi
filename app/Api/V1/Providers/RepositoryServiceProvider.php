@@ -47,6 +47,9 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\AffiliateHistory\AffiliateHistoryRepositoryInterface' => 'App\Api\V1\Repositories\AffiliateHistory\AffiliateHistoryRepository',
         'App\Api\V1\Repositories\AppVersion\AppVersionRepositoryInterface' => 'App\Api\V1\Repositories\AppVersion\AppVersionRepository',
         'App\Api\V1\Repositories\Bank\BankRepositoryInterface' => 'App\Api\V1\Repositories\Bank\BankRepository',
+        'App\Api\V1\Repositories\AgeGroup\AgeGroupRepositoryInterface' => 'App\Api\V1\Repositories\AgeGroup\AgeGroupRepository',
+        'App\Api\V1\Repositories\VideoCategory\VideoCategoryRepositoryInterface' => 'App\Api\V1\Repositories\VideoCategory\VideoCategoryRepository',
+        'App\Api\V1\Repositories\Video\VideoRepositoryInterface' => 'App\Api\V1\Repositories\Video\VideoRepository',
 
 
 
