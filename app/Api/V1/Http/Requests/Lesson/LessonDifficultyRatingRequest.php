@@ -14,7 +14,7 @@ class LessonDifficultyRatingRequest extends BaseRequest
     protected function methodPost(): array
     {
         return [
-            'child_id' => ['required', 'integer', 'exists:children,id'],
+            'child_id' => ['nullable', 'integer', 'exists:children,id'],
             'difficulty_level' => ['required', 'string', new Enum(LessonDifficultyRating::class)],
         ];
     }

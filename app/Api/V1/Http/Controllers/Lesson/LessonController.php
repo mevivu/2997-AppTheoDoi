@@ -196,7 +196,7 @@ class LessonController extends Controller
         try {
             $result = $this->service->toggleDifficultyRating(
                 (int) $id,
-                (int) $request->input('child_id'),
+                $request->filled('child_id') ? (int) $request->input('child_id') : null,
                 $request->input('difficulty_level')
             );
             return $this->jsonResponseSuccess($result, __('Đánh giá đã được cập nhật.'));

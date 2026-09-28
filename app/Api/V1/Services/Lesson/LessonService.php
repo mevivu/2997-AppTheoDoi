@@ -303,18 +303,24 @@ class LessonService implements LessonServiceInterface
      * - Đã có, cùng mức → xóa (toggle off)
      * - Đã có, khác mức → cập nhật sang mức mới
      */
-    public function toggleDifficultyRating(int $lessonId, int $childId, string $level): array
+    public function toggleDifficultyRating(int $lessonId, ?int $childId, string $level): array
     {
         $user = auth('api')->user();
         if (!$user) {
             throw new HttpException(401, 'Vui lòng đăng nhập để đánh giá bài học.');
         }
 
-        // Validate child thuộc về user hiện tại
-        $child = $user->children()->find($childId);
-        if (!$child) {
-            throw new HttpException(403, 'Bạn không có quyền đánh giá cho hồ sơ bé này.');
+        // Validate hoặc tự động lấy hồ sơ bé đầu tiên của user
+        if ($childId) {
+            $child = $user->children()->find($childId);
+        } else {
+            $child = $user->children()->first();
         }
+
+        if (!$child) {
+            throw new HttpException(403, 'Vui lòng tạo hồ sơ bé trước khi thực hiện đánh giá.');
+        }
+        $childId = $child->id;
 
         // Validate lesson tồn tại và đang active
         $lesson = $this->lessonRepository->findActiveWithRelations($lessonId);
@@ -333,7 +339,11 @@ class LessonService implements LessonServiceInterface
         $currentRating = $level;
 
         if ($existing) {
-            if ($existing->difficulty_level->value === $level) {
+            $existingValue = $existing->difficulty_level instanceof \BackedEnum
+                ? $existing->difficulty_level->value
+                : (string) $existing->difficulty_level;
+
+            if ($existingValue === $level) {
                 // Toggle OFF: bỏ chọn
                 $existing->delete();
                 $action = 'removed';
@@ -385,12 +395,20 @@ class LessonService implements LessonServiceInterface
         // Lấy rating hiện tại của user (nếu đang đăng nhập)
         $currentRating = null;
         $user = auth('api')->user();
-        if ($user && $childId) {
-            $currentRating = LessonDifficultyRatingModel::where([
+        if ($user) {
+            $query = LessonDifficultyRatingModel::where([
                 'user_id' => $user->id,
-                'child_id' => $childId,
                 'lesson_id' => $lessonId,
-            ])->value('difficulty_level');
+            ]);
+            if ($childId) {
+                $query->where('child_id', $childId);
+            }
+            $val = $query->latest('id')->value('difficulty_level');
+            if ($val instanceof \BackedEnum) {
+                $currentRating = $val->value;
+            } elseif ($val !== null) {
+                $currentRating = (string) $val;
+            }
         }
 
         return [
