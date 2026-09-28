@@ -201,6 +201,13 @@ return [
                 'roles' => [],
                 'permissions' => ['viewAgeGroup'],
             ],
+            [
+                'title' => 'Thống kê đánh giá',
+                'routeName' => RouteAdminSystem::LESSON_RATING_INDEX,
+                'icon' => '<i class="ti ti-star"></i>',
+                'roles' => [],
+                'permissions' => ['viewLesson'],
+            ],
         ]
     ],
     [

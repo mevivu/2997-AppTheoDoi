@@ -2732,6 +2732,61 @@ return [
             'addClass' => 'text-center align-middle',
         ],
     ],
+    'lesson_rating' => [
+        'id' => [
+            'title' => 'ID',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'thumbnail' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-photo"></i><span>Ảnh bìa</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'name' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-book"></i><span>Tên bài học</span></div>',
+            'addClass' => 'align-middle',
+            'orderable' => true,
+        ],
+        'age_group' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Nhóm tuổi</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'total_ratings' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-users"></i><span>Tổng ĐG</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'easy_count' => [
+            'title' => '<div class="header-cell-content"><span>😊 Dễ</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'with_help_count' => [
+            'title' => '<div class="header-cell-content"><span>👋 Cần trợ giúp</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'hard_count' => [
+            'title' => '<div class="header-cell-content"><span>🔥 Khó</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'rating_bars' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-chart-bar"></i><span>Tỉ lệ đánh giá</span></div>',
+            'addClass' => 'align-middle',
+            'orderable' => false,
+            'style' => 'min-width: 180px;',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
 ];
 
 

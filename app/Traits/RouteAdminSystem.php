@@ -430,6 +430,10 @@ class RouteAdminSystem
     const LESSON_UPDATE = 'admin.lesson.update';
     const LESSON_DELETE = 'admin.lesson.delete';
 
+    /** LESSON RATING */
+    const LESSON_RATING_INDEX = 'admin.lesson_rating.index';
+    const LESSON_RATING_DETAIL = 'admin.lesson_rating.detail';
+
     /** EXERCISE CATEGORY */
     const EXERCISE_CATEGORY_INDEX = 'admin.exercise_category.index';
     const EXERCISE_CATEGORY_CREATE = 'admin.exercise_category.create';

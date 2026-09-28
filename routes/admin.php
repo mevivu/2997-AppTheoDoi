@@ -287,6 +287,17 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+    // Lesson Ratings
+    Route::controller(\App\Admin\Http\Controllers\Lesson\LessonRatingController::class)
+        ->prefix('/lesson-ratings')
+        ->as('lesson_rating.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:viewLesson', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/detail/{id}', 'detail')->name('detail');
+            });
+        });
+
     // Videos
     Route::controller(\App\Admin\Http\Controllers\Video\VideoController::class)
         ->prefix('/videos')
