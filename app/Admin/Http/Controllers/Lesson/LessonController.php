@@ -221,10 +221,16 @@ class LessonController extends Controller
      */
     public function uploadR2Video(Request $request): JsonResponse
     {
+        // Tăng giới hạn thời gian thực thi và bộ nhớ để hỗ trợ upload video dung lượng lớn (tối đa 200MB)
+        set_time_limit(600);
+        ini_set('max_execution_time', '600');
+        ini_set('memory_limit', '512M');
+
         $request->validate([
             'video_file' => 'required|file|max:204800|mimes:mp4,mov,webm,mkv,avi,m4v',
         ], [
             'video_file.required' => 'Vui lòng chọn file video.',
+            'video_file.file' => 'Dữ liệu tải lên phải là file video hợp lệ.',
             'video_file.max' => 'Dung lượng video tối đa là 200MB.',
             'video_file.mimes' => 'Định dạng video hợp lệ: mp4, mov, webm, mkv, avi, m4v.',
         ]);
@@ -243,6 +249,7 @@ class LessonController extends Controller
                 'size_mb' => round($request->file('video_file')->getSize() / (1024 * 1024), 2),
             ]);
         } catch (\Exception $e) {
+            \Log::error('Upload R2 Video failed: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json([
                 'status' => false,
                 'message' => 'Lỗi upload lên Cloudflare R2: ' . $e->getMessage(),

@@ -17,7 +17,7 @@
             <h4 class="card-title fw-bold text-dark mb-0 d-flex align-items-center gap-2">
                 <i class="ti ti-video text-danger fs-2"></i>
                 <span>{{ __('3. Video bài học') }}</span>
-                <span class="badge {{ $videoType === 'r2' ? 'bg-warning text-dark' : 'bg-danger text-white' }} px-2 py-1 fs-12 ms-2" id="single_video_type_badge">
+                <span class="badge {{ $videoType === 'r2' ? 'bg-primary text-white' : 'bg-danger text-white' }} px-2 py-1 fs-12 ms-2" id="single_video_type_badge">
                     {{ $videoType === 'r2' ? 'Cloudflare R2' : 'YouTube' }}
                 </span>
             </h4>
@@ -64,15 +64,15 @@
                         <label class="video-source-card video-card-r2 {{ $videoType === 'r2' ? 'is-active' : '' }} p-3 rounded-3 d-flex align-items-center gap-3 cursor-pointer w-100"
                                for="vtype_r2">
                             <input type="radio" class="d-none single-video-type-radio" name="videos[0][video_type]" id="vtype_r2" value="r2" {{ $videoType === 'r2' ? 'checked' : '' }} autocomplete="off">
-                            <div class="source-icon-box rounded-circle d-flex align-items-center justify-content-center bg-warning-lt" style="width: 44px; height: 44px; flex-shrink: 0;">
-                                <i class="ti ti-cloud-upload fs-1 text-warning"></i>
+                            <div class="source-icon-box rounded-circle d-flex align-items-center justify-content-center bg-primary-lt" style="width: 44px; height: 44px; flex-shrink: 0;">
+                                <i class="ti ti-cloud-upload fs-1 text-primary"></i>
                             </div>
                             <div class="flex-grow-1">
                                 <div class="fw-bold text-dark fs-14">Cloudflare R2 (Tải file MP4)</div>
                                 <div class="text-muted fs-11 mt-1">Tải file lên CDN riêng, bảo mật tốc độ cao</div>
                             </div>
                             <div class="source-check-icon">
-                                <i class="ti ti-circle-check-filled text-warning fs-2"></i>
+                                <i class="ti ti-circle-check-filled text-primary fs-2"></i>
                             </div>
                         </label>
                     </div>
@@ -118,7 +118,7 @@
                     {{-- Trạng thái chờ chọn file --}}
                     <div class="r2-dropzone-idle" id="r2_drop_idle">
                         <div class="mb-3">
-                            <span class="avatar avatar-xl rounded-circle bg-warning-lt text-warning shadow-xs dropzone-cloud-icon">
+                            <span class="avatar avatar-xl rounded-circle bg-primary-lt text-primary shadow-xs dropzone-cloud-icon">
                                 <i class="ti ti-cloud-upload fs-1"></i>
                             </span>
                         </div>
@@ -126,17 +126,17 @@
                         <p class="text-muted fs-12 mb-3">
                             {{ __('Định dạng hỗ trợ:') }} <span class="badge bg-light text-dark fw-semibold">MP4</span> <span class="badge bg-light text-dark fw-semibold">MOV</span> <span class="badge bg-light text-dark fw-semibold">WebM</span> — {{ __('Tối đa 200MB') }}
                         </p>
-                        <button type="button" class="btn btn-outline-warning fw-semibold px-4" id="btn_browse_r2">
+                        <button type="button" class="btn btn-outline-primary fw-semibold px-4" id="btn_browse_r2">
                             <i class="ti ti-folder-open me-2"></i>{{ __('Duyệt file từ máy tính') }}
                         </button>
                     </div>
 
                     {{-- Trạng thái đã chọn file, sẵn sàng upload & thanh tiến trình --}}
                     <div class="r2-file-selected d-none" id="r2_file_selected_box">
-                        <div class="p-3 bg-white rounded-3 border border-warning shadow-xs text-start">
+                        <div class="p-3 bg-white rounded-3 border border-primary-subtle shadow-xs text-start">
                             <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
                                 <div class="d-flex align-items-center gap-3 overflow-hidden">
-                                    <span class="avatar avatar-md rounded-3 bg-warning text-white flex-shrink-0">
+                                    <span class="avatar avatar-md rounded-3 bg-primary text-white flex-shrink-0 shadow-xs">
                                         <i class="ti ti-file-video fs-2"></i>
                                     </span>
                                     <div class="overflow-hidden">
@@ -144,7 +144,7 @@
                                         <div class="text-muted fs-12 d-flex align-items-center gap-2 mt-1">
                                             <span id="r2_selected_filesize" class="badge bg-light text-dark fw-semibold">0 MB</span>
                                             <span id="r2_video_meta_duration" class="badge bg-blue-lt fw-semibold d-none"><i class="ti ti-clock me-1"></i>--:--</span>
-                                            <span id="r2_upload_status_tag" class="badge bg-warning-lt text-warning fw-semibold"><i class="ti ti-alert-circle me-1"></i>Chưa tải lên</span>
+                                            <span id="r2_upload_status_tag" class="badge bg-blue-lt text-blue fw-semibold"><i class="ti ti-circle me-1"></i>Chưa tải lên</span>
                                         </div>
                                     </div>
                                 </div>
@@ -152,7 +152,7 @@
                                     <button type="button" class="btn btn-light btn-sm text-danger" id="btn_cancel_r2_file" title="Đổi file khác">
                                         <i class="ti ti-rotate me-1"></i>{{ __('Đổi file') }}
                                     </button>
-                                    <button type="button" class="btn btn-warning btn-sm fw-bold px-3 shadow-xs" id="btn_upload_single_r2">
+                                    <button type="button" class="btn btn-primary btn-sm fw-bold px-3 shadow-xs" id="btn_upload_single_r2">
                                         <i class="ti ti-cloud-upload me-1"></i>{{ __('Tải lên Cloudflare R2 ngay') }}
                                     </button>
                                 </div>
@@ -162,17 +162,17 @@
                             <div class="mt-3 pt-3 border-top d-none" id="single_r2_progress_wrapper">
                                 <div class="d-flex justify-content-between align-items-center text-dark fw-semibold fs-12 mb-1">
                                     <span id="single_r2_upload_status" class="d-flex align-items-center gap-2">
-                                        <span class="spinner-border spinner-border-sm text-warning" role="status"></span>
+                                        <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
                                         <span>{{ __('Đang chuẩn bị tải file lên Cloudflare R2...') }}</span>
                                     </span>
-                                    <span id="single_r2_upload_percent" class="badge bg-warning text-dark fw-bold fs-12 px-2 py-1">0%</span>
+                                    <span id="single_r2_upload_percent" class="badge bg-primary text-white fw-bold fs-12 px-2 py-1">0%</span>
                                 </div>
                                 <div class="progress" style="height: 14px; border-radius: 8px; background-color: #f1f5f9; overflow: hidden;">
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" id="single_r2_progress_bar" role="progressbar" style="width: 0%; font-size: 10px; font-weight: bold; line-height: 14px;">0%</div>
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" id="single_r2_progress_bar" role="progressbar" style="width: 0%; font-size: 10px; font-weight: bold; line-height: 14px;">0%</div>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center fs-11 text-muted mt-2">
                                     <span id="single_r2_bytes_status">0 MB / 0 MB</span>
-                                    <span id="single_r2_speed_status"><i class="ti ti-cloud-upload text-warning me-1"></i>Đang truyền tải video an toàn lên Cloudflare R2...</span>
+                                    <span id="single_r2_speed_status"><i class="ti ti-cloud-upload text-primary me-1"></i>Đang truyền tải video an toàn lên Cloudflare R2...</span>
                                 </div>
                             </div>
                         </div>
@@ -300,10 +300,10 @@
 
             {{-- 6B. Khung xem trước Trình phát Video Cloudflare R2 (HTML5 Video Player Preview) --}}
             <div class="col-12 {{ $videoType === 'r2' && (!empty($videoUrl) || !empty($videoPath)) ? '' : 'd-none' }}" id="single_r2_preview_box">
-                <div class="card border border-2 border-warning rounded-3 overflow-hidden shadow-xs" style="background-color: #fdfcf9;">
-                    <div class="card-header bg-warning-lt py-2 px-3 d-flex justify-content-between align-items-center">
+                <div class="card border border-2 border-primary-subtle rounded-3 overflow-hidden shadow-xs" style="background-color: #f8fbff;">
+                    <div class="card-header bg-primary-lt py-2 px-3 d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center gap-2">
-                            <span class="badge bg-warning text-dark fw-bold px-2 py-1 fs-11">
+                            <span class="badge bg-primary text-white fw-bold px-2 py-1 fs-11">
                                 <i class="ti ti-player-play me-1"></i>Cloudflare R2 Player
                             </span>
                             <span class="text-dark fw-bold fs-13" id="r2_preview_badge_status">
@@ -365,9 +365,9 @@
     /* Cloudflare R2 Card Active */
     .video-card-r2.is-active,
     .video-card-r2:has(input:checked) {
-        border-color: #f59f00 !important;
-        background-color: #fffbf0 !important;
-        box-shadow: 0 4px 14px rgba(245, 159, 0, 0.18) !important;
+        border-color: #206bc4 !important;
+        background-color: #f0f7ff !important;
+        box-shadow: 0 4px 14px rgba(32, 107, 196, 0.18) !important;
         transform: translateY(-1px);
     }
     .video-card-r2.is-active .source-check-icon,
@@ -375,17 +375,18 @@
         display: block;
     }
 
-    /* Modern Dropzone */
+    /* Modern Dropzone - Primary Blue / Teal */
     .r2-dropzone {
-        border: 2px dashed #f59f00;
-        background-color: #fffdf9;
+        border: 2px dashed #206bc4;
+        background: linear-gradient(180deg, #f8fbff 0%, #f0f7ff 100%);
         transition: all 0.25s ease-in-out;
     }
     .r2-dropzone:hover,
     .r2-dropzone.dragover {
-        border-color: #d97706;
-        background-color: #fef9ed;
-        transform: scale(1.002);
+        border-color: #0054a6;
+        background-color: #eef6ff;
+        box-shadow: 0 4px 16px rgba(32, 107, 196, 0.08);
+        transform: translateY(-1px);
     }
     .r2-dropzone .dropzone-cloud-icon {
         transition: transform 0.2s ease;
@@ -548,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 ytPreviewBox.classList.add('d-none'); // Ẩn hoàn toàn preview YouTube
 
                 badgeType.textContent = 'Cloudflare R2';
-                badgeType.className = 'badge bg-warning text-dark px-2 py-1 fs-12 ms-2';
+                badgeType.className = 'badge bg-primary text-white px-2 py-1 fs-12 ms-2';
                 thumbHintText.textContent = '{{ __("Với Cloudflare R2, video tự dùng frame đầu hoặc bạn có thể nhập link ảnh bìa riêng tùy chọn.") }}';
 
                 // Tách biệt Thumbnail: Nếu đang là URL YouTube thì reset
@@ -691,15 +692,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 r2UploadStatusTag.innerHTML = '<i class="ti ti-check me-1"></i>Đã tải lên';
             }
         } else {
-            r2PreviewBadgeStatus.innerHTML = '<i class="ti ti-device-floppy text-warning me-1"></i>{{ __("Xem trước video từ máy tính (Chưa tải lên R2)") }}';
+            r2PreviewBadgeStatus.innerHTML = '<i class="ti ti-device-floppy text-primary me-1"></i>{{ __("Xem trước video từ máy tính (Chưa tải lên R2)") }}';
             if (r2StorageDesc) r2StorageDesc.textContent = 'File: ' + originalFileName + ' (Chờ bấm tải lên Cloudflare R2)';
-            if (r2StorageIcon) r2StorageIcon.innerHTML = '<i class="ti ti-clock-pause text-warning fs-14"></i>';
+            if (r2StorageIcon) r2StorageIcon.innerHTML = '<i class="ti ti-clock-pause text-primary fs-14"></i>';
             if (btnR2OpenExternal) {
                 btnR2OpenExternal.classList.add('disabled');
                 btnR2OpenExternal.href = '#';
             }
             if (r2UploadStatusTag) {
-                r2UploadStatusTag.className = 'badge bg-warning-lt text-warning fw-semibold';
+                r2UploadStatusTag.className = 'badge bg-blue-lt text-blue fw-semibold';
                 r2UploadStatusTag.innerHTML = '<i class="ti ti-alert-circle me-1"></i>Chưa tải lên';
             }
         }
@@ -721,9 +722,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Reset progress bar
         r2ProgressWrapper.classList.add('d-none');
         r2ProgressBar.style.width = '0%';
-        r2ProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-warning';
+        r2ProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary';
         r2ProgressBar.textContent = '0%';
-        r2UploadPercent.className = 'badge bg-warning text-dark fw-bold fs-12 px-2 py-1';
+        r2UploadPercent.className = 'badge bg-primary text-white fw-bold fs-12 px-2 py-1';
         r2UploadPercent.textContent = '0%';
 
         // 1. Tạo Local Preview phát trực tiếp bằng thẻ <video>
@@ -993,19 +994,19 @@ document.addEventListener('DOMContentLoaded', function () {
             : '{{ __("Vui lòng giữ kết nối mạng trong quá trình tải video lên CDN Cloudflare R2.") }}';
 
         Swal.fire({
-            title: '<div class="d-flex align-items-center justify-content-center gap-2 text-dark fs-16 fw-bold"><i class="ti ti-cloud-upload text-warning fs-1"></i><span>{{ __("Đang tải video lên Cloudflare R2...") }}</span></div>',
+            title: '<div class="d-flex align-items-center justify-content-center gap-2 text-dark fs-16 fw-bold"><i class="ti ti-cloud-upload text-primary fs-1"></i><span>{{ __("Đang tải video lên Cloudflare R2...") }}</span></div>',
             html: `
                 <div class="text-start px-1 py-1">
                     <!-- Khối thông tin file video đang tải -->
-                    <div class="d-flex align-items-center gap-3 p-2 bg-light rounded-3 border mb-3">
-                        <span class="avatar avatar-md rounded-3 bg-warning text-white flex-shrink-0">
+                    <div class="d-flex align-items-center gap-3 p-2.5 bg-light rounded-3 border border-primary-subtle mb-3">
+                        <span class="avatar avatar-md rounded-3 bg-primary text-white flex-shrink-0 shadow-xs">
                             <i class="ti ti-file-video fs-2"></i>
                         </span>
                         <div class="overflow-hidden flex-grow-1">
                             <div class="fw-bold text-dark text-truncate fs-13" title="${safeName}">${safeName}</div>
                             <div class="text-muted fs-11 mt-1 d-flex align-items-center gap-2">
                                 <span>${sizeStr}</span>
-                                <span class="badge bg-warning-lt text-warning fw-semibold">Cloudflare R2 CDN</span>
+                                <span class="badge bg-blue-lt text-blue fw-bold">Cloudflare R2 CDN</span>
                             </div>
                         </div>
                     </div>
@@ -1013,26 +1014,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     <!-- Tiêu đề tiến trình & % hoàn thành -->
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="fs-12 fw-bold text-dark d-flex align-items-center gap-1" id="swal_status_text">
-                            <span class="spinner-border spinner-border-sm text-warning" role="status"></span>
+                            <span class="spinner-border spinner-border-sm text-primary" role="status"></span>
                             <span>{{ __("Đang kết nối Cloudflare...") }}</span>
                         </span>
-                        <span class="badge bg-warning text-dark fw-bold fs-12 px-2 py-1 shadow-xs" id="swal_percent_badge">0%</span>
+                        <span class="badge bg-primary text-white fw-bold fs-12 px-2 py-1 shadow-xs" id="swal_percent_badge">0%</span>
                     </div>
 
                     <!-- Thanh Progress Bar lớn và rực rỡ TRỰC TIẾP TRONG DIALOG -->
                     <div class="progress shadow-xs" style="height: 18px; border-radius: 9px; background-color: #e2e8f0; overflow: hidden;">
-                        <div id="swal_progress_bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning fw-bold text-dark"
+                        <div id="swal_progress_bar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary fw-bold text-white"
                              role="progressbar" style="width: 0%; font-size: 11px; line-height: 18px; transition: width 0.15s ease;">0%</div>
                     </div>
 
                     <!-- Chi tiết số MB đã tải và trạng thái mạng -->
                     <div class="d-flex justify-content-between align-items-center mt-2 fs-11 text-muted">
                         <span id="swal_bytes_text" class="fw-semibold">0 MB / ${sizeStr}</span>
-                        <span id="swal_speed_text"><i class="ti ti-arrow-up text-warning me-1"></i>{{ __("Đang truyền dữ liệu...") }}</span>
+                        <span id="swal_speed_text"><i class="ti ti-arrow-up text-primary me-1"></i>{{ __("Đang truyền dữ liệu...") }}</span>
                     </div>
 
                     <!-- Ghi chú dưới dialog -->
-                    <div class="mt-3 p-2 rounded bg-warning-lt text-warning fs-11 text-center border border-warning-subtle">
+                    <div class="mt-3 p-2 rounded bg-blue-lt text-primary fs-11 text-center border border-blue-subtle">
                         <i class="ti ti-info-circle me-1"></i>${subNotice}
                     </div>
                 </div>
@@ -1074,15 +1075,17 @@ document.addEventListener('DOMContentLoaded', function () {
         r2ProgressWrapper.classList.remove('d-none');
         r2ProgressBar.style.width = '0%';
         r2ProgressBar.textContent = '0%';
-        r2ProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-warning';
-        r2UploadPercent.className = 'badge bg-warning text-dark fw-bold fs-12 px-2 py-1';
+        r2ProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary';
+        r2UploadPercent.className = 'badge bg-primary text-white fw-bold fs-12 px-2 py-1';
         r2UploadPercent.textContent = '0%';
-        r2UploadStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-warning" role="status"></span> {{ __("Đang chuẩn bị truyền tải video...") }}';
+        r2UploadStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-primary" role="status"></span> {{ __("Đang chuẩn bị truyền tải video...") }}';
         r2BytesStatus.textContent = '0 MB / ' + formatBytes(file.size);
-        r2SpeedStatus.innerHTML = '<i class="ti ti-cloud-upload text-warning me-1"></i>{{ __("Đang kết nối Cloudflare...") }}';
+        r2SpeedStatus.innerHTML = '<i class="ti ti-cloud-upload text-primary me-1"></i>{{ __("Đang kết nối Cloudflare...") }}';
 
         const xhr = new XMLHttpRequest();
         xhr.open('POST', '{{ route("admin.lesson.upload_r2_video") }}', true);
+        xhr.setRequestHeader('Accept', 'application/json');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
         xhr.upload.onprogress = function (e) {
             if (e.lengthComputable) {
@@ -1093,10 +1096,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 // 1. Cập nhật Dropzone trên trang chính
                 r2ProgressBar.style.width = percent + '%';
                 r2ProgressBar.textContent = percent + '%';
+                r2ProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary';
+                r2UploadPercent.className = 'badge bg-primary text-white fw-bold fs-12 px-2 py-1';
                 r2UploadPercent.textContent = percent + '%';
                 r2BytesStatus.textContent = loadedStr + ' / ' + totalStr;
-                r2UploadStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-warning" role="status"></span> {{ __("Đang tải lên Cloudflare R2: ") }}' + percent + '%';
-                r2SpeedStatus.innerHTML = '<i class="ti ti-arrow-up text-warning me-1"></i>{{ __("Đang đồng bộ dữ liệu lên CDN...") }}';
+                r2UploadStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-primary" role="status"></span> {{ __("Đang tải lên Cloudflare R2: ") }}' + percent + '%';
+                r2SpeedStatus.innerHTML = '<i class="ti ti-arrow-up text-primary me-1"></i>{{ __("Đang đồng bộ dữ liệu lên CDN...") }}';
 
                 // 2. CẬP NHẬT TRỰC TIẾP TRONG SWEETALERT DIALOG
                 const swalBar = document.getElementById('swal_progress_bar');
@@ -1108,18 +1113,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (swalBar) {
                     swalBar.style.width = percent + '%';
                     swalBar.textContent = percent + '%';
+                    swalBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary fw-bold text-white';
                 }
                 if (swalPercent) {
+                    swalPercent.className = 'badge bg-primary text-white fw-bold fs-12 px-2 py-1 shadow-xs';
                     swalPercent.textContent = percent + '%';
                 }
                 if (swalBytes) {
                     swalBytes.textContent = loadedStr + ' / ' + totalStr;
                 }
                 if (swalStatus) {
-                    swalStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-warning me-1" role="status"></span> {{ __("Đang tải lên R2: ") }}' + percent + '%';
+                    swalStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-primary me-1" role="status"></span> {{ __("Đang tải lên R2: ") }}' + percent + '%';
                 }
                 if (swalSpeed) {
-                    swalSpeed.innerHTML = '<i class="ti ti-arrow-up text-warning me-1"></i>{{ __("Đang truyền dữ liệu...") }}';
+                    swalSpeed.innerHTML = '<i class="ti ti-arrow-up text-primary me-1"></i>{{ __("Đang truyền dữ liệu...") }}';
                 }
             }
         };
@@ -1129,80 +1136,89 @@ document.addEventListener('DOMContentLoaded', function () {
             btnCancelFile.disabled = false;
             btnUploadR2.innerHTML = '<i class="ti ti-cloud-upload me-1"></i>{{ __("Tải lên Cloudflare R2 ngay") }}';
 
-            if (xhr.status === 200) {
-                try {
-                    const res = JSON.parse(xhr.responseText);
-                    if (res.status) {
-                        isR2Uploaded = true;
+            let res = null;
+            try {
+                res = JSON.parse(xhr.responseText);
+            } catch (e) {
+                console.error('Non-JSON response from server (HTTP ' + xhr.status + '):', xhr.responseText);
+            }
 
-                        // 1. Cập nhật Dropzone trên trang chính
-                        r2ProgressBar.className = 'progress-bar bg-success';
-                        r2ProgressBar.style.width = '100%';
-                        r2ProgressBar.textContent = '100%';
-                        r2UploadPercent.className = 'badge bg-success text-white fw-bold fs-12 px-2 py-1';
-                        r2UploadPercent.textContent = 'Hoàn tất 100%';
-                        r2UploadStatus.innerHTML = '<i class="ti ti-circle-check-filled text-success fs-3 me-1"></i> <strong>{{ __("Tải lên Cloudflare R2 thành công!") }}</strong>';
-                        r2BytesStatus.textContent = formatBytes(file.size) + ' / ' + formatBytes(file.size);
-                        r2SpeedStatus.innerHTML = '<i class="ti ti-check text-success me-1"></i>{{ __("Video đã sẵn sàng phát từ CDN") }}';
+            if (xhr.status === 200 && res && res.status) {
+                isR2Uploaded = true;
 
-                        // 2. CẬP NHẬT TRỰC TIẾP TRONG DIALOG POPUP SANG MÀU XANH 100%
-                        const swalBar = document.getElementById('swal_progress_bar');
-                        const swalPercent = document.getElementById('swal_percent_badge');
-                        const swalStatus = document.getElementById('swal_status_text');
-                        const swalSpeed = document.getElementById('swal_speed_text');
-                        const swalBytes = document.getElementById('swal_bytes_text');
+                // 1. Cập nhật Dropzone trên trang chính sang màu xanh lá hoàn tất
+                r2ProgressBar.className = 'progress-bar bg-success';
+                r2ProgressBar.style.width = '100%';
+                r2ProgressBar.textContent = '100%';
+                r2UploadPercent.className = 'badge bg-success text-white fw-bold fs-12 px-2 py-1';
+                r2UploadPercent.textContent = 'Hoàn tất 100%';
+                r2UploadStatus.innerHTML = '<i class="ti ti-circle-check-filled text-success fs-3 me-1"></i> <strong>{{ __("Tải lên Cloudflare R2 thành công!") }}</strong>';
+                r2BytesStatus.textContent = formatBytes(file.size) + ' / ' + formatBytes(file.size);
+                r2SpeedStatus.innerHTML = '<i class="ti ti-check text-success me-1"></i>{{ __("Video đã sẵn sàng phát từ CDN") }}';
 
-                        if (swalBar) {
-                            swalBar.className = 'progress-bar bg-success fw-bold text-white';
-                            swalBar.style.width = '100%';
-                            swalBar.textContent = '100%';
-                        }
-                        if (swalPercent) {
-                            swalPercent.className = 'badge bg-success text-white fw-bold fs-12 px-2 py-1';
-                            swalPercent.textContent = 'Hoàn tất 100%';
-                        }
-                        if (swalStatus) {
-                            swalStatus.innerHTML = '<i class="ti ti-circle-check-filled text-success fs-3 me-1"></i> <strong>' +
-                                (isAutoSubmit ? '{{ __("Tải lên R2 thành công! Đang lưu bài học...") }}' : '{{ __("Tải lên Cloudflare R2 thành công!") }}') + '</strong>';
-                        }
-                        if (swalBytes) {
-                            swalBytes.textContent = formatBytes(file.size) + ' / ' + formatBytes(file.size);
-                        }
-                        if (swalSpeed) {
-                            swalSpeed.innerHTML = '<i class="ti ti-check text-success me-1"></i>{{ __("File đã lưu trữ an toàn trên CDN") }}';
-                        }
+                // 2. CẬP NHẬT TRỰC TIẾP TRONG DIALOG POPUP SANG MÀU XANH HOÀN TẤT 100%
+                const swalBar = document.getElementById('swal_progress_bar');
+                const swalPercent = document.getElementById('swal_percent_badge');
+                const swalStatus = document.getElementById('swal_status_text');
+                const swalSpeed = document.getElementById('swal_speed_text');
+                const swalBytes = document.getElementById('swal_bytes_text');
 
-                        // Cập nhật Hidden inputs
-                        r2ResultBox.classList.remove('d-none');
-                        r2UrlInput.value = res.url;
-                        if (finalVideoUrlInput) finalVideoUrlInput.value = res.url;
-                        r2PathInput.value = res.path;
-                        r2UrlText.textContent = res.url;
-                        r2PreviewLink.href = res.url;
-
-                        // Chuyển sang Preview Stream CDN trực tiếp
-                        showR2VideoPreview(res.url, true, file.name);
-
-                        if (isAutoSubmit) {
-                            // Chờ 800ms để người dùng kịp nhìn thấy kết quả 100% hoàn tất rồi submit form
-                            setTimeout(() => {
-                                if (callback) callback(true, null);
-                            }, 800);
-                        } else {
-                            // Đóng dialog sau 1.2s nếu là thao tác upload thủ công
-                            setTimeout(() => {
-                                if (typeof Swal !== 'undefined') Swal.close();
-                            }, 1200);
-                            if (callback) callback(true, null);
-                        }
-                    } else {
-                        handleUploadError(res.message || '{{ __("Lỗi tải lên Cloudflare R2.") }}');
-                    }
-                } catch (e) {
-                    handleUploadError('{{ __("Lỗi xử lý phản hồi từ máy chủ.") }}');
+                if (swalBar) {
+                    swalBar.className = 'progress-bar bg-success fw-bold text-white';
+                    swalBar.style.width = '100%';
+                    swalBar.textContent = '100%';
                 }
+                if (swalPercent) {
+                    swalPercent.className = 'badge bg-success text-white fw-bold fs-12 px-2 py-1';
+                    swalPercent.textContent = 'Hoàn tất 100%';
+                }
+                if (swalStatus) {
+                    swalStatus.innerHTML = '<i class="ti ti-circle-check-filled text-success fs-3 me-1"></i> <strong>' +
+                        (isAutoSubmit ? '{{ __("Tải lên R2 thành công! Đang lưu bài học...") }}' : '{{ __("Tải lên Cloudflare R2 thành công!") }}') + '</strong>';
+                }
+                if (swalBytes) {
+                    swalBytes.textContent = formatBytes(file.size) + ' / ' + formatBytes(file.size);
+                }
+                if (swalSpeed) {
+                    swalSpeed.innerHTML = '<i class="ti ti-check text-success me-1"></i>{{ __("File đã lưu trữ an toàn trên CDN") }}';
+                }
+
+                // Cập nhật Hidden inputs
+                r2ResultBox.classList.remove('d-none');
+                r2UrlInput.value = res.url;
+                if (finalVideoUrlInput) finalVideoUrlInput.value = res.url;
+                r2PathInput.value = res.path;
+                r2UrlText.textContent = res.url;
+                r2PreviewLink.href = res.url;
+
+                // Chuyển sang Preview Stream CDN trực tiếp
+                showR2VideoPreview(res.url, true, file.name);
+
+                if (isAutoSubmit) {
+                    // Chờ 800ms để người dùng kịp nhìn thấy kết quả 100% hoàn tất rồi submit form
+                    setTimeout(() => {
+                        if (callback) callback(true, null);
+                    }, 800);
+                } else {
+                    // Đóng dialog sau 1.2s nếu là thao tác upload thủ công
+                    setTimeout(() => {
+                        if (typeof Swal !== 'undefined') Swal.close();
+                    }, 1200);
+                    if (callback) callback(true, null);
+                }
+            } else if (res && res.message) {
+                handleUploadError(res.message);
+            } else if (res && res.errors && res.errors.video_file) {
+                handleUploadError(res.errors.video_file[0]);
+            } else if (xhr.status === 413) {
+                handleUploadError('{{ __("Dung lượng video vượt quá giới hạn cấu hình của máy chủ (tối đa 200MB).") }}');
+            } else if (xhr.status === 419) {
+                handleUploadError('{{ __("Phiên làm việc đã hết hạn. Vui lòng tải lại trang và thử lại.") }}');
+            } else if (xhr.status === 422 && res && res.errors) {
+                const firstErr = Object.values(res.errors)[0];
+                handleUploadError(Array.isArray(firstErr) ? firstErr[0] : firstErr);
             } else {
-                handleUploadError('{{ __("Lỗi máy chủ: ") }}' + xhr.status);
+                handleUploadError('{{ __("Lỗi máy chủ (HTTP ") }}' + xhr.status + '): ' + (xhr.statusText || '{{ __("Không thể xử lý file video.") }}'));
             }
         };
 
