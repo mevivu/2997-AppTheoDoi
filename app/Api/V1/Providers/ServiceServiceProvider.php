@@ -37,7 +37,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Api\V1\Services\AppVersion\AppVersionServiceInterface' => 'App\Api\V1\Services\AppVersion\AppVersionService',
         'App\Services\Affiliate\AffiliateServiceInterface' => 'App\Services\Affiliate\AffiliateService',
         'App\Api\V1\Services\Video\VideoServiceInterface' => 'App\Api\V1\Services\Video\VideoService',
-
+        'App\Api\V1\Services\Lesson\LessonServiceInterface' => 'App\Api\V1\Services\Lesson\LessonService',
     ];
 
     /**

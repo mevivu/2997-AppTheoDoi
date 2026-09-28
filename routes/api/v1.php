@@ -259,16 +259,29 @@ Route::controller(\App\Api\V1\Http\Controllers\VaccinationSchedule\VaccinationSc
     });
 
 
-// Video Education
-Route::controller(\App\Api\V1\Http\Controllers\Video\VideoController::class)
+// Education Lessons (5 Pillars)
+Route::controller(\App\Api\V1\Http\Controllers\Lesson\LessonController::class)
+    ->prefix('/lessons')
+    ->as('lesson.')
+    ->group(function () {
+        Route::get('/age-groups', 'getAgeGroups');
+        Route::get('/pillars', 'getPillars');
+        Route::get('/categories', 'getCategories');
+        Route::get('/list', 'getList');
+        Route::get('/{id}', 'show')->whereNumber('id');
+        Route::post('/{id}/view', 'incrementView')->whereNumber('id')->middleware('throttle:30,1');
+    });
+
+// Backward-compatible Video Education endpoints (forwarded to LessonController)
+Route::controller(\App\Api\V1\Http\Controllers\Lesson\LessonController::class)
     ->prefix('/videos')
     ->as('video.')
     ->group(function () {
         Route::get('/age-groups', 'getAgeGroups');
         Route::get('/categories', 'getCategories');
         Route::get('/list', 'getList');
-        Route::get('/{id}', 'show');
-        Route::post('/{id}/view', 'incrementView')->middleware('throttle:30,1');
+        Route::get('/{id}', 'show')->whereNumber('id');
+        Route::post('/{id}/view', 'incrementView')->whereNumber('id')->middleware('throttle:30,1');
     });
 
 // Exercise

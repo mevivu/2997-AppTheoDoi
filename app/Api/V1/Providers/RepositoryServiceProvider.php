@@ -50,9 +50,8 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\AgeGroup\AgeGroupRepositoryInterface' => 'App\Api\V1\Repositories\AgeGroup\AgeGroupRepository',
         'App\Api\V1\Repositories\VideoCategory\VideoCategoryRepositoryInterface' => 'App\Api\V1\Repositories\VideoCategory\VideoCategoryRepository',
         'App\Api\V1\Repositories\Video\VideoRepositoryInterface' => 'App\Api\V1\Repositories\Video\VideoRepository',
-
-
-
+        'App\Api\V1\Repositories\LessonCategory\LessonCategoryRepositoryInterface' => 'App\Api\V1\Repositories\LessonCategory\LessonCategoryRepository',
+        'App\Api\V1\Repositories\Lesson\LessonRepositoryInterface' => 'App\Api\V1\Repositories\Lesson\LessonRepository',
     ];
 
     /**
