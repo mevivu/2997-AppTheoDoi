@@ -103,13 +103,16 @@
             </div>
 
             {{-- 2B. Khối tải lên Cloudflare R2 (Modern Dropzone & Upload Box) --}}
+            @php
+                $hasExistingR2 = (!empty($videoPath) || !empty($videoUrl)) && $videoType === 'r2';
+            @endphp
             <div class="col-12 {{ $videoType === 'r2' ? '' : 'd-none' }}" id="single_r2_box">
-                <label class="form-label fw-bold text-dark fs-13 mb-1">
+                <label class="form-label fw-bold text-dark fs-13 mb-1 {{ $hasExistingR2 ? 'd-none' : '' }}" id="r2_drop_label">
                     {{ __('Tải video lên Cloudflare R2') }}: <span class="text-danger">*</span>
                 </label>
                 
                 {{-- Dropzone Area --}}
-                <div class="r2-dropzone rounded-3 p-4 text-center cursor-pointer position-relative {{ !empty($videoPath) && $videoType === 'r2' ? 'd-none' : '' }}" id="r2_drop_area">
+                <div class="r2-dropzone rounded-3 p-4 text-center cursor-pointer position-relative {{ $hasExistingR2 ? 'd-none' : '' }}" id="r2_drop_area">
                     <input type="file" id="single_r2_file" class="d-none" accept="video/mp4,video/quicktime,video/webm,video/x-matroska,video/avi">
                     
                     {{-- Trạng thái chờ chọn file --}}
@@ -177,27 +180,35 @@
                 </div>
 
                 {{-- Hộp thông báo kết quả lưu trữ R2 thành công --}}
-                <div class="mt-3 {{ !empty($videoPath) && $videoType === 'r2' ? '' : 'd-none' }}" id="single_r2_result_box">
-                    <div class="alert alert-success d-flex align-items-center justify-content-between p-3 mb-0 rounded-3 border-0 shadow-xs">
-                        <div class="d-flex align-items-center gap-3 overflow-hidden">
-                            <span class="avatar avatar-md rounded-circle bg-success text-white flex-shrink-0">
-                                <i class="ti ti-check fs-2"></i>
+                <div class="mt-3 {{ $hasExistingR2 ? '' : 'd-none' }}" id="single_r2_result_box">
+                    <div class="r2-success-banner p-3 rounded-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div class="d-flex align-items-center gap-3 min-w-0">
+                            <span class="avatar avatar-md rounded-circle bg-success text-white flex-shrink-0 shadow-xs">
+                                <i class="ti ti-circle-check fs-2"></i>
                             </span>
-                            <div class="overflow-hidden">
-                                <div class="fw-bold fs-13 text-success d-flex align-items-center gap-1">
-                                    <span>{{ __('Video đã được lưu trữ an toàn trên Cloudflare R2!') }}</span>
-                                    <span class="badge bg-success-lt text-success fs-11">CDN Active</span>
+                            <div class="min-w-0">
+                                <div class="d-flex align-items-center gap-2 flex-wrap mb-0.5">
+                                    <span class="fw-bold text-dark fs-14">{{ __('Video đã lưu trữ an toàn trên Cloudflare R2') }}</span>
+                                    <span class="badge bg-green-lt text-green fw-bold px-2 py-0.5 fs-11">
+                                        <span class="status-dot status-dot-animated bg-green me-1"></span>CDN Active
+                                    </span>
                                 </div>
-                                <div class="text-muted fs-11 text-truncate mt-1 d-none" id="single_r2_url_text">{{ $videoType === 'r2' ? $videoUrl : '' }}</div>
+                                <div class="text-muted fs-12 text-truncate" id="single_r2_status_desc">
+                                    {{ __('Sẵn sàng phát trực tiếp với CDN tốc độ cao, tối ưu cho ứng dụng di động.') }}
+                                </div>
                                 <input type="hidden" id="single_r2_url" value="{{ $videoType === 'r2' ? $videoUrl : '' }}">
                             </div>
                         </div>
-                        <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-2">
-                            <button type="button" class="btn btn-outline-success btn-sm" id="btn_r2_change_video" title="{{ __('Tải file khác thay thế video này') }}">
-                                <i class="ti ti-rotate me-1"></i>{{ __('Đổi video khác') }}
+
+                        {{-- Cụm Action Buttons đồng bộ --}}
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-md-auto">
+                            <button type="button" class="btn btn-sm btn-white border shadow-xs text-dark px-3 d-inline-flex align-items-center gap-1.5" id="btn_r2_change_video" title="{{ __('Tải file khác thay thế video này') }}">
+                                <i class="ti ti-rotate text-primary fs-14"></i>
+                                <span class="fw-semibold">{{ __('Đổi video khác') }}</span>
                             </button>
-                            <a href="{{ $videoType === 'r2' ? $videoUrl : '#' }}" target="_blank" class="btn btn-success btn-sm" id="single_r2_preview_link">
-                                <i class="ti ti-external-link me-1"></i>{{ __('Xem stream') }}
+                            <a href="{{ $videoType === 'r2' ? $videoUrl : '#' }}" target="_blank" class="btn btn-sm btn-success px-3 d-inline-flex align-items-center gap-1.5 shadow-xs" id="single_r2_preview_link">
+                                <i class="ti ti-player-play fs-14"></i>
+                                <span class="fw-semibold">{{ __('Xem stream') }}</span>
                             </a>
                         </div>
                     </div>
@@ -381,6 +392,13 @@
     }
     .r2-dropzone:hover .dropzone-cloud-icon {
         transform: translateY(-3px);
+    }
+
+    /* R2 Success Banner */
+    .r2-success-banner {
+        background: #f0fdf4;
+        border: 1.5px solid #86efac !important;
+        box-shadow: 0 1px 4px rgba(16, 185, 129, 0.08);
     }
 </style>
 
@@ -935,6 +953,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (existingUrl) {
             showR2VideoPreview(existingUrl, true);
             dropArea.classList.add('d-none');
+            const dropLabel = document.getElementById('r2_drop_label');
+            if (dropLabel) dropLabel.classList.add('d-none');
         } else {
             r2PreviewBox.classList.add('d-none');
             if (r2VideoPlayer) {
@@ -950,6 +970,8 @@ document.addEventListener('DOMContentLoaded', function () {
         btnChangeR2.addEventListener('click', function (e) {
             e.stopPropagation();
             dropArea.classList.remove('d-none');
+            const dropLabel = document.getElementById('r2_drop_label');
+            if (dropLabel) dropLabel.classList.remove('d-none');
             r2FileInput.click();
         });
     }

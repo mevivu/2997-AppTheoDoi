@@ -153,32 +153,32 @@
                     @endphp
                     <div class="diff-selector d-flex gap-2">
                         {{-- Dễ --}}
-                        <label class="diff-card diff-card-easy flex-fill cursor-pointer rounded-3 p-2 text-center {{ $selectedDiff == 'easy' ? 'is-active' : '' }}" for="diff_easy">
+                        <label class="diff-card diff-card-easy flex-fill cursor-pointer rounded-3 text-center {{ $selectedDiff == 'easy' ? 'is-active' : '' }}" for="diff_easy">
                             <input type="radio" class="d-none diff-input" name="difficulty" id="diff_easy" value="easy" 
                                    {{ $selectedDiff == 'easy' ? 'checked' : '' }} autocomplete="off">
-                            <div class="d-flex align-items-center justify-content-center gap-1 py-1">
-                                <i class="ti ti-mood-smile fs-2"></i>
-                                <span class="fw-bold fs-13">{{ __('Dễ') }}</span>
+                            <div class="d-flex align-items-center justify-content-center gap-1.5 w-100 px-1">
+                                <i class="ti ti-mood-smile fs-2 flex-shrink-0"></i>
+                                <span class="fw-bold fs-12 text-nowrap">{{ __('Dễ') }}</span>
                             </div>
                         </label>
 
                         {{-- Có trợ giúp --}}
-                        <label class="diff-card diff-card-medium flex-fill cursor-pointer rounded-3 p-2 text-center {{ $selectedDiff == 'medium' ? 'is-active' : '' }}" for="diff_medium">
+                        <label class="diff-card diff-card-medium flex-fill cursor-pointer rounded-3 text-center {{ $selectedDiff == 'medium' ? 'is-active' : '' }}" for="diff_medium">
                             <input type="radio" class="d-none diff-input" name="difficulty" id="diff_medium" value="medium" 
                                    {{ $selectedDiff == 'medium' ? 'checked' : '' }} autocomplete="off">
-                            <div class="d-flex align-items-center justify-content-center gap-1 py-1">
-                                <i class="ti ti-hand-stop fs-2"></i>
-                                <span class="fw-bold fs-13">{{ __('Có trợ giúp') }}</span>
+                            <div class="d-flex align-items-center justify-content-center gap-1.5 w-100 px-1">
+                                <i class="ti ti-hand-stop fs-2 flex-shrink-0"></i>
+                                <span class="fw-bold fs-12 text-nowrap">{{ __('Có trợ giúp') }}</span>
                             </div>
                         </label>
 
                         {{-- Tự lập / Thử thách --}}
-                        <label class="diff-card diff-card-hard flex-fill cursor-pointer rounded-3 p-2 text-center {{ $selectedDiff == 'hard' ? 'is-active' : '' }}" for="diff_hard">
+                        <label class="diff-card diff-card-hard flex-fill cursor-pointer rounded-3 text-center {{ $selectedDiff == 'hard' ? 'is-active' : '' }}" for="diff_hard">
                             <input type="radio" class="d-none diff-input" name="difficulty" id="diff_hard" value="hard" 
                                    {{ $selectedDiff == 'hard' ? 'checked' : '' }} autocomplete="off">
-                            <div class="d-flex align-items-center justify-content-center gap-1 py-1">
-                                <i class="ti ti-flame fs-2"></i>
-                                <span class="fw-bold fs-13">{{ __('Tự lập / Thử thách') }}</span>
+                            <div class="d-flex align-items-center justify-content-center gap-1.5 w-100 px-1">
+                                <i class="ti ti-flame fs-2 flex-shrink-0"></i>
+                                <span class="fw-bold fs-12 text-nowrap" title="{{ __('Tự lập / Thử thách') }}">{{ __('Thử thách') }}</span>
                             </div>
                         </label>
                     </div>
@@ -191,6 +191,11 @@
                         color: #64748b;
                         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                         user-select: none;
+                        height: 42px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 0 0.25rem !important;
                     }
                     .diff-card:hover {
                         border-color: #cbd5e1;
