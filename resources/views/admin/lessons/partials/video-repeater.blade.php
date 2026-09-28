@@ -1183,27 +1183,51 @@ document.addEventListener('DOMContentLoaded', function () {
                     swalSpeed.innerHTML = '<i class="ti ti-check text-success me-1"></i>{{ __("File đã lưu trữ an toàn trên CDN") }}';
                 }
 
-                // Cập nhật Hidden inputs
-                r2ResultBox.classList.remove('d-none');
-                r2UrlInput.value = res.url;
+                // Cập nhật Hidden inputs an toàn
+                if (r2ResultBox) r2ResultBox.classList.remove('d-none');
+                if (r2UrlInput) r2UrlInput.value = res.url;
                 if (finalVideoUrlInput) finalVideoUrlInput.value = res.url;
-                r2PathInput.value = res.path;
-                r2UrlText.textContent = res.url;
-                r2PreviewLink.href = res.url;
+                if (r2PathInput) r2PathInput.value = res.path;
+                if (r2UrlText) r2UrlText.textContent = res.url;
+                if (r2PreviewLink) r2PreviewLink.href = res.url;
+                const r2StatusDesc = document.getElementById('single_r2_status_desc');
+                if (r2StatusDesc) {
+                    r2StatusDesc.textContent = '{{ __("Đã lưu trữ: ") }}' + (file.name || 'video.mp4') + ' (Cloudflare R2 CDN)';
+                }
 
                 // Chuyển sang Preview Stream CDN trực tiếp
-                showR2VideoPreview(res.url, true, file.name);
+                try {
+                    showR2VideoPreview(res.url, true, file.name);
+                } catch (previewErr) {
+                    console.warn('Preview error:', previewErr);
+                }
 
                 if (isAutoSubmit) {
-                    // Chờ 800ms để người dùng kịp nhìn thấy kết quả 100% hoàn tất rồi submit form
+                    // Khi người dùng bấm Lưu/Cập nhật form: hiển thị 100% rồi tự động đóng popup và lưu bài học
                     setTimeout(() => {
+                        if (typeof Swal !== 'undefined' && Swal.isVisible()) {
+                            Swal.close();
+                        }
                         if (callback) callback(true, null);
-                    }, 800);
+                    }, 600);
                 } else {
-                    // Đóng dialog sau 1.2s nếu là thao tác upload thủ công
+                    // Khi người dùng bấm nút "Tải lên Cloudflare R2 ngay" thủ công:
+                    // 1. Cập nhật nút Đóng/Hoàn tất trên dialog & cho phép click ngoài / phím Esc để đóng
+                    if (typeof Swal !== 'undefined' && Swal.isVisible()) {
+                        Swal.update({
+                            showConfirmButton: true,
+                            confirmButtonText: '<i class="ti ti-check me-1"></i>{{ __("Hoàn tất / Đóng") }}',
+                            confirmButtonColor: '#206bc4',
+                            allowOutsideClick: true,
+                            allowEscapeKey: true
+                        });
+                    }
+                    // 2. Tự động đóng popup sau 1.5 giây nếu người dùng không bấm
                     setTimeout(() => {
-                        if (typeof Swal !== 'undefined') Swal.close();
-                    }, 1200);
+                        if (typeof Swal !== 'undefined' && Swal.isVisible()) {
+                            Swal.close();
+                        }
+                    }, 1500);
                     if (callback) callback(true, null);
                 }
             } else if (res && res.message) {
@@ -1265,7 +1289,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // BẢO VỆ TIẾN TRÌNH LƯU BÀI HỌC (Pre-submit Auto-Upload Guard)
-    const parentForm = document.getElementById('lesson_form') || ytUrlInput.closest('form');
+    const parentForm = document.getElementById('lesson_form') || (ytUrlInput ? ytUrlInput.closest('form') : document.querySelector('form'));
     if (parentForm) {
         let isSubmittingForm = false;
 
@@ -1277,7 +1301,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (vType === 'r2') {
                 // Tình huống 1: Đã chọn file MP4 nhưng QUÊN bấm nút "Tải lên Cloudflare R2 ngay"
-                if (r2FileInput.files && r2FileInput.files.length > 0 && !isR2Uploaded) {
+                if (r2FileInput && r2FileInput.files && r2FileInput.files.length > 0 && !isR2Uploaded) {
                     e.preventDefault();
                     e.stopPropagation();
 
@@ -1285,8 +1309,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     executeR2Upload(function (success, errorMsg) {
                         if (success) {
                             isSubmittingForm = true;
-                            if (typeof Swal !== 'undefined') Swal.close();
-                            parentForm.submit();
+                            if (typeof Swal !== 'undefined' && Swal.isVisible()) {
+                                Swal.close();
+                            }
+                            // Kích hoạt submit form thực tế
+                            setTimeout(() => {
+                                try {
+                                    if (typeof parentForm.requestSubmit === 'function') {
+                                        parentForm.requestSubmit();
+                                    } else {
+                                        parentForm.submit();
+                                    }
+                                } catch (submitErr) {
+                                    console.warn('requestSubmit fallback to submit()', submitErr);
+                                    parentForm.submit();
+                                }
+                            }, 100);
                         }
                     }, true);
                     return false;
