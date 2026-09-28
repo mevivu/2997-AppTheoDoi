@@ -83,48 +83,53 @@ class LessonService implements LessonServiceInterface
             $childAgeMonths = (int) $request->input('child_age_months');
         }
 
-        // Lấy tất cả nhóm tuổi để hiển thị đầy đủ timeline thanh chọn tuổi
-        $allGroups = $this->ageGroupRepository->getAllActiveOrdered();
-
         if ($isUnborn) {
-            foreach ($allGroups as $g) {
-                $g->is_current = ($g->min_months === null && $g->max_months === null);
+            $prenatalGroup = $this->ageGroupRepository->getPrenatalGroup();
+            $otherGroups = $this->ageGroupRepository->getEarlyStageGroups(2);
+
+            $groups = new Collection();
+            if ($prenatalGroup) {
+                $prenatalGroup->is_current = true;
+                $groups->push($prenatalGroup);
             }
-            return $allGroups;
+            foreach ($otherGroups as $g) {
+                $g->is_current = false;
+                $groups->push($g);
+            }
+
+            return $groups;
         }
 
         if ($childAgeMonths !== null) {
-            $matched = false;
-            foreach ($allGroups as $g) {
-                $inRange = ($g->min_months !== null && $g->min_months <= $childAgeMonths)
-                    && ($g->max_months === null || $g->max_months >= $childAgeMonths);
+            $nearestIds = $this->ageGroupRepository->getNearestGroupIds($childAgeMonths, 3);
+            $nearestGroups = $this->ageGroupRepository->getByIdsOrdered($nearestIds);
 
-                if ($inRange && !$matched) {
+            $hasCurrent = false;
+            foreach ($nearestGroups as $g) {
+                $inRange = ($g->min_months === null || $g->min_months <= $childAgeMonths)
+                    && ($g->max_months === null || $g->max_months >= $childAgeMonths);
+                if ($inRange && !$hasCurrent && ($g->min_months !== null || $g->max_months !== null)) {
                     $g->is_current = true;
-                    $matched = true;
+                    $hasCurrent = true;
                 } else {
                     $g->is_current = false;
                 }
             }
 
-            // Nếu không khớp trực tiếp, tìm nhóm gần nhất
-            if (!$matched && $allGroups->isNotEmpty()) {
-                $nearestIds = $this->ageGroupRepository->getNearestGroupIds($childAgeMonths, 1);
-                if (!empty($nearestIds)) {
-                    $closestId = $nearestIds[0];
-                    foreach ($allGroups as $g) {
-                        if ($g->id == $closestId) {
-                            $g->is_current = true;
-                            break;
-                        }
+            if (!$hasCurrent && $nearestGroups->isNotEmpty() && !empty($nearestIds)) {
+                $closestId = $nearestIds[0];
+                foreach ($nearestGroups as $g) {
+                    if ($g->id == $closestId) {
+                        $g->is_current = true;
+                        break;
                     }
                 }
             }
 
-            return $allGroups;
+            return $nearestGroups;
         }
 
-        return $allGroups;
+        return $this->ageGroupRepository->getAllActiveOrdered();
     }
 
     /**
