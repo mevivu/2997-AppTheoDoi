@@ -109,7 +109,7 @@
                 </label>
                 
                 {{-- Dropzone Area --}}
-                <div class="r2-dropzone rounded-3 p-4 text-center cursor-pointer position-relative" id="r2_drop_area">
+                <div class="r2-dropzone rounded-3 p-4 text-center cursor-pointer position-relative {{ !empty($videoPath) && $videoType === 'r2' ? 'd-none' : '' }}" id="r2_drop_area">
                     <input type="file" id="single_r2_file" class="d-none" accept="video/mp4,video/quicktime,video/webm,video/x-matroska,video/avi">
                     
                     {{-- Trạng thái chờ chọn file --}}
@@ -192,9 +192,14 @@
                                 <input type="hidden" id="single_r2_url" value="{{ $videoType === 'r2' ? $videoUrl : '' }}">
                             </div>
                         </div>
-                        <a href="{{ $videoType === 'r2' ? $videoUrl : '#' }}" target="_blank" class="btn btn-success btn-sm flex-shrink-0 ms-2" id="single_r2_preview_link">
-                            <i class="ti ti-external-link me-1"></i>{{ __('Xem stream') }}
-                        </a>
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-2">
+                            <button type="button" class="btn btn-outline-success btn-sm" id="btn_r2_change_video" title="{{ __('Tải file khác thay thế video này') }}">
+                                <i class="ti ti-rotate me-1"></i>{{ __('Đổi video khác') }}
+                            </button>
+                            <a href="{{ $videoType === 'r2' ? $videoUrl : '#' }}" target="_blank" class="btn btn-success btn-sm" id="single_r2_preview_link">
+                                <i class="ti ti-external-link me-1"></i>{{ __('Xem stream') }}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -727,6 +732,7 @@ document.addEventListener('DOMContentLoaded', function () {
         currentR2File = file;
         isR2Uploaded = false;
 
+        dropArea.classList.remove('d-none');
         selectedFileName.textContent = file.name;
         selectedFileSize.textContent = formatBytes(file.size);
         idleBox.classList.add('d-none');
@@ -749,8 +755,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 2. Trích xuất Metadata Duration của video MP4 ngay trên trình duyệt (0ms)
         const tempVideo = document.createElement('video');
-        tempVideo.preload = 'metadata';
+        tempVideo.preload = 'auto';
         tempVideo.src = currentLocalBlobUrl;
+        tempVideo.muted = true;
+        tempVideo.playsInline = true;
         tempVideo.onloadedmetadata = function () {
             const sec = Math.round(tempVideo.duration) || 0;
             if (sec > 0) {
@@ -762,6 +770,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     r2VideoMetaDuration.innerHTML = '<i class="ti ti-clock me-1"></i>' + formatted;
                     r2VideoMetaDuration.classList.remove('d-none');
                 }
+            }
+            tempVideo.currentTime = Math.min(1, (tempVideo.duration || 1) / 2);
+        };
+        tempVideo.onseeked = function () {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = tempVideo.videoWidth || 640;
+                canvas.height = tempVideo.videoHeight || 360;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+                const frameData = canvas.toDataURL('image/jpeg', 0.85);
+                if (frameData && frameData.length > 200) {
+                    updateLessonAvatarPreview(frameData);
+                }
+            } catch (e) {
+                // Ignore silent canvas error
             }
         };
 
@@ -948,6 +972,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const existingUrl = r2UrlInput ? r2UrlInput.value.trim() : '';
         if (existingUrl) {
             showR2VideoPreview(existingUrl, true);
+            dropArea.classList.add('d-none');
         } else {
             r2PreviewBox.classList.add('d-none');
             if (r2VideoPlayer) {
@@ -956,6 +981,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
+
+    // Nút "Đổi video khác" khi video R2 đã có sẵn
+    const btnChangeR2 = document.getElementById('btn_r2_change_video');
+    if (btnChangeR2) {
+        btnChangeR2.addEventListener('click', function (e) {
+            e.stopPropagation();
+            dropArea.classList.remove('d-none');
+            r2FileInput.click();
+        });
+    }
 
     function escapeHtml(text) {
         if (!text) return '';

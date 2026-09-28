@@ -1,5 +1,5 @@
 @php use App\Traits\RouteAdminSystem; @endphp
-<div class="col-12 col-lg-4 col-xl-3">
+<div class="col-12 col-lg-4">
     {{-- Card 0: Ảnh đại diện bài học --}}
     <div class="card border-0 custom-shadow rounded-3 mb-4">
         <div class="card-header bg-white border-bottom px-4 py-3">
@@ -11,8 +11,8 @@
         <div class="card-body p-3 p-md-4">
             <x-input-image name="image" 
                            :value="old('image')" 
-                           width="125px"
-                           height="75px"
+                           width="100%"
+                           height="125px"
                            sub="{{ __('Ảnh avatar/bìa đại diện bài học (khuyến nghị 16:9, tối đa 5MB)') }}" />
         </div>
     </div>
@@ -35,29 +35,29 @@
                         $isVip = ($key === 'vip');
                         $isChecked = ($selectedAccess === $key);
                     @endphp
-                    <label class="access-type-card access-card-{{ $key }} {{ $isChecked ? 'is-active' : '' }} rounded-3 p-3 cursor-pointer d-flex align-items-center gap-3 mb-0"
+                    <label class="access-type-card access-card-{{ $key }} {{ $isChecked ? 'is-active' : '' }} rounded-3 p-3 cursor-pointer d-flex align-items-center justify-content-between gap-3 mb-0"
                            for="access_type_{{ $key }}">
-                        <input class="form-check-input access-type-radio mt-0" 
+                        <input class="access-type-radio d-none" 
                                type="radio" 
                                name="access_type" 
                                id="access_type_{{ $key }}" 
                                value="{{ $key }}" 
                                {{ $isChecked ? 'checked' : '' }} 
                                required>
-                        <div class="flex-grow-1">
+                        <div class="flex-grow-1 overflow-hidden">
                             <div class="d-flex align-items-center gap-2 mb-1">
                                 @if($isVip)
-                                    <span class="badge bg-yellow text-dark fw-bold px-2 py-1 shadow-xs">
+                                    <span class="badge bg-yellow text-dark fw-bold px-2 py-0.5 shadow-xs">
                                         <i class="ti ti-crown me-1"></i>VIP
                                     </span>
                                 @else
-                                    <span class="badge bg-green text-white fw-bold px-2 py-1 shadow-xs">
+                                    <span class="badge bg-green text-white fw-bold px-2 py-0.5 shadow-xs">
                                         <i class="ti ti-gift me-1"></i>FREE
                                     </span>
                                 @endif
                                 <span class="fw-bold text-dark fs-14">{{ $label }}</span>
                             </div>
-                            <div class="text-muted fs-11 lh-base">
+                            <div class="text-muted fs-11 lh-base text-truncate-2">
                                 {{ $isVip ? 'Chỉ tài khoản VIP mới xem được toàn bộ video.' : 'Mọi người dùng đều có thể truy cập bài học này.' }}
                             </div>
                         </div>
@@ -71,23 +71,47 @@
     </div>
 
     <style>
+        /* Tối ưu Image Uploader dạng Vertical trong Sidebar */
+        .custom-image-uploader .image-uploader-card {
+            padding: 1rem !important;
+        }
+        .custom-image-uploader .image-uploader-card > .d-flex {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+            gap: 0.75rem !important;
+        }
+        .custom-image-uploader .image-thumbnail-box {
+            width: 100% !important;
+            max-width: 200px !important;
+            height: 115px !important;
+            margin: 0 auto !important;
+        }
+        .custom-image-uploader .image-details-col {
+            align-items: center !important;
+            width: 100% !important;
+        }
+        .custom-image-uploader .image-details-col > div {
+            text-align: center !important;
+        }
+        .custom-image-uploader .image-details-col .d-flex {
+            justify-content: center !important;
+            width: 100% !important;
+        }
+
+        /* Access Type Cards */
         .access-type-card {
             position: relative;
             border: 2px solid #e2e8f0;
             background-color: #ffffff;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             user-select: none;
+            padding: 0.85rem 1rem !important;
         }
         .access-type-card:hover {
             border-color: #cbd5e1;
             background-color: #f8fafc;
             transform: translateY(-1px);
-        }
-        .access-type-card .access-type-radio {
-            width: 1.25rem;
-            height: 1.25rem;
-            cursor: pointer;
-            flex-shrink: 0;
         }
         .access-type-card .access-check-icon {
             display: none;

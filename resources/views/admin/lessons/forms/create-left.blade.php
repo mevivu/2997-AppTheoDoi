@@ -1,4 +1,4 @@
-<div class="col-12 col-md-9">
+<div class="col-12 col-lg-8">
     {{-- Khối 1: Danh mục bài học (/admin/lesson-categories & Lĩnh vực) --}}
     <div class="card custom-shadow mb-4 border-0">
         <div class="card-header bg-light py-3 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
