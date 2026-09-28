@@ -345,6 +345,7 @@ return [
         ]
     ],
 
+    /*
     [
         'title' => 'Bài tập',
         'routeName' => null,
@@ -382,6 +383,7 @@ return [
             ],
         ]
     ],
+    */
     [
         'title' => 'Bài viết',
         'routeName' => null,
