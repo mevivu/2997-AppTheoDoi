@@ -8,41 +8,38 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * Mô hình LessonVideo (Video đính kèm bài học)
- *
- * Quản lý các video trong bài học (1 bài học có thể gắn video từ YouTube hoặc Cloudflare R2).
- * Hỗ trợ tự động trích xuất YouTube ID, render ảnh thumbnail và tính toán thời lượng phát.
- */
 class LessonVideo extends Model
 {
     use HasFactory;
 
-    /**
-     * Bảng cơ sở dữ liệu tương ứng
-     *
-     * @var string
-     */
     protected $table = 'lesson_videos';
 
     /**
-     * Các trường dữ liệu cho phép gán hàng loạt (Mass Assignment)
+     * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'lesson_id',        // ID bài học
-        'title',            // Tiêu đề video (ví dụ: Video 1 - Hướng dẫn, Video 2 - Thực hành)
-        'video_type',       // Nguồn phát video: youtube, r2 (Enum VideoType)
-        'video_url',        // Đường dẫn liên kết video (YouTube URL hoặc CDN R2)
-        'video_path',       // S3/R2 Object Key lưu trữ trên Cloudflare R2
-        'thumbnail',        // Ảnh bìa tùy chọn của video
-        'duration_seconds', // Thời lượng video tính theo giây
-        'sort_order',       // Thứ tự hiển thị
+        /** ID bài học */
+        'lesson_id',
+        /** Tiêu đề video */
+        'title',
+        /** Loại video (youtube, r2) */
+        'video_type',
+        /** Đường dẫn video */
+        'video_url',
+        /** Đường dẫn file trên R2 */
+        'video_path',
+        /** Ảnh bìa video */
+        'thumbnail',
+        /** Thời lượng video (giây) */
+        'duration_seconds',
+        /** Thứ tự sắp xếp */
+        'sort_order',
     ];
 
     /**
-     * Ép kiểu dữ liệu tự động cho các thuộc tính
+     * The attributes that should be cast.
      *
      * @var array<string, string>
      */
@@ -54,16 +51,14 @@ class LessonVideo extends Model
     ];
 
     /**
-     * Các thuộc tính ảo bổ sung vào mảng/JSON khi serialize
+     * The accessors to append to the model's array form.
      *
      * @var array<int, string>
      */
     protected $appends = ['youtube_id', 'thumbnail_url', 'formatted_duration'];
 
     /**
-     * Liên kết: Bài học mà video này thuộc về
-     *
-     * @return BelongsTo
+     * Bài học chứa video này
      */
     public function lesson(): BelongsTo
     {
@@ -71,9 +66,7 @@ class LessonVideo extends Model
     }
 
     /**
-     * Kiểm tra video có phải nguồn từ YouTube hay không
-     *
-     * @return bool
+     * Kiểm tra video nguồn YouTube
      */
     public function isYouTube(): bool
     {
@@ -81,9 +74,7 @@ class LessonVideo extends Model
     }
 
     /**
-     * Kiểm tra video có phải nguồn từ Cloudflare R2 hay không
-     *
-     * @return bool
+     * Kiểm tra video nguồn Cloudflare R2
      */
     public function isR2(): bool
     {
@@ -91,9 +82,7 @@ class LessonVideo extends Model
     }
 
     /**
-     * Thuộc tính ảo: Trích xuất YouTube Video ID từ URL video
-     *
-     * @return string|null
+     * Lấy YouTube Video ID
      */
     public function getYoutubeIdAttribute(): ?string
     {
@@ -104,11 +93,7 @@ class LessonVideo extends Model
     }
 
     /**
-     * Phương thức tĩnh: Trích xuất YouTube ID từ mọi định dạng liên kết YouTube
-     * Hỗ trợ: youtu.be, watch?v=, embed/, shorts/
-     *
-     * @param string|null $url
-     * @return string|null
+     * Tự động trích xuất YouTube ID từ đường dẫn
      */
     public static function extractYouTubeId(?string $url): ?string
     {
@@ -133,10 +118,7 @@ class LessonVideo extends Model
     }
 
     /**
-     * Thuộc tính ảo: URL ảnh bìa / thumbnail của video
-     * Ưu tiên: Ảnh bìa tùy chỉnh -> Ảnh thumbnail YouTube -> Ảnh mặc định hệ thống (ImageSystem::DEFAULT_IMAGE)
-     *
-     * @return string
+     * Ảnh bìa video
      */
     public function getThumbnailUrlAttribute(): string
     {
@@ -155,9 +137,7 @@ class LessonVideo extends Model
     }
 
     /**
-     * Thuộc tính ảo: Định dạng thời lượng video sang dạng mm:ss hoặc hh:mm:ss
-     *
-     * @return string
+     * Thời lượng định dạng mm:ss hoặc hh:mm:ss
      */
     public function getFormattedDurationAttribute(): string
     {
@@ -177,9 +157,7 @@ class LessonVideo extends Model
     }
 
     /**
-     * Thuộc tính ảo: URL phát trực tiếp (Streaming URL) của video
-     *
-     * @return string|null
+     * Đường dẫn phát trực tiếp video
      */
     public function getStreamUrlAttribute(): ?string
     {

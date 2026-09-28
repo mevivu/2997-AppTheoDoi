@@ -13,47 +13,50 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-/**
- * Mô hình Lesson (Bài học giáo dục cho trẻ)
- *
- * Quản lý bài học giáo dục thuộc các danh mục con, hỗ trợ đính kèm video hướng dẫn (YouTube hoặc Cloudflare R2).
- * Phục vụ phân luồng nội dung theo độ tuổi, trụ cột giáo dục và phân quyền truy cập (Miễn phí / VIP).
- */
 class Lesson extends Model
 {
     use HasFactory, Sluggable;
 
-    /**
-     * Bảng cơ sở dữ liệu tương ứng
-     *
-     * @var string
-     */
     protected $table = 'lessons';
 
     /**
-     * Các trường dữ liệu cho phép gán hàng loạt (Mass Assignment)
+     * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'lesson_category_id', // ID danh mục bài học
-        'name',               // Tên tiêu đề bài học
-        'slug',               // Đường dẫn thân thiện SEO
-        'image',              // Ảnh đại diện riêng bài học (nếu có)
-        'description',        // Mô tả tóm tắt ngắn
-        'content',            // Nội dung hướng dẫn chi tiết cho phụ huynh
-        'difficulty',         // Độ khó: easy (Dễ), medium (Có trợ giúp), hard (Thử thách)
-        'frequency',          // Tần suất gợi ý (ví dụ: Hàng ngày, 3 lần/tuần)
-        'benefit',            // Lợi ích phát triển mang lại cho bé
-        'tools',              // Dụng cụ / học cụ cần chuẩn bị
-        'access_type',        // Phân quyền: free (Miễn phí), vip (Gói VIP)
-        'view_count',         // Lượt xem bài học
-        'sort_order',         // Thứ tự hiển thị
-        'status',             // Trạng thái hoạt động
+        /** ID danh mục bài học */
+        'lesson_category_id',
+        /** Tên bài học */
+        'name',
+        /** Đường dẫn tĩnh */
+        'slug',
+        /** Ảnh đại diện bài học */
+        'image',
+        /** Tóm tắt bài học */
+        'description',
+        /** Nội dung hướng dẫn chi tiết cho phụ huynh */
+        'content',
+        /** Độ khó bài học */
+        'difficulty',
+        /** Tần suất gợi ý */
+        'frequency',
+        /** Lợi ích mang lại cho bé */
+        'benefit',
+        /** Dụng cụ / học cụ cần chuẩn bị */
+        'tools',
+        /** Phân quyền truy cập (free/vip) */
+        'access_type',
+        /** Lượt xem bài học */
+        'view_count',
+        /** Thứ tự sắp xếp */
+        'sort_order',
+        /** Trạng thái hoạt động */
+        'status',
     ];
 
     /**
-     * Ép kiểu dữ liệu tự động cho các thuộc tính
+     * The attributes that should be cast.
      *
      * @var array<string, string>
      */
@@ -67,16 +70,14 @@ class Lesson extends Model
     ];
 
     /**
-     * Các thuộc tính ảo bổ sung vào mảng/JSON khi serialize
+     * The accessors to append to the model's array form.
      *
      * @var array<int, string>
      */
     protected $appends = ['video_count', 'first_video_thumbnail', 'thumbnail_url'];
 
     /**
-     * Liên kết: Danh mục bài học mà bài học này thuộc về
-     *
-     * @return BelongsTo
+     * Danh mục của bài học
      */
     public function category(): BelongsTo
     {
@@ -84,9 +85,7 @@ class Lesson extends Model
     }
 
     /**
-     * Liên kết: Video chính của bài học (mỗi bài học có 1 video chính sắp xếp đầu tiên)
-     *
-     * @return HasOne
+     * Video chính của bài học
      */
     public function video(): HasOne
     {
@@ -94,9 +93,7 @@ class Lesson extends Model
     }
 
     /**
-     * Liên kết: Danh sách tất cả video đính kèm trong bài học
-     *
-     * @return HasMany
+     * Danh sách video trong bài học
      */
     public function videos(): HasMany
     {
@@ -104,9 +101,7 @@ class Lesson extends Model
     }
 
     /**
-     * Liên kết: Video đầu tiên của bài học theo thứ tự hiển thị
-     *
-     * @return HasOne
+     * Video đầu tiên của bài học
      */
     public function firstVideo(): HasOne
     {
@@ -114,9 +109,7 @@ class Lesson extends Model
     }
 
     /**
-     * Thuộc tính ảo: Tổng số lượng video đính kèm trong bài học
-     *
-     * @return int
+     * Tổng số lượng video trong bài học
      */
     public function getVideoCountAttribute(): int
     {
@@ -124,10 +117,7 @@ class Lesson extends Model
     }
 
     /**
-     * Thuộc tính ảo: URL ảnh bìa / thumbnail của bài học
-     * Ưu tiên: Ảnh bài học -> Ảnh thumbnail video đầu tiên -> Ảnh mặc định hệ thống (ImageSystem::DEFAULT_IMAGE)
-     *
-     * @return string
+     * Đường dẫn ảnh bìa bài học
      */
     public function getThumbnailUrlAttribute(): string
     {
@@ -142,10 +132,7 @@ class Lesson extends Model
     }
 
     /**
-     * Thuộc tính ảo: URL ảnh bìa của video đầu tiên
-     * Trả về ảnh thumbnail của video đầu tiên hoặc ảnh mặc định từ ImageSystem
-     *
-     * @return string
+     * Ảnh đại diện video đầu tiên
      */
     public function getFirstVideoThumbnailAttribute(): string
     {
@@ -157,9 +144,7 @@ class Lesson extends Model
     }
 
     /**
-     * Kiểm tra bài học có phải dạng miễn phí (Free) hay không
-     *
-     * @return bool
+     * Kiểm tra bài học miễn phí
      */
     public function isFree(): bool
     {
@@ -167,9 +152,7 @@ class Lesson extends Model
     }
 
     /**
-     * Kiểm tra bài học có yêu cầu quyền VIP hay không
-     *
-     * @return bool
+     * Kiểm tra bài học VIP
      */
     public function isVip(): bool
     {
@@ -177,10 +160,7 @@ class Lesson extends Model
     }
 
     /**
-     * Phạm vi truy vấn (Scope): Lọc các bài học đang ở trạng thái kích hoạt (Active)
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * Lọc bài học đang hoạt động
      */
     public function scopeActive($query)
     {
@@ -188,10 +168,7 @@ class Lesson extends Model
     }
 
     /**
-     * Phạm vi truy vấn (Scope): Lọc các bài học miễn phí
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * Lọc bài học miễn phí
      */
     public function scopeFree($query)
     {
@@ -199,10 +176,7 @@ class Lesson extends Model
     }
 
     /**
-     * Phạm vi truy vấn (Scope): Lọc các bài học dành riêng cho tài khoản VIP
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @return \Illuminate\Database\Eloquent\Builder
+     * Lọc bài học VIP
      */
     public function scopeVip($query)
     {
@@ -210,11 +184,7 @@ class Lesson extends Model
     }
 
     /**
-     * Phạm vi truy vấn (Scope): Lọc bài học theo danh mục
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param int $categoryId
-     * @return \Illuminate\Database\Eloquent\Builder
+     * Lọc theo danh mục
      */
     public function scopeByCategory($query, $categoryId)
     {
@@ -222,11 +192,7 @@ class Lesson extends Model
     }
 
     /**
-     * Phạm vi truy vấn (Scope): Lọc bài học theo mức độ khó (Dễ / Có trợ giúp / Thử thách)
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param LessonDifficulty|string $difficulty
-     * @return \Illuminate\Database\Eloquent\Builder
+     * Lọc theo độ khó
      */
     public function scopeByDifficulty($query, LessonDifficulty|string $difficulty)
     {

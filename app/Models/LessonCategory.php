@@ -6,35 +6,50 @@ use App\Admin\Support\Eloquent\Sluggable;
 use App\Enums\ActiveStatus;
 use App\Enums\Lesson\EducationPillar;
 use App\Enums\Lesson\LessonCategoryKey;
+use App\Traits\ImageSystem;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
-/**
- * Mô hình LessonCategory
- *
- * Quản lý danh mục bài học phân theo nhóm độ tuổi và 5 trụ cột giáo dục (PQ, IQ, EQ, AQ, Thai giáo).
- */
 class LessonCategory extends Model
 {
     use HasFactory, Sluggable;
 
     protected $table = 'lesson_categories';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
+        /** ID nhóm độ tuổi */
         'age_group_id',
+        /** Trụ cột / Lĩnh vực giáo dục */
         'pillar',
+        /** Định danh chuyên môn danh mục */
         'key',
+        /** Tên danh mục */
         'name',
+        /** Đường dẫn tĩnh */
         'slug',
+        /** Biểu tượng icon */
         'icon',
+        /** Mô tả danh mục */
         'description',
+        /** Thứ tự sắp xếp */
         'sort_order',
+        /** Trạng thái hoạt động */
         'status',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'age_group_id' => 'integer',
         'pillar' => EducationPillar::class,
@@ -68,7 +83,7 @@ class LessonCategory extends Model
     }
 
     /**
-     * Scope lọc danh mục đang hoạt động
+     * Lọc danh mục đang hoạt động
      */
     public function scopeActive($query)
     {
@@ -76,7 +91,7 @@ class LessonCategory extends Model
     }
 
     /**
-     * Scope lọc theo nhóm tuổi
+     * Lọc theo nhóm tuổi
      */
     public function scopeByAgeGroup($query, $ageGroupId)
     {
@@ -84,7 +99,7 @@ class LessonCategory extends Model
     }
 
     /**
-     * Scope lọc theo trụ cột giáo dục
+     * Lọc theo trụ cột giáo dục
      */
     public function scopeByPillar($query, EducationPillar|string $pillar)
     {
@@ -106,5 +121,20 @@ class LessonCategory extends Model
     public function getKeyLabelAttribute(): string
     {
         return $this->key?->label() ?? (string) $this->attributes['key'];
+    }
+
+    /**
+     * Đường dẫn ảnh đại diện danh mục
+     */
+    public function getIconUrlAttribute(): string
+    {
+        if (!empty($this->icon)) {
+            if (str_starts_with($this->icon, 'http://') || str_starts_with($this->icon, 'https://')) {
+                return $this->icon;
+            }
+            return asset($this->icon);
+        }
+
+        return asset(ImageSystem::DEFAULT_IMAGE);
     }
 }
