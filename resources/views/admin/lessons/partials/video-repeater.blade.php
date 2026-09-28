@@ -181,34 +181,34 @@
 
                 {{-- Hộp thông báo kết quả lưu trữ R2 thành công --}}
                 <div class="mt-3 {{ $hasExistingR2 ? '' : 'd-none' }}" id="single_r2_result_box">
-                    <div class="r2-success-banner p-3 rounded-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                        <div class="d-flex align-items-center gap-3 min-w-0">
+                    <div class="r2-success-banner p-3 rounded-3 d-flex flex-wrap align-items-center justify-content-between gap-2 overflow-hidden">
+                        <div class="d-flex align-items-center gap-2.5 min-w-0" style="max-width: calc(100% - 225px);">
                             <span class="avatar avatar-md rounded-circle bg-success text-white flex-shrink-0 shadow-xs">
                                 <i class="ti ti-circle-check fs-2"></i>
                             </span>
-                            <div class="min-w-0">
-                                <div class="d-flex align-items-center gap-2 flex-wrap mb-0.5">
-                                    <span class="fw-bold text-dark fs-14">{{ __('Video đã lưu trữ an toàn trên Cloudflare R2') }}</span>
+                            <div class="min-w-0 overflow-hidden">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <span class="fw-bold text-dark fs-13 text-nowrap">{{ __('Video đã lưu trữ an toàn') }}</span>
                                     <span class="badge bg-green-lt text-green fw-bold px-2 py-0.5 fs-11">
-                                        <span class="status-dot status-dot-animated bg-green me-1"></span>CDN Active
+                                        <span class="status-dot status-dot-animated bg-green me-1"></span>R2 CDN
                                     </span>
                                 </div>
-                                <div class="text-muted fs-12 text-truncate" id="single_r2_status_desc">
-                                    {{ __('Sẵn sàng phát trực tiếp với CDN tốc độ cao, tối ưu cho ứng dụng di động.') }}
+                                <div class="text-muted fs-11 text-truncate mt-0.5" id="single_r2_status_desc">
+                                    {{ __('Đã sẵn sàng phát trực tiếp với CDN tốc độ cao.') }}
                                 </div>
                                 <input type="hidden" id="single_r2_url" value="{{ $videoType === 'r2' ? $videoUrl : '' }}">
                             </div>
                         </div>
 
-                        {{-- Cụm Action Buttons đồng bộ --}}
-                        <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-md-auto">
-                            <button type="button" class="btn btn-sm btn-white border shadow-xs text-dark px-3 d-inline-flex align-items-center gap-1.5" id="btn_r2_change_video" title="{{ __('Tải file khác thay thế video này') }}">
+                        {{-- Cụm Action Buttons nằm gọn bên trong banner --}}
+                        <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-auto">
+                            <button type="button" class="btn btn-sm btn-white border shadow-xs text-dark px-2.5 d-inline-flex align-items-center gap-1.5" id="btn_r2_change_video" title="{{ __('Tải file khác thay thế video này') }}">
                                 <i class="ti ti-rotate text-primary fs-14"></i>
-                                <span class="fw-semibold">{{ __('Đổi video khác') }}</span>
+                                <span class="fw-semibold fs-12">{{ __('Đổi video') }}</span>
                             </button>
-                            <a href="{{ $videoType === 'r2' ? $videoUrl : '#' }}" target="_blank" class="btn btn-sm btn-success px-3 d-inline-flex align-items-center gap-1.5 shadow-xs" id="single_r2_preview_link">
+                            <a href="{{ $videoType === 'r2' ? $videoUrl : '#' }}" target="_blank" class="btn btn-sm btn-success px-2.5 d-inline-flex align-items-center gap-1.5 shadow-xs" id="single_r2_preview_link">
                                 <i class="ti ti-player-play fs-14"></i>
-                                <span class="fw-semibold">{{ __('Xem stream') }}</span>
+                                <span class="fw-semibold fs-12">{{ __('Xem stream') }}</span>
                             </a>
                         </div>
                     </div>
