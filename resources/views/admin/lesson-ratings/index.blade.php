@@ -194,35 +194,90 @@
                             // Render summary breakdown
                             $('#modal_easy_count').text(summary.easy.count);
                             $('#modal_easy_pct').text(summary.easy.pct + '%');
+                            $('#modal_easy_bar').css('width', summary.easy.pct + '%');
 
                             $('#modal_with_help_count').text(summary.with_help.count);
                             $('#modal_with_help_pct').text(summary.with_help.pct + '%');
+                            $('#modal_with_help_bar').css('width', summary.with_help.pct + '%');
 
                             $('#modal_hard_count').text(summary.hard.count);
                             $('#modal_hard_pct').text(summary.hard.pct + '%');
+                            $('#modal_hard_bar').css('width', summary.hard.pct + '%');
 
                             // Render ratings list
                             if (ratings.length > 0) {
                                 let rowsHtml = '';
                                 ratings.forEach(function (item, index) {
+                                    const userInitial = item.user_name ? item.user_name.charAt(0).toUpperCase() : 'U';
+                                    const userAvatarHtml = item.user_avatar
+                                        ? `<img src="${item.user_avatar}" class="avatar avatar-sm rounded-circle me-2 flex-shrink-0" style="object-fit: cover;">`
+                                        : `<span class="avatar avatar-sm rounded-circle bg-blue-lt text-blue me-2 flex-shrink-0 fw-bold">${userInitial}</span>`;
+
+                                    const phoneHtml = (item.user_phone && item.user_phone !== 'Chưa cập nhật')
+                                        ? `<div class="text-muted fs-12 mt-0.5 d-flex align-items-center gap-1">
+                                             <i class="ti ti-phone fs-13 text-secondary"></i>
+                                             <a href="tel:${item.user_phone}" class="text-secondary text-decoration-none fw-medium">${item.user_phone}</a>
+                                           </div>`
+                                        : `<div class="text-muted fs-12 mt-0.5"><i class="ti ti-phone-off fs-13 me-1"></i>Chưa cập nhật</div>`;
+
+                                    const childAvatarHtml = item.child_avatar
+                                        ? `<img src="${item.child_avatar}" class="rounded-circle me-1" style="width: 18px; height: 18px; object-fit: cover;">`
+                                        : `<i class="ti ti-baby-carriage me-1 text-purple"></i>`;
+
+                                    const childHtml = `
+                                        <span class="badge rounded-pill px-2.5 py-1 fw-semibold fs-12 d-inline-flex align-items-center" 
+                                              style="background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe;">
+                                            ${childAvatarHtml}${item.child_name}
+                                        </span>
+                                    `;
+
+                                    let diffBadgeHtml = '';
+                                    if (item.difficulty_level === 'easy') {
+                                        diffBadgeHtml = `
+                                            <span class="badge rounded-pill px-3 py-1.5 fw-semibold fs-12 shadow-none" 
+                                                  style="background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0;">
+                                                <span class="me-1">😊</span>Dễ dàng
+                                            </span>
+                                        `;
+                                    } else if (item.difficulty_level === 'with_help') {
+                                        diffBadgeHtml = `
+                                            <span class="badge rounded-pill px-3 py-1.5 fw-semibold fs-12 shadow-none" 
+                                                  style="background: #fef3c7; color: #b45309; border: 1px solid #fde68a;">
+                                                <span class="me-1">👋</span>Có trợ giúp
+                                            </span>
+                                        `;
+                                    } else {
+                                        diffBadgeHtml = `
+                                            <span class="badge rounded-pill px-3 py-1.5 fw-semibold fs-12 shadow-none" 
+                                                  style="background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca;">
+                                                <span class="me-1">🔥</span>Khó
+                                            </span>
+                                        `;
+                                    }
+
+                                    const timeHtml = `<span class="text-muted fs-12 fw-medium d-inline-flex align-items-center gap-1">
+                                        <i class="ti ti-calendar-time text-secondary fs-13"></i>${item.created_at}
+                                    </span>`;
+
                                     rowsHtml += `
                                         <tr>
                                             <td class="text-center text-muted fw-semibold">${index + 1}</td>
                                             <td>
-                                                <div class="fw-semibold text-dark">${item.user_name}</div>
-                                                <small class="text-muted"><i class="ti ti-phone fs-12 me-1"></i>${item.user_phone}</small>
+                                                <div class="d-flex align-items-center">
+                                                    ${userAvatarHtml}
+                                                    <div class="min-w-0">
+                                                        <div class="fw-bold text-dark text-truncate">${item.user_name}</div>
+                                                        ${phoneHtml}
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td>
-                                                <span class="badge bg-purple-lt text-purple px-2 py-1">
-                                                    <i class="ti ti-baby-carriage me-1"></i>${item.child_name}
-                                                </span>
+                                                ${childHtml}
                                             </td>
                                             <td class="text-center">
-                                                <span class="badge ${item.difficulty_badge} px-2 py-1">
-                                                    ${item.difficulty_icon} ${item.difficulty_label}
-                                                </span>
+                                                ${diffBadgeHtml}
                                             </td>
-                                            <td class="text-center text-muted fs-12">${item.created_at}</td>
+                                            <td class="text-center">${timeHtml}</td>
                                         </tr>
                                     `;
                                 });

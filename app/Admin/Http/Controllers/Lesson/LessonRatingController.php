@@ -131,11 +131,25 @@ class LessonRatingController extends Controller
                 ->get()
                 ->map(function ($item) {
                     $levelEnum = $item->difficulty_level;
+
+                    // Giải mã SĐT phụ huynh an toàn bằng AESHelper / accessor decrypted_phone
+                    $phone = $item->user?->decrypted_phone;
+                    if (empty($phone) && !empty($item->user?->phone)) {
+                        try {
+                            $decrypted = \App\AES\AESHelper::decrypt($item->user->phone);
+                            $phone = ($decrypted !== false && !empty($decrypted)) ? $decrypted : $item->user->phone;
+                        } catch (\Throwable $e) {
+                            $phone = $item->user->phone;
+                        }
+                    }
+
                     return [
                         'id' => $item->id,
                         'user_name' => $item->user?->fullname ?? 'Phụ huynh',
-                        'user_phone' => $item->user?->phone ? substr($item->user->phone, 0, 4) . '***' . substr($item->user->phone, -3) : '—',
+                        'user_phone' => !empty($phone) ? $phone : 'Chưa cập nhật',
+                        'user_avatar' => $item->user?->avatar ? asset($item->user->avatar) : null,
                         'child_name' => $item->child?->fullname ?? 'Bé',
+                        'child_avatar' => $item->child?->avatar ? asset($item->child->avatar) : null,
                         'difficulty_level' => $levelEnum instanceof LessonDifficultyRating ? $levelEnum->value : $levelEnum,
                         'difficulty_label' => $levelEnum instanceof LessonDifficultyRating ? $levelEnum->label() : ($levelEnum ?? '—'),
                         'difficulty_icon' => $levelEnum instanceof LessonDifficultyRating ? $levelEnum->icon() : '❓',

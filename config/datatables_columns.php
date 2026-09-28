@@ -2733,11 +2733,6 @@ return [
         ],
     ],
     'lesson_rating' => [
-        'id' => [
-            'title' => 'ID',
-            'orderable' => true,
-            'addClass' => 'text-center align-middle',
-        ],
         'thumbnail' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-photo"></i><span>Ảnh bìa</span></div>',
             'orderable' => false,

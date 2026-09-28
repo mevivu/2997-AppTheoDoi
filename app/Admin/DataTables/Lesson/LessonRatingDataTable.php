@@ -33,10 +33,10 @@ class LessonRatingDataTable extends BaseDataTable
             ->pluck('name', 'id')
             ->all();
 
-        $this->columnAllSearch = [0, 2, 3];
+        $this->columnAllSearch = [1, 2];
         $this->columnSearchSelect = [
             [
-                'column' => 3, // age_group
+                'column' => 2, // age_group
                 'data' => $ageGroupOptions,
             ],
         ];
