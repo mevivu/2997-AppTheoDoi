@@ -305,51 +305,13 @@
                             </span>
                         </div>
                     </div>
-                    <div class="card-body p-3">
-                        <div class="row g-3 align-items-center">
-                            {{-- Trình phát Video HTML5 --}}
-                            <div class="col-12 col-md-7 col-lg-8">
-                                <div class="position-relative rounded-3 overflow-hidden bg-black shadow-sm" style="max-height: 280px; min-height: 180px; display: flex; align-items: center; justify-content: center;">
-                                    <video id="single_r2_video_player" controls playsinline preload="metadata" class="w-100 h-100" style="max-height: 280px; object-fit: contain; background: #000;"
-                                           src="{{ $videoType === 'r2' ? $videoUrl : '' }}">
-                                        Trình duyệt của bạn không hỗ trợ thẻ video HTML5.
-                                    </video>
-                                </div>
-                            </div>
-                            {{-- Thông tin video R2 --}}
-                            <div class="col-12 col-md-5 col-lg-4">
-                                <div class="p-3 bg-white rounded-3 border h-100 d-flex flex-column justify-content-between">
-                                    <div>
-                                        <div class="text-muted fs-11 text-uppercase fw-bold mb-1">{{ __('Tiêu đề video') }}</div>
-                                        <h5 class="fw-bold text-dark fs-14 mb-2 text-truncate-2" id="r2_preview_info_title">
-                                            {{ !empty($videoTitle) ? $videoTitle : __('Video hướng dẫn bài học') }}
-                                        </h5>
-                                        
-                                        <div class="mt-3 p-2.5 rounded-3 bg-light border border-light-subtle">
-                                            <div class="text-muted fs-11 text-uppercase fw-bold mb-1">{{ __('Trạng thái lưu trữ') }}</div>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <span class="avatar avatar-xs rounded-circle bg-success-lt text-success" id="r2_storage_icon">
-                                                    <i class="ti ti-cloud-check fs-14"></i>
-                                                </span>
-                                                <div class="overflow-hidden">
-                                                    <div class="fw-bold fs-12 text-dark" id="r2_storage_status_title">Cloudflare R2 Storage</div>
-                                                    <div class="text-muted fs-11 text-truncate" id="r2_storage_status_desc">
-                                                        {{ $videoType === 'r2' && !empty($videoUrl) ? __('Đã lưu trữ an toàn, CDN sẵn sàng') : __('Video cục bộ (chờ tải lên R2)') }}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="mt-3 pt-2 border-top">
-                                        <a href="{{ $videoType === 'r2' && !empty($videoUrl) ? $videoUrl : '#' }}" target="_blank"
-                                           class="btn btn-outline-warning btn-sm w-100 fw-semibold {{ $videoType === 'r2' && !empty($videoUrl) ? '' : 'disabled' }}"
-                                           id="btn_r2_open_external">
-                                            <i class="ti ti-external-link me-1"></i>{{ __('Mở xem stream CDN') }}
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="card-body p-2 p-md-3">
+                        {{-- Trình phát Video HTML5 full-width --}}
+                        <div class="position-relative rounded-3 overflow-hidden bg-black shadow-sm" style="max-height: 420px; min-height: 220px; display: flex; align-items: center; justify-content: center;">
+                            <video id="single_r2_video_player" controls playsinline preload="metadata" class="w-100 h-100" style="max-height: 420px; object-fit: contain; background: #000;"
+                                   src="{{ $videoType === 'r2' ? $videoUrl : '' }}">
+                                Trình duyệt của bạn không hỗ trợ thẻ video HTML5.
+                            </video>
                         </div>
                     </div>
                 </div>
