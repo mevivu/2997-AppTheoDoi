@@ -5,11 +5,6 @@ namespace App\Models;
 use App\Admin\Support\Eloquent\Sluggable;
 use App\Enums\Package\PackageStatus;
 use App\Enums\Package\PackageType;
-use App\Enums\User\AffiliateRank;
-use App\Enums\User\Gender;
-use App\Enums\User\KycStatus;
-use App\Enums\User\UserServiceType;
-use App\Enums\User\UserStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -19,90 +14,128 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Enums\User\{Gender, UserStatus, UserServiceType, AffiliateRank, KycStatus};
 
-/**
- * Mô hình User (Người dùng / Phụ huynh)
- *
- * Quản lý tài khoản người dùng, phụ huynh, xác thực JWT & Sanctum, phân quyền vai trò Spatie,
- * quản lý gói dịch vụ (UserPackage), giới hạn thiết bị đăng nhập (UserDevice), hệ thống tiếp thị
- * liên kết (Affiliate), hồ sơ định danh KYC và bảo mật dữ liệu nhạy cảm (mã hóa AES).
- */
 class User extends Authenticatable implements JWTSubject
 {
     use HasRoles, Sluggable, HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * Trường nguồn dùng để tự động tạo slug thân thiện SEO
-     *
-     * @var string
-     */
-    protected $columnSlug = 'fullname';
-
-    /**
-     * Danh sách các trường cho phép gán dữ liệu hàng loạt (Mass Assignment)
+     * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
+    protected $columnSlug = 'fullname';
+
+    
+
     protected $fillable = [
-        'username',                    // Tên tài khoản người dùng
-        'code',                        // Mã định danh người dùng
-        'affiliate_code',              // Mã chia sẻ tiếp thị liên kết (Affiliate Code)
-        'referrer_id',                 // ID của người dùng giới thiệu (Người bảo trợ)
-        'affiliate_rank',              // Cấp bậc đối tác affiliate (1: Bạc, 2: Vàng, 3: Bạch Kim, 4: Kim Cương)
-        'affiliate_total_sales',       // Tổng doanh số giới thiệu tích lũy (VNĐ)
-        'wallet_balance',              // Số dư ví hoa hồng / tiền thưởng Affiliate (VNĐ)
-        'slug',                        // Đường dẫn tĩnh định danh
-        'fullname',                    // Họ và tên người dùng / phụ huynh
-        'password',                    // Mật khẩu tài khoản (đã băm Bcrypt)
-        'email',                       // Địa chỉ email (mã hóa AES)
-        'phone',                       // Số điện thoại (mã hóa AES)
-        'birthday',                    // Ngày tháng năm sinh
-        'gender',                      // Giới tính (Enum Gender)
-        'active',                      // Trạng thái kích hoạt tài khoản
-        'avatar',                      // Đường dẫn ảnh đại diện
-        'status',                      // Trạng thái hoạt động tài khoản (Enum UserStatus)
-        'bank_id',                     // ID ngân hàng thụ hưởng liên kết
-        'bank_code',                   // Mã ngân hàng (VCB, MB, TCB...)
-        'bank_name',                   // Tên ngân hàng
-        'bank_account_number',         // Số tài khoản ngân hàng nhận hoa hồng
-        'bank_account_name',           // Tên chủ tài khoản ngân hàng
-        'service_type',                // Phương thức đăng ký tài khoản (Email, Google, Apple)
-        'apple_id',                    // Định danh tài khoản Apple ID (Sign in with Apple)
-        'device_token',                // Token thiết bị nhận thông báo đẩy FCM
-        'email_verified_at',           // Thời điểm xác thực email thành công
-        'address',                     // Địa chỉ cư trú chi tiết
-        'lat',                         // Tọa độ vĩ độ địa lý
-        'lng',                         // Tọa độ kinh độ địa lý
-        'father_name',                 // Họ và tên bố (phục vụ dự đoán chiều cao con)
-        'father_height',               // Chiều cao của bố (cm)
-        'father_birthday',             // Ngày sinh của bố
-        'mother_name',                 // Họ và tên mẹ (phục vụ dự đoán chiều cao con)
-        'mother_height',               // Chiều cao của mẹ (cm)
-        'mother_birthday',             // Ngày sinh của mẹ
-        'id_card_front',               // Ảnh chụp CCCD / CMND mặt trước (KYC)
-        'id_card_back',                // Ảnh chụp CCCD / CMND mặt sau (KYC)
-        'tax_code',                    // Mã số thuế cá nhân (MST)
-        'kyc_status',                  // Trạng thái xác minh định danh (Enum KycStatus)
-        'kyc_submitted_at',            // Thời điểm gửi hồ sơ yêu cầu xác minh KYC
-        'kyc_verified_at',             // Thời điểm Admin duyệt xác minh KYC thành công
-        'kyc_rejected_at',             // Thời điểm Admin từ chối hồ sơ KYC
-        'kyc_rejection_reason',        // Lý do Admin từ chối duyệt hồ sơ KYC
-        'pending_referral_reward',     // Đánh dấu tài khoản mới chưa hoàn thiện hồ sơ con (chống gian lận hoa hồng)
-        'affiliate_terms_accepted_at', // Thời điểm người dùng đồng ý Điều khoản & Điều kiện Affiliate
+        /** Tên người dùng */
+        'username',
+        /** Mã người dùng */
+        'code',
+        /** Mã chia sẻ affiliate */
+        'affiliate_code',
+        /** ID người giới thiệu */
+        'referrer_id',
+        /** Cấp bậc đối tác tiếp thị liên kết (1: Bạc, 2: Vàng, 3: Bạch Kim, 4: Kim Cương) */
+        'affiliate_rank',
+        /** Tổng doanh số giới thiệu tích lũy (VNĐ) */
+        'affiliate_total_sales',
+        /** Số dư ví hoa hồng / thưởng Affiliate (VNĐ) */
+        'wallet_balance',
+        /** Đường dẫn tĩnh */
+        'slug',
+        /** Họ và tên */
+        'fullname',
+        /** Mật khẩu */
+        'password',
+        /** Email */
+        'email',
+        /** Số điện thoại */
+        'phone',
+        /** Ngày sinh */
+        'birthday',
+        /** Giới tính */
+        'gender',
+        /** Trạng thái hoạt động */
+        'active',
+        /** Ảnh đại diện */
+        'avatar',
+        /** Trạng thái */
+        'status',
+        /** ID ngân hàng liên kết */
+        'bank_id',
+        /** Mã ngân hàng (VCB, MB, TCB...) */
+        'bank_code',
+        /** Tên ngân hàng */
+        'bank_name',
+        /** Số tài khoản ngân hàng */
+        'bank_account_number',
+        /** Tên chủ tài khoản */
+        'bank_account_name',
+        /** Hình thức đăng ký (Email, Google, Apple) */
+        'service_type',
+        /** Apple ID */
+        'apple_id',
+        /** Token thiết bị */
+        'device_token',
+        /** Thời gian xác thực email */
+        'email_verified_at',
+        /** Tên địa chỉ chi tiết*/
+        'address',
+        /** Vĩ độ */
+        'lat',
+        /** Kinh độ */
+        'lng',
+        /** Tên của bố */
+        'father_name',
+        /** Chiều cao của bố (cm) */
+        'father_height',
+        /** Ngày sinh của bố */
+        'father_birthday',
+        /** Tên của mẹ */
+        'mother_name',
+        /** Chiều cao của mẹ */
+        'mother_height',
+        /** Ngày sinh của mẹ */
+        'mother_birthday',
+        /** Ảnh CCCD mặt trước */
+        'id_card_front',
+        /** Ảnh CCCD mặt sau */
+        'id_card_back',
+        /** Mã số thuế cá nhân (MST) */
+        'tax_code',
+        /** Trạng thái xác minh CCCD */
+        'kyc_status',
+        /** Thời điểm gửi yêu cầu xác minh CCCD */
+        'kyc_submitted_at',
+        /** Thời điểm Admin xác minh KYC */
+        'kyc_verified_at',
+        /** Thời điểm Admin từ chối duyệt CCCD */
+        'kyc_rejected_at',
+        /** Lý do Admin từ chối duyệt CCCD */
+        'kyc_rejection_reason',
+        /** Đánh dấu user mới chưa hoàn thành hồ sơ con (chống gian lận) */
+        'pending_referral_reward',
+        /** Thời điểm user đồng ý Điều kiện & Điều khoản Affiliate */
+        'affiliate_terms_accepted_at',
+
     ];
 
+
     /**
-     * Các trường dữ liệu ẩn đi khi chuyển đổi sang mảng hoặc JSON (Serialization)
+     * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
      */
     protected $hidden = [
-        'remember_token', // Token ghi nhớ đăng nhập
-        'password',       // Mật khẩu người dùng
+        'remember_token',
+        'password'
     ];
 
     /**
-     * Ép kiểu dữ liệu tự động cho các thuộc tính Eloquent Model
+     * The attributes that should be cast.
      *
      * @var array<string, string>
      */
@@ -123,40 +156,23 @@ class User extends Authenticatable implements JWTSubject
         'affiliate_terms_accepted_at' => 'datetime',
     ];
 
-    /**
-     * Liên kết: Danh sách các gói dịch vụ / gói cước người dùng đã đăng ký
-     *
-     * @return HasMany
-     */
     public function userPackages(): HasMany
     {
         return $this->hasMany(UserPackage::class);
     }
 
-    /**
-     * Liên kết: Danh sách tất cả thiết bị đã từng đăng nhập của người dùng
-     *
-     * @return HasMany
-     */
     public function devices(): HasMany
     {
         return $this->hasMany(UserDevice::class, 'user_id');
     }
 
-    /**
-     * Liên kết: Danh sách các thiết bị đang ở trạng thái hoạt động (được phép phiên đăng nhập)
-     *
-     * @return HasMany
-     */
     public function activeDevices(): HasMany
     {
         return $this->hasMany(UserDevice::class, 'user_id')->where('is_active', true);
     }
 
     /**
-     * Liên kết: Người dùng đã giới thiệu tài khoản này (Người bảo trợ / Referrer)
-     *
-     * @return BelongsTo
+     * Người dùng đã giới thiệu tài khoản này
      */
     public function referrer(): BelongsTo
     {
@@ -164,9 +180,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Liên kết: Danh sách những người dùng do tài khoản này giới thiệu (Tuyến dưới)
-     *
-     * @return HasMany
+     * Danh sách những người dùng do tài khoản này giới thiệu
      */
     public function referrals(): HasMany
     {
@@ -174,9 +188,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Liên kết: Lịch sử nhận hoa hồng, điểm thưởng affiliate của tài khoản
-     *
-     * @return HasMany
+     * Lịch sử nhận hoa hồng / thưởng affiliate của tài khoản
      */
     public function affiliateHistories(): HasMany
     {
@@ -184,9 +196,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Lấy số lượng thiết bị tối đa được phép đăng nhập theo gói cước hiện tại của người dùng
-     *
-     * @return int
+     * Lấy số lượng thiết bị tối đa được phép đăng nhập theo gói cước hiện tại
      */
     public function getMaxDevicesAllowed(): int
     {
@@ -212,7 +222,7 @@ class User extends Authenticatable implements JWTSubject
             return (int) ($firstPackage->package->max_devices ?? 1);
         }
 
-        // 3. Dự phòng: Lấy giới hạn từ Gói Miễn phí / Cơ bản mặc định
+        // 3. Fallback: Gói Free / Cơ Bản mặc định
         $normalPackage = Package::getNormalPackage();
         if ($normalPackage) {
             return (int) ($normalPackage->max_devices ?? 1);
@@ -221,41 +231,23 @@ class User extends Authenticatable implements JWTSubject
         return 1;
     }
 
-    /**
-     * Liên kết: Danh sách hồ sơ các con của phụ huynh này
-     *
-     * @return HasMany
-     */
     public function children(): HasMany
     {
         return $this->hasMany(Child::class, 'user_id');
     }
 
-    /**
-     * Liên kết: Danh sách lịch sử giao dịch mua gói / nạp tiền của người dùng
-     *
-     * @return HasMany
-     */
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'user_id');
     }
 
-    /**
-     * Liên kết: Thông tin ngân hàng thụ hưởng liên kết của người dùng
-     *
-     * @return BelongsTo
-     */
     public function bank(): BelongsTo
     {
         return $this->belongsTo(Bank::class, 'bank_id');
     }
 
-    /**
-     * Liên kết: Phân quyền vai trò người dùng (Spatie Roles)
-     *
-     * @return BelongsToMany
-     */
+
+
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id')
@@ -263,12 +255,7 @@ class User extends Authenticatable implements JWTSubject
             ->wherePivot('model_type', self::class);
     }
 
-    /**
-     * Kiểm tra người dùng có ít nhất một quyền (permission) trong danh sách chỉ định hay không
-     *
-     * @param array $permissionsArr
-     * @return bool
-     */
+
     public function checkPermissions($permissionsArr): bool
     {
         foreach ($permissionsArr as $permission) {
@@ -279,31 +266,18 @@ class User extends Authenticatable implements JWTSubject
         return false;
     }
 
-    /**
-     * Lấy định danh khóa chính đại diện cho người dùng khi tạo JWT Token
-     *
-     * @return mixed
-     */
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
 
-    /**
-     * Trả về mảng chứa các thông tin tùy biến (Custom Claims) bổ sung vào JWT Token
-     *
-     * @return array
-     */
+
     public function getJWTCustomClaims(): array
     {
         return [];
     }
 
-    /**
-     * Khởi tạo các sự kiện vòng đời (Model Lifecycle Events) của mô hình User
-     *
-     * @return void
-     */
     protected static function booted(): void
     {
         // Tự động sinh mã affiliate CC001, CC002... khi tạo người dùng mới
@@ -313,25 +287,21 @@ class User extends Authenticatable implements JWTSubject
             }
         });
 
-        // Tự động kích hoạt gói dùng thử (Trial Package) khi tài khoản đăng ký mới
+        // Tao package trial
         static::created(function ($user) {
             $trialPackage = Package::getTrialPackage();
-            if ($trialPackage) {
-                $user->userPackages()->create([
-                    'package_id' => $trialPackage->id,
-                    'start_date' => now(),
-                    'end_date' => now()->addDays($trialPackage->days),
-                    'status' => PackageStatus::Active,
-                    'current_type' => PackageType::Trial
-                ]);
-            }
+            $user->userPackages()->create([
+                'package_id' => $trialPackage->id,
+                'start_date' => now(),
+                'end_date' => now()->addDays($trialPackage->days),
+                'status' => PackageStatus::Active,
+                'current_type' => PackageType::Trial
+            ]);
         });
     }
 
     /**
-     * Tự động sinh mã chia sẻ tiếp thị liên kết định dạng chuẩn CC001, CC002...
-     *
-     * @return string
+     * Tự động sinh mã chia sẻ affiliate định dạng CC001, CC002...
      */
     public static function generateAffiliateCode(): string
     {
@@ -355,9 +325,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Lấy tên hiển thị cấp bậc đối tác tiếp thị liên kết (Bạc, Vàng, Bạch Kim, Kim Cương)
-     *
-     * @return string
+     * Lấy tên hiển thị cấp bậc mẹ giới thiệu
      */
     public function getAffiliateRankName(): string
     {
@@ -365,9 +333,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Lấy class CSS huy hiệu (Badge) hiển thị cấp bậc affiliate trên giao diện Quản trị (Admin)
-     *
-     * @return string
+     * Lấy class badge hiển thị cấp bậc mẹ giới thiệu trên Admin
      */
     public function getAffiliateRankBadge(): string
     {
@@ -375,9 +341,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Kiểm tra đối tác đã hoàn thành và được Admin phê duyệt xác minh KYC (CCCD + MST) thành công hay chưa
-     *
-     * @return bool
+     * Kiểm tra đối tác đã hoàn thành và được Admin phê duyệt xác minh KYC (CCCD + MST) thành công chưa
      */
     public function hasCompletedKyc(): bool
     {
@@ -385,9 +349,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Kiểm tra hồ sơ xác minh KYC có đang chờ Admin xét duyệt hay không
-     *
-     * @return bool
+     * Kiểm tra hồ sơ KYC có đang chờ Admin duyệt hay không
      */
     public function isKycPending(): bool
     {
@@ -395,9 +357,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Kiểm tra hồ sơ xác minh KYC có bị Admin từ chối hay không
-     *
-     * @return bool
+     * Kiểm tra hồ sơ KYC có bị từ chối hay không
      */
     public function isKycRejected(): bool
     {
@@ -405,9 +365,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Lấy class CSS huy hiệu (Badge) thể hiện màu sắc của trạng thái xác minh KYC
-     *
-     * @return string
+     * Lấy class badge màu sắc của trạng thái KYC
      */
     public function getKycStatusBadge(): string
     {
@@ -415,9 +373,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Kiểm tra người dùng đã tạo ít nhất 1 hồ sơ con trong hệ thống hay chưa
-     *
-     * @return bool
+     * Kiểm tra user đã tạo ít nhất 1 hồ sơ con chưa
      */
     public function hasChildren(): bool
     {
@@ -425,9 +381,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Kiểm tra người dùng đã xác nhận đồng ý Điều kiện & Điều khoản Affiliate hay chưa
-     *
-     * @return bool
+     * Kiểm tra user đã đồng ý Điều kiện & Điều khoản Affiliate chưa
      */
     public function hasAcceptedAffiliateTerms(): bool
     {
@@ -435,9 +389,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Thuộc tính ảo: Lấy số điện thoại đã được giải mã AES an toàn
-     *
-     * @return string|null
+     * Lấy số điện thoại đã giải mã AES an toàn
      */
     public function getDecryptedPhoneAttribute(): ?string
     {
@@ -453,9 +405,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * Thuộc tính ảo: Lấy địa chỉ email đã được giải mã AES an toàn
-     *
-     * @return string|null
+     * Lấy email đã giải mã AES an toàn
      */
     public function getDecryptedEmailAttribute(): ?string
     {

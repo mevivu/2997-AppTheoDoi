@@ -177,8 +177,6 @@ class Video extends Model
     }
 
     /**
-
-    /**
      * Phạm vi truy vấn video đang hoạt động
      */
     public function scopeActive($query)
