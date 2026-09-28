@@ -5,6 +5,7 @@ namespace App\Api\V1\Http\Controllers\Lesson;
 use App\Admin\Http\Controllers\Controller;
 use App\Api\V1\Http\Requests\Lesson\LessonAgeGroupRequest;
 use App\Api\V1\Http\Requests\Lesson\LessonCategoryRequest;
+use App\Api\V1\Http\Requests\Lesson\LessonDifficultyRatingRequest;
 use App\Api\V1\Http\Requests\Lesson\LessonListRequest;
 use App\Api\V1\Http\Requests\Lesson\LessonPillarRequest;
 use App\Api\V1\Http\Resources\Lesson\AgeGroupResource;
@@ -177,6 +178,56 @@ class LessonController extends Controller
         } catch (Exception $e) {
             $this->logError('Increment lesson view failed:', $e);
             return $this->jsonResponseError('Không tìm thấy bài học hoặc bài học đã bị ẩn', 404);
+        }
+    }
+
+    /**
+     * Toggle đánh giá độ khó bài học (tạo / cập nhật / xóa)
+     *
+     * @bodyParam child_id integer required ID hồ sơ bé
+     * @bodyParam difficulty_level string required Mức đánh giá: easy, with_help, hard
+     *
+     * @param LessonDifficultyRatingRequest $request
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function rateDifficulty(LessonDifficultyRatingRequest $request, $id): JsonResponse
+    {
+        try {
+            $result = $this->service->toggleDifficultyRating(
+                (int) $id,
+                (int) $request->input('child_id'),
+                $request->input('difficulty_level')
+            );
+            return $this->jsonResponseSuccess($result, __('Đánh giá đã được cập nhật.'));
+        } catch (HttpException $e) {
+            return $this->jsonResponseError($e->getMessage(), $e->getStatusCode());
+        } catch (Exception $e) {
+            $this->logError('Rate lesson difficulty failed:', $e);
+            return $this->jsonResponseError('Đánh giá bài học thất bại, vui lòng thử lại.', 500);
+        }
+    }
+
+    /**
+     * Thống kê đánh giá độ khó bài học (phần trăm mỗi mức)
+     *
+     * @queryParam child_id integer ID hồ sơ bé (để lấy đánh giá hiện tại của user cho bé)
+     *
+     * @param Request $request
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function getDifficultyStats(Request $request, $id): JsonResponse
+    {
+        try {
+            $childId = $request->filled('child_id') ? (int) $request->input('child_id') : null;
+            $result = $this->service->getDifficultyStats((int) $id, $childId);
+            return $this->jsonResponseSuccess($result);
+        } catch (HttpException $e) {
+            return $this->jsonResponseError($e->getMessage(), $e->getStatusCode());
+        } catch (Exception $e) {
+            $this->logError('Get difficulty stats failed:', $e);
+            return $this->jsonResponseError('Lấy thống kê đánh giá thất bại.', 500);
         }
     }
 }

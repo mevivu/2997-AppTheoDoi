@@ -13,7 +13,6 @@ class LessonCategoryRequest extends BaseRequest
     protected function methodPost(): array
     {
         return [
-            'age_group_id' => ['required', 'exists:App\Models\AgeGroup,id'],
             'pillar' => ['required', new Enum(EducationPillar::class)],
             'key' => ['required', new Enum(LessonCategoryKey::class)],
             'name' => ['required', 'string', 'max:191'],
@@ -28,7 +27,6 @@ class LessonCategoryRequest extends BaseRequest
     {
         return [
             'id' => ['required', 'exists:App\Models\LessonCategory,id'],
-            'age_group_id' => ['required', 'exists:App\Models\AgeGroup,id'],
             'pillar' => ['required', new Enum(EducationPillar::class)],
             'key' => ['required', new Enum(LessonCategoryKey::class)],
             'name' => ['required', 'string', 'max:191'],
@@ -42,8 +40,7 @@ class LessonCategoryRequest extends BaseRequest
     public function messages(): array
     {
         return [
-            'age_group_id.required' => 'Vui lòng chọn nhóm tuổi',
-            'pillar.required' => 'Vui lòng chọn lĩnh vực giáo dục (PQ, IQ, EQ, AQ, Thai giáo)',
+            'pillar.required' => 'Vui lòng chọn lĩnh vực giáo dục (PQ, IQ, EQ, AQ)',
             'key.required' => 'Vui lòng chọn định danh chuyên môn',
             'name.required' => 'Vui lòng nhập tên danh mục bài học',
             'name.max' => 'Tên danh mục không được vượt quá 191 ký tự',

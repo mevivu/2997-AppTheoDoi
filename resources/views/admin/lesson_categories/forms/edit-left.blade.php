@@ -6,30 +6,17 @@
             </h3>
         </div>
         <div class="row card-body">
-            {{-- Nhóm độ tuổi --}}
-            <div class="col-12 mb-4">
-                <label class="form-label fw-bold text-dark fs-14">
-                    {{ __('1. Nhóm độ tuổi') }}: <span class="text-danger">*</span>
-                </label>
-                <x-select name="age_group_id" id="age_group_id" :required="true">
-                    <x-select-option value="" title="-- Chọn nhóm độ tuổi --" />
-                    @foreach ($ageGroups as $group)
-                        <x-select-option :value="$group->id" :selected="old('age_group_id', $instance->age_group_id) == $group->id" :title="$group->name . ' (' . ($group->min_months ?? 0) . ' - ' . ($group->max_months ?? '...') . ' tháng)'" />
-                    @endforeach
-                </x-select>
-            </div>
-
-            {{-- 5 Lĩnh vực cốt lõi (Pillars) - 5 Buttons dạng Card --}}
+            {{-- 4 Lĩnh vực cốt lõi (Pillars) - 4 Buttons dạng Card --}}
             <div class="col-12 mb-4">
                 <label class="form-label fw-bold text-dark fs-14 mb-2">
-                    {{ __('2. Lĩnh vực giáo dục cốt lõi (Trụ cột)') }}: <span class="text-danger">*</span>
+                    {{ __('1. Lĩnh vực giáo dục cốt lõi (Trụ cột)') }}: <span class="text-danger">*</span>
                 </label>
                 <div class="row g-2" id="pillar_card_group">
                     @php
                         $selectedPillar = old('pillar', $instance->pillar?->value ?? 'pq');
                     @endphp
                     @foreach ($pillars as $p)
-                        <div class="col-6 col-sm-4 col-md-auto flex-fill">
+                        <div class="col-6 col-sm-3 flex-fill">
                             <label class="card card-sm card-link text-center p-3 h-100 cursor-pointer border pillar-card {{ $selectedPillar == $p->value ? 'active-pillar' : '' }}"
                                    id="pillar_label_{{ $p->value }}"
                                    style="border-radius: 10px; transition: all 0.2s;"
@@ -54,7 +41,7 @@
             {{-- Định danh chuyên môn (Key) --}}
             <div class="col-12 mb-4">
                 <label class="form-label fw-bold text-dark fs-14">
-                    {{ __('3. Định danh chuyên môn (Key)') }}: <span class="text-danger">*</span>
+                    {{ __('2. Định danh chuyên môn (Key)') }}: <span class="text-danger">*</span>
                 </label>
                 <select name="key" id="category_key_select" class="form-select" required>
                     <option value="">-- Đang tải danh sách key... --</option>

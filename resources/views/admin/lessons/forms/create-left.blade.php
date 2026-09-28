@@ -38,9 +38,9 @@
                 </div>
 
                 {{-- Chọn Danh mục bài học chính --}}
-                <div class="col-12 col-md-8">
+                <div class="col-12 col-md-7">
                     <label class="form-label fw-bold text-dark fs-13 mb-1">
-                        {{ __('Danh mục bài học') }}: <span class="text-danger">*</span>
+                        {{ __('Danh mục kỹ năng / chủ đề') }}: <span class="text-danger">*</span>
                     </label>
                     <select name="lesson_category_id" id="lesson_category_id" class="form-select @error('lesson_category_id') is-invalid @enderror" required>
                         <option value="">-- {{ __('Chọn danh mục bài học') }} --</option>
@@ -52,7 +52,6 @@
                                 <optgroup label="⭐ {{ $p->label() }} ({{ strtoupper($p->value) }})" data-pillar="{{ $p->value }}">
                                     @foreach($pCats as $cat)
                                         @php
-                                            $ageText = $cat->ageGroup ? ($cat->ageGroup->name . ' - ' . ($cat->ageGroup->min_months ?? 0) . '-' . ($cat->ageGroup->max_months ?? '...') . ' tháng') : 'Mọi độ tuổi';
                                             $isSel = old('lesson_category_id') == $cat->id;
                                         @endphp
                                         <option value="{{ $cat->id }}"
@@ -60,12 +59,10 @@
                                                 data-pillar-label="{{ $cat->pillar?->label() }}"
                                                 data-pillar-icon="{{ $cat->pillar?->icon() }}"
                                                 data-pillar-color="{{ $cat->pillar?->color() }}"
-                                                data-age-group="{{ $cat->ageGroup?->name ?? 'Mọi độ tuổi' }}"
-                                                data-age-group-id="{{ $cat->age_group_id }}"
                                                 data-cat-name="{{ $cat->name }}"
                                                 data-cat-key="{{ $cat->key?->value ?? $cat->key }}"
                                                 {{ $isSel ? 'selected' : '' }}>
-                                            {{ $cat->name }} [{{ $ageText }}]
+                                            {{ $cat->name }}
                                         </option>
                                     @endforeach
                                 </optgroup>
@@ -77,19 +74,22 @@
                     @enderror
                 </div>
 
-                {{-- Lọc phụ theo Nhóm tuổi (Tùy chọn) --}}
-                <div class="col-12 col-md-4">
+                {{-- Nhóm độ tuổi áp dụng cho bài học --}}
+                <div class="col-12 col-md-5">
                     <label class="form-label fw-bold text-dark fs-13 mb-1">
-                        {{ __('Lọc theo Nhóm độ tuổi') }}:
+                        {{ __('Nhóm độ tuổi áp dụng') }}: <span class="text-danger">*</span>
                     </label>
-                    <select id="filter_age_group_id" class="form-select">
-                        <option value="">-- Tất cả độ tuổi --</option>
+                    <select name="age_group_id" id="age_group_id" class="form-select @error('age_group_id') is-invalid @enderror" required>
+                        <option value="">-- {{ __('Chọn nhóm độ tuổi') }} --</option>
                         @foreach ($ageGroups as $group)
-                            <option value="{{ $group->id }}">
-                                {{ $group->name }} ({{ $group->min_months ?? 0 }} - {{ $group->max_months ?? '...' }} tháng)
+                            <option value="{{ $group->id }}" {{ old('age_group_id') == $group->id ? 'selected' : '' }}>
+                                {{ $group->name }} {{ ($group->min_months !== null || $group->max_months !== null) ? '(' . ($group->min_months ?? 0) . ' - ' . ($group->max_months ?? '...') . ' tháng)' : '(Thai kỳ)' }}
                             </option>
                         @endforeach
                     </select>
+                    @error('age_group_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 {{-- Thẻ thông tin chi tiết danh mục được chọn (Live Category Info Card) --}}
@@ -105,8 +105,7 @@
                                     <span class="fw-bold text-dark fs-14" id="cat_info_name">Tên danh mục</span>
                                 </div>
                                 <div class="text-muted fs-12 d-flex align-items-center gap-3 flex-wrap">
-                                    <span><i class="ti ti-baby-carriage me-1 text-primary"></i>{{ __('Độ tuổi áp dụng:') }} <strong id="cat_info_age" class="text-dark">—</strong></span>
-                                    <span><i class="ti ti-key me-1 text-muted"></i>{{ __('Mã key:') }} <code id="cat_info_key">—</code></span>
+                                    <span><i class="ti ti-key me-1 text-muted"></i>{{ __('Mã định danh (Key):') }} <code id="cat_info_key">—</code></span>
                                 </div>
                             </div>
                         </div>
@@ -284,7 +283,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const catSelect = document.getElementById('lesson_category_id');
     const frequencyInput = document.getElementById('frequency_input');
-    const ageFilterSelect = document.getElementById('filter_age_group_id');
     const pillarButtons = document.querySelectorAll('.pillar-filter-btn');
 
     // Preset tần suất
@@ -300,7 +298,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const catInfoPillarAvatar = document.getElementById('cat_info_pillar_avatar');
     const catInfoPillarIcon = document.getElementById('cat_info_pillar_icon');
     const catInfoName = document.getElementById('cat_info_name');
-    const catInfoAge = document.getElementById('cat_info_age');
     const catInfoKey = document.getElementById('cat_info_key');
 
     function updateCategoryInfo() {
@@ -314,7 +311,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const pillarLabel = selectedOpt.dataset.pillarLabel || 'Lĩnh vực';
         const pillarColor = selectedOpt.dataset.pillarColor || '#206bc4';
         const pillarIcon = selectedOpt.dataset.pillarIcon || 'ti ti-category';
-        const ageGroup = selectedOpt.dataset.ageGroup || 'Mọi độ tuổi';
         const catName = selectedOpt.dataset.catName || selectedOpt.textContent.trim();
         const catKey = selectedOpt.dataset.catKey || '';
 
@@ -325,7 +321,6 @@ document.addEventListener('DOMContentLoaded', function () {
         catInfoPillarAvatar.style.backgroundColor = pillarColor;
         catInfoPillarIcon.className = pillarIcon + ' fs-2 text-white';
         catInfoName.textContent = catName;
-        catInfoAge.textContent = ageGroup;
         catInfoKey.textContent = catKey ? catKey.toUpperCase() : '—';
     }
 
@@ -333,39 +328,25 @@ document.addEventListener('DOMContentLoaded', function () {
         catSelect.addEventListener('change', updateCategoryInfo);
     }
 
-    // Lọc nhanh theo Lĩnh vực (Pills) & Độ tuổi
+    // Lọc nhanh theo Lĩnh vực (Pills)
     function filterCategories() {
         const activeBtn = document.querySelector('.pillar-filter-btn.active');
         const selectedPillar = activeBtn ? activeBtn.dataset.pillar : 'all';
-        const selectedAge = ageFilterSelect ? ageFilterSelect.value : '';
 
         const optgroups = catSelect.querySelectorAll('optgroup');
         optgroups.forEach(group => {
             const groupPillar = group.dataset.pillar;
-            let groupHasVisible = false;
+            const matchPillar = (selectedPillar === 'all' || groupPillar === selectedPillar);
 
+            group.hidden = !matchPillar;
             const options = group.querySelectorAll('option');
             options.forEach(opt => {
-                const optPillar = opt.dataset.pillar;
-                const optAgeId = opt.dataset.ageGroupId;
-
-                const matchPillar = (selectedPillar === 'all' || optPillar === selectedPillar);
-                const matchAge = (!selectedAge || optAgeId === selectedAge);
-
-                if (matchPillar && matchAge) {
-                    opt.hidden = false;
-                    opt.disabled = false;
-                    groupHasVisible = true;
-                } else {
-                    opt.hidden = true;
-                    opt.disabled = true;
-                }
+                opt.hidden = !matchPillar;
+                opt.disabled = !matchPillar;
             });
-
-            group.hidden = !groupHasVisible;
         });
 
-        // Nếu option đang chọn bị ẩn thì reset hoặc chọn option đầu tiên nhìn thấy
+        // Nếu option đang chọn bị ẩn thì reset
         const currentOpt = catSelect.options[catSelect.selectedIndex];
         if (currentOpt && currentOpt.hidden) {
             catSelect.value = '';
@@ -384,10 +365,6 @@ document.addEventListener('DOMContentLoaded', function () {
             filterCategories();
         });
     });
-
-    if (ageFilterSelect) {
-        ageFilterSelect.addEventListener('change', filterCategories);
-    }
 
     // Kích hoạt hiển thị ban đầu
     updateCategoryInfo();

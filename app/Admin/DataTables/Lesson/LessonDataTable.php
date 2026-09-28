@@ -79,7 +79,7 @@ class LessonDataTable extends BaseDataTable
 
     public function query()
     {
-        return $this->repository->getQueryBuilderWithRelations(['category.ageGroup', 'videos'])
+        return $this->repository->getQueryBuilderWithRelations(['category', 'ageGroup', 'videos'])
             ->withCount('videos')
             ->orderBy('sort_order', 'asc');
     }
@@ -95,7 +95,7 @@ class LessonDataTable extends BaseDataTable
             'thumbnail' => $this->view['thumbnail'],
             'category' => $this->view['category'],
             'pillar' => $this->view['pillar'],
-            'age_group' => fn($row) => $row->category?->ageGroup?->name ?? '—',
+            'age_group' => fn($row) => $row->ageGroup?->name ?? '—',
             'videos_count' => $this->view['videos_count'],
             'difficulty' => $this->view['difficulty'],
             'access_type' => $this->view['access_type'],
@@ -115,9 +115,7 @@ class LessonDataTable extends BaseDataTable
                 });
             },
             'age_group' => function ($query, $keyword) {
-                $query->whereHas('category', function ($q) use ($keyword) {
-                    $q->where('age_group_id', $keyword);
-                });
+                $query->where('age_group_id', $keyword);
             },
             'difficulty' => function ($query, $keyword) {
                 $query->where('difficulty', $keyword);

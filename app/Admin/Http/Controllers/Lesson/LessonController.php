@@ -77,7 +77,7 @@ class LessonController extends Controller
     public function create(): Factory|View|Application
     {
         $ageGroups = AgeGroup::active()->orderBy('sort_order')->get();
-        $categories = LessonCategory::with('ageGroup')->active()->orderBy('sort_order')->get();
+        $categories = LessonCategory::active()->orderBy('sort_order')->get();
 
         return view($this->view['create'], [
             'ageGroups' => $ageGroups,
@@ -99,11 +99,11 @@ class LessonController extends Controller
 
     public function edit($id): Factory|View|Application
     {
-        $instance = $this->repository->getQueryBuilderWithRelations(['category.ageGroup', 'videos'])
+        $instance = $this->repository->getQueryBuilderWithRelations(['category', 'ageGroup', 'videos'])
             ->findOrFail($id);
 
         $ageGroups = AgeGroup::active()->orderBy('sort_order')->get();
-        $categories = LessonCategory::with('ageGroup')->active()->orderBy('sort_order')->get();
+        $categories = LessonCategory::active()->orderBy('sort_order')->get();
 
         return view($this->view['edit'], [
             'instance' => $instance,

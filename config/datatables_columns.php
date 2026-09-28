@@ -2642,11 +2642,6 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false,
         ],
-        'age_group' => [
-            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Nhóm tuổi</span></div>',
-            'addClass' => 'text-center align-middle',
-            'orderable' => false,
-        ],
         'lessons_count' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-book"></i><span>Số bài học</span></div>',
             'addClass' => 'text-center align-middle',

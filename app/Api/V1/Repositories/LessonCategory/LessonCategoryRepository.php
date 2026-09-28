@@ -12,37 +12,52 @@ use Illuminate\Support\Facades\DB;
 class LessonCategoryRepository extends AdminRepository implements LessonCategoryRepositoryInterface
 {
     /**
-     * Lấy danh mục theo nhóm tuổi và trụ cột giáo dục kèm số lượng bài học
+     * Lấy danh mục theo trụ cột giáo dục kèm số lượng bài học (tùy chọn theo nhóm tuổi)
      */
-    public function getByAgeGroupAndPillar(int $ageGroupId, string|EducationPillar $pillar): Collection
+    public function getByPillar(string|EducationPillar $pillar, ?int $ageGroupId = null): Collection
     {
         $pillarValue = $pillar instanceof EducationPillar ? $pillar->value : $pillar;
 
         return $this->model
             ->active()
-            ->where('age_group_id', $ageGroupId)
             ->where('pillar', $pillarValue)
             ->withCount([
-                'lessons as lessons_count' => function ($q) {
+                'lessons as lessons_count' => function ($q) use ($ageGroupId) {
                     $q->where('status', ActiveStatus::Active->value);
+                    if ($ageGroupId !== null) {
+                        $q->where('age_group_id', $ageGroupId);
+                    }
                 },
-                'lessons as free_lessons_count' => function ($q) {
+                'lessons as free_lessons_count' => function ($q) use ($ageGroupId) {
                     $q->where('status', ActiveStatus::Active->value)
                       ->where('access_type', LessonAccessType::Free->value);
+                    if ($ageGroupId !== null) {
+                        $q->where('age_group_id', $ageGroupId);
+                    }
                 },
-                'lessons as vip_lessons_count' => function ($q) {
+                'lessons as vip_lessons_count' => function ($q) use ($ageGroupId) {
                     $q->where('status', ActiveStatus::Active->value)
                       ->where('access_type', LessonAccessType::Vip->value);
+                    if ($ageGroupId !== null) {
+                        $q->where('age_group_id', $ageGroupId);
+                    }
                 },
             ])
-            ->with('ageGroup')
             ->orderBy('sort_order', 'asc')
             ->orderBy('id', 'asc')
             ->get();
     }
 
     /**
-     * Lấy thống kê số bài học của 5 trụ cột giáo dục (tùy chọn theo nhóm tuổi)
+     * Lấy danh mục theo nhóm tuổi và trụ cột giáo dục kèm số lượng bài học (tương thích ngược)
+     */
+    public function getByAgeGroupAndPillar(?int $ageGroupId, string|EducationPillar $pillar): Collection
+    {
+        return $this->getByPillar($pillar, $ageGroupId);
+    }
+
+    /**
+     * Lấy thống kê số bài học của 4 trụ cột giáo dục (tùy chọn theo nhóm tuổi)
      */
     public function getPillarsWithLessonCounts(?int $ageGroupId = null): array
     {
@@ -52,7 +67,7 @@ class LessonCategoryRepository extends AdminRepository implements LessonCategory
             ->where('lesson_categories.status', ActiveStatus::Active->value);
 
         if ($ageGroupId !== null) {
-            $query->where('lesson_categories.age_group_id', $ageGroupId);
+            $query->where('lessons.age_group_id', $ageGroupId);
         }
 
         $results = $query
@@ -72,7 +87,6 @@ class LessonCategoryRepository extends AdminRepository implements LessonCategory
                     EducationPillar::IQ => 'Trí tuệ',
                     EducationPillar::EQ => 'Cảm xúc',
                     EducationPillar::AQ => 'Vượt khó',
-                    EducationPillar::THAI_GIAO => 'Học tập',
                 },
                 'icon' => $pillarCase->icon(),
                 'color' => $pillarCase->color(),
@@ -86,27 +100,34 @@ class LessonCategoryRepository extends AdminRepository implements LessonCategory
     }
 
     /**
-     * Lấy tất cả danh mục hoạt động theo nhóm tuổi
+     * Lấy tất cả danh mục hoạt động (tùy chọn theo nhóm tuổi)
      */
-    public function getCategoriesByAgeGroup(int $ageGroupId): Collection
+    public function getCategoriesByAgeGroup(?int $ageGroupId = null): Collection
     {
         return $this->model
             ->active()
-            ->where('age_group_id', $ageGroupId)
             ->withCount([
-                'lessons as lessons_count' => function ($q) {
+                'lessons as lessons_count' => function ($q) use ($ageGroupId) {
                     $q->where('status', ActiveStatus::Active->value);
+                    if ($ageGroupId !== null) {
+                        $q->where('age_group_id', $ageGroupId);
+                    }
                 },
-                'lessons as free_lessons_count' => function ($q) {
+                'lessons as free_lessons_count' => function ($q) use ($ageGroupId) {
                     $q->where('status', ActiveStatus::Active->value)
                       ->where('access_type', LessonAccessType::Free->value);
+                    if ($ageGroupId !== null) {
+                        $q->where('age_group_id', $ageGroupId);
+                    }
                 },
-                'lessons as vip_lessons_count' => function ($q) {
+                'lessons as vip_lessons_count' => function ($q) use ($ageGroupId) {
                     $q->where('status', ActiveStatus::Active->value)
                       ->where('access_type', LessonAccessType::Vip->value);
+                    if ($ageGroupId !== null) {
+                        $q->where('age_group_id', $ageGroupId);
+                    }
                 },
             ])
-            ->with('ageGroup')
             ->orderBy('sort_order', 'asc')
             ->orderBy('id', 'asc')
             ->get();

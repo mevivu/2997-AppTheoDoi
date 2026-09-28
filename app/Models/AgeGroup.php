@@ -39,19 +39,11 @@ class AgeGroup extends Model
     ];
 
     /**
-     * Danh sách các danh mục bài học thuộc nhóm tuổi này
-     */
-    public function lessonCategories(): HasMany
-    {
-        return $this->hasMany(LessonCategory::class, 'age_group_id')->orderBy('sort_order', 'asc');
-    }
-
-    /**
      * Danh sách tất cả bài học thuộc nhóm tuổi này
      */
-    public function lessons(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+    public function lessons(): HasMany
     {
-        return $this->hasManyThrough(Lesson::class, LessonCategory::class, 'age_group_id', 'lesson_category_id');
+        return $this->hasMany(Lesson::class, 'age_group_id')->orderBy('sort_order', 'asc');
     }
 
 

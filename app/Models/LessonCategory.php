@@ -25,8 +25,6 @@ class LessonCategory extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        /** ID nhóm độ tuổi */
-        'age_group_id',
         /** Trụ cột / Lĩnh vực giáo dục */
         'pillar',
         /** Định danh chuyên môn danh mục */
@@ -51,20 +49,11 @@ class LessonCategory extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'age_group_id' => 'integer',
         'pillar' => EducationPillar::class,
         'key' => LessonCategoryKey::class,
         'sort_order' => 'integer',
         'status' => ActiveStatus::class,
     ];
-
-    /**
-     * Nhóm tuổi tương ứng của danh mục
-     */
-    public function ageGroup(): BelongsTo
-    {
-        return $this->belongsTo(AgeGroup::class, 'age_group_id');
-    }
 
     /**
      * Danh sách bài học thuộc danh mục này
@@ -88,14 +77,6 @@ class LessonCategory extends Model
     public function scopeActive($query)
     {
         return $query->where('status', ActiveStatus::Active->value);
-    }
-
-    /**
-     * Lọc theo nhóm tuổi
-     */
-    public function scopeByAgeGroup($query, $ageGroupId)
-    {
-        return $query->where('age_group_id', $ageGroupId);
     }
 
     /**

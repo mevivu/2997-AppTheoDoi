@@ -14,7 +14,7 @@ class LessonCategoryRequest extends BaseRequest
     protected function methodGet(): array
     {
         return [
-            'age_group_id' => ['required', 'integer', 'exists:age_groups,id'],
+            'age_group_id' => ['nullable', 'integer', 'exists:age_groups,id'],
             'pillar' => ['nullable', 'string', new Enum(EducationPillar::class)],
         ];
     }
@@ -22,10 +22,9 @@ class LessonCategoryRequest extends BaseRequest
     public function messages(): array
     {
         return [
-            'age_group_id.required' => 'Vui lòng chọn nhóm tuổi.',
             'age_group_id.integer' => 'ID nhóm tuổi phải là số nguyên.',
             'age_group_id.exists' => 'Nhóm tuổi không tồn tại.',
-            'pillar.enum' => 'Trụ cột giáo dục không hợp lệ (hỗ trợ: pq, iq, eq, aq, thai_giao).',
+            'pillar.enum' => 'Trụ cột giáo dục không hợp lệ (hỗ trợ: pq, iq, eq, aq).',
         ];
     }
 }

@@ -98,8 +98,8 @@ class LessonDetailResource extends JsonResource
             'category_name' => $this->category?->name,
             'pillar' => $pillarValue,
             'pillar_label' => $pillarLabel,
-            'age_group_id' => $this->category?->age_group_id,
-            'age_group_name' => $this->category?->ageGroup?->name,
+            'age_group_id' => $this->age_group_id,
+            'age_group_name' => $this->ageGroup?->name,
             'videos' => $videosList,
             // Thuộc tính tương thích ngược cho App phiên bản cũ
             'title' => $this->name,
@@ -109,6 +109,7 @@ class LessonDetailResource extends JsonResource
             'duration_seconds' => $videosList[0]['duration_seconds'] ?? 0,
             'formatted_duration' => $videosList[0]['formatted_duration'] ?? '00:00',
             'video_category_id' => $this->lesson_category_id,
+            'difficulty_rating' => $this->difficulty_rating_data ?? null,
             'created_at' => format_datetime($this->created_at),
         ];
     }

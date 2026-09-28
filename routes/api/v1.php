@@ -270,6 +270,8 @@ Route::controller(\App\Api\V1\Http\Controllers\Lesson\LessonController::class)
         Route::get('/list', 'getList');
         Route::get('/{id}', 'show')->whereNumber('id');
         Route::post('/{id}/view', 'incrementView')->whereNumber('id')->middleware('throttle:30,1');
+        Route::get('/{id}/difficulty-stats', 'getDifficultyStats')->whereNumber('id');
+        Route::post('/{id}/difficulty-rating', 'rateDifficulty')->whereNumber('id')->middleware(['auth:api', 'throttle:30,1']);
     });
 
 // Backward-compatible Video Education endpoints (forwarded to LessonController)

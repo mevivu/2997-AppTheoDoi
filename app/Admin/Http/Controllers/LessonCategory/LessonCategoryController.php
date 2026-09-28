@@ -64,10 +64,7 @@ class LessonCategoryController extends Controller
 
     public function create(): Factory|View|Application
     {
-        $ageGroups = AgeGroup::active()->orderBy('sort_order')->get();
-
         return view($this->view['create'], [
-            'ageGroups' => $ageGroups,
             'pillars' => EducationPillar::cases(),
             'status' => ActiveStatus::asSelectArray(),
             'breadcrumbs' => $this->crums->add(__('Danh mục bài học'), route($this->route['index']))->add(__('Thêm mới')),
@@ -84,11 +81,9 @@ class LessonCategoryController extends Controller
     public function edit($id): Factory|View|Application
     {
         $instance = $this->repository->findOrFail($id);
-        $ageGroups = AgeGroup::active()->orderBy('sort_order')->get();
 
         return view($this->view['edit'], [
             'instance' => $instance,
-            'ageGroups' => $ageGroups,
             'pillars' => EducationPillar::cases(),
             'status' => ActiveStatus::asSelectArray(),
             'breadcrumbs' => $this->crums->add(__('Danh mục bài học'), route($this->route['index']))->add(__('Chỉnh sửa')),

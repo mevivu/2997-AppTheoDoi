@@ -33,25 +33,16 @@ class LessonCategoryDataTable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $ageGroupOptions = AgeGroup::query()
-            ->orderBy('sort_order')
-            ->pluck('name', 'id')
-            ->all();
-
         $pillarOptions = EducationPillar::asSelectArray();
 
-        $this->columnAllSearch = [2, 3, 4, 5, 8];
+        $this->columnAllSearch = [2, 3, 4, 7];
         $this->columnSearchSelect = [
             [
                 'column' => 3, // Pillar
                 'data' => $pillarOptions,
             ],
             [
-                'column' => 5, // Age Group
-                'data' => $ageGroupOptions,
-            ],
-            [
-                'column' => 8, // Status
+                'column' => 7, // Status
                 'data' => ActiveStatus::asSelectArray(),
             ],
         ];
@@ -59,7 +50,7 @@ class LessonCategoryDataTable extends BaseDataTable
 
     public function query()
     {
-        return $this->repository->getQueryBuilderWithRelations(['ageGroup'])
+        return $this->repository->getQueryBuilder()
             ->withCount('lessons')
             ->orderBy('sort_order', 'asc');
     }
@@ -75,7 +66,6 @@ class LessonCategoryDataTable extends BaseDataTable
             'icon' => $this->view['icon'],
             'pillar' => $this->view['pillar'],
             'key' => $this->view['key'],
-            'age_group' => fn($row) => $row->ageGroup?->name ?? '—',
             'lessons_count' => $this->view['lessons_count'],
             'status' => $this->view['status'],
         ];
@@ -86,9 +76,6 @@ class LessonCategoryDataTable extends BaseDataTable
         $this->customFilterColumns = [
             'pillar' => function ($query, $keyword) {
                 $query->where('pillar', $keyword);
-            },
-            'age_group' => function ($query, $keyword) {
-                $query->where('age_group_id', $keyword);
             },
         ];
     }

@@ -10,6 +10,8 @@ use App\Enums\Lesson\LessonAccessType;
 use App\Enums\Package\PackageType;
 use App\Enums\Package\PackageUserStatus;
 use App\Models\FeatureUsage;
+use App\Models\Lesson;
+use App\Models\LessonDifficultyRatingModel;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -146,11 +148,11 @@ class LessonService implements LessonServiceInterface
      */
     public function getCategories(Request $request): Collection
     {
-        $ageGroupId = (int) $request->input('age_group_id');
+        $ageGroupId = $request->filled('age_group_id') ? (int) $request->input('age_group_id') : null;
         $pillar = $request->input('pillar');
 
         if (!empty($pillar)) {
-            return $this->lessonCategoryRepository->getByAgeGroupAndPillar($ageGroupId, $pillar);
+            return $this->lessonCategoryRepository->getByPillar($pillar, $ageGroupId);
         }
 
         return $this->lessonCategoryRepository->getCategoriesByAgeGroup($ageGroupId);
@@ -207,7 +209,7 @@ class LessonService implements LessonServiceInterface
         $relatedLessons = $this->lessonRepository->getRelatedLessons(
             $lesson->id,
             $lesson->lesson_category_id,
-            $lesson->category?->age_group_id,
+            $lesson->age_group_id,
             $lesson->category?->pillar?->value,
             6
         );
@@ -216,6 +218,10 @@ class LessonService implements LessonServiceInterface
             $item->is_locked = $this->computeIsLocked($item, $isVip);
             return $item;
         });
+
+        // Embed thống kê đánh giá độ khó vào lesson detail
+        $childId = request()->filled('child_id') ? (int) request()->input('child_id') : null;
+        $lesson->difficulty_rating_data = $this->getDifficultyStats($lesson->id, $childId);
 
         return [
             'lesson' => $lesson,
@@ -287,5 +293,112 @@ class LessonService implements LessonServiceInterface
         }
 
         return true;
+    }
+
+    /**
+     * Toggle đánh giá độ khó bài học (tạo / cập nhật / xóa)
+     *
+     * Logic:
+     * - Chưa có rating → tạo mới
+     * - Đã có, cùng mức → xóa (toggle off)
+     * - Đã có, khác mức → cập nhật sang mức mới
+     */
+    public function toggleDifficultyRating(int $lessonId, int $childId, string $level): array
+    {
+        $user = auth('api')->user();
+        if (!$user) {
+            throw new HttpException(401, 'Vui lòng đăng nhập để đánh giá bài học.');
+        }
+
+        // Validate child thuộc về user hiện tại
+        $child = $user->children()->find($childId);
+        if (!$child) {
+            throw new HttpException(403, 'Bạn không có quyền đánh giá cho hồ sơ bé này.');
+        }
+
+        // Validate lesson tồn tại và đang active
+        $lesson = $this->lessonRepository->findActiveWithRelations($lessonId);
+        if (!$lesson) {
+            throw new HttpException(404, 'Không tìm thấy bài học hoặc bài học đã bị ẩn.');
+        }
+
+        // Tìm rating hiện tại
+        $existing = LessonDifficultyRatingModel::where([
+            'user_id' => $user->id,
+            'child_id' => $child->id,
+            'lesson_id' => $lesson->id,
+        ])->first();
+
+        $action = 'created';
+        $currentRating = $level;
+
+        if ($existing) {
+            if ($existing->difficulty_level->value === $level) {
+                // Toggle OFF: bỏ chọn
+                $existing->delete();
+                $action = 'removed';
+                $currentRating = null;
+            } else {
+                // Đổi mức đánh giá
+                $existing->update(['difficulty_level' => $level]);
+                $action = 'updated';
+            }
+        } else {
+            // Tạo mới
+            LessonDifficultyRatingModel::create([
+                'user_id' => $user->id,
+                'child_id' => $child->id,
+                'lesson_id' => $lesson->id,
+                'difficulty_level' => $level,
+            ]);
+        }
+
+        return [
+            'action' => $action,
+            'current_rating' => $currentRating,
+            'stats' => $this->getDifficultyStats($lessonId, $childId),
+        ];
+    }
+
+    /**
+     * Lấy thống kê đánh giá độ khó bài học (phần trăm mỗi mức)
+     */
+    public function getDifficultyStats(int $lessonId, ?int $childId = null): array
+    {
+        $counts = LessonDifficultyRatingModel::where('lesson_id', $lessonId)
+            ->selectRaw('difficulty_level, COUNT(*) as count')
+            ->groupBy('difficulty_level')
+            ->pluck('count', 'difficulty_level')
+            ->toArray();
+
+        $total = array_sum($counts);
+
+        $stats = [];
+        foreach (['easy', 'with_help', 'hard'] as $level) {
+            $count = $counts[$level] ?? 0;
+            $stats[$level] = [
+                'count' => $count,
+                'percent' => $total > 0 ? round(($count / $total) * 100) : 0,
+            ];
+        }
+
+        // Lấy rating hiện tại của user (nếu đang đăng nhập)
+        $currentRating = null;
+        $user = auth('api')->user();
+        if ($user && $childId) {
+            $currentRating = LessonDifficultyRatingModel::where([
+                'user_id' => $user->id,
+                'child_id' => $childId,
+                'lesson_id' => $lessonId,
+            ])->value('difficulty_level');
+        }
+
+        return [
+            'current_rating' => $currentRating,
+            'stats' => [
+                'total_ratings' => $total,
+                ...$stats,
+            ],
+        ];
     }
 }

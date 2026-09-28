@@ -21,10 +21,8 @@ class LessonRepository extends AdminRepository implements LessonRepositoryInterf
         $query = $this->model
             ->active()
             ->with([
-                'category' => function ($q) {
-                    $q->select('id', 'name', 'slug', 'pillar', 'age_group_id', 'icon')
-                      ->with('ageGroup:id,name,min_months,max_months');
-                },
+                'category:id,name,slug,pillar,icon',
+                'ageGroup:id,name,min_months,max_months',
                 'videos' => function ($q) {
                     $q->orderBy('sort_order', 'asc');
                 },
@@ -36,11 +34,9 @@ class LessonRepository extends AdminRepository implements LessonRepositoryInterf
             $query->where('lesson_category_id', $categoryId);
         }
 
-        // Lọc theo nhóm độ tuổi
+        // Lọc theo nhóm độ tuổi trực tiếp trên bảng lessons
         if (!empty($filters['age_group_id'])) {
-            $query->whereHas('category', function ($q) use ($filters) {
-                $q->where('age_group_id', $filters['age_group_id']);
-            });
+            $query->where('age_group_id', $filters['age_group_id']);
         }
 
         // Lọc theo trụ cột giáo dục
@@ -87,9 +83,8 @@ class LessonRepository extends AdminRepository implements LessonRepositoryInterf
         return $this->model
             ->active()
             ->with([
-                'category' => function ($q) {
-                    $q->with('ageGroup');
-                },
+                'category',
+                'ageGroup',
                 'videos' => function ($q) {
                     $q->orderBy('sort_order', 'asc');
                 },
@@ -111,7 +106,8 @@ class LessonRepository extends AdminRepository implements LessonRepositoryInterf
             ->active()
             ->where('id', '!=', $currentLessonId)
             ->with([
-                'category:id,name,slug,pillar,age_group_id',
+                'category:id,name,slug,pillar,icon',
+                'ageGroup:id,name,min_months,max_months',
                 'videos' => function ($q) {
                     $q->orderBy('sort_order', 'asc');
                 },
@@ -119,11 +115,14 @@ class LessonRepository extends AdminRepository implements LessonRepositoryInterf
 
         if ($categoryId) {
             $query->where('lesson_category_id', $categoryId);
+            if ($ageGroupId) {
+                $query->where('age_group_id', $ageGroupId);
+            }
         } elseif ($pillar && $ageGroupId) {
-            $query->whereHas('category', function ($q) use ($pillar, $ageGroupId) {
-                $q->where('pillar', $pillar)
-                  ->where('age_group_id', $ageGroupId);
-            });
+            $query->where('age_group_id', $ageGroupId)
+                  ->whereHas('category', function ($q) use ($pillar) {
+                      $q->where('pillar', $pillar);
+                  });
         } elseif ($pillar) {
             $query->whereHas('category', function ($q) use ($pillar) {
                 $q->where('pillar', $pillar);

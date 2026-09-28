@@ -9,17 +9,22 @@ use Illuminate\Database\Eloquent\Collection;
 interface LessonCategoryRepositoryInterface extends AdminRepositoryInterface
 {
     /**
-     * Lấy danh mục theo nhóm tuổi và trụ cột giáo dục kèm số lượng bài học
+     * Lấy danh mục theo trụ cột giáo dục kèm số lượng bài học (tùy chọn theo nhóm tuổi)
      */
-    public function getByAgeGroupAndPillar(int $ageGroupId, string|EducationPillar $pillar): Collection;
+    public function getByPillar(string|EducationPillar $pillar, ?int $ageGroupId = null): Collection;
 
     /**
-     * Lấy thống kê số bài học của 5 trụ cột giáo dục (tùy chọn theo nhóm tuổi)
+     * Lấy danh mục theo nhóm tuổi và trụ cột giáo dục kèm số lượng bài học
+     */
+    public function getByAgeGroupAndPillar(?int $ageGroupId, string|EducationPillar $pillar): Collection;
+
+    /**
+     * Lấy thống kê số bài học của 4 trụ cột giáo dục (tùy chọn theo nhóm tuổi)
      */
     public function getPillarsWithLessonCounts(?int $ageGroupId = null): array;
 
     /**
-     * Lấy tất cả danh mục hoạt động theo nhóm tuổi
+     * Lấy tất cả danh mục hoạt động (tùy chọn đếm bài học theo nhóm tuổi)
      */
-    public function getCategoriesByAgeGroup(int $ageGroupId): Collection;
+    public function getCategoriesByAgeGroup(?int $ageGroupId = null): Collection;
 }

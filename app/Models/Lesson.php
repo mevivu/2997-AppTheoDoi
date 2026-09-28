@@ -27,6 +27,8 @@ class Lesson extends Model
     protected $fillable = [
         /** ID danh mục bài học */
         'lesson_category_id',
+        /** ID nhóm độ tuổi */
+        'age_group_id',
         /** Tên bài học */
         'name',
         /** Đường dẫn tĩnh */
@@ -62,6 +64,7 @@ class Lesson extends Model
      */
     protected $casts = [
         'lesson_category_id' => 'integer',
+        'age_group_id' => 'integer',
         'difficulty' => LessonDifficulty::class,
         'access_type' => LessonAccessType::class,
         'view_count' => 'integer',
@@ -75,6 +78,14 @@ class Lesson extends Model
      * @var array<int, string>
      */
     protected $appends = ['video_count', 'first_video_thumbnail', 'thumbnail_url'];
+
+    /**
+     * Nhóm tuổi của bài học
+     */
+    public function ageGroup(): BelongsTo
+    {
+        return $this->belongsTo(AgeGroup::class, 'age_group_id');
+    }
 
     /**
      * Danh mục của bài học
@@ -98,6 +109,14 @@ class Lesson extends Model
     public function videos(): HasMany
     {
         return $this->hasMany(LessonVideo::class, 'lesson_id')->orderBy('sort_order', 'asc');
+    }
+
+    /**
+     * Danh sách đánh giá độ khó từ phụ huynh
+     */
+    public function difficultyRatings(): HasMany
+    {
+        return $this->hasMany(LessonDifficultyRatingModel::class, 'lesson_id');
     }
 
     /**
@@ -189,6 +208,14 @@ class Lesson extends Model
     public function scopeByCategory($query, $categoryId)
     {
         return $query->where('lesson_category_id', $categoryId);
+    }
+
+    /**
+     * Lọc theo nhóm độ tuổi
+     */
+    public function scopeByAgeGroup($query, $ageGroupId)
+    {
+        return $query->where('age_group_id', $ageGroupId);
     }
 
     /**

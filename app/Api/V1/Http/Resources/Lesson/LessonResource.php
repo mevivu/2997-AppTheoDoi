@@ -96,8 +96,8 @@ class LessonResource extends JsonResource
             'category_name' => $this->category?->name,
             'pillar' => $pillarValue,
             'pillar_label' => $pillarLabel,
-            'age_group_id' => $this->category?->age_group_id,
-            'age_group_name' => $this->category?->ageGroup?->name,
+            'age_group_id' => $this->age_group_id,
+            'age_group_name' => $this->ageGroup?->name,
             'video_count' => (int) ($this->videos?->count() ?? 0),
             'video' => $videoData,
             // Thuộc tính tương thích ngược cho App phiên bản cũ

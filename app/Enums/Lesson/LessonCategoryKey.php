@@ -83,11 +83,11 @@ enum LessonCategoryKey: string
     public function pillar(): EducationPillar
     {
         return match ($this) {
-            self::Height, self::Bmi, self::Strength, self::Endurance => EducationPillar::PQ,
-            self::Language, self::MathLogic, self::Visual, self::Memory => EducationPillar::IQ,
+            self::Height, self::Bmi, self::Strength, self::Endurance, self::PrenatalMovement => EducationPillar::PQ,
+            self::Language, self::MathLogic, self::Visual, self::Memory,
+            self::PrenatalMusic, self::PrenatalStory, self::PrenatalNutrition, self::StudyMethod, self::Focus => EducationPillar::IQ,
             self::EmotionRecognition, self::Empathy, self::SocialCommunication, self::Motivation, self::EmotionControl => EducationPillar::EQ,
             self::Resilience, self::Patience, self::Positivity, self::SelfReflection, self::Flexibility => EducationPillar::AQ,
-            self::PrenatalMusic, self::PrenatalStory, self::PrenatalNutrition, self::PrenatalMovement, self::StudyMethod, self::Focus => EducationPillar::THAI_GIAO,
             default => EducationPillar::PQ,
         };
     }

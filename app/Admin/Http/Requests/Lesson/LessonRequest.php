@@ -14,6 +14,7 @@ class LessonRequest extends BaseRequest
     {
         return [
             'lesson_category_id' => ['required', 'exists:App\Models\LessonCategory,id'],
+            'age_group_id' => ['required', 'exists:App\Models\AgeGroup,id'],
             'name' => ['required', 'string', 'max:255'],
             'image' => ['nullable'],
             'description' => ['nullable', 'string'],
@@ -49,6 +50,8 @@ class LessonRequest extends BaseRequest
         return [
             'lesson_category_id.required' => 'Vui lòng chọn danh mục bài học',
             'lesson_category_id.exists' => 'Danh mục bài học được chọn không hợp lệ',
+            'age_group_id.required' => 'Vui lòng chọn nhóm độ tuổi áp dụng',
+            'age_group_id.exists' => 'Nhóm độ tuổi được chọn không hợp lệ',
             'name.required' => 'Vui lòng nhập tên bài học',
             'name.max' => 'Tên bài học không được vượt quá 255 ký tự',
             'difficulty.required' => 'Vui lòng chọn độ khó bài học',

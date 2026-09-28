@@ -41,4 +41,14 @@ interface LessonServiceInterface
      * Tăng lượt xem bài học kèm bảo vệ chống spam (2 giờ / user)
      */
     public function incrementView(Request $request, int $id): array;
+
+    /**
+     * Toggle đánh giá độ khó bài học (tạo/cập nhật/xóa)
+     */
+    public function toggleDifficultyRating(int $lessonId, int $childId, string $level): array;
+
+    /**
+     * Lấy thống kê đánh giá độ khó bài học (phần trăm mỗi mức)
+     */
+    public function getDifficultyStats(int $lessonId, ?int $childId = null): array;
 }

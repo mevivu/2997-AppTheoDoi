@@ -12,7 +12,6 @@ enum EducationPillar: string
     case IQ = 'iq';
     case EQ = 'eq';
     case AQ = 'aq';
-    case THAI_GIAO = 'thai_giao';
 
     public function label(): string
     {
@@ -21,7 +20,6 @@ enum EducationPillar: string
             self::IQ => 'Trí tuệ (IQ)',
             self::EQ => 'Cảm xúc (EQ)',
             self::AQ => 'Vượt khó (AQ)',
-            self::THAI_GIAO => 'Học tập & Thai giáo',
         };
     }
 
@@ -32,7 +30,6 @@ enum EducationPillar: string
             self::IQ => 'ti ti-bulb',
             self::EQ => 'ti ti-heart',
             self::AQ => 'ti ti-mountain',
-            self::THAI_GIAO => 'ti ti-school',
         };
     }
 
@@ -43,7 +40,6 @@ enum EducationPillar: string
             self::IQ => '#F59E0B',
             self::EQ => '#EC4899',
             self::AQ => '#10B981',
-            self::THAI_GIAO => '#8B5CF6',
         };
     }
 
@@ -54,7 +50,6 @@ enum EducationPillar: string
             self::IQ => 'bg-warning-lt text-warning',
             self::EQ => 'bg-pink-lt text-pink',
             self::AQ => 'bg-green-lt text-green',
-            self::THAI_GIAO => 'bg-purple-lt text-purple',
         };
     }
 
