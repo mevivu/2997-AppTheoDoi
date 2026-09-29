@@ -250,7 +250,9 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
             Route::group(['middleware' => ['permission:createLessonCategory', 'auth:admin']], function () {
                 Route::get('/add', 'create')->name('create');
+                Route::get('/create', 'create');
                 Route::post('/add', 'store')->name('store');
+                Route::post('/create', 'store');
             });
             Route::group(['middleware' => ['permission:updateLessonCategory', 'auth:admin']], function () {
                 Route::put('/edit', 'update')->name('update');
@@ -276,7 +278,9 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
             Route::group(['middleware' => ['permission:createLesson', 'auth:admin']], function () {
                 Route::get('/add', 'create')->name('create');
+                Route::get('/create', 'create');
                 Route::post('/add', 'store')->name('store');
+                Route::post('/create', 'store');
             });
             Route::group(['middleware' => ['permission:updateLesson', 'auth:admin']], function () {
                 Route::put('/edit', 'update')->name('update');
