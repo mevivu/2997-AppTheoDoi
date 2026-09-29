@@ -78,7 +78,14 @@ class LessonCategoryRepository extends AdminRepository implements LessonCategory
 
         $pillars = [];
         $order = 1;
-        foreach (EducationPillar::cases() as $pillarCase) {
+        $orderedCases = [
+            EducationPillar::IQ,
+            EducationPillar::EQ,
+            EducationPillar::PQ,
+            EducationPillar::AQ,
+            EducationPillar::HOC_TAP,
+        ];
+        foreach ($orderedCases as $pillarCase) {
             $pillars[$pillarCase->value] = [
                 'key' => $pillarCase->value,
                 'name' => $pillarCase->label(),

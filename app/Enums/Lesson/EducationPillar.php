@@ -8,9 +8,9 @@ enum EducationPillar: string
 {
     use Enum;
 
-    case PQ = 'pq';
     case IQ = 'iq';
     case EQ = 'eq';
+    case PQ = 'pq';
     case AQ = 'aq';
     case HOC_TAP = 'hoc_tap';
 
