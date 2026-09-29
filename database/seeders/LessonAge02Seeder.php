@@ -458,12 +458,12 @@ class LessonAge02Seeder extends Seeder
             ],
 
             // ==========================================
-            // 5. THAI GIÁO & HỌC TẬP SỚM (THAI_GIAO)
+            // 5. KỸ NĂNG & PHƯƠNG PHÁP HỌC TẬP (HOC_TAP)
             // ==========================================
             [
-                'pillar' => EducationPillar::THAI_GIAO,
+                'pillar' => EducationPillar::HOC_TAP,
                 'key' => LessonCategoryKey::StudyMethod,
-                'category_name' => 'Đa giác quan sớm',
+                'category_name' => 'Kích thích đa giác quan',
                 'description' => 'Kích thích thính giác qua âm thanh thiên nhiên, xúc giác qua sách vải sờ chạm và thị giác qua tranh ảnh.',
                 'lessons' => [
                     [
@@ -485,7 +485,7 @@ class LessonAge02Seeder extends Seeder
                 ],
             ],
             [
-                'pillar' => EducationPillar::THAI_GIAO,
+                'pillar' => EducationPillar::HOC_TAP,
                 'key' => LessonCategoryKey::Focus,
                 'category_name' => 'Đọc sách tranh & Tập trung',
                 'description' => 'Thói quen đọc sách Ehon trước giờ ngủ, tăng khả năng ngồi yên lắng nghe giọng đọc truyền cảm.',

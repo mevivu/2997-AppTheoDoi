@@ -34,13 +34,17 @@ enum LessonCategoryKey: string
     case SelfReflection = 'self_reflection';           // Tự phản hồi
     case Flexibility = 'flexibility';                   // Linh hoạt
 
-    // 5. Thai giáo & Học tập (Prenatal & Learning)
+    // 5. Kỹ năng & Phương pháp Học tập
+    case StudyMethod = 'study_method';                 // Phương pháp học tập
+    case Focus = 'focus';                               // Rèn luyện tập trung
+    case SelfStudy = 'self_study';                     // Kỹ năng tự học
+    case ReadingHabit = 'reading_habit';               // Thói quen đọc sách
+
+    // Thai giáo (Dành cho mẹ bầu / sơ sinh)
     case PrenatalMusic = 'prenatal_music';             // Âm nhạc thai giáo
     case PrenatalStory = 'prenatal_story';             // Lời thủ thỉ & Kể chuyện
     case PrenatalNutrition = 'prenatal_nutrition';     // Dinh dưỡng thai kỳ
     case PrenatalMovement = 'prenatal_movement';       // Vận động nhẹ nhàng
-    case StudyMethod = 'study_method';                 // Phương pháp học tập
-    case Focus = 'focus';                               // Rèn luyện tập trung
 
     case Other = 'other';                               // Khác
 
@@ -69,12 +73,15 @@ enum LessonCategoryKey: string
             self::SelfReflection => 'Tự phản hồi',
             self::Flexibility => 'Linh hoạt',
 
+            self::StudyMethod => 'Phương pháp học tập',
+            self::Focus => 'Rèn luyện tập trung',
+            self::SelfStudy => 'Kỹ năng tự học',
+            self::ReadingHabit => 'Thói quen đọc sách',
+
             self::PrenatalMusic => 'Âm nhạc thai giáo',
             self::PrenatalStory => 'Lời thủ thỉ & Kể chuyện',
             self::PrenatalNutrition => 'Dinh dưỡng thai kỳ',
             self::PrenatalMovement => 'Vận động nhẹ nhàng',
-            self::StudyMethod => 'Phương pháp học tập',
-            self::Focus => 'Rèn luyện tập trung',
 
             self::Other => 'Khác',
         };
@@ -83,11 +90,11 @@ enum LessonCategoryKey: string
     public function pillar(): EducationPillar
     {
         return match ($this) {
-            self::Height, self::Bmi, self::Strength, self::Endurance => EducationPillar::PQ,
-            self::Language, self::MathLogic, self::Visual, self::Memory => EducationPillar::IQ,
+            self::Height, self::Bmi, self::Strength, self::Endurance, self::PrenatalMovement => EducationPillar::PQ,
+            self::Language, self::MathLogic, self::Visual, self::Memory, self::PrenatalMusic, self::PrenatalStory, self::PrenatalNutrition => EducationPillar::IQ,
             self::EmotionRecognition, self::Empathy, self::SocialCommunication, self::Motivation, self::EmotionControl => EducationPillar::EQ,
             self::Resilience, self::Patience, self::Positivity, self::SelfReflection, self::Flexibility => EducationPillar::AQ,
-            self::PrenatalMusic, self::PrenatalStory, self::PrenatalNutrition, self::PrenatalMovement, self::StudyMethod, self::Focus => EducationPillar::THAI_GIAO,
+            self::StudyMethod, self::Focus, self::SelfStudy, self::ReadingHabit => EducationPillar::HOC_TAP,
             default => EducationPillar::PQ,
         };
     }
