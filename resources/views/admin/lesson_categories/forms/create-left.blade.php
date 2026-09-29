@@ -13,7 +13,7 @@
                 </label>
                 <div class="row g-2" id="pillar_card_group">
                     @foreach ($pillars as $p)
-                        <div class="col-6 col-sm-3 flex-fill">
+                        <div class="col-6 col-sm-4 col-md flex-fill">
                             <label class="card card-sm card-link text-center p-3 h-100 cursor-pointer border pillar-card"
                                    id="pillar_label_{{ $p->value }}"
                                    style="border-radius: 10px; transition: all 0.2s;"

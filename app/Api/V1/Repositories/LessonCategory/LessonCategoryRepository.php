@@ -82,14 +82,12 @@ class LessonCategoryRepository extends AdminRepository implements LessonCategory
             $pillars[$pillarCase->value] = [
                 'key' => $pillarCase->value,
                 'name' => $pillarCase->label(),
-                'short_name' => match ($pillarCase) {
-                    EducationPillar::PQ => 'Thể chất',
-                    EducationPillar::IQ => 'Trí tuệ',
-                    EducationPillar::EQ => 'Cảm xúc',
-                    EducationPillar::AQ => 'Vượt khó',
-                },
+                'short_name' => $pillarCase->shortName(),
+                'description' => $pillarCase->description(),
                 'icon' => $pillarCase->icon(),
+                'image_url' => $pillarCase->imageUrl(),
                 'color' => $pillarCase->color(),
+                'soft_color' => $pillarCase->softColor(),
                 'active_color' => '#196C74',
                 'order' => $order++,
                 'lessons_count' => (int) ($results[$pillarCase->value] ?? 0),

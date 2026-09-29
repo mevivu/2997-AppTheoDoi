@@ -513,11 +513,10 @@ class LessonAge02Seeder extends Seeder
         // 3. Thực thi chèn hoặc cập nhật idempotent vào database
         $sortOrderCat = 1;
         foreach ($sampleData as $item) {
-            $categorySlug = Str::slug($item['category_name']) . '-' . $ageGroupId . '-' . $item['pillar']->value;
+            $categorySlug = Str::slug($item['category_name']) . '-' . $item['pillar']->value;
 
             $category = LessonCategory::updateOrCreate(
                 [
-                    'age_group_id' => $ageGroupId,
                     'pillar' => $item['pillar']->value,
                     'key' => $item['key']->value,
                 ],
@@ -541,6 +540,7 @@ class LessonAge02Seeder extends Seeder
                         'name' => $lessonData['name'],
                     ],
                     [
+                        'age_group_id' => $ageGroupId,
                         'slug' => $lessonSlug,
                         'description' => $lessonData['description'],
                         'content' => "<p>{$lessonData['description']}</p><p><strong>Mục tiêu bài học:</strong> Giúp trẻ phát triển toàn diện theo chuẩn chuyên gia giáo dục sớm lứa tuổi 0 - 2 tuổi.</p>",
