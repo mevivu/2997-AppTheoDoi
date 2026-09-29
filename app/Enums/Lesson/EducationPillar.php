@@ -36,6 +36,11 @@ enum EducationPillar: string
         };
     }
 
+    public function isDefault(): bool
+    {
+        return $this === self::PQ;
+    }
+
     public function icon(): string
     {
         return match ($this) {

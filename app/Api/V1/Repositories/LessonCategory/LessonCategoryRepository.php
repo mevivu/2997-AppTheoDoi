@@ -78,14 +78,7 @@ class LessonCategoryRepository extends AdminRepository implements LessonCategory
 
         $pillars = [];
         $order = 1;
-        $orderedCases = [
-            EducationPillar::IQ,
-            EducationPillar::EQ,
-            EducationPillar::PQ,
-            EducationPillar::AQ,
-            EducationPillar::HOC_TAP,
-        ];
-        foreach ($orderedCases as $pillarCase) {
+        foreach (EducationPillar::cases() as $pillarCase) {
             $pillars[$pillarCase->value] = [
                 'key' => $pillarCase->value,
                 'name' => $pillarCase->label(),
@@ -97,6 +90,7 @@ class LessonCategoryRepository extends AdminRepository implements LessonCategory
                 'soft_color' => $pillarCase->softColor(),
                 'active_color' => '#196C74',
                 'order' => $order++,
+                'is_default' => $pillarCase->isDefault(),
                 'lessons_count' => (int) ($results[$pillarCase->value] ?? 0),
             ];
         }

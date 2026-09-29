@@ -28,6 +28,7 @@ class PillarResource extends JsonResource
             'soft_color' => $this->resource['soft_color'] ?? null,
             'active_color' => $this->resource['active_color'] ?? '#196C74',
             'order' => (int) ($this->resource['order'] ?? 1),
+            'is_default' => (bool) ($this->resource['is_default'] ?? false),
             'lessons_count' => (int) ($this->resource['lessons_count'] ?? 0),
         ];
     }
