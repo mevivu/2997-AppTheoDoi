@@ -1294,6 +1294,13 @@ document.addEventListener('DOMContentLoaded', function () {
         let isSubmittingForm = false;
 
         parentForm.addEventListener('submit', function (e) {
+            // Đồng bộ dữ liệu CKEditor vào textarea (mô tả, nội dung) trước khi submit
+            if (window.CKEDITOR && window.CKEDITOR.instances) {
+                for (let k in window.CKEDITOR.instances) {
+                    try { window.CKEDITOR.instances[k].updateElement(); } catch (err) {}
+                }
+            }
+
             if (isSubmittingForm) return; // Đang submit sau khi auto-upload xong
 
             const checkedRadio = document.querySelector('.single-video-type-radio:checked');

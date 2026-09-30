@@ -57,7 +57,7 @@
             <div class="col-12">
                 <div class="mb-3">
                     <label class="control-label">{{ __('Mô tả ngắn gọn') }}:</label>
-                    <textarea name="description" class="form-control" rows="3" placeholder="Tóm tắt ngắn về bài tập...">{{ old('description') }}</textarea>
+                    <textarea name="description" class="ckeditor visually-hidden">{{ old('description') }}</textarea>
                 </div>
             </div>
 

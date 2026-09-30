@@ -136,10 +136,10 @@
                     <x-input type="text" name="name" :value="old('name')" :required="true" placeholder="Ví dụ: Rèn luyện khả năng thăng bằng với bóng phản xạ..." />
                 </div>
 
-                {{-- Tóm tắt bài học --}}
+                {{-- Mô tả nội dung bài học --}}
                 <div class="col-12">
-                    <label class="form-label fw-bold text-dark fs-13 mb-1">{{ __('Tóm tắt bài học') }}:</label>
-                    <textarea name="description" class="form-control" rows="2" placeholder="Tóm tắt ngắn gọn mục tiêu của bài học để hiển thị trên danh sách app...">{{ old('description') }}</textarea>
+                    <label class="form-label fw-bold text-dark fs-13 mb-1">{{ __('Mô tả nội dung bài học') }}:</label>
+                    <textarea name="description" class="ckeditor visually-hidden">{{ old('description') }}</textarea>
                 </div>
 
                 {{-- Độ khó bài học (3 Thẻ chọn trực quan phân biệt trạng thái) --}}
