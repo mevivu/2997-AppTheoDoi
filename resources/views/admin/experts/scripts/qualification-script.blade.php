@@ -44,14 +44,14 @@
             const sortOrder = data.sort_order !== undefined && data.sort_order !== null ? data.sort_order : idx;
 
             const itemHtml = `
-                <div class="qualification-item p-3 p-md-4 position-relative shadow-xs" data-idx="${idx}">
-                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <div class="qualification-item p-3 p-md-4 position-relative" data-idx="${idx}">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
                         <div class="d-flex align-items-center gap-2">
-                            <span class="badge bg-primary text-white fw-bold px-2 py-1 fs-12">
+                            <span class="badge rounded-pill fw-semibold px-2.5 py-1 fs-12 border-0" style="background: #dbeafe; color: #1e40af;">
                                 <i class="ti ti-award me-1"></i>Học vị <span class="qualification-index-label">#1</span>
                             </span>
                         </div>
-                        <button type="button" class="btn btn-outline-danger btn-sm btn-remove-qualification d-flex align-items-center gap-1 px-2 py-1 rounded-2 shadow-none" title="{{ __('Xóa văn bằng này') }}">
+                        <button type="button" class="btn btn-sm btn-remove-qualification d-flex align-items-center gap-1 px-2.5 py-1 rounded-2 border-0 shadow-none" title="{{ __('Xóa văn bằng này') }}">
                             <i class="ti ti-trash fs-3"></i>
                             <span class="fs-12 fw-semibold">{{ __('Xóa') }}</span>
                         </button>
