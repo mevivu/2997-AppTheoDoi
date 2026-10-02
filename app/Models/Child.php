@@ -42,7 +42,9 @@ class Child extends Model
         /** Trạng thái */
         'status',
         /** Trạng thái sinh */
-        'is_born'
+        'is_born',
+        /** Đã kích hoạt sổ tiêm chủng chưa */
+        'vaccination_initialized'
     ];
     protected $casts = [
         'birthday' => 'date',
@@ -122,22 +124,10 @@ class Child extends Model
                 ]);
             }
 
-            //create vaccination schedule admin
-            $vaccinationSchedules = VaccinationSchedule::where('type', PermissionType::ADMIN)
-                ->where('status', ActiveStatus::Active)
-                ->get();
-            foreach ($vaccinationSchedules as $schedule) {
-                VaccinationSchedule::create([
-                    'child_id' => $child->id,
-                    'name' => $schedule->name,
-                    'description' => $schedule->description,
-                    'image' => $schedule->image,
-                    'performed_on' => $schedule->performed_on,
-                    'vaccination_status' => $schedule->vaccination_status,
-                    'vaccination_type_id' => $schedule->vaccination_type_id,
-                    'type' => PermissionType::USER
-                ]);
-            }
+            // Vaccination schedules: KHÔNG tự động khởi tạo khi tạo hồ sơ con.
+            // Chỉ kích hoạt khi user chủ động bấm "Mở sổ tiêm chủng" trên app.
+            // Xem: VaccinationScheduleController::initialize()
+
             for ($age = 1; $age <= 16; $age++) {
                 Rating::create(
                     [

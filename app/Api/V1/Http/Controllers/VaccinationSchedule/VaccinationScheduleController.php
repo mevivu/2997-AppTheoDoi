@@ -249,4 +249,54 @@ class VaccinationScheduleController extends Controller
             return $this->jsonResponseError('Deleted failed', 500);
         }
     }
+
+    /**
+     * Kích hoạt sổ tiêm chủng (Lazy Initialization)
+     *
+     * API này cho phép khởi tạo sổ tiêm chủng cho hồ sơ con.
+     * Chỉ cần gọi một lần, các lần gọi tiếp theo sẽ trả về thông báo đã kích hoạt.
+     *
+     * @authenticated
+     * @bodyParam child_id int required ID của hồ sơ con cần kích hoạt sổ tiêm chủng. Ví dụ: 1
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Thực hiện thành công.",
+     *     "data": {
+     *         "already_initialized": false,
+     *         "message": "Đã kích hoạt sổ tiêm chủng thành công.",
+     *         "total_schedules": 30
+     *     }
+     * }
+     *
+     * @response 200 {
+     *     "status": 200,
+     *     "message": "Thực hiện thành công.",
+     *     "data": {
+     *         "already_initialized": true,
+     *         "message": "Sổ tiêm chủng đã được kích hoạt trước đó."
+     *     }
+     * }
+     *
+     * @response 500 {
+     *     "status": 500,
+     *     "message": "Lỗi hệ thống khi kích hoạt sổ tiêm chủng."
+     * }
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return JsonResponse
+     */
+    public function initialize(\Illuminate\Http\Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'child_id' => 'required|integer|exists:children,id',
+            ]);
+            $result = $this->service->initialize($request);
+            return $this->jsonResponseSuccess($result);
+        } catch (Exception $exception) {
+            $this->logError('Initialize vaccination schedule failed:', $exception);
+            return $this->jsonResponseError('Initialize vaccination schedule failed', 500);
+        }
+    }
 }

@@ -254,6 +254,7 @@ Route::controller(\App\Api\V1\Http\Controllers\VaccinationSchedule\VaccinationSc
         Route::get('/', 'index');
         Route::get('/{id}', 'show');
         Route::post('/', 'store');
+        Route::post('/initialize', 'initialize');
         Route::post('/update', 'update');
         Route::delete('/{id}', 'delete');
     });

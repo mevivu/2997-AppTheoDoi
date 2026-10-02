@@ -27,6 +27,7 @@ class ChildResource extends JsonResource
             'birthday' =>  $this->birthday ? format_date($this->birthday) : null,
             'due_date' => $this->due_date ? format_date($this->due_date) : null,
             'avatar' => formatImageUrl($this->avatar),
+            'vaccination_initialized' => (bool) $this->vaccination_initialized,
             'user' => [
                 'fullname' => $this->user->fullname
             ]
