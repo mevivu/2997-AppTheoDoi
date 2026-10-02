@@ -28,7 +28,7 @@
             items.forEach((item, idx) => {
                 const label = item.querySelector('.qualification-index-label');
                 if (label) {
-                    label.textContent = 'Học vị / Bằng cấp #' + (idx + 1);
+                    label.textContent = '#' + (idx + 1);
                 }
             });
         }
@@ -44,57 +44,67 @@
             const sortOrder = data.sort_order !== undefined && data.sort_order !== null ? data.sort_order : idx;
 
             const itemHtml = `
-                <div class="qualification-item border rounded-3 p-3 bg-light position-relative" data-idx="${idx}">
-                    <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
-                        <span class="fw-bold text-primary fs-13 d-flex align-items-center gap-1">
-                            <i class="ti ti-award"></i>
-                            <span class="qualification-index-label">{{ __('Học vị / Bằng cấp') }}</span>
-                        </span>
-                        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-qualification" title="{{ __('Xóa văn bằng này') }}">
-                            <i class="ti ti-trash me-1"></i>{{ __('Xóa') }}
+                <div class="qualification-item p-3 p-md-4 position-relative shadow-xs" data-idx="${idx}">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-primary text-white fw-bold px-2 py-1 fs-12">
+                                <i class="ti ti-award me-1"></i>Học vị <span class="qualification-index-label">#1</span>
+                            </span>
+                        </div>
+                        <button type="button" class="btn btn-outline-danger btn-sm btn-remove-qualification d-flex align-items-center gap-1 px-2 py-1 rounded-2 shadow-none" title="{{ __('Xóa văn bằng này') }}">
+                            <i class="ti ti-trash fs-3"></i>
+                            <span class="fs-12 fw-semibold">{{ __('Xóa') }}</span>
                         </button>
                     </div>
-                    <div class="row g-2">
+                    <div class="row g-3">
                         <div class="col-12 col-md-6">
-                            <label class="form-label fs-12 fw-bold mb-1">
-                                {{ __('Tên bằng cấp / Học vị') }}: <span class="text-danger">*</span>
+                            <label class="form-label fs-13 fw-bold text-dark mb-1">
+                                <i class="ti ti-certificate text-primary me-1"></i>{{ __('Tên bằng cấp / Học vị') }}: <span class="text-danger">*</span>
                             </label>
                             <input type="text" 
                                    name="qualifications[${idx}][degree_name]" 
-                                   class="form-control form-control-sm" 
+                                   class="form-control" 
                                    required 
-                                   placeholder="{{ __('VD: Bác sĩ CKII, Thạc sĩ Y học...') }}" 
+                                   placeholder="{{ __('VD: Bác sĩ CKII, Thạc sĩ Y học, Tiến sĩ...') }}" 
                                    value="${degreeName}">
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="form-label fs-12 fw-bold mb-1">{{ __('Chuyên ngành đào tạo') }}:</label>
+                            <label class="form-label fs-13 fw-bold text-dark mb-1">
+                                <i class="ti ti-stethoscope text-cyan me-1"></i>{{ __('Chuyên ngành đào tạo') }}:
+                            </label>
                             <input type="text" 
                                    name="qualifications[${idx}][specialization]" 
-                                   class="form-control form-control-sm" 
+                                   class="form-control" 
                                    placeholder="{{ __('VD: Nhi sơ sinh, Dinh dưỡng, Tâm lý trẻ em...') }}" 
                                    value="${specialization}">
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="form-label fs-12 fw-bold mb-1">{{ __('Cơ sở / Trường đào tạo') }}:</label>
+                            <label class="form-label fs-13 fw-bold text-dark mb-1">
+                                <i class="ti ti-building text-secondary me-1"></i>{{ __('Cơ sở / Trường đào tạo') }}:
+                            </label>
                             <input type="text" 
                                    name="qualifications[${idx}][institution]" 
-                                   class="form-control form-control-sm" 
+                                   class="form-control" 
                                    placeholder="{{ __('VD: Đại học Y Hà Nội, Viện Dinh Dưỡng...') }}" 
                                    value="${institution}">
                         </div>
                         <div class="col-6 col-md-3">
-                            <label class="form-label fs-12 fw-bold mb-1">{{ __('Năm tốt nghiệp') }}:</label>
+                            <label class="form-label fs-13 fw-bold text-dark mb-1">
+                                <i class="ti ti-calendar text-warning me-1"></i>{{ __('Năm tốt nghiệp') }}:
+                            </label>
                             <input type="text" 
                                    name="qualifications[${idx}][graduation_year]" 
-                                   class="form-control form-control-sm" 
+                                   class="form-control text-center" 
                                    placeholder="{{ __('VD: 2018') }}" 
                                    value="${graduationYear}">
                         </div>
                         <div class="col-6 col-md-3">
-                            <label class="form-label fs-12 fw-bold mb-1">{{ __('Thứ tự') }}:</label>
+                            <label class="form-label fs-13 fw-bold text-dark mb-1">
+                                <i class="ti ti-sort-ascending text-muted me-1"></i>{{ __('Thứ tự') }}:
+                            </label>
                             <input type="number" 
                                    name="qualifications[${idx}][sort_order]" 
-                                   class="form-control form-control-sm" 
+                                   class="form-control text-center" 
                                    value="${sortOrder}" 
                                    min="0">
                         </div>
