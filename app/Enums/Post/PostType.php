@@ -2,15 +2,14 @@
 
 namespace App\Enums\Post;
 
-use BenSampo\Enum\Enum;
-use BenSampo\Enum\Contracts\LocalizedEnum;
+use App\Admin\Support\Enum;
 
-/**
- * @method static static Default()
- * @method static static Draft()
- */
-final class PostType extends Enum implements LocalizedEnum
+enum PostType: int
 {
-    const Default = 1;
-    // const Video = 2;
+    use Enum;
+
+    case Post = 1;       // Bài viết thông thường
+    case Knowledge = 2;  // Kiến thức chăm con
+
+    public const Default = self::Post;
 }

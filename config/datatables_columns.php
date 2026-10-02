@@ -1824,16 +1824,57 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
+        'post_type' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-category"></i><span>Phân loại</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
         'status' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
         'is_featured' => [
-            'title' => '<div class="header-cell-content"><i class="ti ti-file-text"></i><span>Nổi bật</span></div>',
+            'title' => '<div class="header-cell-content"><i class="ti ti-star"></i><span>Nổi bật</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'created_at' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Ngày tạo</span></div>',
             'orderable' => false,
             'addClass' => 'text-center align-middle',
             'visible' => false,
+        ],
+    ],
+    'knowledge_post' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+            'visible' => false,
+        ],
+        'image' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-photo"></i><span>Ảnh</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'title' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-file-text"></i><span>Tiêu đề</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'is_featured' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-star"></i><span>Nổi bật</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
         ],
         'created_at' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Ngày tạo</span></div>',

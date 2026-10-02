@@ -23,6 +23,7 @@ use App\Enums\Package\PackageDiscountType;
 use App\Enums\Package\PackageStatus;
 use App\Enums\Package\PackageType;
 use App\Enums\Post\PostStatus;
+use App\Enums\Post\PostType;
 use App\Enums\PostCategory\PostCategoryStatus;
 use App\Enums\PriorityStatus;
 use App\Enums\Journal\JournalType;
@@ -284,5 +285,9 @@ return [
     ExerciseMediaType::class => [
         ExerciseMediaType::IMAGE->value => 'Hình ảnh',
         ExerciseMediaType::VIDEO->value => 'Video',
+    ],
+    PostType::class => [
+        PostType::Post->value => 'Bài viết',
+        PostType::Knowledge->value => 'Kiến thức chăm con',
     ],
 ];

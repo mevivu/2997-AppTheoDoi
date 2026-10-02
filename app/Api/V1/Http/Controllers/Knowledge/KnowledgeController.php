@@ -9,6 +9,7 @@ use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
 use App\Enums\FeaturedStatus;
 use App\Enums\Post\PostStatus;
+use App\Enums\Post\PostType;
 use App\Enums\PostCategory\PostCategoryStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
@@ -45,6 +46,7 @@ class KnowledgeController extends Controller
 
             $featuredPosts = Post::query()
                 ->where('status', PostStatus::Published)
+                ->where('type', PostType::Knowledge)
                 ->where('is_featured', FeaturedStatus::Featured)
                 ->with('categories')
                 ->orderByDesc('id')
@@ -53,6 +55,7 @@ class KnowledgeController extends Controller
 
             $latestPosts = Post::query()
                 ->where('status', PostStatus::Published)
+                ->where('type', PostType::Knowledge)
                 ->with('categories')
                 ->orderByDesc('id')
                 ->take(10)
@@ -113,6 +116,7 @@ class KnowledgeController extends Controller
 
             $query = Post::query()
                 ->where('status', PostStatus::Published)
+                ->where('type', PostType::Knowledge)
                 ->with('categories');
 
             if ($categoryId) {
@@ -147,7 +151,7 @@ class KnowledgeController extends Controller
     /**
      * Chi tiết bài viết Kiến Thức Chăm Con
      *
-     * Kèm bài viết liên quan cùng chuyên mục
+     * Kèm bài viết liên quan
      *
      * @param int $id
      * @return JsonResponse
@@ -157,6 +161,7 @@ class KnowledgeController extends Controller
         try {
             $post = Post::query()
                 ->where('status', PostStatus::Published)
+                ->where('type', PostType::Knowledge)
                 ->with('categories')
                 ->find($id);
 
@@ -164,18 +169,25 @@ class KnowledgeController extends Controller
                 return $this->jsonResponseError('Không tìm thấy bài viết.', 404);
             }
 
-            // Lấy các bài viết liên quan cùng chuyên mục
+            // Lấy các bài viết kiến thức liên quan khác
             $categoryIds = $post->categories->pluck('id')->toArray();
-            $relatedPosts = [];
-
             if (!empty($categoryIds)) {
                 $relatedPosts = Post::query()
                     ->where('status', PostStatus::Published)
+                    ->where('type', PostType::Knowledge)
                     ->where('id', '!=', $post->id)
                     ->whereHas('categories', function ($q) use ($categoryIds) {
                         $q->whereIn('posts_categories.id', $categoryIds);
                     })
                     ->with('categories')
+                    ->orderByDesc('id')
+                    ->take(4)
+                    ->get();
+            } else {
+                $relatedPosts = Post::query()
+                    ->where('status', PostStatus::Published)
+                    ->where('type', PostType::Knowledge)
+                    ->where('id', '!=', $post->id)
                     ->orderByDesc('id')
                     ->take(4)
                     ->get();

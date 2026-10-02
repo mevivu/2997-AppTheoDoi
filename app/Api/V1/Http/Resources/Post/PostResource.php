@@ -25,6 +25,10 @@ class PostResource extends JsonResource
             'is_featured' => $this->is_featured,
             'excerpt' => $this->excerpt,
             'content' => $this->content,
+            'type' => $this->type?->value ?? ($this->type ?? ($this->post_type?->value ?? ($this->post_type ?? 1))),
+            'type_name' => ($this->type == 2 || (isset($this->type->value) && $this->type->value == 2) || $this->post_type == 2 || (isset($this->post_type->value) && $this->post_type->value == 2)) ? 'Kiến thức chăm con' : 'Bài viết',
+            'post_type' => $this->post_type?->value ?? ($this->post_type ?? ($this->type?->value ?? ($this->type ?? 1))),
+            'post_type_name' => ($this->type == 2 || (isset($this->type->value) && $this->type->value == 2) || $this->post_type == 2 || (isset($this->post_type->value) && $this->post_type->value == 2)) ? 'Kiến thức chăm con' : 'Bài viết',
             'posted_at' => format_datetime($this->posted_at),
         ];
     }

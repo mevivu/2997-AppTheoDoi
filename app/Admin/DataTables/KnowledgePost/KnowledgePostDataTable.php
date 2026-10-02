@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Admin\DataTables\Post;
+namespace App\Admin\DataTables\KnowledgePost;
 
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Post\PostRepositoryInterface;
@@ -9,11 +9,11 @@ use App\Enums\FeaturedStatus;
 use App\Enums\Post\PostStatus;
 use App\Enums\Post\PostType;
 
-class PostDataTable extends BaseDataTable
+class KnowledgePostDataTable extends BaseDataTable
 {
-
     use GetConfig;
-    protected $nameTable = 'PostTable';
+
+    protected $nameTable = 'KnowledgePostTable';
     protected array $actions = ['reset', 'reload'];
 
     public function __construct(
@@ -27,33 +27,26 @@ class PostDataTable extends BaseDataTable
     public function setView(): void
     {
         $this->view = [
-            'action' => 'admin.posts.datatable.action',
+            'action' => 'admin.knowledge_posts.datatable.action',
             'image' => 'admin.posts.datatable.image',
-            'editlink' => 'admin.posts.datatable.editlink',
+            'editlink' => 'admin.knowledge_posts.datatable.editlink',
             'status' => 'admin.posts.datatable.status',
             'is_featured' => 'admin.posts.datatable.is-featured',
-            'post_type' => 'admin.posts.datatable.post-type',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [2, 3, 4, 5, 6];
-
-        $this->columnSearchDate = [6];
-
+        $this->columnAllSearch = [2, 3, 4, 5];
+        $this->columnSearchDate = [5];
         $this->columnSearchSelect = [
             [
                 'column' => 3,
-                'data' => PostType::asSelectArray()
-            ],
-            [
-                'column' => 4,
                 'data' => PostStatus::asSelectArray()
             ],
             [
-                'column' => 5,
+                'column' => 4,
                 'data' => FeaturedStatus::asSelectArray()
             ],
         ];
@@ -61,21 +54,20 @@ class PostDataTable extends BaseDataTable
 
     public function query()
     {
-        return $this->repository->getQueryBuilderOrderBy('id', 'DESC');
+        return $this->repository->getQueryBuilderOrderBy('id', 'DESC')->where('type', PostType::Knowledge);
     }
 
     protected function setCustomColumns(): void
     {
-        $this->customColumns = config('datatables_columns.post', []);
+        $this->customColumns = config('datatables_columns.knowledge_post', []);
     }
 
     protected function setCustomEditColumns(): void
     {
         $this->customEditColumns = [
             'image' => $this->view['image'],
-            'title' => $this->view['editlink'],
-            'post_type' => $this->view['post_type'],
             'status' => $this->view['status'],
+            'title' => $this->view['editlink'],
             'is_featured' => $this->view['is_featured'],
             'created_at' => '{{ date("d-m-Y", strtotime($created_at)) }}',
         ];
@@ -91,8 +83,6 @@ class PostDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['image', 'title', 'post_type', 'status', 'is_featured', 'action', 'checkbox'];
+        $this->customRawColumns = ['image', 'title', 'status', 'is_featured', 'action', 'checkbox'];
     }
-
-
 }

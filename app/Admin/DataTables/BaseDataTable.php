@@ -143,6 +143,7 @@ abstract class BaseDataTable extends DataTable
 
     protected function getColumns()
     {
+        $this->buildColumns = [];
         $this->exportVisiableColumns();
 
         foreach($this->customColumns as $key => $items){
@@ -224,6 +225,10 @@ abstract class BaseDataTable extends DataTable
      */
     public function html()
     {
+        if ($this->instanceHtml) {
+            return $this->instanceHtml;
+        }
+
         $this->instanceHtml = $this->builder()
             ->setTableId($this->nameTable)
             ->columns($this->getColumns())

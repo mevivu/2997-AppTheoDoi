@@ -6,6 +6,7 @@ use App\Api\V1\Http\Requests\Post\PostRequest;
 use App\Api\V1\Http\Resources\Post\PostResource;
 use App\Api\V1\Repositories\Post\PostRepositoryInterface;
 use App\Enums\Post\PostStatus;
+use App\Enums\Post\PostType;
 use App\Http\Controllers\Controller;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
@@ -40,23 +41,7 @@ class PostController extends Controller
      *
      * @queryParam page int Trang hiện tại. Example: 1
      * @queryParam limit int Số lượng bản ghi trên mỗi trang. Example: 10
-     *
-     * @response {
-     *     "status": 200,
-     *     "message": "Thực hiện thành công.",
-     *     "data": [
-     *         {
-     *             "id": 2,
-     *             "title": "bài viết",
-     *             "slug": "bai-viet",
-     *             "image": "/image.png",
-     *             "is_featured": 2,
-     *             "excerpt": "Lorem",
-     *             "content": "Á há há há",
-     *             "posted_at": "13-12-2024 06:40"
-     *         }
-     *     ]
-     * }
+     * @queryParam type int Loại bài viết (1: Bài viết, 2: Kiến thức chăm con, all: Tất cả). Default: 1. Example: 1
      *
      * @param PostRequest $request
      * @return JsonResponse
@@ -68,10 +53,16 @@ class PostController extends Controller
 
             $page = $data['page'] ?? 1;
             $limit = $data['limit'] ?? 10;
+            $type = $data['type'] ?? $request->input('type');
 
-            $posts = $this->repository->getByQueryBuilder(
-                ['status' => PostStatus::Published->value]
-            )
+            $filter = ['status' => PostStatus::Published->value];
+            if ($type !== null && $type !== 'all' && $type !== '') {
+                $filter['type'] = (int) $type;
+            } elseif ($type === null) {
+                $filter['type'] = PostType::Post;
+            }
+
+            $posts = $this->repository->getByQueryBuilder($filter)
                 ->orderByDesc('is_featured')
                 ->orderByDesc('created_at')
                 ->paginate($limit, ['*'], 'page', $page);

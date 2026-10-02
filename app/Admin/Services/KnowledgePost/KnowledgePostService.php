@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Admin\Services\Post;
+namespace App\Admin\Services\KnowledgePost;
 
-use App\Admin\Services\Post\PostServiceInterface;
-use  App\Admin\Repositories\Post\PostRepositoryInterface;
+use App\Admin\Repositories\Post\PostRepositoryInterface;
 use App\Api\V1\Support\UseLog;
 use App\Enums\FeaturedStatus;
 use App\Enums\Post\PostStatus;
@@ -14,15 +13,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-class PostService implements PostServiceInterface
+class KnowledgePostService implements KnowledgePostServiceInterface
 {
     use UseLog;
 
-    /**
-     * Current Object instance
-     *
-     * @var array
-     */
     protected array $data;
 
     protected PostRepositoryInterface $repository;
@@ -34,28 +28,23 @@ class PostService implements PostServiceInterface
 
     public function store(Request $request)
     {
-
         $data = $request->validated();
-        $data['post_type'] = PostType::Post->value;
-        $data['type'] = PostType::Post;
+        $data['type'] = PostType::Knowledge;
+        $data['post_type'] = PostType::Knowledge->value;
         $data['posted_at'] = now();
         $data['priority'] = PriorityStatus::NotPriority;
-        if ($data['is_featured'] == 0) {
+        if (($data['is_featured'] ?? 0) == 0) {
             $data['is_featured'] = FeaturedStatus::Featureless;
         }
-        $categoriesId = $data['categories_id'] ?? [];
-        unset($data['categories_id']);
+
         DB::beginTransaction();
         try {
             $post = $this->repository->create($data);
-            if ($categoriesId) {
-                $this->repository->attachCategories($post, $categoriesId);
-            }
             DB::commit();
             return $post;
         } catch (Throwable $e) {
             DB::rollBack();
-            $this->logError('Failed to process create post CMS', $e);
+            $this->logError('Failed to process create knowledge post CMS', $e);
             return false;
         }
     }
@@ -63,22 +52,21 @@ class PostService implements PostServiceInterface
     public function update(Request $request): object|bool
     {
         $data = $request->validated();
-        $categoriesId = $data['categories_id'] ?? [];
-        unset($data['categories_id']);
+        if (($data['is_featured'] ?? 0) == 0) {
+            $data['is_featured'] = FeaturedStatus::Featureless;
+        }
+
         DB::beginTransaction();
         try {
             $post = $this->repository->update($data['id'], $data);
-
-            $this->repository->syncCategories($post, $categoriesId);
             DB::commit();
             return $post;
         } catch (Throwable $e) {
             DB::rollBack();
-            $this->logError('Failed to process update post CMS', $e);
+            $this->logError('Failed to process update knowledge post CMS', $e);
             return false;
         }
     }
-
 
     /**
      * @throws Exception
@@ -86,11 +74,10 @@ class PostService implements PostServiceInterface
     public function delete($id): object|bool
     {
         return $this->repository->delete($id);
-
     }
 
     public function actionMultipleRecode(Request $request): bool
-    {   
+    {
         $this->data = $request->all();
         switch ($this->data['action']) {
             case 1:
@@ -102,6 +89,9 @@ class PostService implements PostServiceInterface
                 foreach ($this->data['id'] as $value) {
                     $this->repository->updateAttribute($value, 'status', PostStatus::Draft);
                 }
+                return true;
+            case 3:
+                $this->repository->multipleDelete($this->data['id']);
                 return true;
             default:
                 return false;

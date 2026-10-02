@@ -995,6 +995,27 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         });
     });
 
+    // Knowledge Post (Kiến thức chăm con)
+    Route::prefix('/kien-thuc-cham-con')->as('knowledge_post.')->group(function () {
+        Route::controller(App\Admin\Http\Controllers\KnowledgePost\KnowledgePostController::class)->group(function () {
+            Route::group(['middleware' => ['permission:createKnowledgePost', 'auth:admin']], function () {
+                Route::get('/them', 'create')->name('create');
+                Route::post('/them', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewKnowledgePost', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/sua/{id}', 'edit')->name('edit');
+                Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:updateKnowledgePost', 'auth:admin']], function () {
+                Route::put('/sua', 'update')->name('update');
+            });
+            Route::group(['middleware' => ['permission:deleteKnowledgePost', 'auth:admin']], function () {
+                Route::delete('/xoa/{id}', 'delete')->name('delete');
+            });
+        });
+    });
+
     //Post category
     Route::prefix('/danh-muc-bai-viet')->as('post_category.')->group(function () {
         Route::controller(App\Admin\Http\Controllers\PostCategory\PostCategoryController::class)->group(function () {

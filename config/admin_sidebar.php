@@ -431,6 +431,35 @@ return [
         ]
     ],
     [
+        'title' => 'Kiến thức chăm con',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-baby-carriage"></i>',
+        'roles' => [],
+        'permissions' =>
+            [
+                'createKnowledgePost',
+                'viewKnowledgePost',
+                'updateKnowledgePost',
+                'deleteKnowledgePost',
+            ],
+        'sub' => [
+            [
+                'title' => 'Thêm kiến thức',
+                'routeName' => RouteAdminSystem::KNOWLEDGE_POST_CREATE,
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createKnowledgePost'],
+            ],
+            [
+                'title' => 'DS kiến thức',
+                'routeName' => RouteAdminSystem::KNOWLEDGE_POST_INDEX,
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewKnowledgePost'],
+            ],
+        ]
+    ],
+    [
         'title' => 'Thông tin BMI',
         'routeName' => null,
         'icon' => '<i class="ti ti-info-circle"></i>',

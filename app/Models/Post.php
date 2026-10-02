@@ -28,6 +28,7 @@ class Post extends Model
     protected $casts = [
         'status' => PostStatus::class,
         'post_type' => PostType::class,
+        'type' => PostType::class,
         'is_featured' => FeaturedStatus::class,
         'priority' => PriorityStatus::class,
     ];
@@ -38,6 +39,11 @@ class Post extends Model
         return $this->status == PostStatus::Published;
     }
 
+    public function isKnowledge(): bool
+    {
+        return $this->type == PostType::Knowledge;
+    }
+
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(PostCategory::class, 'posts_posts_categories', 'post_id', 'category_id');
@@ -46,6 +52,16 @@ class Post extends Model
     public function scopePublished($query)
     {
         return $query->where('status', PostStatus::Published);
+    }
+
+    public function scopePost($query)
+    {
+        return $query->where('type', PostType::Post);
+    }
+
+    public function scopeKnowledge($query)
+    {
+        return $query->where('type', PostType::Knowledge);
     }
 
     public function scopeHasCategories($query, array $categoriesId)

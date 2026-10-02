@@ -17,6 +17,7 @@ class PostRequest extends BaseRequest
         return [
             'page' => ['nullable', 'integer', 'min:1'],
             'limit' => ['nullable', 'integer', 'min:1'],
+            'type' => ['nullable'],
         ];
     }
 }

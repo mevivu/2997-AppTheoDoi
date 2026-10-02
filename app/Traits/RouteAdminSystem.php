@@ -163,6 +163,14 @@ class RouteAdminSystem
     const POST_CATEGORY_UPDATE = 'admin.post_category.update';
     const POST_CATEGORY_DELETE = 'admin.post_category.delete';
 
+    /** KNOWLEDGE POSTS (Kiến thức chăm con) */
+    const KNOWLEDGE_POST_INDEX = 'admin.knowledge_post.index';
+    const KNOWLEDGE_POST_CREATE = 'admin.knowledge_post.create';
+    const KNOWLEDGE_POST_EDIT = 'admin.knowledge_post.edit';
+    const KNOWLEDGE_POST_STORE = 'admin.knowledge_post.store';
+    const KNOWLEDGE_POST_UPDATE = 'admin.knowledge_post.update';
+    const KNOWLEDGE_POST_DELETE = 'admin.knowledge_post.delete';
+
     /** BMI & WHO */
     const BMI_INDEX = 'admin.bmi.index';
     const BMI_CREATE = 'admin.bmi.create';
