@@ -81,11 +81,11 @@ class AssessmentService implements AssessmentServiceInterface
         return [
             'assessments' => $assessment,
             'information' => [
-                'iq' => $latestIq?->score,
-                'eq' => $latestEq?->score,
-                'aq' => $latestAq?->score,
-                'gpa' => $latestGpa,
-                'pq' => $pq,
+                'iq' => (float) ($latestIq?->score ?? 0),
+                'eq' => (float) ($latestEq?->score ?? 0),
+                'aq' => (float) ($latestAq?->score ?? 0),
+                'gpa' => (float) ($latestGpa ?? 0),
+                'pq' => (float) ($pq ?? 0),
             ]
         ];
     }

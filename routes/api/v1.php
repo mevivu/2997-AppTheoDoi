@@ -360,6 +360,17 @@ Route::controller(\App\Api\V1\Http\Controllers\Post\PostController::class)
         Route::get('/{id}', 'show');
     });
 
+//***** -- Knowledge (Kiến thức chăm con) -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Knowledge\KnowledgeController::class)
+    ->prefix('/knowledge')
+    ->as('knowledge.')
+    ->group(function () {
+        Route::get('/overview', 'overview');
+        Route::get('/categories', 'categories');
+        Route::get('/posts', 'posts');
+        Route::get('/posts/{id}', 'show');
+    });
+
 //***** -- Slider -- ******* //
 Route::controller(\App\Api\V1\Http\Controllers\Slider\SliderController::class)
     ->prefix('/sliders')

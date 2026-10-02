@@ -35,6 +35,11 @@ class PostCategory extends Model
 
     }
 
+    public function posts(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Post::class, 'posts_posts_categories', 'category_id', 'post_id');
+    }
+
     public function scopePublished($query)
     {
         return $query->where('status', PostCategoryStatus::Published);
