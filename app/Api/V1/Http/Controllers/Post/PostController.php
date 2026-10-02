@@ -41,7 +41,7 @@ class PostController extends Controller
      *
      * @queryParam page int Trang hiện tại. Example: 1
      * @queryParam limit int Số lượng bản ghi trên mỗi trang. Example: 10
-     * @queryParam type int Loại bài viết (1: Bài viết, 2: Kiến thức chăm con, all: Tất cả). Default: 2. Example: 2
+     * @queryParam type int Loại bài viết (1: Bài viết, 2: Kiến thức chăm con, all: Tất cả). Default: 1. Example: 1
      *
      * @param PostRequest $request
      * @return JsonResponse
@@ -61,8 +61,8 @@ class PostController extends Controller
             if ($type !== null && $type !== 'all' && $type !== '') {
                 $targetType = (int) $type;
             } elseif ($type === null || $type === '') {
-                // Mặc định cho app khi lấy /posts (Kiến thức chăm con) chỉ lấy loại Kiến thức chăm con (type = 2)
-                $targetType = PostType::Knowledge->value;
+                // Mặc định như cũ lấy bài viết thông thường (type = 1)
+                $targetType = PostType::Post->value;
             }
 
             $query = $this->repository->getByQueryBuilder($filter);
