@@ -67,6 +67,17 @@ class Expert extends Model
     }
 
     /**
+     * Danh sách học vị & bằng cấp chuyên môn của chuyên gia
+     */
+    public function qualifications(): HasMany
+    {
+        return $this->hasMany(ExpertQualification::class, 'expert_id')
+            ->where('status', DefaultStatus::Published)
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('id', 'asc');
+    }
+
+    /**
      * Scope lọc chuyên gia đã kích hoạt xuất bản
      */
     public function scopePublished($query)

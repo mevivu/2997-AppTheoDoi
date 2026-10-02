@@ -23,6 +23,12 @@ class ExpertRequest extends BaseRequest
             'is_verified' => ['nullable'],
             'sort_order' => ['nullable', 'integer'],
             'status' => ['required', new Enum(DefaultStatus::class)],
+            'qualifications' => ['nullable', 'array'],
+            'qualifications.*.degree_name' => ['nullable', 'string', 'max:255'],
+            'qualifications.*.institution' => ['nullable', 'string', 'max:255'],
+            'qualifications.*.graduation_year' => ['nullable', 'string', 'max:50'],
+            'qualifications.*.specialization' => ['nullable', 'string', 'max:255'],
+            'qualifications.*.sort_order' => ['nullable', 'integer'],
         ];
     }
 
@@ -42,6 +48,12 @@ class ExpertRequest extends BaseRequest
             'is_verified' => ['nullable'],
             'sort_order' => ['nullable', 'integer'],
             'status' => ['required', new Enum(DefaultStatus::class)],
+            'qualifications' => ['nullable', 'array'],
+            'qualifications.*.degree_name' => ['nullable', 'string', 'max:255'],
+            'qualifications.*.institution' => ['nullable', 'string', 'max:255'],
+            'qualifications.*.graduation_year' => ['nullable', 'string', 'max:50'],
+            'qualifications.*.specialization' => ['nullable', 'string', 'max:255'],
+            'qualifications.*.sort_order' => ['nullable', 'integer'],
         ];
     }
 }

@@ -38,12 +38,14 @@ class ExpertCornerController extends Controller
             $strategicExperts = Expert::query()
                 ->where('status', DefaultStatus::Published)
                 ->where('council_type', \App\Enums\Expert\ExpertCouncilType::Strategic)
+                ->with('qualifications')
                 ->orderBy('sort_order', 'asc')
                 ->get();
 
             $professionalExperts = Expert::query()
                 ->where('status', DefaultStatus::Published)
                 ->where('council_type', \App\Enums\Expert\ExpertCouncilType::Professional)
+                ->with('qualifications')
                 ->orderBy('sort_order', 'asc')
                 ->get();
 
@@ -54,6 +56,7 @@ class ExpertCornerController extends Controller
 
             $experts = Expert::query()
                 ->where('status', DefaultStatus::Published)
+                ->with('qualifications')
                 ->orderBy('sort_order', 'asc')
                 ->take(10)
                 ->get();
@@ -61,14 +64,14 @@ class ExpertCornerController extends Controller
             $featuredPosts = ExpertPost::query()
                 ->where('status', DefaultStatus::Published)
                 ->where('is_featured', 1)
-                ->with(['expert', 'category', 'ageGroup'])
+                ->with(['expert.qualifications', 'category', 'ageGroup'])
                 ->orderByDesc('id')
                 ->take(5)
                 ->get();
 
             $latestPosts = ExpertPost::query()
                 ->where('status', DefaultStatus::Published)
-                ->with(['expert', 'category', 'ageGroup'])
+                ->with(['expert.qualifications', 'category', 'ageGroup'])
                 ->orderByDesc('id')
                 ->take(10)
                 ->get();
@@ -116,7 +119,7 @@ class ExpertCornerController extends Controller
         try {
             $query = ExpertPost::query()
                 ->where('status', DefaultStatus::Published)
-                ->with(['expert', 'category', 'ageGroup']);
+                ->with(['expert.qualifications', 'category', 'ageGroup']);
 
             if ($request->filled('category_id')) {
                 $query->where('category_id', $request->input('category_id'));
@@ -172,7 +175,7 @@ class ExpertCornerController extends Controller
         try {
             $post = ExpertPost::query()
                 ->where('status', DefaultStatus::Published)
-                ->with(['expert', 'category', 'ageGroup'])
+                ->with(['expert.qualifications', 'category', 'ageGroup'])
                 ->where(function ($q) use ($id) {
                     if (is_numeric($id)) {
                         $q->where('id', $id);
@@ -196,7 +199,7 @@ class ExpertCornerController extends Controller
                 ->when($post->category_id, function ($q) use ($post) {
                     $q->where('category_id', $post->category_id);
                 })
-                ->with(['expert', 'category', 'ageGroup'])
+                ->with(['expert.qualifications', 'category', 'ageGroup'])
                 ->orderByDesc('id')
                 ->take(4)
                 ->get();
@@ -220,7 +223,8 @@ class ExpertCornerController extends Controller
     {
         try {
             $query = Expert::query()
-                ->where('status', DefaultStatus::Published);
+                ->where('status', DefaultStatus::Published)
+                ->with('qualifications');
 
             if ($request->filled('council_type')) {
                 $query->where('council_type', (int) $request->input('council_type'));
@@ -246,6 +250,7 @@ class ExpertCornerController extends Controller
         try {
             $expert = Expert::query()
                 ->where('status', DefaultStatus::Published)
+                ->with('qualifications')
                 ->find($id);
 
             if (!$expert) {

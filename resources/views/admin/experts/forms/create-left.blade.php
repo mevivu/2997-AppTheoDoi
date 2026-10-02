@@ -97,4 +97,15 @@
             </div>
         </div>
     </div>
+
+    {{-- Danh sách Học vị & Bằng cấp chuyên môn --}}
+    @include('admin.experts.forms.qualifications')
 </div>
+
+@push('custom-js')
+    @php
+        $initialQualifications = old('qualifications', []);
+    @endphp
+    @include('admin.experts.scripts.qualification-script', ['initialQualifications' => $initialQualifications])
+@endpush
+

@@ -30,6 +30,7 @@ class ExpertResource extends JsonResource
             'contact_link' => $this->contact_link ?? '',
             'contact_phone' => $this->contact_phone ?? '',
             'is_verified' => (bool) $this->is_verified,
+            'qualifications' => ExpertQualificationResource::collection($this->qualifications ?? []),
         ];
     }
 }
