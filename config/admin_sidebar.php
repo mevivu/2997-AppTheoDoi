@@ -914,29 +914,29 @@ return [
             ],
         ]
     ],
-//    [
-//        'title' => 'Giới thiệu nền tảng',
-//        'routeName' => null,
-//        'icon' => '<i class="ti ti-info-circle"></i>',
-//        'roles' => [],
-//        'permissions' => ['viewIntroduction', 'createIntroduction', 'updateIntroduction', 'deleteIntroduction'],
-//        'sub' => [
-//            [
-//                'title' => 'Thêm bài giới thiệu',
-//                'routeName' => RouteAdminSystem::INTRODUCTION_CREATE,
-//                'icon' => '<i class="ti ti-plus"></i>',
-//                'roles' => [],
-//                'permissions' => ['createIntroduction'],
-//            ],
-//            [
-//                'title' => 'DS Bài giới thiệu',
-//                'routeName' => RouteAdminSystem::INTRODUCTION_INDEX,
-//                'icon' => '<i class="ti ti-list"></i>',
-//                'roles' => [],
-//                'permissions' => ['viewIntroduction'],
-//            ],
-//        ]
-//    ],
+    [
+        'title' => 'Giới thiệu nền tảng',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-info-circle"></i>',
+        'roles' => [],
+        'permissions' => ['viewIntroduction', 'createIntroduction', 'updateIntroduction', 'deleteIntroduction'],
+        'sub' => [
+            [
+                'title' => 'Thêm bài giới thiệu',
+                'routeName' => RouteAdminSystem::INTRODUCTION_CREATE,
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createIntroduction'],
+            ],
+            [
+                'title' => 'DS Bài giới thiệu',
+                'routeName' => RouteAdminSystem::INTRODUCTION_INDEX,
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewIntroduction'],
+            ],
+        ]
+    ],
     [
         'title' => 'Góc Chuyên Gia',
         'routeName' => null,
