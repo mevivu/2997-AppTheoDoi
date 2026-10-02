@@ -1261,6 +1261,94 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
     });
 
+    // Introductions (Giới thiệu nền tảng)
+    Route::controller(App\Admin\Http\Controllers\Introduction\IntroductionController::class)
+        ->prefix('/gioi-thieu')
+        ->as('introduction.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createIntroduction', 'auth:admin']], function () {
+                Route::get('/them', 'create')->name('create');
+                Route::post('/them', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewIntroduction', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/sua/{id}', 'edit')->name('edit');
+                Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:updateIntroduction', 'auth:admin']], function () {
+                Route::put('/sua', 'update')->name('update');
+            });
+            Route::group(['middleware' => ['permission:deleteIntroduction', 'auth:admin']], function () {
+                Route::delete('/xoa/{id}', 'delete')->name('delete');
+            });
+        });
+
+    // Experts (Hồ sơ Chuyên gia / Bác sĩ)
+    Route::controller(App\Admin\Http\Controllers\Expert\ExpertController::class)
+        ->prefix('/chuyen-gia')
+        ->as('expert.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createExpert', 'auth:admin']], function () {
+                Route::get('/them', 'create')->name('create');
+                Route::post('/them', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewExpert', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/sua/{id}', 'edit')->name('edit');
+                Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:updateExpert', 'auth:admin']], function () {
+                Route::put('/sua', 'update')->name('update');
+            });
+            Route::group(['middleware' => ['permission:deleteExpert', 'auth:admin']], function () {
+                Route::delete('/xoa/{id}', 'delete')->name('delete');
+            });
+        });
+
+    // Expert Categories (Danh mục Chuyên đề)
+    Route::controller(App\Admin\Http\Controllers\ExpertCategory\ExpertCategoryController::class)
+        ->prefix('/chuyen-muc-chuyen-gia')
+        ->as('expert_category.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createExpertCategory', 'auth:admin']], function () {
+                Route::get('/them', 'create')->name('create');
+                Route::post('/them', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewExpertCategory', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/sua/{id}', 'edit')->name('edit');
+                Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:updateExpertCategory', 'auth:admin']], function () {
+                Route::put('/sua', 'update')->name('update');
+            });
+            Route::group(['middleware' => ['permission:deleteExpertCategory', 'auth:admin']], function () {
+                Route::delete('/xoa/{id}', 'delete')->name('delete');
+            });
+        });
+
+    // Expert Posts (Bài viết & Lời khuyên Chuyên gia)
+    Route::controller(App\Admin\Http\Controllers\ExpertPost\ExpertPostController::class)
+        ->prefix('/bai-viet-chuyen-gia')
+        ->as('expert_post.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createExpertPost', 'auth:admin']], function () {
+                Route::get('/them', 'create')->name('create');
+                Route::post('/them', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:viewExpertPost', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/sua/{id}', 'edit')->name('edit');
+                Route::post('/multiple', 'actionMultipleRecode')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:updateExpertPost', 'auth:admin']], function () {
+                Route::put('/sua', 'update')->name('update');
+            });
+            Route::group(['middleware' => ['permission:deleteExpertPost', 'auth:admin']], function () {
+                Route::delete('/xoa/{id}', 'delete')->name('delete');
+            });
+        });
+
     //auth
     Route::controller(App\Admin\Http\Controllers\Auth\ProfileController::class)
         ->prefix('/thong-tin-ca-nhan')

@@ -97,6 +97,10 @@ if (!function_exists('formatImageUrl')) {
     function formatImageUrl($url)
     {
         if ($url) {
+            if (preg_match('/^(https?:\/\/|data:)/i', $url)) {
+                return $url;
+            }
+
             $url = preg_replace('/\/+/', '/', $url);
 
             if (!preg_match('/^\/public\//', $url)) {

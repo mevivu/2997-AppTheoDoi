@@ -76,6 +76,10 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Lesson\LessonRepositoryInterface' => 'App\Admin\Repositories\Lesson\LessonRepository',
         'App\Admin\Repositories\ExerciseCategory\ExerciseCategoryRepositoryInterface' => 'App\Admin\Repositories\ExerciseCategory\ExerciseCategoryRepository',
         'App\Admin\Repositories\ExerciseMedia\ExerciseMediaRepositoryInterface' => 'App\Admin\Repositories\ExerciseMedia\ExerciseMediaRepository',
+        'App\Admin\Repositories\Introduction\IntroductionRepositoryInterface' => 'App\Admin\Repositories\Introduction\IntroductionRepository',
+        'App\Admin\Repositories\Expert\ExpertRepositoryInterface' => 'App\Admin\Repositories\Expert\ExpertRepository',
+        'App\Admin\Repositories\ExpertCategory\ExpertCategoryRepositoryInterface' => 'App\Admin\Repositories\ExpertCategory\ExpertCategoryRepository',
+        'App\Admin\Repositories\ExpertPost\ExpertPostRepositoryInterface' => 'App\Admin\Repositories\ExpertPost\ExpertPostRepository',
     ];
 
     /**

@@ -2782,6 +2782,194 @@ return [
             'addClass' => 'text-center align-middle',
         ],
     ],
+    'introduction' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'image' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-photo"></i><span>Ảnh</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'title' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-file-text"></i><span>Tiêu đề</span></div>',
+            'orderable' => true,
+            'addClass' => 'align-middle',
+        ],
+        'section_type' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-category"></i><span>Phân loại</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'sort_order' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-sort-ascending"></i><span>Thứ tự</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'created_at' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Ngày tạo</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'expert' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'avatar' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-user"></i><span>Ảnh</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'council_type' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-users-group"></i><span>Hội đồng</span></div>',
+            'orderable' => true,
+            'addClass' => 'align-middle text-center',
+        ],
+        'name' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-id"></i><span>Họ tên</span></div>',
+            'orderable' => true,
+            'addClass' => 'align-middle',
+        ],
+        'title' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-certificate"></i><span>Chức danh</span></div>',
+            'orderable' => false,
+            'addClass' => 'align-middle',
+        ],
+        'hospital' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-building-hospital"></i><span>Nơi công tác</span></div>',
+            'orderable' => false,
+            'addClass' => 'align-middle',
+        ],
+        'is_verified' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-discount-check"></i><span>Xác thực</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'expert_category' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'name' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-category"></i><span>Tên chuyên mục</span></div>',
+            'orderable' => true,
+            'addClass' => 'align-middle',
+        ],
+        'sort_order' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-sort-ascending"></i><span>Thứ tự</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'expert_post' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'image' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-photo"></i><span>Ảnh</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'title' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-file-text"></i><span>Tiêu đề</span></div>',
+            'orderable' => true,
+            'addClass' => 'align-middle',
+        ],
+        'expert' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-user-check"></i><span>Bác sĩ / Chuyên gia</span></div>',
+            'orderable' => false,
+            'addClass' => 'align-middle',
+        ],
+        'category' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-category"></i><span>Chuyên mục</span></div>',
+            'orderable' => false,
+            'addClass' => 'align-middle',
+        ],
+        'age_group' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-child"></i><span>Độ tuổi</span></div>',
+            'orderable' => false,
+            'addClass' => 'align-middle text-center',
+        ],
+        'is_featured' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-star"></i><span>Nổi bật</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'views' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-eye"></i><span>Lượt xem</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
 ];
 
 

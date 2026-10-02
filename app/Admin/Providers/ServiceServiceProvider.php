@@ -56,6 +56,10 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\Lesson\LessonServiceInterface' => 'App\Admin\Services\Lesson\LessonService',
         'App\Admin\Services\ExerciseCategory\ExerciseCategoryServiceInterface' => 'App\Admin\Services\ExerciseCategory\ExerciseCategoryService',
         'App\Admin\Services\ExerciseMedia\ExerciseMediaServiceInterface' => 'App\Admin\Services\ExerciseMedia\ExerciseMediaService',
+        'App\Admin\Services\Introduction\IntroductionServiceInterface' => 'App\Admin\Services\Introduction\IntroductionService',
+        'App\Admin\Services\Expert\ExpertServiceInterface' => 'App\Admin\Services\Expert\ExpertService',
+        'App\Admin\Services\ExpertCategory\ExpertCategoryServiceInterface' => 'App\Admin\Services\ExpertCategory\ExpertCategoryService',
+        'App\Admin\Services\ExpertPost\ExpertPostServiceInterface' => 'App\Admin\Services\ExpertPost\ExpertPostService',
     ];
 
     /**

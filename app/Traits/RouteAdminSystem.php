@@ -442,6 +442,38 @@ class RouteAdminSystem
     const EXERCISE_CATEGORY_UPDATE = 'admin.exercise_category.update';
     const EXERCISE_CATEGORY_DELETE = 'admin.exercise_category.delete';
 
+    /** INTRODUCTION */
+    const INTRODUCTION_INDEX = 'admin.introduction.index';
+    const INTRODUCTION_CREATE = 'admin.introduction.create';
+    const INTRODUCTION_STORE = 'admin.introduction.store';
+    const INTRODUCTION_EDIT = 'admin.introduction.edit';
+    const INTRODUCTION_UPDATE = 'admin.introduction.update';
+    const INTRODUCTION_DELETE = 'admin.introduction.delete';
+
+    /** EXPERT */
+    const EXPERT_INDEX = 'admin.expert.index';
+    const EXPERT_CREATE = 'admin.expert.create';
+    const EXPERT_STORE = 'admin.expert.store';
+    const EXPERT_EDIT = 'admin.expert.edit';
+    const EXPERT_UPDATE = 'admin.expert.update';
+    const EXPERT_DELETE = 'admin.expert.delete';
+
+    /** EXPERT CATEGORY */
+    const EXPERT_CATEGORY_INDEX = 'admin.expert_category.index';
+    const EXPERT_CATEGORY_CREATE = 'admin.expert_category.create';
+    const EXPERT_CATEGORY_STORE = 'admin.expert_category.store';
+    const EXPERT_CATEGORY_EDIT = 'admin.expert_category.edit';
+    const EXPERT_CATEGORY_UPDATE = 'admin.expert_category.update';
+    const EXPERT_CATEGORY_DELETE = 'admin.expert_category.delete';
+
+    /** EXPERT POST */
+    const EXPERT_POST_INDEX = 'admin.expert_post.index';
+    const EXPERT_POST_CREATE = 'admin.expert_post.create';
+    const EXPERT_POST_STORE = 'admin.expert_post.store';
+    const EXPERT_POST_EDIT = 'admin.expert_post.edit';
+    const EXPERT_POST_UPDATE = 'admin.expert_post.update';
+    const EXPERT_POST_DELETE = 'admin.expert_post.delete';
+
     /**
      * Helper URL dẫn đến trang chi tiết trẻ em tại tab #childrenInfo trong trang sửa thông tin phụ huynh
      * Fallback sang route sửa trẻ em nếu không có thông tin phụ huynh

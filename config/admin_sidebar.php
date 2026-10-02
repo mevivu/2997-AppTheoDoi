@@ -914,6 +914,66 @@ return [
             ],
         ]
     ],
+//    [
+//        'title' => 'Giới thiệu nền tảng',
+//        'routeName' => null,
+//        'icon' => '<i class="ti ti-info-circle"></i>',
+//        'roles' => [],
+//        'permissions' => ['viewIntroduction', 'createIntroduction', 'updateIntroduction', 'deleteIntroduction'],
+//        'sub' => [
+//            [
+//                'title' => 'Thêm bài giới thiệu',
+//                'routeName' => RouteAdminSystem::INTRODUCTION_CREATE,
+//                'icon' => '<i class="ti ti-plus"></i>',
+//                'roles' => [],
+//                'permissions' => ['createIntroduction'],
+//            ],
+//            [
+//                'title' => 'DS Bài giới thiệu',
+//                'routeName' => RouteAdminSystem::INTRODUCTION_INDEX,
+//                'icon' => '<i class="ti ti-list"></i>',
+//                'roles' => [],
+//                'permissions' => ['viewIntroduction'],
+//            ],
+//        ]
+//    ],
+    [
+        'title' => 'Góc Chuyên Gia',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-stethoscope"></i>',
+        'roles' => [],
+        'permissions' => ['viewExpertPost', 'createExpertPost', 'updateExpertPost', 'deleteExpertPost', 'viewExpert', 'createExpert', 'updateExpert', 'deleteExpert', 'viewExpertCategory'],
+        'sub' => [
+            [
+                'title' => 'Thêm bài chuyên gia',
+                'routeName' => RouteAdminSystem::EXPERT_POST_CREATE,
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createExpertPost'],
+            ],
+            [
+                'title' => 'DS Bài & Lời khuyên',
+                'routeName' => RouteAdminSystem::EXPERT_POST_INDEX,
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewExpertPost'],
+            ],
+            [
+                'title' => 'Hồ sơ Chuyên gia / BS',
+                'routeName' => RouteAdminSystem::EXPERT_INDEX,
+                'icon' => '<i class="ti ti-user-check"></i>',
+                'roles' => [],
+                'permissions' => ['viewExpert'],
+            ],
+            [
+                'title' => 'Danh mục Chuyên đề',
+                'routeName' => RouteAdminSystem::EXPERT_CATEGORY_INDEX,
+                'icon' => '<i class="ti ti-category"></i>',
+                'roles' => [],
+                'permissions' => ['viewExpertCategory'],
+            ],
+        ]
+    ],
     [
         'title' => 'Cài đặt',
         'routeName' => null,

@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Admin\Services\ExpertCategory;
+
+use Illuminate\Http\Request;
+
+interface ExpertCategoryServiceInterface
+{
+    public function store(Request $request);
+    public function update(Request $request);
+    public function delete($id);
+    public function actionMultipleRecode(Request $request): bool;
+}

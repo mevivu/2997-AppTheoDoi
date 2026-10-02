@@ -380,6 +380,28 @@ Route::controller(App\Api\V1\Http\Controllers\Setting\SettingController::class)
         Route::get('/affiliate-terms', 'affiliateTerms');
     });
 
+//***** -- Introduction (Giới thiệu nền tảng & Thương hiệu) -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\Introduction\IntroductionController::class)
+    ->prefix('/introductions')
+    ->as('introduction.')
+    ->group(function () {
+        Route::get('/', 'index');
+        Route::get('/{id}', 'show');
+    });
+
+//***** -- Expert Corner (Góc Chuyên Gia & Lời khuyên Y khoa) -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\ExpertCorner\ExpertCornerController::class)
+    ->prefix('/expert-corner')
+    ->as('expert_corner.')
+    ->group(function () {
+        Route::get('/overview', 'overview');
+        Route::get('/categories', 'categories');
+        Route::get('/posts', 'posts');
+        Route::get('/posts/{id}', 'show');
+        Route::get('/experts', 'experts');
+        Route::get('/experts/{id}', 'expertDetail');
+    });
+
 //***** -- Product -- ******* //
 Route::controller(\App\Api\V1\Http\Controllers\Product\ProductController::class)
     ->prefix('/products')
