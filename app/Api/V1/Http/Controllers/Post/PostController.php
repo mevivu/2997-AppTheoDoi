@@ -41,7 +41,7 @@ class PostController extends Controller
      *
      * @queryParam page int Trang hiện tại. Example: 1
      * @queryParam limit int Số lượng bản ghi trên mỗi trang. Example: 10
-     * @queryParam type int Loại bài viết (1: Bài viết, 2: Kiến thức chăm con, all: Tất cả). Default: 1. Example: 1
+     * @queryParam type int Loại bài viết (1: Bài viết, 2: Kiến thức chăm con, all: Tất cả). Default: 2. Example: 2
      *
      * @param PostRequest $request
      * @return JsonResponse
@@ -56,14 +56,26 @@ class PostController extends Controller
             $type = $data['type'] ?? $request->input('type');
 
             $filter = ['status' => PostStatus::Published->value];
+            
+            $targetType = null;
             if ($type !== null && $type !== 'all' && $type !== '') {
-                $filter['type'] = (int) $type;
-            } elseif ($type === null) {
-                $filter['type'] = PostType::Post;
+                $targetType = (int) $type;
+            } elseif ($type === null || $type === '') {
+                // Mặc định cho app khi lấy /posts (Kiến thức chăm con) chỉ lấy loại Kiến thức chăm con (type = 2)
+                $targetType = PostType::Knowledge->value;
             }
 
-            $posts = $this->repository->getByQueryBuilder($filter)
-                ->orderByDesc('is_featured')
+            $query = $this->repository->getByQueryBuilder($filter);
+
+            if ($targetType !== null) {
+                $query->where(function ($q) use ($targetType) {
+                    $q->where('type', $targetType)
+                      ->orWhere('post_type', $targetType);
+                });
+            }
+
+            $posts = $query
+                ->orderBy('is_featured', 'asc')
                 ->orderByDesc('created_at')
                 ->paginate($limit, ['*'], 'page', $page);
 

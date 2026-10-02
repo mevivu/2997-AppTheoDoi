@@ -22,7 +22,7 @@ class PostResource extends JsonResource
             'title' => $this->title,
             'slug' => $this->slug,
             'image' => formatImageUrl($this->image),
-            'is_featured' => $this->is_featured,
+            'is_featured' => $this->is_featured?->value ?? ($this->is_featured ?? 2),
             'excerpt' => $this->excerpt,
             'content' => $this->content,
             'type' => $this->type?->value ?? ($this->type ?? ($this->post_type?->value ?? ($this->post_type ?? 1))),
