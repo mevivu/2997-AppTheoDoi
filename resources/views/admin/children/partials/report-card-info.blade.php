@@ -1,400 +1,126 @@
 @php
-    $stages = collect($reportCardSummary['stages'] ?? [])
-        ->keyBy('education_level')
-        ->all();
+    $stages = collect($reportCardSummary['stages'] ?? [])->keyBy('education_level');
     $highlights = $reportCardSummary['highlights'] ?? [];
-
-    $ratingBadges = [
-        'xuat_sac' => ['badge' => 'bg-purple-lt text-purple', 'label' => 'Xuất sắc'],
-        'gioi' => ['badge' => 'bg-success-lt text-success', 'label' => 'Giỏi'],
-        'kha' => ['badge' => 'bg-primary-lt text-primary', 'label' => 'Khá'],
-        'dat' => ['badge' => 'bg-warning-lt text-warning', 'label' => 'Đạt'],
-        'chua_dat' => ['badge' => 'bg-danger-lt text-danger', 'label' => 'Chưa đạt'],
-        'hoan_thanh_xuat_sac' => ['badge' => 'bg-purple-lt text-purple', 'label' => 'HT Xuất sắc'],
-        'hoan_thanh_tot' => ['badge' => 'bg-success-lt text-success', 'label' => 'HT Tốt'],
-        'hoan_thanh' => ['badge' => 'bg-warning-lt text-warning', 'label' => 'Hoàn thành'],
-        'chua_hoan_thanh' => ['badge' => 'bg-danger-lt text-danger', 'label' => 'Chưa HT'],
+    $stageMeta = [
+        'primary' => ['title' => 'Tiểu học', 'range' => 'Lớp 1 – 5', 'rule' => 'TT27/2020', 'icon' => 'ti-backpack'],
+        'lower_secondary' => ['title' => 'Trung học cơ sở', 'range' => 'Lớp 6 – 9', 'rule' => 'TT22/2021', 'icon' => 'ti-school'],
+        'upper_secondary' => ['title' => 'Trung học phổ thông', 'range' => 'Lớp 10 – 12', 'rule' => 'TT22/2021', 'icon' => 'ti-certificate'],
     ];
-
-    $statusBadges = [
-        'calculated' => ['badge' => 'badge-outline text-success border-success', 'label' => 'Đã tính'],
-        'manual' => ['badge' => 'badge-outline text-primary border-primary', 'label' => 'Nhập tay'],
-        'incomplete' => ['badge' => 'badge-outline text-warning border-warning', 'label' => 'Thiếu điểm'],
-        'overridden' => ['badge' => 'badge-outline text-info border-info', 'label' => 'Ghi đè'],
-        'error' => ['badge' => 'badge-outline text-danger border-danger', 'label' => 'Lỗi'],
+    $ratingLabels = [
+        'xuat_sac' => 'Xuất sắc', 'gioi' => 'Giỏi', 'kha' => 'Khá', 'dat' => 'Đạt', 'chua_dat' => 'Chưa đạt',
+        'hoan_thanh_xuat_sac' => 'Hoàn thành xuất sắc', 'hoan_thanh_tot' => 'Hoàn thành tốt',
+        'hoan_thanh' => 'Hoàn thành', 'chua_hoan_thanh' => 'Chưa hoàn thành',
     ];
+    $ratingClasses = [
+        'xuat_sac' => 'rc-result-excellent', 'hoan_thanh_xuat_sac' => 'rc-result-excellent',
+        'gioi' => 'rc-result-good', 'hoan_thanh_tot' => 'rc-result-good',
+        'kha' => 'rc-result-fair', 'dat' => 'rc-result-fair', 'hoan_thanh' => 'rc-result-fair',
+        'chua_dat' => 'rc-result-alert', 'chua_hoan_thanh' => 'rc-result-alert',
+    ];
+    $formatSemester = function ($semester) use ($ratingLabels, $ratingClasses) {
+        if (!$semester || ($semester['average_score'] === null && empty($semester['academic_performance']))) return null;
+        $rating = $semester['academic_performance'] ?? null;
+        return [
+            'score' => $semester['average_score'],
+            'label' => $ratingLabels[$rating] ?? ($rating ?: 'Đã cập nhật'),
+            'class' => $ratingClasses[$rating] ?? 'rc-result-neutral',
+        ];
+    };
 @endphp
 
-<div class="row g-3">
-    <!-- Header -->
-    <div class="col-12">
-        <div class="d-flex align-items-center justify-content-between mb-1">
+@push('libs-css')
+<style>
+    .rc-shell { --rc-blue:#1769aa; --rc-teal:#0f8f83; --rc-ink:#172033; --rc-muted:#667085; }
+    .rc-intro { background:linear-gradient(135deg,#eaf5ff 0%,#eefbf9 100%); border:1px solid #d8eaf3; border-radius:16px; padding:20px; }
+    .rc-intro-icon { width:48px; height:48px; display:grid; place-items:center; border-radius:14px; color:#fff; background:linear-gradient(135deg,var(--rc-blue),var(--rc-teal)); font-size:25px; box-shadow:0 8px 18px rgba(23,105,170,.18); }
+    .rc-stage { border:1px solid #e5eaf0; border-radius:14px; box-shadow:0 4px 14px rgba(16,24,40,.04); }
+    .rc-stage-icon { width:40px; height:40px; display:grid; place-items:center; border-radius:11px; background:#eaf5ff; color:var(--rc-blue); font-size:20px; }
+    .rc-progress { height:6px; background:#edf1f5; border-radius:9px; overflow:hidden; }
+    .rc-progress > span { display:block; height:100%; background:linear-gradient(90deg,var(--rc-blue),var(--rc-teal)); border-radius:9px; }
+    .rc-highlight { border:1px solid #e5eaf0; border-radius:14px; background:#fff; }
+    .rc-subject { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:9px; background:#f3f8fc; color:#255477; font-size:12px; font-weight:600; }
+    .rc-table-card { border:1px solid #e5eaf0; border-radius:14px; overflow:hidden; background:#fff; }
+    .rc-table thead th { background:#f6f9fb; color:#667085; font-size:11px; letter-spacing:.04em; text-transform:uppercase; border-bottom:1px solid #e5eaf0; padding:12px; }
+    .rc-table tbody td { padding:13px 12px; border-color:#edf0f3; }
+    .rc-table tbody tr:hover { background:#f8fbfd; }
+    .rc-class { display:flex; align-items:center; gap:10px; min-width:130px; }
+    .rc-class-number { width:34px; height:34px; display:grid; place-items:center; border-radius:10px; background:#eaf5ff; color:var(--rc-blue); font-weight:700; }
+    .rc-result { display:inline-flex; flex-direction:column; align-items:center; min-width:92px; padding:6px 9px; border-radius:9px; line-height:1.2; }
+    .rc-result strong { font-size:14px; } .rc-result small { font-size:10px; margin-top:3px; }
+    .rc-result-excellent { background:#e8f7f3; color:#08796e; } .rc-result-good { background:#e9f3ff; color:#1769aa; }
+    .rc-result-fair { background:#fff6df; color:#9a6700; } .rc-result-alert { background:#fff0f0; color:#c13a3a; }
+    .rc-result-neutral { background:#f2f4f7; color:#475467; } .rc-empty { color:#b0b8c4; font-size:12px; }
+    @media(max-width:767px){ .rc-intro{padding:16px}.rc-table{min-width:720px} }
+</style>
+@endpush
+
+<div class="rc-shell">
+    <div class="rc-intro mb-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="rc-intro-icon"><i class="ti ti-report"></i></div>
             <div>
-                <h5 class="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                    <i class="ti ti-book-2 text-warning fs-4"></i>
-                    {{ __('Học Bạ Điện Tử & Đánh Giá Kết Quả Học Tập') }}
-                </h5>
-                <small class="text-muted">
-                    {{ __('Chuẩn hóa thuật toán xếp loại học lực theo Thông tư 27 (Tiểu học) & Thông tư 22 (THCS / THPT) của Bộ GD&ĐT') }}
-                </small>
+                <h4 class="mb-1" style="color:var(--rc-ink)">Học bạ điện tử</h4>
+                <div class="text-muted">Tổng hợp kết quả học tập từ lớp 1 đến lớp 12 của {{ $children->fullname }}.</div>
             </div>
-            <span class="badge bg-warning-lt px-3 py-2 fs-13 rounded-pill fw-bold">
-                <i class="ti ti-school me-1"></i> {{ __('12 Khối Lớp') }}
-            </span>
         </div>
     </div>
 
-    <!-- 3 Thẻ Tổng Quan Cấp Học (Tiểu học, THCS, THPT) -->
-    <div class="col-12">
-        <div class="row g-3">
+    <div class="row g-3 mb-3">
+        @foreach($stageMeta as $key => $meta)
             @php
-                $stageCards = [
-                    'primary' => [
-                        'title' => 'Cấp Tiểu Học',
-                        'classes' => 'Lớp 1 - 5',
-                        'reg' => 'Thông tư 27/2020',
-                        'icon' => 'ti-backpack',
-                        'color' => 'success',
-                    ],
-                    'lower_secondary' => [
-                        'title' => 'Cấp Trung Học Cơ Sở',
-                        'classes' => 'Lớp 6 - 9',
-                        'reg' => 'Thông tư 22/2021',
-                        'icon' => 'ti-school',
-                        'color' => 'primary',
-                    ],
-                    'upper_secondary' => [
-                        'title' => 'Cấp Trung Học Phổ Thông',
-                        'classes' => 'Lớp 10 - 12',
-                        'reg' => 'Thông tư 22/2021',
-                        'icon' => 'ti-certificate',
-                        'color' => 'warning',
-                    ],
-                ];
+                $stage = $stages->get($key, []); $done = (int)($stage['classes_with_full_year'] ?? 0);
+                $total = (int)($stage['classes_total'] ?? count($stage['classes'] ?? []));
+                $percent = $total ? min(100, round($done * 100 / $total)) : 0; $latest = $stage['latest_rating'] ?? null;
             @endphp
-
-            @foreach($stageCards as $sKey => $sConf)
-                @php
-                    $sData = $stages[$sKey] ?? null;
-                    $compYears = $sData['classes_with_full_year'] ?? 0;
-                    $totYears = $sData['classes_total'] ?? count($sData['classes'] ?? []);
-                    $latestRat = $sData['latest_rating'] ?? null;
-                @endphp
-                <div class="col-12 col-md-4">
-                    <div class="card p-3 border border-light-subtle rounded-3 bg-white h-100 shadow-sm">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="p-2 bg-{{ $sConf['color'] }}-lt rounded-2 fs-4">
-                                    <i class="ti {{ $sConf['icon'] }} text-{{ $sConf['color'] }}"></i>
-                                </div>
-                                <div>
-                                    <h6 class="mb-0 fw-bold text-dark fs-14">{{ $sConf['title'] }}</h6>
-                                    <span class="text-muted fs-11">{{ $sConf['classes'] }} • <span class="badge bg-light text-muted fs-10">{{ $sConf['reg'] }}</span></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p-2 rounded-2 bg-light-subtle border border-light-subtle fs-12 mt-2">
-                            <div class="d-flex justify-content-between mb-1">
-                                <span class="text-muted">{{ __('Năm học hoàn thành:') }}</span>
-                                <strong class="text-dark">{{ $compYears }} / {{ $totYears }} {{ __('năm') }}</strong>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-muted">{{ __('Xếp loại gần nhất:') }}</span>
-                                @if($latestRat)
-                                    @php
-                                        $bInfo = $ratingBadges[$latestRat['value']] ?? ['badge' => 'bg-secondary text-white', 'label' => $latestRat['label']];
-                                    @endphp
-                                    <span class="badge {{ $bInfo['badge'] }} fw-semibold fs-11 px-2 py-1">
-                                        {{ $latestRat['class'] }}: {{ $bInfo['label'] }}
-                                    </span>
-                                @else
-                                    <span class="badge bg-light text-muted fs-11">{{ __('Chưa có dữ liệu') }}</span>
-                                @endif
-                            </div>
-                        </div>
+            <div class="col-12 col-md-4">
+                <div class="rc-stage h-100 p-3">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="rc-stage-icon"><i class="ti {{ $meta['icon'] }}"></i></div>
+                        <div><div class="fw-bold">{{ $meta['title'] }}</div><small class="text-muted">{{ $meta['range'] }} · {{ $meta['rule'] }}</small></div>
                     </div>
+                    <div class="d-flex justify-content-between small mb-2"><span class="text-muted">Đã hoàn thành</span><strong>{{ $done }}/{{ $total }} lớp</strong></div>
+                    <div class="rc-progress mb-3"><span style="width:{{ $percent }}%"></span></div>
+                    <div class="small text-muted">Kết quả gần nhất</div>
+                    <div class="fw-semibold mt-1">{{ $latest ? $latest['class'].' · '.($ratingLabels[$latest['value']] ?? $latest['label']) : 'Chưa có dữ liệu' }}</div>
                 </div>
-            @endforeach
-        </div>
+            </div>
+        @endforeach
     </div>
 
-    <!-- Highlights (Môn học thế mạnh / Cần cải thiện nếu có) -->
     @if(!empty($highlights['strong_subjects']) || !empty($highlights['need_attention']))
-        <div class="col-12">
-            <div class="card p-3 border border-light-subtle rounded-3 bg-white shadow-sm">
-                <div class="row g-3">
-                    <div class="col-12 col-md-6">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <i class="ti ti-star-filled text-warning"></i>
-                            <h6 class="mb-0 fw-semibold text-slate fs-13">{{ __('Môn Học Thế Mạnh (Điểm TB Cao Nhất)') }}</h6>
-                        </div>
-                        <div class="d-flex gap-2 flex-wrap">
-                            @forelse($highlights['strong_subjects'] ?? [] as $topSub)
-                                <span class="badge bg-success-lt text-success px-2 py-1 fs-12">
-                                    {{ $topSub['name'] }}: <strong>{{ number_format($topSub['value'], 1) }}</strong>
-                                </span>
-                            @empty
-                                <span class="text-muted fs-12">{{ __('Chưa đủ dữ liệu điểm số') }}</span>
-                            @endforelse
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <div class="d-flex align-items-center gap-2 mb-2">
-                            <i class="ti ti-trending-up text-primary"></i>
-                            <h6 class="mb-0 fw-semibold text-slate fs-13">{{ __('Môn Cần Quan Tâm & Bồi Dưỡng Thêm') }}</h6>
-                        </div>
-                        <div class="d-flex gap-2 flex-wrap">
-                            @forelse($highlights['need_attention'] ?? [] as $impSub)
-                                <span class="badge bg-warning-lt text-warning px-2 py-1 fs-12">
-                                    {{ $impSub['name'] }}: <strong>{{ number_format($impSub['value'], 1) }}</strong>
-                                </span>
-                            @empty
-                                <span class="text-muted fs-12">{{ __('Không có môn nào dưới ngưỡng khuyến nghị') }}</span>
-                            @endforelse
-                        </div>
-                    </div>
-                </div>
+        <div class="rc-highlight p-3 mb-3">
+            <div class="row g-3">
+                <div class="col-md-6"><div class="fw-semibold mb-2"><i class="ti ti-rosette text-success me-1"></i>Môn học nổi bật</div><div class="d-flex flex-wrap gap-2">@forelse($highlights['strong_subjects'] ?? [] as $subject)<span class="rc-subject">{{ $subject['name'] }} <strong>{{ number_format($subject['value'],1) }}</strong></span>@empty<span class="text-muted small">Chưa đủ dữ liệu</span>@endforelse</div></div>
+                <div class="col-md-6"><div class="fw-semibold mb-2"><i class="ti ti-bulb text-warning me-1"></i>Môn cần quan tâm</div><div class="d-flex flex-wrap gap-2">@forelse($highlights['need_attention'] ?? [] as $subject)<span class="rc-subject">{{ $subject['name'] }} <strong>{{ number_format($subject['value'],1) }}</strong></span>@empty<span class="text-muted small">Không có môn dưới ngưỡng khuyến nghị</span>@endforelse</div></div>
             </div>
         </div>
     @endif
 
-    <!-- Bảng Chi Tiết Điểm Số & Xếp Loại 12 Lớp Học -->
-    <div class="col-12">
-        <div class="card border border-light-subtle rounded-3 bg-white shadow-sm overflow-hidden">
-            <div class="card-header py-2 px-3 bg-light-subtle border-bottom d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2">
-                    <i class="ti ti-table text-primary"></i>
-                    <h6 class="card-title mb-0 fs-14 fw-bold">{{ __('Bảng Tổng Hợp Kết Quả 12 Khối Lớp') }}</h6>
-                </div>
-                <div class="fs-12 text-muted">
-                    {{ __('Nhấp nút') }} <span class="badge bg-light text-dark"><i class="ti ti-zoom-check"></i> Chẩn đoán</span> {{ __('để kiểm tra từng tiêu chí thuật toán') }}
-                </div>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-vcenter table-hover text-center align-middle mb-0 fs-13">
-                    <thead class="bg-light text-muted">
+    <div class="rc-table-card">
+        <div class="p-3 border-bottom"><h5 class="mb-1">Kết quả theo năm học</h5><div class="text-muted small">Thông tin chỉ dùng để xem và đối chiếu.</div></div>
+        <div class="table-responsive">
+            <table class="table table-vcenter rc-table mb-0 text-center">
+                <thead><tr><th class="text-start">Lớp</th><th>Học kỳ 1</th><th>Học kỳ 2</th><th>Cả năm</th><th>Ảnh học bạ</th></tr></thead>
+                <tbody>
+                @foreach($stages as $stage)
+                    @foreach($stage['classes'] ?? [] as $class)
+                        @php
+                            $classId = $class['class_id']; $name = $class['name'] ?? ('Lớp '.$classId);
+                            $semester1 = $formatSemester($class['semesters']['semester_1'] ?? null);
+                            $semester2 = $formatSemester($class['semesters']['semester_2'] ?? null);
+                            $fullYear = $formatSemester($class['semesters']['full_year'] ?? null);
+                        @endphp
                         <tr>
-                            <th style="width: 100px;">{{ __('Khối Lớp') }}</th>
-                            <th>{{ __('Học Kỳ 1') }}</th>
-                            <th>{{ __('Học Kỳ 2') }}</th>
-                            <th>{{ __('Cả Năm') }}</th>
-                            <th style="width: 120px;">{{ __('Ảnh Học Bạ') }}</th>
-                            <th style="width: 140px;">{{ __('Thao Tác') }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($stages as $stageKey => $stageData)
-                            @foreach($stageData['classes'] as $cls)
-                                @php
-                                    $cid = $cls['class_id'];
-                                    $cname = $cls['name'] ?? ('Lớp ' . $cid);
-                                    $hk1 = $cls['semesters']['semester_1'] ?? null;
-                                    $hk2 = $cls['semesters']['semester_2'] ?? null;
-                                    $cn = $cls['semesters']['full_year'] ?? null;
-                                    $attCount = (int) ($cls['attachments_count'] ?? 0);
-                                @endphp
-                                <tr>
-                                    <!-- Cột Lớp -->
-                                    <td class="fw-bold text-start ps-3">
-                                        <span class="badge bg-light text-dark fs-12 px-2 py-1">
-                                            {{ $cname }}
-                                        </span>
-                                    </td>
-
-                                    <!-- Cột Học kỳ 1 -->
-                                    <td>
-                                        @if($hk1 && ($hk1['academic_performance'] || $hk1['average_score'] !== null))
-                                            @php
-                                                $rVal = $hk1['academic_performance'] ?? '';
-                                                $bInfo = $ratingBadges[$rVal] ?? ['badge' => 'bg-secondary text-white', 'label' => $rVal ?: 'Chưa XL'];
-                                                $sVal = $hk1['calculation_status'] ?? 'empty';
-                                                $sInfo = $statusBadges[$sVal] ?? ['badge' => 'badge-outline text-muted', 'label' => $sVal];
-                                            @endphp
-                                            <div class="d-flex flex-column align-items-center gap-1">
-                                                <div class="d-flex align-items-center gap-1">
-                                                    <span class="badge {{ $bInfo['badge'] }} px-2 py-1">{{ $bInfo['label'] }}</span>
-                                                    @if($hk1['average_score'] !== null)
-                                                        <span class="badge bg-light text-dark fw-bold">{{ number_format($hk1['average_score'], 1) }}</span>
-                                                    @endif
-                                                </div>
-                                                <span class="badge {{ $sInfo['badge'] }} fs-10 px-1 py-0">{{ $sInfo['label'] }}</span>
-                                                <button type="button" class="btn btn-ghost-primary btn-sm px-1 py-0 fs-11 btn-debug-report-card"
-                                                    data-child-id="{{ $children->id }}"
-                                                    data-class-id="{{ $cid }}"
-                                                    data-semester="semester_1"
-                                                    data-class-name="{{ $cname }}"
-                                                    data-semester-label="Học kỳ 1"
-                                                    title="{{ __('Xem chẩn đoán chi tiết HK1') }}">
-                                                    <i class="ti ti-zoom-check me-1"></i>Chẩn đoán
-                                                </button>
-                                            </div>
-                                        @else
-                                            <div class="text-muted fs-11">
-                                                <span>--</span>
-                                                <div>
-                                                    <button type="button" class="btn btn-ghost-secondary btn-sm px-1 py-0 fs-10 btn-debug-report-card"
-                                                        data-child-id="{{ $children->id }}"
-                                                        data-class-id="{{ $cid }}"
-                                                        data-semester="semester_1"
-                                                        data-class-name="{{ $cname }}"
-                                                        data-semester-label="Học kỳ 1">
-                                                        <i class="ti ti-zoom-check me-1"></i>Kiểm tra
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </td>
-
-                                    <!-- Cột Học kỳ 2 -->
-                                    <td>
-                                        @if($hk2 && ($hk2['academic_performance'] || $hk2['average_score'] !== null))
-                                            @php
-                                                $rVal = $hk2['academic_performance'] ?? '';
-                                                $bInfo = $ratingBadges[$rVal] ?? ['badge' => 'bg-secondary text-white', 'label' => $rVal ?: 'Chưa XL'];
-                                                $sVal = $hk2['calculation_status'] ?? 'empty';
-                                                $sInfo = $statusBadges[$sVal] ?? ['badge' => 'badge-outline text-muted', 'label' => $sVal];
-                                            @endphp
-                                            <div class="d-flex flex-column align-items-center gap-1">
-                                                <div class="d-flex align-items-center gap-1">
-                                                    <span class="badge {{ $bInfo['badge'] }} px-2 py-1">{{ $bInfo['label'] }}</span>
-                                                    @if($hk2['average_score'] !== null)
-                                                        <span class="badge bg-light text-dark fw-bold">{{ number_format($hk2['average_score'], 1) }}</span>
-                                                    @endif
-                                                </div>
-                                                <span class="badge {{ $sInfo['badge'] }} fs-10 px-1 py-0">{{ $sInfo['label'] }}</span>
-                                                <button type="button" class="btn btn-ghost-primary btn-sm px-1 py-0 fs-11 btn-debug-report-card"
-                                                    data-child-id="{{ $children->id }}"
-                                                    data-class-id="{{ $cid }}"
-                                                    data-semester="semester_2"
-                                                    data-class-name="{{ $cname }}"
-                                                    data-semester-label="Học kỳ 2"
-                                                    title="{{ __('Xem chẩn đoán chi tiết HK2') }}">
-                                                    <i class="ti ti-zoom-check me-1"></i>Chẩn đoán
-                                                </button>
-                                            </div>
-                                        @else
-                                            <div class="text-muted fs-11">
-                                                <span>--</span>
-                                                <div>
-                                                    <button type="button" class="btn btn-ghost-secondary btn-sm px-1 py-0 fs-10 btn-debug-report-card"
-                                                        data-child-id="{{ $children->id }}"
-                                                        data-class-id="{{ $cid }}"
-                                                        data-semester="semester_2"
-                                                        data-class-name="{{ $cname }}"
-                                                        data-semester-label="Học kỳ 2">
-                                                        <i class="ti ti-zoom-check me-1"></i>Kiểm tra
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </td>
-
-                                    <!-- Cột Cả Năm -->
-                                    <td>
-                                        @if($cn && ($cn['academic_performance'] || $cn['average_score'] !== null))
-                                            @php
-                                                $rVal = $cn['academic_performance'] ?? '';
-                                                $bInfo = $ratingBadges[$rVal] ?? ['badge' => 'bg-secondary text-white', 'label' => $rVal ?: 'Chưa XL'];
-                                                $sVal = $cn['calculation_status'] ?? 'empty';
-                                                $sInfo = $statusBadges[$sVal] ?? ['badge' => 'badge-outline text-muted', 'label' => $sVal];
-                                            @endphp
-                                            <div class="d-flex flex-column align-items-center gap-1">
-                                                <div class="d-flex align-items-center gap-1">
-                                                    <span class="badge {{ $bInfo['badge'] }} px-2 py-1">{{ $bInfo['label'] }}</span>
-                                                    @if($cn['average_score'] !== null)
-                                                        <span class="badge bg-light text-dark fw-bold">{{ number_format($cn['average_score'], 1) }}</span>
-                                                    @endif
-                                                </div>
-                                                <span class="badge {{ $sInfo['badge'] }} fs-10 px-1 py-0">{{ $sInfo['label'] }}</span>
-                                                <button type="button" class="btn btn-ghost-primary btn-sm px-1 py-0 fs-11 btn-debug-report-card"
-                                                    data-child-id="{{ $children->id }}"
-                                                    data-class-id="{{ $cid }}"
-                                                    data-semester="full_year"
-                                                    data-class-name="{{ $cname }}"
-                                                    data-semester-label="Cả năm"
-                                                    title="{{ __('Xem chẩn đoán chi tiết Cả năm') }}">
-                                                    <i class="ti ti-zoom-check me-1"></i>Chẩn đoán
-                                                </button>
-                                            </div>
-                                        @else
-                                            <div class="text-muted fs-11">
-                                                <span>--</span>
-                                                <div>
-                                                    <button type="button" class="btn btn-ghost-secondary btn-sm px-1 py-0 fs-10 btn-debug-report-card"
-                                                        data-child-id="{{ $children->id }}"
-                                                        data-class-id="{{ $cid }}"
-                                                        data-semester="full_year"
-                                                        data-class-name="{{ $cname }}"
-                                                        data-semester-label="Cả năm">
-                                                        <i class="ti ti-zoom-check me-1"></i>Kiểm tra
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </td>
-
-                                    <!-- Cột Ảnh Học Bạ -->
-                                    <td>
-                                        @if($attCount > 0)
-                                            <span class="badge bg-azure-lt text-azure px-2 py-1 fs-11">
-                                                <i class="ti ti-paperclip me-1"></i>{{ $attCount }} {{ __('ảnh') }}
-                                            </span>
-                                        @else
-                                            <span class="text-muted fs-11">{{ __('0 ảnh') }}</span>
-                                        @endif
-                                    </td>
-
-                                    <!-- Cột Thao Tác -->
-                                    <td>
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle px-2 py-1 fs-12" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="ti ti-settings me-1"></i>{{ __('Tính Lại') }}
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm fs-12">
-                                                <li>
-                                                    <a class="dropdown-item btn-recalculate-report-card" href="javascript:void(0)"
-                                                        data-child-id="{{ $children->id }}"
-                                                        data-class-id="{{ $cid }}"
-                                                        data-semester="semester_1"
-                                                        data-class-name="{{ $cname }}"
-                                                        data-semester-label="Học kỳ 1">
-                                                        <i class="ti ti-calculator text-primary me-2"></i>{{ __('Tính lại Học kỳ 1') }}
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item btn-recalculate-report-card" href="javascript:void(0)"
-                                                        data-child-id="{{ $children->id }}"
-                                                        data-class-id="{{ $cid }}"
-                                                        data-semester="semester_2"
-                                                        data-class-name="{{ $cname }}"
-                                                        data-semester-label="Học kỳ 2">
-                                                        <i class="ti ti-calculator text-primary me-2"></i>{{ __('Tính lại Học kỳ 2') }}
-                                                    </a>
-                                                </li>
-                                                <li><hr class="dropdown-divider my-1"></li>
-                                                <li>
-                                                    <a class="dropdown-item btn-recalculate-report-card" href="javascript:void(0)"
-                                                        data-child-id="{{ $children->id }}"
-                                                        data-class-id="{{ $cid }}"
-                                                        data-semester="full_year"
-                                                        data-class-name="{{ $cname }}"
-                                                        data-semester-label="Cả năm">
-                                                        <i class="ti ti-refresh text-success me-2"></i>{{ __('Tính lại Cả Năm') }}
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
+                            <td><div class="rc-class"><span class="rc-class-number">{{ $classId }}</span><div class="text-start"><strong>{{ $name }}</strong><div class="text-muted small">Khối {{ $classId }}</div></div></div></td>
+                            @foreach([$semester1,$semester2,$fullYear] as $result)
+                                <td>@if($result)<span class="rc-result {{ $result['class'] }}">@if($result['score'] !== null)<strong>{{ number_format($result['score'],1) }}</strong>@endif<small>{{ $result['label'] }}</small></span>@else<span class="rc-empty">Chưa cập nhật</span>@endif</td>
                             @endforeach
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                            <td>@if(($class['attachments_count'] ?? 0)>0)<span class="badge bg-azure-lt text-azure"><i class="ti ti-photo me-1"></i>{{ $class['attachments_count'] }} ảnh</span>@else<span class="rc-empty">Chưa có ảnh</span>@endif</td>
+                        </tr>
+                    @endforeach
+                @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-<!-- Include Modal Chẩn Đoán Học Bạ -->
-@include('admin.children.partials.report-card-debug-modal', ['children' => $children])

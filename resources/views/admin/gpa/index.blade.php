@@ -2,7 +2,7 @@
 
 @push('libs-css')
     <style>
-        .report-card-hero { background: linear-gradient(135deg, #206bc4 0%, #5b5bd6 55%, #7c3aed 100%); border: 0; overflow: hidden; }
+        .report-card-hero { background: linear-gradient(135deg, #1769aa 0%, #167fa3 55%, #0f8f83 100%); border: 0; overflow: hidden; }
         .report-card-hero:after { content: ''; position: absolute; width: 240px; height: 240px; right: -60px; top: -110px; border-radius: 50%; background: rgba(255,255,255,.1); }
         .report-card-hero .hero-icon { width: 54px; height: 54px; border-radius: 16px; background: rgba(255,255,255,.16); display: grid; place-items: center; font-size: 28px; }
         .report-stat { border: 0; box-shadow: 0 4px 18px rgba(30,41,59,.07); transition: transform .2s ease, box-shadow .2s ease; }
@@ -35,7 +35,7 @@
             <div class="row row-cards mb-4">
                 <div class="col-6 col-lg-3"><div class="card report-stat h-100"><div class="card-body d-flex align-items-center gap-3"><span class="stat-icon bg-blue-lt text-blue"><i class="ti ti-books"></i></span><div><div class="text-muted small">Tổng học bạ</div><div class="h2 mb-0">{{ number_format($reportCardStats['total']) }}</div></div></div></div></div>
                 <div class="col-6 col-lg-3"><div class="card report-stat h-100"><div class="card-body d-flex align-items-center gap-3"><span class="stat-icon bg-green-lt text-green"><i class="ti ti-circle-check"></i></span><div><div class="text-muted small">Đã hoàn tất</div><div class="h2 mb-0">{{ $reportCardStats['completion_rate'] }}%</div><small class="text-muted">{{ $reportCardStats['completed'] }} hồ sơ</small></div></div></div></div>
-                <div class="col-6 col-lg-3"><div class="card report-stat h-100"><div class="card-body d-flex align-items-center gap-3"><span class="stat-icon bg-purple-lt text-purple"><i class="ti ti-chart-bar"></i></span><div><div class="text-muted small">Điểm TB cả năm</div><div class="h2 mb-0">{{ $reportCardStats['average_score'] ?? '—' }}</div></div></div></div></div>
+                <div class="col-6 col-lg-3"><div class="card report-stat h-100"><div class="card-body d-flex align-items-center gap-3"><span class="stat-icon bg-cyan-lt text-cyan"><i class="ti ti-chart-bar"></i></span><div><div class="text-muted small">Điểm TB cả năm</div><div class="h2 mb-0">{{ $reportCardStats['average_score'] ?? '—' }}</div></div></div></div></div>
                 <div class="col-6 col-lg-3"><div class="card report-stat h-100"><div class="card-body d-flex align-items-center gap-3"><span class="stat-icon {{ $reportCardStats['needs_review'] ? 'bg-orange-lt text-orange' : 'bg-secondary-lt text-secondary' }}"><i class="ti ti-alert-triangle"></i></span><div><div class="text-muted small">Cần kiểm tra</div><div class="h2 mb-0">{{ number_format($reportCardStats['needs_review']) }}</div></div></div></div></div>
             </div>
 
