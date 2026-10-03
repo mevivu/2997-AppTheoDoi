@@ -1,5 +1,7 @@
 @php
-    $stages = $reportCardSummary['stages'] ?? [];
+    $stages = collect($reportCardSummary['stages'] ?? [])
+        ->keyBy('education_level')
+        ->all();
     $highlights = $reportCardSummary['highlights'] ?? [];
 
     $ratingBadges = [
@@ -74,8 +76,8 @@
             @foreach($stageCards as $sKey => $sConf)
                 @php
                     $sData = $stages[$sKey] ?? null;
-                    $compYears = $sData['completed_years'] ?? 0;
-                    $totYears = $sData['total_years'] ?? 0;
+                    $compYears = $sData['classes_with_full_year'] ?? 0;
+                    $totYears = $sData['classes_total'] ?? count($sData['classes'] ?? []);
                     $latestRat = $sData['latest_rating'] ?? null;
                 @endphp
                 <div class="col-12 col-md-4">
@@ -117,7 +119,7 @@
     </div>
 
     <!-- Highlights (Môn học thế mạnh / Cần cải thiện nếu có) -->
-    @if(!empty($highlights['top_subjects']) || !empty($highlights['improve_subjects']))
+    @if(!empty($highlights['strong_subjects']) || !empty($highlights['need_attention']))
         <div class="col-12">
             <div class="card p-3 border border-light-subtle rounded-3 bg-white shadow-sm">
                 <div class="row g-3">
@@ -127,9 +129,9 @@
                             <h6 class="mb-0 fw-semibold text-slate fs-13">{{ __('Môn Học Thế Mạnh (Điểm TB Cao Nhất)') }}</h6>
                         </div>
                         <div class="d-flex gap-2 flex-wrap">
-                            @forelse($highlights['top_subjects'] as $topSub)
+                            @forelse($highlights['strong_subjects'] ?? [] as $topSub)
                                 <span class="badge bg-success-lt text-success px-2 py-1 fs-12">
-                                    {{ $topSub['name'] }}: <strong>{{ number_format($topSub['average'], 1) }}</strong>
+                                    {{ $topSub['name'] }}: <strong>{{ number_format($topSub['value'], 1) }}</strong>
                                 </span>
                             @empty
                                 <span class="text-muted fs-12">{{ __('Chưa đủ dữ liệu điểm số') }}</span>
@@ -142,9 +144,9 @@
                             <h6 class="mb-0 fw-semibold text-slate fs-13">{{ __('Môn Cần Quan Tâm & Bồi Dưỡng Thêm') }}</h6>
                         </div>
                         <div class="d-flex gap-2 flex-wrap">
-                            @forelse($highlights['improve_subjects'] as $impSub)
+                            @forelse($highlights['need_attention'] ?? [] as $impSub)
                                 <span class="badge bg-warning-lt text-warning px-2 py-1 fs-12">
-                                    {{ $impSub['name'] }}: <strong>{{ number_format($impSub['average'], 1) }}</strong>
+                                    {{ $impSub['name'] }}: <strong>{{ number_format($impSub['value'], 1) }}</strong>
                                 </span>
                             @empty
                                 <span class="text-muted fs-12">{{ __('Không có môn nào dưới ngưỡng khuyến nghị') }}</span>
@@ -186,7 +188,7 @@
                             @foreach($stageData['classes'] as $cls)
                                 @php
                                     $cid = $cls['class_id'];
-                                    $cname = $cls['class_name'];
+                                    $cname = $cls['name'] ?? ('Lớp ' . $cid);
                                     $hk1 = $cls['semesters']['semester_1'] ?? null;
                                     $hk2 = $cls['semesters']['semester_2'] ?? null;
                                     $cn = $cls['semesters']['full_year'] ?? null;
