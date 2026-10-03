@@ -482,6 +482,16 @@ class RouteAdminSystem
     const EXPERT_POST_UPDATE = 'admin.expert_post.update';
     const EXPERT_POST_DELETE = 'admin.expert_post.delete';
 
+    /** FETAL GROWTH STANDARD */
+    const FETAL_GROWTH_STANDARD_INDEX = 'admin.fetal-growth-standard.index';
+    const FETAL_GROWTH_STANDARD_CREATE = 'admin.fetal-growth-standard.create';
+    const FETAL_GROWTH_STANDARD_STORE = 'admin.fetal-growth-standard.store';
+    const FETAL_GROWTH_STANDARD_EDIT = 'admin.fetal-growth-standard.edit';
+    const FETAL_GROWTH_STANDARD_UPDATE = 'admin.fetal-growth-standard.update';
+    const FETAL_GROWTH_STANDARD_DELETE = 'admin.fetal-growth-standard.delete';
+    const FETAL_GROWTH_STANDARD_IMPORT = 'admin.fetal-growth-standard.import';
+    const FETAL_GROWTH_STANDARD_MULTIPLE = 'admin.fetal-growth-standard.multiple';
+
     /**
      * Helper URL dẫn đến trang chi tiết trẻ em tại tab #childrenInfo trong trang sửa thông tin phụ huynh
      * Fallback sang route sửa trẻ em nếu không có thông tin phụ huynh

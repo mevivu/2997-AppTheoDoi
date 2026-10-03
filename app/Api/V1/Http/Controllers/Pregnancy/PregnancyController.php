@@ -295,4 +295,20 @@ class PregnancyController extends Controller
         }
     }
 
+    /**
+     * Lấy dữ liệu tổng quan theo dõi thai kỳ (tuần tuổi, ngày chào đời, ngày dự sinh, chuẩn Vinmec/WHO, biểu đồ tăng trưởng)
+     *
+     * @authenticated
+     * @queryParam child_id int optional ID của thai nhi / trẻ. Example: 1
+     */
+    public function trackingOverview(\Illuminate\Http\Request $request): JsonResponse
+    {
+        try {
+            $data = $this->service->trackingOverview($request);
+            return $this->jsonResponseSuccess($data);
+        } catch (Exception $exception) {
+            $this->logError('Get pregnancy tracking overview failed:', $exception);
+            return $this->jsonResponseError('Get pregnancy tracking overview failed', 500);
+        }
+    }
 }

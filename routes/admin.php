@@ -1370,6 +1370,30 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+    // Fetal Growth Standards (Chuẩn phát triển thai nhi)
+    Route::controller(App\Admin\Http\Controllers\FetalGrowthStandard\FetalGrowthStandardController::class)
+        ->prefix('/chuan-phat-trien-thai-nhi')
+        ->as('fetal-growth-standard.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:createFetalGrowthStandard', 'auth:admin']], function () {
+                Route::get('/them', 'create')->name('create');
+                Route::post('/them', 'store')->name('store');
+                Route::post('/import', 'import')->name('import');
+            });
+            Route::group(['middleware' => ['permission:viewFetalGrowthStandard', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/download-template', 'downloadTemplate')->name('downloadTemplate');
+                Route::get('/sua/{id}', 'edit')->name('edit');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+            });
+            Route::group(['middleware' => ['permission:updateFetalGrowthStandard', 'auth:admin']], function () {
+                Route::put('/sua', 'update')->name('update');
+            });
+            Route::group(['middleware' => ['permission:deleteFetalGrowthStandard', 'auth:admin']], function () {
+                Route::delete('/xoa/{id}', 'delete')->name('delete');
+            });
+        });
+
     //auth
     Route::controller(App\Admin\Http\Controllers\Auth\ProfileController::class)
         ->prefix('/thong-tin-ca-nhan')

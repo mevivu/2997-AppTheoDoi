@@ -61,6 +61,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\ExpertCategory\ExpertCategoryServiceInterface' => 'App\Admin\Services\ExpertCategory\ExpertCategoryService',
         'App\Admin\Services\ExpertPost\ExpertPostServiceInterface' => 'App\Admin\Services\ExpertPost\ExpertPostService',
         'App\Admin\Services\KnowledgePost\KnowledgePostServiceInterface' => 'App\Admin\Services\KnowledgePost\KnowledgePostService',
+        'App\Admin\Services\FetalGrowthStandard\FetalGrowthStandardServiceInterface' => 'App\Admin\Services\FetalGrowthStandard\FetalGrowthStandardService',
     ];
 
     /**

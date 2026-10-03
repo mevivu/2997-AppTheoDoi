@@ -15,4 +15,6 @@ interface PregnancyServiceInterface
 
     public function index(Request $request);
 
+    public function trackingOverview(Request $request);
+
 }

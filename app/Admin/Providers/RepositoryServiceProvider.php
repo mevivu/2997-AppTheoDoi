@@ -80,6 +80,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Expert\ExpertRepositoryInterface' => 'App\Admin\Repositories\Expert\ExpertRepository',
         'App\Admin\Repositories\ExpertCategory\ExpertCategoryRepositoryInterface' => 'App\Admin\Repositories\ExpertCategory\ExpertCategoryRepository',
         'App\Admin\Repositories\ExpertPost\ExpertPostRepositoryInterface' => 'App\Admin\Repositories\ExpertPost\ExpertPostRepository',
+        'App\Admin\Repositories\FetalGrowthStandard\FetalGrowthStandardRepositoryInterface' => 'App\Admin\Repositories\FetalGrowthStandard\FetalGrowthStandardRepository',
     ];
 
     /**

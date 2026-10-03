@@ -3011,6 +3011,91 @@ return [
             'addClass' => 'text-center align-middle',
         ],
     ],
+    'fetal_growth_standards' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'week' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Tuần thai</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle font-weight-bold',
+        ],
+        'length' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-ruler"></i><span>Chiều dài (cm)</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'weight' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-scale"></i><span>Cân nặng (g)</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'head_circumference' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-circle"></i><span>Chu vi đầu (cm)</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
+    'fetal_growth_standards' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'week' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-calendar"></i><span>Tuần thai</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'length' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-ruler"></i><span>Chiều dài chuẩn (cm)</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'weight' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-scale"></i><span>Cân nặng chuẩn (g)</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'head_circumference' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-circle"></i><span>Chu vi đầu (cm)</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => true,
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
 ];
+
 
 

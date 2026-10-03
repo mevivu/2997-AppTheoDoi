@@ -1004,6 +1004,29 @@ return [
         ]
     ],
     [
+        'title' => 'Chuẩn thai nhi theo tuần',
+        'routeName' => null,
+        'icon' => '<i class="ti ti-baby-carriage"></i>',
+        'roles' => [],
+        'permissions' => ['viewFetalGrowthStandard', 'createFetalGrowthStandard', 'updateFetalGrowthStandard', 'deleteFetalGrowthStandard'],
+        'sub' => [
+            [
+                'title' => 'Thêm chỉ số tuần',
+                'routeName' => RouteAdminSystem::FETAL_GROWTH_STANDARD_CREATE,
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createFetalGrowthStandard'],
+            ],
+            [
+                'title' => 'Bảng chuẩn thai nhi',
+                'routeName' => RouteAdminSystem::FETAL_GROWTH_STANDARD_INDEX,
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewFetalGrowthStandard'],
+            ],
+        ]
+    ],
+    [
         'title' => 'Cài đặt',
         'routeName' => null,
         'icon' => '<i class="ti ti-settings"></i>',

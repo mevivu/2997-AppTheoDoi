@@ -167,6 +167,8 @@ Route::controller(\App\Api\V1\Http\Controllers\Pregnancy\PregnancyController::cl
     ->as('pregnancy.')
     ->group(function () {
         Route::get('/', 'index');
+        Route::get('/tracking-overview', 'trackingOverview');
+        Route::get('/overview', 'trackingOverview');
         Route::get('/{id}', 'show');
         Route::post('/', 'store');
         Route::post('/update', 'update');
