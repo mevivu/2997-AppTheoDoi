@@ -246,7 +246,7 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-pennant"></i>',
         'roles' => [],
-        'permissions' => ['createPregnancy', 'viewPregnancy', 'viewPregnancy', 'updatePregnancy'],
+        'permissions' => ['createPregnancy', 'viewPregnancy', 'updatePregnancy', 'viewFetalGrowthStandard', 'createFetalGrowthStandard'],
         'sub' => [
             [
                 'title' => 'Thêm Thai kì',
@@ -262,8 +262,20 @@ return [
                 'roles' => [],
                 'permissions' => ['viewPregnancy'],
             ],
-
-
+            [
+                'title' => 'Thêm chuẩn thai',
+                'routeName' => RouteAdminSystem::FETAL_GROWTH_STANDARD_CREATE,
+                'icon' => '<i class="ti ti-plus"></i>',
+                'roles' => [],
+                'permissions' => ['createFetalGrowthStandard'],
+            ],
+            [
+                'title' => 'Bảng chuẩn thai',
+                'routeName' => RouteAdminSystem::FETAL_GROWTH_STANDARD_INDEX,
+                'icon' => '<i class="ti ti-list"></i>',
+                'roles' => [],
+                'permissions' => ['viewFetalGrowthStandard'],
+            ],
         ]
     ],
     [
@@ -1000,29 +1012,6 @@ return [
                 'icon' => '<i class="ti ti-category"></i>',
                 'roles' => [],
                 'permissions' => ['viewExpertCategory'],
-            ],
-        ]
-    ],
-    [
-        'title' => 'Chuẩn thai nhi theo tuần',
-        'routeName' => null,
-        'icon' => '<i class="ti ti-baby-carriage"></i>',
-        'roles' => [],
-        'permissions' => ['viewFetalGrowthStandard', 'createFetalGrowthStandard', 'updateFetalGrowthStandard', 'deleteFetalGrowthStandard'],
-        'sub' => [
-            [
-                'title' => 'Thêm chỉ số tuần',
-                'routeName' => RouteAdminSystem::FETAL_GROWTH_STANDARD_CREATE,
-                'icon' => '<i class="ti ti-plus"></i>',
-                'roles' => [],
-                'permissions' => ['createFetalGrowthStandard'],
-            ],
-            [
-                'title' => 'Bảng chuẩn thai nhi',
-                'routeName' => RouteAdminSystem::FETAL_GROWTH_STANDARD_INDEX,
-                'icon' => '<i class="ti ti-list"></i>',
-                'roles' => [],
-                'permissions' => ['viewFetalGrowthStandard'],
             ],
         ]
     ],
