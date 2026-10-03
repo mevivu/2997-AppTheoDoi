@@ -27,6 +27,12 @@
                         <span>{{ __('Lịch Tiêm Chủng') }}</span>
                     </button>
                 </li>
+                <li class="nav-item flex-fill" role="presentation">
+                    <button class="nav-link w-100 text-center py-2" id="tab-child-report-card" data-bs-toggle="tab" data-bs-target="#content-child-report-card" type="button" role="tab" aria-selected="false">
+                        <i class="ti ti-book me-1 fs-5 text-warning"></i>
+                        <span>{{ __('Học Bạ Điện Tử') }}</span>
+                    </button>
+                </li>
             </ul>
         </div>
 
@@ -51,6 +57,11 @@
                 <!-- Tab 4: Tiêm chủng -->
                 <div class="tab-pane fade" id="content-child-vaccination" role="tabpanel" aria-labelledby="tab-child-vaccination">
                     @include('admin.children.partials.vaccination-info', ['children' => $children])
+                </div>
+
+                <!-- Tab 5: Học bạ điện tử -->
+                <div class="tab-pane fade" id="content-child-report-card" role="tabpanel" aria-labelledby="tab-child-report-card">
+                    @include('admin.children.partials.report-card-info', ['children' => $children])
                 </div>
             </div>
         </div>

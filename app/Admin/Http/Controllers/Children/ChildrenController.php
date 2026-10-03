@@ -217,6 +217,14 @@ class ChildrenController extends Controller
         }
 
 
+        $reportCardSummary = null;
+        try {
+            $summaryService = app(\App\Services\ReportCard\ReportCardSummaryService::class);
+            $reportCardSummary = $summaryService->getSummary((int) $id);
+        } catch (\Throwable $e) {
+            Log::warning('Error getting report card summary for child ' . $id . ': ' . $e->getMessage());
+        }
+
         return view(
             $this->view['edit'],
             [
@@ -225,6 +233,7 @@ class ChildrenController extends Controller
                 'heightPrediction' => $heightPrediction,
                 'heightChart' => $heightChart,
                 'pqOverall' => $pqOverall,
+                'reportCardSummary' => $reportCardSummary,
                 'gender' => Gender::asSelectArray(),
                 'birthday' => $instance->birthday,
                 'dueDate' => $instance->due_date,
@@ -392,6 +401,164 @@ class ChildrenController extends Controller
             return response()->json([
                 'status' => 500,
                 'message' => 'Lỗi khi lấy dữ liệu chẩn đoán thể chất PQ: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function ajaxDebugReportCard(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $childId = $request->input('child_id');
+            $classId = $request->input('class_id');
+            $semester = $request->input('semester');
+
+            $validator = validator([
+                'child_id' => $childId,
+                'class_id' => $classId,
+                'semester' => $semester,
+            ], [
+                'child_id' => 'required|numeric',
+                'class_id' => 'required|numeric',
+                'semester' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 422,
+                    'message' => $validator->errors()->first(),
+                ], 422);
+            }
+
+            $classGrade = \App\Models\ClassGrade::where('child_id', $childId)
+                ->where('class_id', $classId)
+                ->first();
+
+            if (!$classGrade) {
+                return response()->json([
+                    'status' => 404,
+                    'message' => 'Chưa có bảng điểm lớp của trẻ cho năm học này.',
+                ], 404);
+            }
+
+            $evaluation = $classGrade->evaluations()->where('semester', $semester)->first();
+
+            $loader = app(\App\Services\ReportCard\ReportCardInputLoader::class);
+            $engine = app(\App\Services\ReportCard\ReportCardEngine::class);
+
+            $input = $loader->load($classGrade, $semester);
+            $calcResult = $engine->calculate($input);
+
+            $className = $classGrade->class?->name ?? "Lớp {$classId}";
+
+            $subjectsData = [];
+            foreach ($calcResult->subjects as $sr) {
+                $subModel = $classGrade->class?->subjects?->firstWhere('id', $sr->subjectId);
+                $isComment = ($sr->method === 'comment');
+                $subjectsData[] = [
+                    'subject_id' => $sr->subjectId,
+                    'name' => $sr->name ?: ($subModel?->name ?? "Môn #{$sr->subjectId}"),
+                    'method' => $sr->method,
+                    'grade' => !$isComment ? $sr->value : null,
+                    'achievement_level' => $isComment ? (string) $sr->value : null,
+                    'full_year_grade' => ($semester === 'full_year' && !$isComment) ? $sr->value : null,
+                    'full_year_grade_source' => $sr->source,
+                    'hk1' => $sr->hk1,
+                    'hk2' => $sr->hk2,
+                    'is_passed' => (bool) $sr->passed,
+                    'is_required' => (bool) $sr->isRequired,
+                ];
+            }
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Lấy dữ liệu chẩn đoán học bạ thành công.',
+                'data' => [
+                    'child_id' => (int) $childId,
+                    'class_id' => (int) $classId,
+                    'class_name' => $className,
+                    'education_level' => $calcResult->educationLevel,
+                    'regulation' => $calcResult->regulation,
+                    'semester' => $semester,
+                    'calculation_status' => $calcResult->status,
+                    'calculated_academic_performance' => $calcResult->rating,
+                    'current_academic_performance' => $evaluation?->academic_performance?->value ?? $evaluation?->academic_performance,
+                    'is_performance_overridden' => (bool) $evaluation?->is_performance_overridden,
+                    'teacher_remark' => $evaluation?->teacher_remark,
+                    'version' => $calcResult->version,
+                    'subjects' => $subjectsData,
+                    'rules' => $calcResult->rules,
+                    'adjustment' => $calcResult->adjustment,
+                    'missing' => $calcResult->missing,
+                    'warnings' => $calcResult->warnings,
+                    'snapshot' => $calcResult->snapshot(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('ajaxDebugReportCard error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 500,
+                'message' => 'Lỗi khi chẩn đoán dữ liệu học bạ: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function ajaxRecalculateReportCard(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $childId = $request->input('child_id');
+            $classId = $request->input('class_id');
+            $semester = $request->input('semester');
+            $applyFinal = (bool) $request->input('apply_final', false);
+
+            $validator = validator([
+                'child_id' => $childId,
+                'class_id' => $classId,
+                'semester' => $semester,
+            ], [
+                'child_id' => 'required|numeric',
+                'class_id' => 'required|numeric',
+                'semester' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 422,
+                    'message' => $validator->errors()->first(),
+                ], 422);
+            }
+
+            $service = app(\App\Api\V1\Services\ChildEvaluation\ChildEvaluationServiceInterface::class);
+            $service->findAndCreateChildEvaluations($childId, $classId, $semester);
+
+            $classGrade = \App\Models\ClassGrade::where('child_id', $childId)
+                ->where('class_id', $classId)
+                ->firstOrFail();
+
+            $loader = app(\App\Services\ReportCard\ReportCardInputLoader::class);
+            $engine = app(\App\Services\ReportCard\ReportCardEngine::class);
+            $persister = app(\App\Services\ReportCard\ReportCardPersister::class);
+
+            $input = $loader->load($classGrade, $semester);
+            $calcResult = $engine->calculate($input);
+
+            \Illuminate\Support\Facades\Config::set('report_card.auto_classification', $applyFinal);
+            $saved = $persister->persist($classGrade, $semester, $calcResult, $input);
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Tính toán lại học bạ thành công.',
+                'data' => [
+                    'evaluation_id' => $saved?->id,
+                    'calculation_status' => $saved?->calculation_status?->value ?? $saved?->calculation_status,
+                    'calculated_academic_performance' => $saved?->calculated_academic_performance,
+                    'academic_performance' => $saved?->academic_performance?->value ?? $saved?->academic_performance,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('ajaxRecalculateReportCard error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 500,
+                'message' => 'Lỗi khi tính lại học bạ: ' . $e->getMessage(),
             ], 500);
         }
     }

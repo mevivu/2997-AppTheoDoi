@@ -1062,6 +1062,8 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::post('/chay-phac-do-v2', 'ajaxHeightChartV2')->name('heightChartV2');
                 Route::post('/debug-chieu-cao-v2', 'ajaxDebugHeightV2')->name('debugHeightV2');
                 Route::post('/debug-the-chat-pq', 'ajaxDebugPQ')->name('debugPQ');
+                Route::post('/debug-hoc-ba', 'ajaxDebugReportCard')->name('debugReportCard');
+                Route::post('/tinh-lai-hoc-ba', 'ajaxRecalculateReportCard')->name('recalculateReportCard');
             });
 
             Route::group(['middleware' => ['permission:updateChildren', 'auth:admin']], function () {

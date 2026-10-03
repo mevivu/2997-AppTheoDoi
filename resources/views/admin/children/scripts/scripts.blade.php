@@ -1108,6 +1108,322 @@
                     }, 2000);
                 });
             });
+
+            // 10. Debug & Tính Lại Học Bạ Điện Tử (Report Card) Handlers
+            var latestRcDebugData = null;
+
+            function getRcRatingBadge(val) {
+                if (!val) return '<span class="badge bg-light text-muted">Chưa xếp loại</span>';
+                var map = {
+                    'xuat_sac': '<span class="badge bg-purple-lt text-purple px-2 py-1">Xuất sắc</span>',
+                    'gioi': '<span class="badge bg-success-lt text-success px-2 py-1">Giỏi</span>',
+                    'kha': '<span class="badge bg-primary-lt text-primary px-2 py-1">Khá</span>',
+                    'dat': '<span class="badge bg-warning-lt text-warning px-2 py-1">Đạt</span>',
+                    'chua_dat': '<span class="badge bg-danger-lt text-danger px-2 py-1">Chưa đạt</span>',
+                    'hoan_thanh_xuat_sac': '<span class="badge bg-purple-lt text-purple px-2 py-1">HT Xuất sắc</span>',
+                    'hoan_thanh_tot': '<span class="badge bg-success-lt text-success px-2 py-1">HT Tốt</span>',
+                    'hoan_thanh': '<span class="badge bg-warning-lt text-warning px-2 py-1">Hoàn thành</span>',
+                    'chua_hoan_thanh': '<span class="badge bg-danger-lt text-danger px-2 py-1">Chưa HT</span>'
+                };
+                return map[val] || `<span class="badge bg-secondary text-white px-2 py-1">${val}</span>`;
+            }
+
+            function getRcStatusBadge(val) {
+                var map = {
+                    'calculated': '<span class="badge bg-success text-white">Đã tính tự động</span>',
+                    'manual': '<span class="badge bg-primary text-white">Nhập tay</span>',
+                    'incomplete': '<span class="badge bg-warning text-dark">Chưa đủ điểm</span>',
+                    'overridden': '<span class="badge bg-info text-white">Đã ghi đè</span>',
+                    'error': '<span class="badge bg-danger text-white">Lỗi tính toán</span>'
+                };
+                return map[val] || `<span class="badge bg-light text-muted">${val || 'Chưa có'}</span>`;
+            }
+
+            // Click nút Chẩn đoán học bạ
+            $(document).on('click', '.btn-debug-report-card', function() {
+                var cId = $(this).data('child-id');
+                var classId = $(this).data('class-id');
+                var semester = $(this).data('semester');
+                var className = $(this).data('class-name') || ('Lớp ' + classId);
+                var semesterLabel = $(this).data('semester-label') || semester;
+
+                $('#modal-debug-rc-class-label').text(className);
+                $('#modal-debug-rc-semester-label').text(semesterLabel);
+                $('#modal-debug-rc-regulation-label').text('Đang tải...');
+
+                // Gán dữ liệu cho nút Tính lại trong modal
+                $('#btn-rc-recalc-from-modal').data('child-id', cId)
+                    .data('class-id', classId)
+                    .data('semester', semester);
+
+                // Reset tab về tab 1
+                var firstTab = document.querySelector('#tab-rc-subjects');
+                if (firstTab) {
+                    var tabInst = new bootstrap.Tab(firstTab);
+                    tabInst.show();
+                }
+
+                $('#debug-rc-loading').removeClass('d-none');
+                $('#debug-rc-content').addClass('d-none');
+                $('#debug-rc-error').addClass('d-none');
+
+                var modalEl = document.getElementById('modal-debug-report-card');
+                if (modalEl) {
+                    var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+                    modal.show();
+                }
+
+                $.ajax({
+                    url: "{{ route('admin.children.debugReportCard') }}",
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        child_id: cId,
+                        class_id: classId,
+                        semester: semester
+                    },
+                    success: function(res) {
+                        if (res.status === 200 && res.data) {
+                            latestRcDebugData = res.data;
+                            renderReportCardDebugModal(latestRcDebugData);
+                            $('#debug-rc-loading').addClass('d-none');
+                            $('#debug-rc-content').removeClass('d-none');
+                        } else {
+                            $('#debug-rc-loading').addClass('d-none');
+                            $('#debug-rc-error-msg').text(res.message || 'Không thể lấy dữ liệu chẩn đoán học bạ.');
+                            $('#debug-rc-error').removeClass('d-none');
+                        }
+                    },
+                    error: function(err) {
+                        $('#debug-rc-loading').addClass('d-none');
+                        var msg = err.responseJSON && err.responseJSON.message ? err.responseJSON.message : 'Lỗi kết nối máy chủ.';
+                        $('#debug-rc-error-msg').text(msg);
+                        $('#debug-rc-error').removeClass('d-none');
+                    }
+                });
+            });
+
+            function renderReportCardDebugModal(data) {
+                $('#modal-debug-rc-class-label').text(data.class_name);
+                var semLabels = {
+                    'semester_1': 'Học kỳ 1',
+                    'semester_2': 'Học kỳ 2',
+                    'full_year': 'Cả năm'
+                };
+                $('#modal-debug-rc-semester-label').text(semLabels[data.semester] || data.semester);
+                $('#modal-debug-rc-regulation-label').text(data.regulation + ' (' + (data.education_level === 'primary' ? 'Tiểu học' : 'Trung học') + ')');
+
+                // Header cards
+                $('#rc-modal-calc-rating').html(getRcRatingBadge(data.calculated_academic_performance));
+                var curRatingHtml = getRcRatingBadge(data.current_academic_performance);
+                if (data.is_performance_overridden) {
+                    curRatingHtml += ' <span class="badge bg-info-lt text-info fs-11 ms-1">Đã ghi đè</span>';
+                }
+                $('#rc-modal-current-rating').html(curRatingHtml);
+                $('#rc-modal-calc-status').html(getRcStatusBadge(data.calculation_status));
+
+                // TAB 1: Bảng môn học
+                var tbody = $('#rc-debug-subjects-tbody');
+                tbody.empty();
+                var subjects = data.subjects || [];
+                if (subjects.length === 0) {
+                    tbody.html('<tr><td colspan="8" class="text-muted py-3">Chưa có môn học nào được cấu hình cho lớp này.</td></tr>');
+                } else {
+                    var rowsHtml = '';
+                    subjects.forEach(function(sub, idx) {
+                        var methodBadge = sub.method === 'comment'
+                            ? '<span class="badge bg-blue-lt text-blue">Nhận xét</span>'
+                            : '<span class="badge bg-green-lt text-green">Điểm số</span>';
+
+                        var scoreDisplay = '--';
+                        if (sub.method === 'comment') {
+                            scoreDisplay = sub.achievement_level ? `<strong class="text-primary">${sub.achievement_level}</strong>` : '<span class="text-muted">Chưa ĐG</span>';
+                        } else {
+                            scoreDisplay = sub.grade !== null ? `<strong class="text-dark fs-14">${parseFloat(sub.grade).toFixed(1)}</strong>` : '<span class="text-muted">Chưa có</span>';
+                        }
+
+                        var fyDisplay = sub.full_year_grade !== null ? `<strong>${parseFloat(sub.full_year_grade).toFixed(1)}</strong>` : '<span class="text-muted">--</span>';
+                        var fySourceDisplay = sub.full_year_grade_source ? `<span class="badge bg-light text-muted fs-11">${sub.full_year_grade_source}</span>` : '<span class="text-muted">--</span>';
+
+                        var passedDisplay = sub.is_passed
+                            ? '<span class="badge bg-success-lt text-success"><i class="ti ti-check me-1"></i>Đạt</span>'
+                            : '<span class="badge bg-danger-lt text-danger"><i class="ti ti-x me-1"></i>Chưa đạt</span>';
+
+                        var reqDisplay = sub.is_required
+                            ? '<span class="badge bg-primary-lt text-primary">Bắt buộc</span>'
+                            : '<span class="text-muted fs-11">Tự chọn</span>';
+
+                        rowsHtml += `
+                            <tr>
+                                <td class="text-muted">${idx + 1}</td>
+                                <td class="text-start fw-semibold text-dark">${sub.name}</td>
+                                <td>${methodBadge}</td>
+                                <td>${scoreDisplay}</td>
+                                <td>${fyDisplay}</td>
+                                <td>${fySourceDisplay}</td>
+                                <td>${passedDisplay}</td>
+                                <td>${reqDisplay}</td>
+                            </tr>
+                        `;
+                    });
+                    tbody.html(rowsHtml);
+                }
+
+                // TAB 2: Counters & Rule Match
+                var rules = data.rules || {};
+                var counters = rules.counters || {};
+                var countersHtml = '<div class="row g-2">';
+                if (data.education_level === 'primary') {
+                    countersHtml += `
+                        <div class="col-6">Tổng số môn: <strong>${counters.total_subjects ?? 0}</strong></div>
+                        <div class="col-6">Môn hoàn thành tốt (T): <strong class="text-success">${counters.count_t ?? 0}</strong></div>
+                        <div class="col-6">Môn hoàn thành (H): <strong class="text-warning">${counters.count_h ?? 0}</strong></div>
+                        <div class="col-6">Môn chưa hoàn thành (C): <strong class="text-danger">${counters.count_c ?? 0}</strong></div>
+                        <div class="col-12 mt-2">Điểm kiểm tra định kỳ >= 9.0: <strong>${counters.scores_above_9 ?? 0}</strong> | >= 7.0: <strong>${counters.scores_above_7 ?? 0}</strong> | >= 5.0: <strong>${counters.scores_above_5 ?? 0}</strong></div>
+                    `;
+                } else {
+                    countersHtml += `
+                        <div class="col-6">Môn đánh giá nhận xét Đạt: <strong class="text-success">${counters.count_comment_passed ?? 0} / ${counters.count_comment_total ?? 0}</strong></div>
+                        <div class="col-6">Môn đánh giá điểm số: <strong>${counters.count_score_total ?? 0}</strong></div>
+                        <div class="col-6">Số môn điểm >= 8.0: <strong class="text-success">${counters.scores_above_8 ?? 0}</strong></div>
+                        <div class="col-6">Số môn điểm >= 6.5: <strong class="text-primary">${counters.scores_above_6_5 ?? 0}</strong></div>
+                        <div class="col-6">Số môn điểm >= 5.0: <strong class="text-warning">${counters.scores_above_5 ?? 0}</strong></div>
+                        <div class="col-6">Số môn điểm < 3.5: <strong class="text-danger">${counters.scores_below_3_5 ?? 0}</strong></div>
+                    `;
+                }
+                countersHtml += `
+                    <div class="col-12 mt-2 pt-2 border-top">
+                        <div class="text-muted fs-11">QUY TẮC CAO NHẤT KHỚP ĐƯỢC:</div>
+                        <div class="fw-bold text-success">${getRcRatingBadge(rules.matched || data.calculated_academic_performance)}</div>
+                        <div class="text-muted fs-11 mt-1">${rules.condition || 'Đạt đầy đủ các điều kiện xếp loại tương ứng.'}</div>
+                    </div>
+                </div>`;
+                $('#rc-debug-counters-content').html(countersHtml);
+
+                // TAB 2: Adjustment & Downgrade
+                var adj = data.adjustment || {};
+                var adjHtml = '';
+                if (adj.is_downgraded) {
+                    adjHtml = `
+                        <div class="alert alert-warning py-2 px-3 mb-0">
+                            <div class="fw-bold"><i class="ti ti-arrow-down-circle me-1"></i> Bị hạ bậc khống chế!</div>
+                            <div>Từ bậc nguyên bản: <strong>${adj.original_rating}</strong> => Hạ xuống: <strong class="text-danger">${adj.downgraded_rating}</strong></div>
+                            <div class="mt-1 fs-11 text-muted">Lý do: ${adj.reason || ('Do môn ' + (adj.limiting_subject || 'khống chế') + ' kéo xuống')}</div>
+                        </div>
+                    `;
+                } else {
+                    adjHtml = `
+                        <div class="alert alert-success py-2 px-3 mb-0">
+                            <div class="fw-bold"><i class="ti ti-circle-check me-1"></i> Không bị hạ bậc khống chế</div>
+                            <div class="fs-11 text-muted">Mọi điểm số môn học đều thỏa mãn ngưỡng quy định của bậc xếp loại.</div>
+                        </div>
+                    `;
+                }
+                $('#rc-debug-adjustment-content').html(adjHtml);
+
+                // TAB 2: Warnings & Missing
+                var missing = data.missing || [];
+                var warnings = data.warnings || [];
+                var warnHtml = '';
+                if (missing.length === 0 && warnings.length === 0) {
+                    warnHtml = '<div class="alert alert-success py-2 px-3 mb-0"><i class="ti ti-check me-1"></i> Dữ liệu điểm số và đánh giá đầy đủ. Không có cảnh báo.</div>';
+                } else {
+                    warnHtml = '<div class="p-2">';
+                    if (missing.length > 0) {
+                        warnHtml += '<div class="text-warning fw-bold mb-1"><i class="ti ti-alert-triangle me-1"></i> Môn học thiếu dữ liệu:</div><ul class="mb-2 ps-3">';
+                        missing.forEach(function(m) {
+                            warnHtml += `<li>Môn ID #${m.subject_id} (${m.name || 'Chưa rõ'}): ${m.reason || 'Chưa có điểm hoặc nhận xét'}</li>`;
+                        });
+                        warnHtml += '</ul>';
+                    }
+                    if (warnings.length > 0) {
+                        warnHtml += '<div class="text-danger fw-bold mb-1"><i class="ti ti-alert-circle me-1"></i> Cảnh báo:</div><ul class="mb-0 ps-3">';
+                        warnings.forEach(function(w) {
+                            warnHtml += `<li>${w}</li>`;
+                        });
+                        warnHtml += '</ul>';
+                    }
+                    warnHtml += '</div>';
+                }
+                $('#rc-debug-warnings-content').html(warnHtml);
+
+                // TAB 3: JSON Viewer
+                $('#rc-debug-json-viewer').text(JSON.stringify(data.snapshot || data, null, 2));
+            }
+
+            // Copy JSON Học Bạ handler
+            $('#btn-copy-rc-debug-json').on('click', function() {
+                if (!latestRcDebugData) return;
+                var jsonStr = JSON.stringify(latestRcDebugData.snapshot || latestRcDebugData, null, 2);
+                navigator.clipboard.writeText(jsonStr).then(function() {
+                    var $text = $('#btn-copy-rc-text');
+                    $text.text('Đã chép!');
+                    setTimeout(function() {
+                        $text.text('Sao chép JSON');
+                    }, 2000);
+                });
+            });
+
+            // Recalculate Click Handler (từ dropdown hoặc từ modal)
+            $(document).on('click', '.btn-recalculate-report-card, #btn-rc-recalc-from-modal', function() {
+                var cId = $(this).data('child-id');
+                var classId = $(this).data('class-id');
+                var semester = $(this).data('semester');
+                var className = $(this).data('class-name') || ('Lớp ' + classId);
+                var semesterLabel = $(this).data('semester-label') || semester;
+
+                if (!cId || !classId || !semester) {
+                    alert('Thiếu thông số để tính lại học bạ.');
+                    return;
+                }
+
+                if (!confirm(`Bạn có chắc chắn muốn tính toán lại học bạ cho [${className}] - [${semesterLabel}] và cập nhật vào hệ thống không?`)) {
+                    return;
+                }
+
+                var $btn = $(this);
+                $btn.prop('disabled', true);
+
+                $.ajax({
+                    url: "{{ route('admin.children.recalculateReportCard') }}",
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        child_id: cId,
+                        class_id: classId,
+                        semester: semester,
+                        apply_final: 1
+                    },
+                    success: function(res) {
+                        if (typeof msgSuccess === 'function') {
+                            msgSuccess(res.message || 'Tính toán lại học bạ thành công.');
+                        } else {
+                            alert(res.message || 'Tính toán lại học bạ thành công.');
+                        }
+
+                        // Đóng modal nếu đang mở
+                        var modalEl = document.getElementById('modal-debug-report-card');
+                        if (modalEl) {
+                            var modal = bootstrap.Modal.getInstance(modalEl);
+                            if (modal) modal.hide();
+                        }
+
+                        // Reload trang để cập nhật bảng điểm
+                        setTimeout(function() {
+                            window.location.reload();
+                        }, 800);
+                    },
+                    error: function(err) {
+                        var msg = err.responseJSON && err.responseJSON.message ? err.responseJSON.message : 'Lỗi khi tính lại học bạ.';
+                        if (typeof msgError === 'function') {
+                            msgError(msg);
+                        } else {
+                            alert(msg);
+                        }
+                        $btn.prop('disabled', false);
+                    }
+                });
+            });
         @endif
     });
 </script>
