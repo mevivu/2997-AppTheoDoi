@@ -386,6 +386,10 @@
                         <p class="fs-12 mb-0">{{ __('Bé chưa có lần đo thể chất nào trên hệ thống hoặc cần cập nhật thêm số đo để vẽ biểu đồ mạng nhện.') }}</p>
                     </div>
                 @endif
+            </div>
+        </div>
+    </div>
+
     <!-- 5. Thẻ Memo Game (Kỷ Lục Trí Nhớ & Giải Đấu) -->
     <div class="col-12">
         <div class="assessment-detail-card border-top border-3 border-azure">

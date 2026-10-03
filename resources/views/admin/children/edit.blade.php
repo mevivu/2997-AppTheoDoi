@@ -165,7 +165,7 @@
             <!-- Form Edit -->
             <x-form id="notificationForm" :action="route(RouteAdminSystem::CHILDREN_UPDATE)" type="put" :validate="true">
                 <input type="hidden" name="id" value="{{ $children->id }}">
-                <div class="row g-4 justify-content-center">
+                <div class="row g-4">
                     @include('admin.children.forms.edit-left', ['children' => $children, 'heightPrediction' => $heightPrediction, 'heightChart' => $heightChart, 'pqOverall' => $pqOverall ?? null, 'pregnancyOverview' => $pregnancyOverview ?? null])
                     @include('admin.children.forms.edit-right', ['children' => $children])
                 </div>
