@@ -46,9 +46,9 @@
                 <div class="mb-3">
                     <label class="control-label">
                         <span class="ti ti-quote"></span>
-                        {{ __('Mô tả tóm tắt / Lời dẫn ngắn') }}:
+                        {{ __('Mô tả tóm tắt / Lời dẫn ngắn (soạn thảo phong phú)') }}:
                     </label>
-                    <textarea class="form-control" name="excerpt" rows="3">{{ old('excerpt', $instance->excerpt) }}</textarea>
+                    <textarea name="excerpt" id="excerpt" class="ckeditor visually-hidden">{{ old('excerpt', $instance->excerpt) }}</textarea>
                 </div>
             </div>
 
@@ -59,7 +59,7 @@
                         <span class="ti ti-file-text"></span>
                         {{ __('Nội dung chi tiết (soạn thảo phong phú)') }}:
                     </label>
-                    <textarea name="content" class="ckeditor visually-hidden">{{ old('content', $instance->content) }}</textarea>
+                    <textarea name="content" id="content" class="ckeditor visually-hidden">{{ old('content', $instance->content) }}</textarea>
                 </div>
             </div>
         </div>

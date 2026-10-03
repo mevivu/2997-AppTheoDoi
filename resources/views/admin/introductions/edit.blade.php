@@ -33,3 +33,28 @@
     <script src="{{ asset('public/libs/ckeditor/adapters/jquery.js') }}"></script>
     @include('ckfinder::setup')
 @endpush
+
+@push('custom-js')
+    <script>
+        $(document).ready(function() {
+            if (typeof CKEDITOR !== 'undefined') {
+                if (CKEDITOR.instances['excerpt'] && CKEDITOR.instances['excerpt'].status === 'ready') {
+                    CKEDITOR.instances['excerpt'].resize('100%', 200, true);
+                }
+                CKEDITOR.on('instanceReady', function(evt) {
+                    if (evt.editor.name === 'excerpt') {
+                        evt.editor.resize('100%', 200, true);
+                    }
+                });
+
+                $('form').on('submit', function() {
+                    for (var name in CKEDITOR.instances) {
+                        try {
+                            CKEDITOR.instances[name].updateElement();
+                        } catch (e) {}
+                    }
+                });
+            }
+        });
+    </script>
+@endpush
