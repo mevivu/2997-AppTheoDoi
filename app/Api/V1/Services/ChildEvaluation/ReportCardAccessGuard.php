@@ -59,4 +59,28 @@ class ReportCardAccessGuard
             throw new ReportCardAccessDeniedException();
         }
     }
+
+    /**
+     * @throws ReportCardAccessDeniedException
+     */
+    public function assertOwnsAttachment(int|string|null $attachmentId): void
+    {
+        $userId = $this->getCurrentUserId();
+
+        if (!$userId || !$attachmentId) {
+            throw new ReportCardAccessDeniedException();
+        }
+
+        $owned = DB::table('child_evaluation_attachments as cea')
+            ->join('child_evaluations as ce', 'ce.id', '=', 'cea.child_evaluation_id')
+            ->join('class_grades as cg', 'cg.id', '=', 'ce.class_grade_id')
+            ->join('children as c', 'c.id', '=', 'cg.child_id')
+            ->where('cea.id', $attachmentId)
+            ->where('c.user_id', $userId)
+            ->exists();
+
+        if (!$owned) {
+            throw new ReportCardAccessDeniedException();
+        }
+    }
 }

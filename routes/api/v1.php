@@ -244,8 +244,15 @@ Route::controller(\App\Api\V1\Http\Controllers\ChildEvaluation\ChildEvaluationCo
     ->group(function () {
         Route::get('/', 'index');
         Route::get('/info', 'findByClassGrade');
-//        Route::post('/', 'store');
         Route::put('/', 'update');
+        Route::get('/summary', 'summary');
+        Route::post('/{id}/attachments', 'uploadAttachments')->whereNumber('id');
+        Route::delete('/{id}/attachments/{attachmentId}', 'deleteAttachment')->whereNumber('id')->whereNumber('attachmentId');
+        Route::patch('/{id}/attachments/order', 'reorderAttachments')->whereNumber('id');
+        Route::get('/attachments/{attachmentId}/file', 'getAttachmentFile')
+            ->name('attachments.file')
+            ->middleware('signed')
+            ->withoutMiddleware([\App\Api\V1\Http\Middleware\CheckAccessTokenApi::class, 'auth:api']);
     });
 
 // Vaccination Schedule

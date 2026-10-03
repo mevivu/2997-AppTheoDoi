@@ -56,6 +56,7 @@ class SubjectGradeResource extends JsonResource
             'achievement_level' => $this->achievement_level,
             'name' => $subject->name,
             'full_year_grade' => $this->full_year_grade,
+            'full_year_grade_source' => $this->full_year_grade_source,
         ];
     }
 

@@ -36,11 +36,18 @@ class ChildEvaluationSearchResource extends JsonResource
             'status' => $this->status,
             'conduct' => $this->conduct,
             'academic_performance' => $this->academic_performance,
+            'calculated_academic_performance' => $this->calculated_academic_performance,
+            'calculation_status' => $this->calculation_status,
+            'is_performance_overridden' => (bool) $this->is_performance_overridden,
+            'teacher_remark' => $this->teacher_remark,
+            'missing' => $this->calculation_snapshot['missing'] ?? [],
+            'warnings' => $this->calculation_snapshot['warnings'] ?? [],
+            'attachments' => \App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationAttachmentResource::collection($this->attachments),
             'created_at' => format_datetime($this->created_at),
             'updated_at' => format_datetime($this->updated_at),
             'subjects' => SubjectGradeResource::collection($this->subjectGrades),
-            'qualities' =>QualityGradeShowResource::collection($this->qualities),
-            'capabilities' => CapabilityGradeShowResource::collection($this->capabilities)
+            'qualities' => QualityGradeShowResource::collection($this->qualities),
+            'capabilities' => CapabilityGradeShowResource::collection($this->capabilities),
         ];
     }
 

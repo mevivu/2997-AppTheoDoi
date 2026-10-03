@@ -15,12 +15,20 @@ class SubjectResource extends JsonResource
      * @param Request $request
      * @return array|Arrayable|JsonSerializable
      */
-    public function toArray($request): array
+    public function toArray($request): array|JsonSerializable|Arrayable
     {
-        return [
+        $data = [
             'id' => $this->id,
             'name' => $this->name,
             'status' => $this->status->value,
         ];
+
+        if ($this->pivot) {
+            $data['evaluation_method'] = $this->pivot->evaluation_method;
+            $data['is_required'] = (bool) ($this->pivot->is_required ?? true);
+            $data['sort_order'] = $this->pivot->sort_order;
+        }
+
+        return $data;
     }
 }

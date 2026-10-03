@@ -22,9 +22,11 @@ class ChildEvaluationResource extends JsonResource
         return [
             'class_grade_id' => $this->id,
             'child_id' => $this->child_id,
+            'education_level' => $this->class?->resolvedEducationLevel()->value,
             'class' => [
                 'id' => $this->class->id,
-                'name' => $this->class->name
+                'name' => $this->class->name,
+                'education_level' => $this->class?->resolvedEducationLevel()->value,
             ],
             'semester1_grade' => $this->semester1_grade,
             'semester2_grade' => $this->semester2_grade,

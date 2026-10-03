@@ -7,14 +7,41 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\URL;
 
+/**
+ * App\Models\ChildEvaluationAttachment
+ *
+ * Model quản lý tệp đính kèm / ảnh chụp học bạ của trẻ
+ *
+ * @property int $id
+ * @property int $child_evaluation_id ID của bảng đánh giá học kỳ
+ * @property string $disk Disk lưu trữ file (local, public, s3)
+ * @property string $file_path Đường dẫn lưu file trên disk
+ * @property string $original_name Tên file gốc lúc tải lên
+ * @property string|null $mime_type Định dạng MIME của file
+ * @property int|null $size_bytes Dung lượng file (bytes)
+ * @property int|null $width Chiều rộng ảnh (pixels)
+ * @property int|null $height Chiều cao ảnh (pixels)
+ * @property int $sort_order Thứ tự sắp xếp hiển thị
+ * @property int|null $uploaded_by ID người dùng tải ảnh lên
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read string|null $url
+ * @property-read \App\Models\ChildEvaluation|null $childEvaluation
+ * @property-read \App\Models\User|null $uploader
+ */
 class ChildEvaluationAttachment extends Model
 {
     use HasFactory;
 
+    /**
+     * Tên bảng trong cơ sở dữ liệu
+     *
+     * @var string
+     */
     protected $table = 'child_evaluation_attachments';
 
     /**
-     * Các thuộc tính có thể gán hàng loạt (mass assignable).
+     * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
@@ -42,7 +69,7 @@ class ChildEvaluationAttachment extends Model
     ];
 
     /**
-     * Chuyển đổi kiểu dữ liệu các trường thuộc tính.
+     * The attributes that should be cast.
      *
      * @var array<string, string>
      */
@@ -54,7 +81,7 @@ class ChildEvaluationAttachment extends Model
     ];
 
     /**
-     * Các trường phụ được tự động tính toán kèm theo khi serialize.
+     * The accessors to append to the model's array form.
      *
      * @var array<int, string>
      */
@@ -89,7 +116,7 @@ class ChildEvaluationAttachment extends Model
 
         try {
             return URL::temporarySignedRoute(
-                'api.v1.child-evaluations.attachments.file',
+                'api.v1.childEvaluation.attachments.file',
                 now()->addMinutes(30),
                 ['attachmentId' => $this->id]
             );

@@ -319,8 +319,9 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $childId = $data['child_id'];
         $class = $this->classesRepository->findOrFail($classId);
         $childEvaluation = $this->findAndCreateChildEvaluations($childId, $classId, $semester);
+        $childEvaluation->load(['subjectGrades', 'qualities', 'capabilities', 'attachments']);
         $classes = $this->classesRepository->getBy(['status' => ActiveStatus::Active]);
-        $subjects = $class->subjects;
+        $subjects = $class->subjects()->withPivot('evaluation_method', 'is_required', 'sort_order')->orderByPivot('sort_order')->get();
         $capabilities = $this->capabilityRepository->getBy(['status' => ActiveStatus::Active]);
         $qualities = $this->qualityRepository->getBy(['status' => ActiveStatus::Active]);
         return [
@@ -333,8 +334,8 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
                 'capabilities' => $capabilities,
                 'qualities' => $qualities,
                 'semester' => SemesterStatus::asSelectArray(),
+                'education_level' => $class->resolvedEducationLevel()->value,
             ]
-
         ];
     }
 
