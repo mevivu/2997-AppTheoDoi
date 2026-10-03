@@ -68,13 +68,21 @@
                     </label>
                     <x-input type="date" name="due_date" placeholder="{{ __('Ngày dự sinh') }}" :value="$due_date" />
                     @if(isset($pregnancyOverview) && $pregnancyOverview)
-                        <div class="mt-2 p-2 rounded-2" style="background: rgba(13, 148, 136, 0.08); border-left: 3px solid #0d9488;">
-                            <div class="fs-12 fw-bold text-teal">
-                                <i class="ti ti-heart-filled text-pink me-1"></i>
-                                {{ $pregnancyOverview['weekDisplay'] }} — 
-                                {{ $pregnancyOverview['daysRemaining'] > 0 ? __('Còn ') . $pregnancyOverview['daysRemaining'] . __(' ngày chào đời') : __('Đến ngày dự sinh') }}
+                        <div class="mt-2 p-2 rounded-2 position-relative" style="background: rgba(13, 148, 136, 0.08); border-left: 3px solid #0d9488;">
+                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-1">
+                                <div class="fs-12 fw-bold text-teal">
+                                    <i class="ti ti-heart-filled text-pink me-1"></i>
+                                    {{ $pregnancyOverview['weekDisplay'] }} — 
+                                    {{ $pregnancyOverview['daysRemaining'] > 0 ? __('Còn ') . $pregnancyOverview['daysRemaining'] . __(' ngày chào đời') : __('Đến ngày dự sinh') }}
+                                </div>
+                                @if(isset($pregnancyOverview['debug']))
+                                    <button type="button" class="btn btn-sm d-inline-flex align-items-center gap-1 py-0 px-2 fs-11 rounded-pill" style="color: #0d9488; border: 1px solid #0d9488; background: #fff;" data-bs-toggle="modal" data-bs-target="#debugPregnancyModal" title="{{ __('Xem chi tiết tính toán và dữ liệu tiêu chuẩn') }}">
+                                        <i class="ti ti-bug fs-12"></i>
+                                        <span>Debug</span>
+                                    </button>
+                                @endif
                             </div>
-                            <small class="text-muted fs-11">
+                            <small class="text-muted fs-11 d-block mt-1">
                                 {{ __('Tiêu chuẩn tuần') }}: Dài <strong>{{ $pregnancyOverview['standard']['length'] !== null ? $pregnancyOverview['standard']['length'] . ' cm' : '-- cm' }}</strong>, Nặng <strong>{{ $pregnancyOverview['standard']['weight'] !== null ? $pregnancyOverview['standard']['weight'] . ' g' : '-- g' }}</strong>
                             </small>
                         </div>
@@ -193,3 +201,7 @@
         </div>
     </div>
 </div>
+
+@if(isset($pregnancyOverview) && isset($pregnancyOverview['debug']))
+    @include('admin.children.partials.modals.debug-pregnancy-modal', ['pregnancyOverview' => $pregnancyOverview, 'children' => $children])
+@endif

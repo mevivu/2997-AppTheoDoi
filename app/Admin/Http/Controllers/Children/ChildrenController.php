@@ -162,6 +162,8 @@ class ChildrenController extends Controller
                             ->first();
                     }
 
+                    $progressPercent = round(min(max(($gestationalAgeDays / 280) * 100, 0), 100), 1);
+
                     $pregnancyOverview = [
                         'dueDate' => $dueDate->format('d/m/Y'),
                         'currentWeek' => $currentWeek,
@@ -169,10 +171,43 @@ class ChildrenController extends Controller
                         'weekDisplay' => "Tuần {$currentWeek}" . ($extraDays > 0 ? " + {$extraDays} ngày" : ""),
                         'daysRemaining' => $daysRemaining,
                         'isDeliveredOrDue' => $daysRemaining <= 0,
+                        'progressPercent' => $progressPercent,
                         'standard' => [
                             'week' => (int) ($standard?->week ?? $lookupWeek),
                             'length' => $standard?->length ? (float)$standard->length : null,
                             'weight' => $standard?->weight ? (float)$standard->weight : null,
+                            'head_circumference' => $standard?->head_circumference ? (float)$standard->head_circumference : null,
+                            'description' => $standard?->description ?? null,
+                        ],
+                        'debug' => [
+                            'child_id' => $instance->id,
+                            'child_name' => $instance->fullname,
+                            'is_born' => is_object($instance->is_born) ? $instance->is_born->value : $instance->is_born,
+                            'raw_due_date' => $instance->due_date,
+                            'parsed_due_date' => $dueDate->format('d/m/Y'),
+                            'parsed_due_date_iso' => $dueDate->format('Y-m-d'),
+                            'system_today' => $today->format('d/m/Y'),
+                            'system_today_iso' => $today->format('Y-m-d'),
+                            'days_remaining' => $daysRemaining,
+                            'formula_gestational_age' => "280 - {$daysRemaining} = {$gestationalAgeDays} ngày",
+                            'gestational_age_days' => $gestationalAgeDays,
+                            'formula_week' => "intdiv({$gestationalAgeDays}, 7) = {$currentWeek} tuần",
+                            'formula_extra_days' => "{$gestationalAgeDays} % 7 = {$extraDays} ngày",
+                            'current_week' => $currentWeek,
+                            'extra_days' => $extraDays,
+                            'progress_percent' => $progressPercent,
+                            'lookup_week' => $lookupWeek,
+                            'sql_query' => "SELECT * FROM fetal_growth_standards WHERE status = " . ActiveStatus::Active->value . " AND week = {$lookupWeek} LIMIT 1",
+                            'matched_standard_id' => $standard?->id,
+                            'standard_record' => $standard ? [
+                                'id' => $standard->id,
+                                'week' => $standard->week,
+                                'length' => $standard->length ? (float)$standard->length : null,
+                                'weight' => $standard->weight ? (float)$standard->weight : null,
+                                'head_circumference' => $standard->head_circumference ? (float)$standard->head_circumference : null,
+                                'description' => $standard->description,
+                                'status' => $standard->status,
+                            ] : null,
                         ],
                     ];
                 }
