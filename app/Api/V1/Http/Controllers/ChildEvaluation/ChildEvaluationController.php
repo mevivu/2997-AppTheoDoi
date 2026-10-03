@@ -3,6 +3,7 @@
 namespace App\Api\V1\Http\Controllers\ChildEvaluation;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Api\V1\Exception\ReportCardAccessDeniedException;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationInfoRequest;
 use App\Api\V1\Http\Requests\ChildEvaluation\ChildEvaluationRequest;
 use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationInfoResource;
@@ -10,6 +11,7 @@ use App\Api\V1\Http\Resources\ChildEvaluation\ChildEvaluationResourceCollection;
 use App\Api\V1\Repositories\ChildEvaluation\ChildEvaluationRepositoryInterface;
 use App\Api\V1\Repositories\ClassGrade\ClassGradeRepositoryInterface;
 use App\Api\V1\Services\ChildEvaluation\ChildEvaluationServiceInterface;
+use App\Api\V1\Services\ChildEvaluation\ReportCardAccessGuard;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\Response;
 use App\Api\V1\Support\UseLog;
@@ -26,16 +28,19 @@ class ChildEvaluationController extends Controller
 
     protected ClassGradeRepositoryInterface $classGradeRepository;
 
+    protected ReportCardAccessGuard $accessGuard;
+
     public function __construct(
         ChildEvaluationRepositoryInterface $repository,
         ClassGradeRepositoryInterface     $classGradeRepository,
-        ChildEvaluationServiceInterface    $service
-
+        ChildEvaluationServiceInterface    $service,
+        ReportCardAccessGuard              $accessGuard
     )
     {
         $this->repository = $repository;
         $this->classGradeRepository = $classGradeRepository;
         $this->service = $service;
+        $this->accessGuard = $accessGuard;
         $this->middleware('auth:api');
 
     }
@@ -68,8 +73,11 @@ class ChildEvaluationController extends Controller
     public function findByClassGrade(ChildEvaluationInfoRequest $request): JsonResponse
     {
         try {
+            $this->accessGuard->assertOwnsChild($request->validated()['child_id'] ?? null);
             $response = $this->service->findByClass($request);
             return $this->jsonResponseSuccess(new ChildEvaluationInfoResource($response));
+        } catch (ReportCardAccessDeniedException $e) {
+            return $this->jsonResponseError($e->getMessage(), 403);
         } catch (Exception $e) {
             $this->logError('findByClassGrade:', $e);
             return $this->jsonResponseError('Lỗi server nội bộ khi truy xuất đánh giá năng lực.', 500);
@@ -128,6 +136,12 @@ class ChildEvaluationController extends Controller
      */
     public function update(ChildEvaluationRequest $request): JsonResponse
     {
+        try {
+            $this->accessGuard->assertOwnsEvaluation($request->validated()['child_evaluation_id'] ?? null);
+        } catch (ReportCardAccessDeniedException $e) {
+            return $this->jsonResponseError($e->getMessage(), 403);
+        }
+
         DB::beginTransaction();
         try {
             $response = $this->service->update($request);
@@ -201,8 +215,11 @@ class ChildEvaluationController extends Controller
     public function index(ChildEvaluationRequest $request): JsonResponse
     {
         try {
+            $this->accessGuard->assertOwnsChild($request->validated()['child_id'] ?? null);
             $response = $this->service->index($request);
             return $this->jsonResponseSuccess(new ChildEvaluationResourceCollection($response));
+        } catch (ReportCardAccessDeniedException $e) {
+            return $this->jsonResponseError($e->getMessage(), 403);
         } catch (Exception $exception) {
             $this->logError('Get Children List failed:', $exception);
             return $this->jsonResponseError('Lỗi hệ thống khi lấy danh sách đứa trẻ.', 500);

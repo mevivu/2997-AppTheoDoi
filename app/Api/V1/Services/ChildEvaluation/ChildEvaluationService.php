@@ -21,7 +21,7 @@ use App\Models\ChildEvaluation;
 use App\Models\ClassGrade;
 use Exception;
 use Illuminate\Http\Request;
-use function PHPUnit\Framework\isEmpty;
+use Illuminate\Support\Facades\DB;
 
 
 class ChildEvaluationService implements ChildEvaluationServiceInterface
@@ -137,20 +137,22 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         if ($academicPerformance == null) {
             unset($data['academic_performance']);
         }
-        if (isEmpty($subjects)) {
+        // Lưu ý: trước đây dùng PHPUnit\Framework\isEmpty() — hàm này trả về object (luôn truthy)
+        // và chỉ tồn tại khi cài dev dependency. Dùng !empty() để đúng ý định: chỉ xử lý khi có dữ liệu.
+        if (!empty($subjects)) {
             $averageScore = $this->calculateAverageScore($subjects);
             $data['average_score'] = $averageScore;
         }
         $childEvaluation = $this->repository->update($childEvaluationId, $data);
         $classGrade = $childEvaluation->classGrade;
         $semester = $childEvaluation->semester;
-        if (isEmpty($subjects)) {
+        if (!empty($subjects)) {
             $this->createSubjectGrade($subjects, $childEvaluationId);
         }
-        if (isEmpty($qualities)) {
+        if (!empty($qualities)) {
             $this->createChildQuality($qualities, $childEvaluationId);
         }
-        if (isEmpty($capabilities)) {
+        if (!empty($capabilities)) {
             $this->createChildCapability($capabilities, $childEvaluationId);
         }
 
@@ -315,25 +317,44 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
 
     public function findAndCreateChildEvaluations($childId, $classId, $semester)
     {
-        $classGrade = $this->classGradeRepository->getByQueryBuilder(
-            [
-                'child_id' => $childId,
-                'class_id' => $classId
-            ]
-        )->first();
-        $evaluation = $classGrade->evaluations()->where('semester', $semester)->first();
+        return DB::transaction(function () use ($childId, $classId, $semester) {
+            $classGrade = $this->classGradeRepository->getByQueryBuilder(
+                [
+                    'child_id' => $childId,
+                    'class_id' => $classId
+                ]
+            )->first();
 
-        if (!$evaluation) {
-            $evaluation = $classGrade->evaluations()->create([
-                'semester' => $semester,
-                'status' => ActiveStatus::Draft,
-                'conduct' => ConductRating::Pending,
-                'average_score' => null,
-                'academic_performance' => AcademicRating::Pending
-            ]);
+            // Bé tạo trước khi có lớp mới (hoặc dữ liệu cũ thiếu) sẽ không có class_grade → trước đây gây lỗi 500.
+            if (!$classGrade) {
+                $classGrade = ClassGrade::create([
+                    'child_id' => $childId,
+                    'class_id' => $classId,
+                    'semester1_grade' => null,
+                    'semester2_grade' => null,
+                    'full_year_grade' => null,
+                    'status' => ActiveStatus::Draft->value,
+                ]);
+            }
 
-        }
-        return $evaluation;
+            // Khóa dòng class_grade theo khóa chính (record lock, không phải gap lock) để các request
+            // song song cùng bé/lớp/kỳ xếp hàng, tránh tạo trùng child_evaluation.
+            $classGrade = ClassGrade::whereKey($classGrade->id)->lockForUpdate()->first();
+
+            $evaluation = $classGrade->evaluations()->where('semester', $semester)->first();
+
+            if (!$evaluation) {
+                $evaluation = $classGrade->evaluations()->create([
+                    'semester' => $semester,
+                    'status' => ActiveStatus::Draft,
+                    'conduct' => ConductRating::Pending,
+                    'average_score' => null,
+                    'academic_performance' => AcademicRating::Pending
+                ]);
+            }
+
+            return $evaluation;
+        });
     }
 
 }
