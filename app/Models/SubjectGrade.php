@@ -28,11 +28,14 @@ class SubjectGrade extends Model
         'achievement_level',
         /** Điểm trung bình cả năm */
         'full_year_grade',
-
+        /** Nguồn điểm cả năm */
+        'full_year_grade_source',
     ];
 
     protected $casts = [
-        'achievement_level' => AchievementLevel::class
+        'achievement_level' => AchievementLevel::class,
+        'full_year_grade' => 'decimal:2',
+        'full_year_grade_source' => \App\Enums\ReportCard\FullYearGradeSource::class,
     ];
 
     public function subject(): BelongsTo

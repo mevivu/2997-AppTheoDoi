@@ -29,15 +29,39 @@ class ChildEvaluation extends Model
         /**Kỳ học */
         'semester',
         /** Trạng thái  */
-        'status'
+        'status',
+        /** Học lực tính bởi hệ thống */
+        'calculated_academic_performance',
+        /** Trạng thái tính toán */
+        'calculation_status',
+        /** Cờ phụ huynh chủ động ghi đè học lực */
+        'is_performance_overridden',
+        /** Nhận xét chung của giáo viên */
+        'teacher_remark',
+        /** Dữ liệu chi tiết tính toán để debug/audit */
+        'calculation_snapshot',
+        /** Phiên bản công thức tính */
+        'calculation_version',
+        /** Thời điểm tính toán */
+        'calculated_at',
     ];
 
     protected $casts = [
         'semester' => SemesterStatus::class,
         'status' => ActiveStatus::class,
         'conduct' => ConductRating::class,
-        'academic_performance' => AcademicRating::class
+        'academic_performance' => AcademicRating::class,
+        'calculation_status' => \App\Enums\ReportCard\CalculationStatus::class,
+        'is_performance_overridden' => 'boolean',
+        'calculation_snapshot' => 'array',
+        'calculation_version' => 'integer',
+        'calculated_at' => 'datetime',
     ];
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(ChildEvaluationAttachment::class, 'child_evaluation_id')->orderBy('sort_order');
+    }
 
     public function subjectGrades(): HasMany
     {
