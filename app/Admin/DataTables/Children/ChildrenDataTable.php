@@ -8,6 +8,7 @@ use App\Admin\Traits\Roles;
 use App\Enums\Child\BornStatus;
 use App\Enums\Child\ChildStatus;
 use App\Enums\User\Gender;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 class ChildrenDataTable extends BaseDataTable
@@ -101,7 +102,27 @@ class ChildrenDataTable extends BaseDataTable
                 ])->render();
             },
             'gender' => $this->view['gender'],
-            'birthday' => '{{ date("d-m-Y", strtotime($birthday)) }}',
+            'birthday' => function ($children) {
+                if (!$children->birthday || $children->is_born == BornStatus::Unborn) {
+                    return '';
+                }
+                try {
+                    $date = Carbon::parse($children->birthday)->timezone(config('app.timezone', 'Asia/Ho_Chi_Minh'));
+                    return $date->year > 1970 ? $date->format('d-m-Y') : '';
+                } catch (\Throwable $e) {
+                    return '';
+                }
+            },
+            'due_date' => function ($children) {
+                if (!$children->due_date) {
+                    return '';
+                }
+                try {
+                    return Carbon::parse($children->due_date)->timezone(config('app.timezone', 'Asia/Ho_Chi_Minh'))->format('d-m-Y');
+                } catch (\Throwable $e) {
+                    return '';
+                }
+            },
         ];
     }
 
@@ -165,9 +186,24 @@ class ChildrenDataTable extends BaseDataTable
                 case 'user_code':
                     return $row->user ? $row->user->code : '';
                 case 'birthday':
-                    return $row->birthday ? date('d/m/Y', strtotime($row->birthday)) : '';
+                    if (!$row->birthday || $row->is_born == BornStatus::Unborn) {
+                        return '';
+                    }
+                    try {
+                        $date = Carbon::parse($row->birthday)->timezone(config('app.timezone', 'Asia/Ho_Chi_Minh'));
+                        return $date->year > 1970 ? $date->format('d/m/Y') : '';
+                    } catch (\Throwable $e) {
+                        return '';
+                    }
                 case 'due_date':
-                    return $row->due_date ? date('d/m/Y', strtotime($row->due_date)) : '';
+                    if (!$row->due_date) {
+                        return '';
+                    }
+                    try {
+                        return Carbon::parse($row->due_date)->timezone(config('app.timezone', 'Asia/Ho_Chi_Minh'))->format('d/m/Y');
+                    } catch (\Throwable $e) {
+                        return '';
+                    }
                 case 'is_born':
                     // Handle Native Enum description if available
                     if ($row->is_born instanceof \BackedEnum && method_exists($row->is_born, 'description')) {

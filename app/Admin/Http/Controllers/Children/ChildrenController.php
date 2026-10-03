@@ -101,77 +101,86 @@ class ChildrenController extends Controller
 
         $heightPrediction = null;
         $heightChart = null;
-        try {
-            $heightService = app(\App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface::class);
-
-            $heightRequest = new \App\Api\V2\Http\Requests\HeightPrediction\HeightPredictionV2Request();
-            $heightRequest->setValidator(validator([
-                'child_id' => $id,
-                'puberty_months' => 0
-            ], [
-                'child_id' => 'required|numeric',
-                'puberty_months' => 'required|numeric|min:0|max:96'
-            ]));
-            $heightPrediction = $heightService->indexV2($heightRequest);
-
-            $chartRequest = new \App\Api\V2\Http\Requests\HeightPrediction\HeightChartV2Request();
-            $chartRequest->setValidator(validator([
-                'child_id' => $id,
-                'puberty_months' => 0,
-                'target_height' => null
-            ], [
-                'child_id' => 'required|numeric',
-                'puberty_months' => 'required|numeric|min:0|max:96',
-                'target_height' => 'nullable|numeric|min:50|max:250'
-            ]));
-            $heightChart = $heightService->chartV2($chartRequest);
-        } catch (\Exception $e) {
-            Log::warning('Error calculating height prediction/chart V2 for child ' . $id . ': ' . $e->getMessage());
-        }
-
         $pqOverall = null;
-        try {
-            $pqService = app(\App\Api\V1\Services\RatingPQ\RatingPQServiceInterface::class);
-            $pqOverall = $pqService->getOverallStats(new \Illuminate\Http\Request(['child_id' => $id]), (int)$id);
-        } catch (\Exception $e) {
-            Log::warning('Error calculating PQ overall for child ' . $id . ': ' . $e->getMessage());
+
+        // Chỉ tính toán dự báo chiều cao và PQ nếu trẻ đã sinh và có ngày sinh hợp lệ
+        if ($instance->is_born != BornStatus::Unborn && $instance->birthday) {
+            try {
+                $heightService = app(\App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface::class);
+
+                $heightRequest = new \App\Api\V2\Http\Requests\HeightPrediction\HeightPredictionV2Request();
+                $heightRequest->setValidator(validator([
+                    'child_id' => $id,
+                    'puberty_months' => 0
+                ], [
+                    'child_id' => 'required|numeric',
+                    'puberty_months' => 'required|numeric|min:0|max:96'
+                ]));
+                $heightPrediction = $heightService->indexV2($heightRequest);
+
+                $chartRequest = new \App\Api\V2\Http\Requests\HeightPrediction\HeightChartV2Request();
+                $chartRequest->setValidator(validator([
+                    'child_id' => $id,
+                    'puberty_months' => 0,
+                    'target_height' => null
+                ], [
+                    'child_id' => 'required|numeric',
+                    'puberty_months' => 'required|numeric|min:0|max:96',
+                    'target_height' => 'nullable|numeric|min:50|max:250'
+                ]));
+                $heightChart = $heightService->chartV2($chartRequest);
+            } catch (\Throwable $e) {
+                Log::warning('Error calculating height prediction/chart V2 for child ' . $id . ': ' . $e->getMessage());
+            }
+
+            try {
+                $pqService = app(\App\Api\V1\Services\RatingPQ\RatingPQServiceInterface::class);
+                $pqOverall = $pqService->getOverallStats(new \Illuminate\Http\Request(['child_id' => $id]), (int)$id);
+            } catch (\Throwable $e) {
+                Log::warning('Error calculating PQ overall for child ' . $id . ': ' . $e->getMessage());
+            }
         }
 
         $pregnancyOverview = null;
         if ($instance->is_born == BornStatus::Unborn || $instance->due_date) {
-            $dueDate = $instance->due_date ? Carbon::parse($instance->due_date)->startOfDay() : null;
-            if ($dueDate) {
-                $today = Carbon::now()->startOfDay();
-                $daysRemaining = (int) $today->diffInDays($dueDate, false);
-                $gestationalAgeDays = 280 - $daysRemaining;
-                $currentWeek = $gestationalAgeDays > 0 ? intdiv($gestationalAgeDays, 7) : 0;
-                $extraDays = $gestationalAgeDays > 0 ? ($gestationalAgeDays % 7) : 0;
+            try {
+                $dueDate = $instance->due_date ? Carbon::parse($instance->due_date)->startOfDay() : null;
+                if ($dueDate) {
+                    $today = Carbon::now()->startOfDay();
+                    $daysRemaining = (int) $today->diffInDays($dueDate, false);
+                    $gestationalAgeDays = 280 - $daysRemaining;
+                    $currentWeek = $gestationalAgeDays > 0 ? intdiv($gestationalAgeDays, 7) : 0;
+                    $extraDays = $gestationalAgeDays > 0 ? ($gestationalAgeDays % 7) : 0;
 
-                $lookupWeek = max(1, min(50, $currentWeek > 0 ? $currentWeek : 8));
-                $standard = FetalGrowthStandard::where('status', ActiveStatus::Active->value)
-                    ->where('week', $lookupWeek)
-                    ->first();
-                if (!$standard) {
+                    $lookupWeek = max(1, min(50, $currentWeek > 0 ? $currentWeek : 8));
                     $standard = FetalGrowthStandard::where('status', ActiveStatus::Active->value)
-                        ->orderByRaw("ABS(week - {$lookupWeek}) ASC")
+                        ->where('week', $lookupWeek)
                         ->first();
-                }
+                    if (!$standard) {
+                        $standard = FetalGrowthStandard::where('status', ActiveStatus::Active->value)
+                            ->orderByRaw("ABS(week - {$lookupWeek}) ASC")
+                            ->first();
+                    }
 
-                $pregnancyOverview = [
-                    'dueDate' => $dueDate->format('d/m/Y'),
-                    'currentWeek' => $currentWeek,
-                    'extraDays' => $extraDays,
-                    'weekDisplay' => "Tuần {$currentWeek}" . ($extraDays > 0 ? " + {$extraDays} ngày" : ""),
-                    'daysRemaining' => $daysRemaining,
-                    'isDeliveredOrDue' => $daysRemaining <= 0,
-                    'standard' => [
-                        'week' => (int) ($standard?->week ?? $lookupWeek),
-                        'length' => $standard?->length ? (float)$standard->length : null,
-                        'weight' => $standard?->weight ? (float)$standard->weight : null,
-                    ],
-                ];
+                    $pregnancyOverview = [
+                        'dueDate' => $dueDate->format('d/m/Y'),
+                        'currentWeek' => $currentWeek,
+                        'extraDays' => $extraDays,
+                        'weekDisplay' => "Tuần {$currentWeek}" . ($extraDays > 0 ? " + {$extraDays} ngày" : ""),
+                        'daysRemaining' => $daysRemaining,
+                        'isDeliveredOrDue' => $daysRemaining <= 0,
+                        'standard' => [
+                            'week' => (int) ($standard?->week ?? $lookupWeek),
+                            'length' => $standard?->length ? (float)$standard->length : null,
+                            'weight' => $standard?->weight ? (float)$standard->weight : null,
+                        ],
+                    ];
+                }
+            } catch (\Throwable $e) {
+                Log::warning('Error calculating pregnancy overview for child ' . $id . ': ' . $e->getMessage());
             }
         }
+
 
         return view(
             $this->view['edit'],
