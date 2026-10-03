@@ -172,19 +172,6 @@ class PregnancyService implements PregnancyServiceInterface
             'description' => $currentStandard?->description ?? '',
         ];
 
-        // Biểu đồ chuẩn tăng trưởng thai nhi từ CMS
-        $growthChart = FetalGrowthStandard::where('status', ActiveStatus::Active->value)
-            ->orderBy('week', 'asc')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'week' => (int) $item->week,
-                    'length' => (float) $item->length,
-                    'weight' => (float) $item->weight,
-                    'head_circumference' => $item->head_circumference ? (float) $item->head_circumference : null,
-                ];
-            });
-
         // Lịch sử nhập liệu của bé
         $userLogs = [];
         if ($child) {
@@ -217,7 +204,6 @@ class PregnancyService implements PregnancyServiceInterface
             'age_display' => $ageDisplay,
             'progress_percent' => $progressPercent,
             'standard' => $standardData,
-            'growth_chart' => $growthChart,
             'user_logs' => $userLogs,
         ];
     }
