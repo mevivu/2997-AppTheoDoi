@@ -1115,6 +1115,16 @@
             function getRcRatingBadge(val) {
                 if (!val) return '<span class="badge bg-light text-muted">Chưa xếp loại</span>';
                 var map = {
+                    'excellent': '<span class="badge bg-purple-lt text-purple px-2 py-1">HT Xuất sắc</span>',
+                    'completed_good': '<span class="badge bg-success-lt text-success px-2 py-1">HT Tốt</span>',
+                    'completed': '<span class="badge bg-primary-lt text-primary px-2 py-1">Hoàn thành</span>',
+                    'not_completed': '<span class="badge bg-danger-lt text-danger px-2 py-1">Chưa HT</span>',
+                    'good': '<span class="badge bg-success-lt text-success px-2 py-1">Tốt</span>',
+                    'fair': '<span class="badge bg-primary-lt text-primary px-2 py-1">Khá</span>',
+                    'achieved': '<span class="badge bg-warning-lt text-warning px-2 py-1">Đạt</span>',
+                    'not_achieved': '<span class="badge bg-danger-lt text-danger px-2 py-1">Chưa đạt</span>',
+                    'pending': '<span class="badge bg-secondary-lt text-secondary px-2 py-1">Chờ xử lý</span>',
+                    // Fallback slugs
                     'xuat_sac': '<span class="badge bg-purple-lt text-purple px-2 py-1">Xuất sắc</span>',
                     'gioi': '<span class="badge bg-success-lt text-success px-2 py-1">Giỏi</span>',
                     'kha': '<span class="badge bg-primary-lt text-primary px-2 py-1">Khá</span>',
@@ -1130,9 +1140,13 @@
 
             function getRcStatusBadge(val) {
                 var map = {
+                    'ok': '<span class="badge bg-success text-white">Hợp lệ (Đã tính)</span>',
+                    'incomplete': '<span class="badge bg-warning text-dark">Chưa đủ dữ liệu</span>',
+                    'invalid_input': '<span class="badge bg-danger text-white">Dữ liệu không hợp lệ</span>',
+                    'not_applicable': '<span class="badge bg-secondary text-white">Không áp dụng</span>',
+                    // Fallbacks
                     'calculated': '<span class="badge bg-success text-white">Đã tính tự động</span>',
                     'manual': '<span class="badge bg-primary text-white">Nhập tay</span>',
-                    'incomplete': '<span class="badge bg-warning text-dark">Chưa đủ điểm</span>',
                     'overridden': '<span class="badge bg-info text-white">Đã ghi đè</span>',
                     'error': '<span class="badge bg-danger text-white">Lỗi tính toán</span>'
                 };

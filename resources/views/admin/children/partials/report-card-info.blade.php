@@ -7,11 +7,30 @@
         'upper_secondary' => ['title' => 'Trung học phổ thông', 'range' => 'Lớp 10 – 12', 'rule' => 'TT22/2021', 'icon' => 'ti-certificate'],
     ];
     $ratingLabels = [
+        'excellent' => 'Hoàn thành xuất sắc',
+        'completed_good' => 'Hoàn thành tốt',
+        'completed' => 'Hoàn thành',
+        'not_completed' => 'Chưa hoàn thành',
+        'good' => 'Tốt',
+        'fair' => 'Khá',
+        'achieved' => 'Đạt',
+        'not_achieved' => 'Chưa đạt',
+        'pending' => 'Chưa đánh giá',
+        // Fallback slug
         'xuat_sac' => 'Xuất sắc', 'gioi' => 'Giỏi', 'kha' => 'Khá', 'dat' => 'Đạt', 'chua_dat' => 'Chưa đạt',
         'hoan_thanh_xuat_sac' => 'Hoàn thành xuất sắc', 'hoan_thanh_tot' => 'Hoàn thành tốt',
         'hoan_thanh' => 'Hoàn thành', 'chua_hoan_thanh' => 'Chưa hoàn thành',
     ];
     $ratingClasses = [
+        'excellent' => 'rc-result-excellent',
+        'good' => 'rc-result-good',
+        'completed_good' => 'rc-result-good',
+        'fair' => 'rc-result-fair',
+        'completed' => 'rc-result-fair',
+        'achieved' => 'rc-result-fair',
+        'not_achieved' => 'rc-result-alert',
+        'not_completed' => 'rc-result-alert',
+        // Fallback slug
         'xuat_sac' => 'rc-result-excellent', 'hoan_thanh_xuat_sac' => 'rc-result-excellent',
         'gioi' => 'rc-result-good', 'hoan_thanh_tot' => 'rc-result-good',
         'kha' => 'rc-result-fair', 'dat' => 'rc-result-fair', 'hoan_thanh' => 'rc-result-fair',
