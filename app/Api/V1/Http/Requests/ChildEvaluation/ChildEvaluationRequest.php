@@ -31,16 +31,19 @@ class ChildEvaluationRequest extends BaseRequest
             'conduct' => ['nullable', new Enum(ConductRating::class)],
             'full_year_grade' => ['nullable'],
             'academic_performance' => ['nullable', new Enum(AcademicRating::class)],
+            'teacher_remark' => ['nullable', 'string', 'max:2000'],
+            'override_academic_performance' => ['nullable', 'boolean'],
         ];
 
         if (request()->input('status') == ActiveStatus::Active->value) {
             $additionalRules = [
-                'subjects' => ['required', 'array'],
+                'subjects' => ['present', 'array'],
                 'subjects.*.id' => ['required', 'exists:subjects,id'],
                 'subjects.*.grade' => ['nullable', 'numeric', 'between:0,10'],
-                'subjects.*.remark' => ['nullable', 'string',],
+                'subjects.*.remark' => ['nullable', 'string'],
                 'subjects.*.full_year_grade' => ['nullable', 'numeric', 'between:0,10'],
                 'subjects.*.achievement_level' => ['nullable', new Enum(AchievementLevel::class)],
+                'subjects.*.override_full_year_grade' => ['nullable', 'boolean'],
 
                 'qualities' => ['nullable', 'array'],
                 'qualities.*.id' => ['nullable', 'exists:qualities,id'],
@@ -55,6 +58,12 @@ class ChildEvaluationRequest extends BaseRequest
             $rules = array_merge($rules, $additionalRules);
         } else {
             $rules['subjects'] = ['nullable', 'array'];
+            $rules['subjects.*.id'] = ['nullable', 'exists:subjects,id'];
+            $rules['subjects.*.grade'] = ['nullable', 'numeric', 'between:0,10'];
+            $rules['subjects.*.remark'] = ['nullable', 'string'];
+            $rules['subjects.*.full_year_grade'] = ['nullable', 'numeric', 'between:0,10'];
+            $rules['subjects.*.achievement_level'] = ['nullable', new Enum(AchievementLevel::class)];
+            $rules['subjects.*.override_full_year_grade'] = ['nullable', 'boolean'];
             $rules['qualities'] = ['nullable', 'array'];
             $rules['capabilities'] = ['nullable', 'array'];
         }

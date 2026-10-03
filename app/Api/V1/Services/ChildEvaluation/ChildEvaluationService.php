@@ -16,9 +16,11 @@ use App\Enums\ActiveStatus;
 use App\Enums\ChildEvaluation\AcademicRating;
 use App\Enums\ChildEvaluation\ConductRating;
 use App\Enums\Class\LevelGroup;
+use App\Enums\ReportCard\FullYearGradeSource;
 use App\Enums\Semester\SemesterStatus;
 use App\Models\ChildEvaluation;
 use App\Models\ClassGrade;
+use App\Services\ReportCard\ReportCardService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -43,7 +45,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     protected QualityRepositoryInterface $qualityRepository;
     protected CapabilityRepositoryInterface $capabilityRepository;
     protected ClassesRepositoryInterface $classesRepository;
-
+    protected ReportCardService $reportCardService;
 
     public function __construct(
         ChildEvaluationRepositoryInterface $repository,
@@ -53,7 +55,8 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         ClassGradeRepositoryInterface      $classGradeRepository,
         QualityRepositoryInterface         $qualityRepository,
         CapabilityRepositoryInterface      $capabilityRepository,
-        ClassesRepositoryInterface         $classesRepository
+        ClassesRepositoryInterface         $classesRepository,
+        ?ReportCardService                 $reportCardService = null
     )
     {
         $this->repository = $repository;
@@ -64,6 +67,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $this->qualityRepository = $qualityRepository;
         $this->capabilityRepository = $capabilityRepository;
         $this->classesRepository = $classesRepository;
+        $this->reportCardService = $reportCardService ?? app(ReportCardService::class);
     }
 
 
@@ -124,51 +128,63 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
      */
     public function update(Request $request): object
     {
-        $data = $request->validated();
-        $childEvaluationId = $data['child_evaluation_id'];
-        $subjects = $data['subjects'] ?? [];
-        $qualities = $data['qualities'] ?? [];
-        $capabilities = $data['capabilities'] ?? [];
-        $conduct = $data['conduct'] ?? null;
-        $academicPerformance = $data['academic_performance'] ?? null;
-        if ($conduct == null) {
-            unset($data['conduct']);
-        }
-        if ($academicPerformance == null) {
-            unset($data['academic_performance']);
-        }
-        // Lưu ý: trước đây dùng PHPUnit\Framework\isEmpty() — hàm này trả về object (luôn truthy)
-        // và chỉ tồn tại khi cài dev dependency. Dùng !empty() để đúng ý định: chỉ xử lý khi có dữ liệu.
-        if (!empty($subjects)) {
-            $averageScore = $this->calculateAverageScore($subjects);
-            $data['average_score'] = $averageScore;
-        }
-        $childEvaluation = $this->repository->update($childEvaluationId, $data);
-        $classGrade = $childEvaluation->classGrade;
-        $semester = $childEvaluation->semester;
-        if (!empty($subjects)) {
-            $this->createSubjectGrade($subjects, $childEvaluationId);
-        }
-        if (!empty($qualities)) {
-            $this->createChildQuality($qualities, $childEvaluationId);
-        }
-        if (!empty($capabilities)) {
-            $this->createChildCapability($capabilities, $childEvaluationId);
-        }
+        return DB::transaction(function () use ($request) {
+            $data = $request->validated();
+            $childEvaluationId = $data['child_evaluation_id'];
+            $subjects = $data['subjects'] ?? [];
+            $qualities = $data['qualities'] ?? [];
+            $capabilities = $data['capabilities'] ?? [];
+            $conduct = $data['conduct'] ?? null;
+            $academicPerformance = $data['academic_performance'] ?? null;
+            if ($conduct == null) {
+                unset($data['conduct']);
+            }
+            if ($academicPerformance == null) {
+                unset($data['academic_performance']);
+            }
 
-        if ($childEvaluation->semester == SemesterStatus::FullYear) {
-            $fullYearGrade = $this->calculateFullYearGradeFromSubjects($subjects);
-            $classGrade->update(['full_year_grade' => $fullYearGrade]);
-        }
+            if (!empty($subjects)) {
+                $averageScore = $this->calculateAverageScore($subjects);
+                $data['average_score'] = $averageScore;
+            }
 
-        return $childEvaluation;
+            // Xử lý cờ ghi đè học lực nếu client gửi lên
+            if (array_key_exists('override_academic_performance', $data)) {
+                $data['is_performance_overridden'] = (bool) $data['override_academic_performance'];
+                unset($data['override_academic_performance']);
+            }
 
+            $childEvaluation = $this->repository->update($childEvaluationId, $data);
+            $classGrade = ClassGrade::whereKey($childEvaluation->class_grade_id)->lockForUpdate()->first();
+            $semester = $childEvaluation->semester;
+
+            if (!empty($subjects)) {
+                $this->createSubjectGrade($subjects, $childEvaluationId);
+            }
+            if (!empty($qualities)) {
+                $this->createChildQuality($qualities, $childEvaluationId);
+            }
+            if (!empty($capabilities)) {
+                $this->createChildCapability($capabilities, $childEvaluationId);
+            }
+
+            if ($childEvaluation->semester == SemesterStatus::FullYear) {
+                $fullYearGrade = $this->calculateFullYearGradeFromSubjects($subjects);
+                $classGrade?->update(['full_year_grade' => $fullYearGrade]);
+            }
+
+            // Tự động tính toán lại học bạ bằng engine nếu cờ tính năng được bật
+            if ($classGrade && config('report_card.engine_enabled', false)) {
+                $this->reportCardService->recalculateClassGrade($classGrade, $childEvaluation->id);
+            }
+
+            return $childEvaluation->fresh(['subjectGrades', 'qualities', 'capabilities']);
+        });
     }
 
     /**
      * Tính điểm cả năm từ các full_year_grade của các môn học
      */
-
     private function calculateFullYearGradeFromSubjects($subjects): ?float
     {
         $totalScore = 0;
@@ -184,24 +200,31 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         return $count > 0 ? round($totalScore / $count, 2) : null;
     }
 
-
     /**
      * @throws Exception
      */
     public function createSubjectGrade(array $subjects, int $childEvaluationId): void
     {
         foreach ($subjects as $subjectData) {
+            $payload = [
+                'grade' => $subjectData['grade'] ?? null,
+                'full_year_grade' => $subjectData['full_year_grade'] ?? null,
+                'remark' => $subjectData['remark'] ?? null,
+                'achievement_level' => $subjectData['achievement_level'] ?? null,
+            ];
+
+            if (!empty($subjectData['override_full_year_grade'])) {
+                $payload['full_year_grade_source'] = FullYearGradeSource::Overridden;
+            } elseif (array_key_exists('full_year_grade', $subjectData) && $subjectData['full_year_grade'] !== null) {
+                $payload['full_year_grade_source'] = FullYearGradeSource::Manual;
+            }
+
             $this->subjectGradeRepository->updateOrCreate(
                 [
                     'child_evaluation_id' => $childEvaluationId,
                     'subject_id' => $subjectData['id'],
                 ],
-                [
-                    'grade' => $subjectData['grade'] ?? null,
-                    'full_year_grade' => $subjectData['full_year_grade'] ?? null,
-                    'remark' => $subjectData['remark'] ?? null,
-                    'achievement_level' => $subjectData['achievement_level'] ?? null,
-                ]
+                $payload
             );
         }
     }
