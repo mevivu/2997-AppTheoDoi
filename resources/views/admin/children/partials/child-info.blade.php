@@ -67,6 +67,18 @@
                         {{ __('Ngày dự sinh') }}:
                     </label>
                     <x-input type="date" name="due_date" placeholder="{{ __('Ngày dự sinh') }}" :value="$due_date" />
+                    @if(isset($pregnancyOverview) && $pregnancyOverview)
+                        <div class="mt-2 p-2 rounded-2" style="background: rgba(13, 148, 136, 0.08); border-left: 3px solid #0d9488;">
+                            <div class="fs-12 fw-bold text-teal">
+                                <i class="ti ti-heart-filled text-pink me-1"></i>
+                                {{ $pregnancyOverview['weekDisplay'] }} — 
+                                {{ $pregnancyOverview['daysRemaining'] > 0 ? __('Còn ') . $pregnancyOverview['daysRemaining'] . __(' ngày chào đời') : __('Đến ngày dự sinh') }}
+                            </div>
+                            <small class="text-muted fs-11">
+                                {{ __('Tiêu chuẩn tuần') }}: Dài <strong>{{ $pregnancyOverview['standard']['length'] !== null ? $pregnancyOverview['standard']['length'] . ' cm' : '-- cm' }}</strong>, Nặng <strong>{{ $pregnancyOverview['standard']['weight'] !== null ? $pregnancyOverview['standard']['weight'] . ' g' : '-- g' }}</strong>
+                            </small>
+                        </div>
+                    @endif
                 </div>
             </div>
 

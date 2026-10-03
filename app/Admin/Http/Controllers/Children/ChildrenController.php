@@ -11,6 +11,9 @@ use App\Enums\Child\BornStatus;
 use App\Traits\ResponseController;
 use Exception;
 use App\Enums\Child\ChildStatus;
+use App\Enums\ActiveStatus;
+use App\Models\FetalGrowthStandard;
+use Carbon\Carbon;
 use App\Enums\User\Gender;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -134,10 +137,47 @@ class ChildrenController extends Controller
             Log::warning('Error calculating PQ overall for child ' . $id . ': ' . $e->getMessage());
         }
 
+        $pregnancyOverview = null;
+        if ($instance->is_born == BornStatus::Unborn || $instance->due_date) {
+            $dueDate = $instance->due_date ? Carbon::parse($instance->due_date)->startOfDay() : null;
+            if ($dueDate) {
+                $today = Carbon::now()->startOfDay();
+                $daysRemaining = (int) $today->diffInDays($dueDate, false);
+                $gestationalAgeDays = 280 - $daysRemaining;
+                $currentWeek = $gestationalAgeDays > 0 ? intdiv($gestationalAgeDays, 7) : 0;
+                $extraDays = $gestationalAgeDays > 0 ? ($gestationalAgeDays % 7) : 0;
+
+                $lookupWeek = max(1, min(50, $currentWeek > 0 ? $currentWeek : 8));
+                $standard = FetalGrowthStandard::where('status', ActiveStatus::Active->value)
+                    ->where('week', $lookupWeek)
+                    ->first();
+                if (!$standard) {
+                    $standard = FetalGrowthStandard::where('status', ActiveStatus::Active->value)
+                        ->orderByRaw("ABS(week - {$lookupWeek}) ASC")
+                        ->first();
+                }
+
+                $pregnancyOverview = [
+                    'dueDate' => $dueDate->format('d/m/Y'),
+                    'currentWeek' => $currentWeek,
+                    'extraDays' => $extraDays,
+                    'weekDisplay' => "Tuần {$currentWeek}" . ($extraDays > 0 ? " + {$extraDays} ngày" : ""),
+                    'daysRemaining' => $daysRemaining,
+                    'isDeliveredOrDue' => $daysRemaining <= 0,
+                    'standard' => [
+                        'week' => (int) ($standard?->week ?? $lookupWeek),
+                        'length' => $standard?->length ? (float)$standard->length : null,
+                        'weight' => $standard?->weight ? (float)$standard->weight : null,
+                    ],
+                ];
+            }
+        }
+
         return view(
             $this->view['edit'],
             [
                 'children' => $instance,
+                'pregnancyOverview' => $pregnancyOverview,
                 'heightPrediction' => $heightPrediction,
                 'heightChart' => $heightChart,
                 'pqOverall' => $pqOverall,

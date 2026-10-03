@@ -101,59 +101,63 @@
                         </div>
                     </div>
 
-                    <!-- Right: Assessment Stat Mini-Cards -->
+                    <!-- Right: Assessment Stat Mini-Cards OR Pregnancy Overview Card -->
                     <div class="col-12 col-xl-6">
-                        <div class="child-hero-stats-grid">
-                            <!-- Dự báo chiều cao -->
-                            <div class="child-stat-card">
-                                <div class="child-stat-icon" style="background: #e0f2fe; color: #0284c7;">
-                                    <i class="ti ti-ruler-2"></i>
+                        @if(isset($pregnancyOverview) && $pregnancyOverview)
+                            @include('admin.children.partials.pregnancy-overview-card', ['pregnancyOverview' => $pregnancyOverview])
+                        @else
+                            <div class="child-hero-stats-grid">
+                                <!-- Dự báo chiều cao -->
+                                <div class="child-stat-card">
+                                    <div class="child-stat-icon" style="background: #e0f2fe; color: #0284c7;">
+                                        <i class="ti ti-ruler-2"></i>
+                                    </div>
+                                    <div class="child-stat-content">
+                                        <div class="child-stat-label">{{ __('DỰ BÁO CC') }}</div>
+                                        <div class="child-stat-val text-info">{{ ($latestPq && $predHeight > 0) ? $predHeight . ' cm' : '--' }}</div>
+                                    </div>
                                 </div>
-                                <div class="child-stat-content">
-                                    <div class="child-stat-label">{{ __('DỰ BÁO CC') }}</div>
-                                    <div class="child-stat-val text-info">{{ ($latestPq && $predHeight > 0) ? $predHeight . ' cm' : '--' }}</div>
-                                </div>
-                            </div>
 
-                            <!-- IQ Score -->
-                            <div class="child-stat-card">
-                                <div class="child-stat-icon" style="background: #f5f3ff; color: #7c3aed;">
-                                    <i class="ti ti-brain"></i>
+                                <!-- IQ Score -->
+                                <div class="child-stat-card">
+                                    <div class="child-stat-icon" style="background: #f5f3ff; color: #7c3aed;">
+                                        <i class="ti ti-brain"></i>
+                                    </div>
+                                    <div class="child-stat-content">
+                                        <div class="child-stat-label">{{ __('IQ') }}</div>
+                                        <div class="child-stat-val text-purple">
+                                            {{ ($latestIq && $latestIq->score !== null && $latestIq->score !== '') ? $latestIq->score . ' đ' : '--' }}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="child-stat-content">
-                                    <div class="child-stat-label">{{ __('IQ') }}</div>
-                                    <div class="child-stat-val text-purple">
-                                        {{ ($latestIq && $latestIq->score !== null && $latestIq->score !== '') ? $latestIq->score . ' đ' : '--' }}
+
+                                <!-- EQ Score -->
+                                <div class="child-stat-card">
+                                    <div class="child-stat-icon" style="background: #fdf2f8; color: #db2777;">
+                                        <i class="ti ti-heart"></i>
+                                    </div>
+                                    <div class="child-stat-content">
+                                        <div class="child-stat-label">{{ __('EQ') }}</div>
+                                        <div class="child-stat-val text-pink">
+                                            {{ ($latestEq && $latestEq->score !== null && $latestEq->score !== '') ? $latestEq->score . ' đ' : '--' }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- PQ Score -->
+                                <div class="child-stat-card">
+                                    <div class="child-stat-icon" style="background: #fff7ed; color: #ea580c;">
+                                        <i class="ti ti-activity"></i>
+                                    </div>
+                                    <div class="child-stat-content">
+                                        <div class="child-stat-label">{{ __('PQ') }}</div>
+                                        <div class="child-stat-val text-orange">
+                                            {{ ($latestPq && $latestPq->height) ? $latestPq->height . ' cm' : (($latestPq && $latestPq->bmi) ? 'BMI ' . $latestPq->bmi : '--') }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- EQ Score -->
-                            <div class="child-stat-card">
-                                <div class="child-stat-icon" style="background: #fdf2f8; color: #db2777;">
-                                    <i class="ti ti-heart"></i>
-                                </div>
-                                <div class="child-stat-content">
-                                    <div class="child-stat-label">{{ __('EQ') }}</div>
-                                    <div class="child-stat-val text-pink">
-                                        {{ ($latestEq && $latestEq->score !== null && $latestEq->score !== '') ? $latestEq->score . ' đ' : '--' }}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- PQ Score -->
-                            <div class="child-stat-card">
-                                <div class="child-stat-icon" style="background: #fff7ed; color: #ea580c;">
-                                    <i class="ti ti-activity"></i>
-                                </div>
-                                <div class="child-stat-content">
-                                    <div class="child-stat-label">{{ __('PQ') }}</div>
-                                    <div class="child-stat-val text-orange">
-                                        {{ ($latestPq && $latestPq->height) ? $latestPq->height . ' cm' : (($latestPq && $latestPq->bmi) ? 'BMI ' . $latestPq->bmi : '--') }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -162,7 +166,7 @@
             <x-form id="notificationForm" :action="route(RouteAdminSystem::CHILDREN_UPDATE)" type="put" :validate="true">
                 <input type="hidden" name="id" value="{{ $children->id }}">
                 <div class="row g-4 justify-content-center">
-                    @include('admin.children.forms.edit-left', ['children' => $children, 'heightPrediction' => $heightPrediction, 'heightChart' => $heightChart, 'pqOverall' => $pqOverall ?? null])
+                    @include('admin.children.forms.edit-left', ['children' => $children, 'heightPrediction' => $heightPrediction, 'heightChart' => $heightChart, 'pqOverall' => $pqOverall ?? null, 'pregnancyOverview' => $pregnancyOverview ?? null])
                     @include('admin.children.forms.edit-right', ['children' => $children])
                 </div>
             </x-form>

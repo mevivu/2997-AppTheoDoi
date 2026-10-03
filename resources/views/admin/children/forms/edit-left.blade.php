@@ -35,7 +35,7 @@
             <div class="tab-content" id="childProfileTabsContent">
                 <!-- Tab 1: Thông tin cơ bản & Phụ huynh -->
                 <div class="tab-pane fade show active" id="content-child-info" role="tabpanel" aria-labelledby="tab-child-info">
-                    @include('admin.children.partials.child-info', ['children' => $children])
+                    @include('admin.children.partials.child-info', ['children' => $children, 'pregnancyOverview' => $pregnancyOverview ?? null])
                 </div>
 
                 <!-- Tab 2: Dự Báo Chiều Cao -->
