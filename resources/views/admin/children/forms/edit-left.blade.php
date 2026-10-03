@@ -1,10 +1,11 @@
+@php($reportCardActive = request('tab') === 'report-card')
 <div class="col-12 col-lg-8 col-xl-9">
     <div class="card border-0 custom-shadow rounded-3">
         <!-- Navigation Pills Tabs -->
         <div class="card-header bg-white border-bottom p-3">
             <ul class="nav nav-pills custom-profile-tabs card-header-pills w-100" id="childProfileTabs" role="tablist">
                 <li class="nav-item flex-fill" role="presentation">
-                    <button class="nav-link active w-100 text-center py-2" id="tab-child-info" data-bs-toggle="tab" data-bs-target="#content-child-info" type="button" role="tab" aria-selected="true">
+                    <button class="nav-link {{ $reportCardActive ? '' : 'active' }} w-100 text-center py-2" id="tab-child-info" data-bs-toggle="tab" data-bs-target="#content-child-info" type="button" role="tab" aria-selected="{{ $reportCardActive ? 'false' : 'true' }}">
                         <i class="ti ti-baby-carriage me-1 fs-5"></i>
                         <span>{{ __('Thông Tin & Cha Mẹ') }}</span>
                     </button>
@@ -28,7 +29,7 @@
                     </button>
                 </li>
                 <li class="nav-item flex-fill" role="presentation">
-                    <button class="nav-link w-100 text-center py-2" id="tab-child-report-card" data-bs-toggle="tab" data-bs-target="#content-child-report-card" type="button" role="tab" aria-selected="false">
+                    <button class="nav-link {{ $reportCardActive ? 'active' : '' }} w-100 text-center py-2" id="tab-child-report-card" data-bs-toggle="tab" data-bs-target="#content-child-report-card" type="button" role="tab" aria-selected="{{ $reportCardActive ? 'true' : 'false' }}">
                         <i class="ti ti-book me-1 fs-5 text-warning"></i>
                         <span>{{ __('Học Bạ Điện Tử') }}</span>
                     </button>
@@ -40,7 +41,7 @@
         <div class="card-body p-4">
             <div class="tab-content" id="childProfileTabsContent">
                 <!-- Tab 1: Thông tin cơ bản & Phụ huynh -->
-                <div class="tab-pane fade show active" id="content-child-info" role="tabpanel" aria-labelledby="tab-child-info">
+                <div class="tab-pane fade {{ $reportCardActive ? '' : 'show active' }}" id="content-child-info" role="tabpanel" aria-labelledby="tab-child-info">
                     @include('admin.children.partials.child-info', ['children' => $children, 'pregnancyOverview' => $pregnancyOverview ?? null])
                 </div>
 
@@ -60,7 +61,7 @@
                 </div>
 
                 <!-- Tab 5: Học bạ điện tử -->
-                <div class="tab-pane fade" id="content-child-report-card" role="tabpanel" aria-labelledby="tab-child-report-card">
+                <div class="tab-pane fade {{ $reportCardActive ? 'show active' : '' }}" id="content-child-report-card" role="tabpanel" aria-labelledby="tab-child-report-card">
                     @include('admin.children.partials.report-card-info', ['children' => $children])
                 </div>
             </div>

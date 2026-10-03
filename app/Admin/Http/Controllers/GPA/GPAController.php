@@ -45,11 +45,38 @@ class GPAController extends Controller
     public function index(GPADataTable $dataTable)
     {
         $actionMultiple = $this->getActionMultiple();
+
+        $baseQuery = ClassGrade::query()
+            ->where('status', '!=', ActiveStatus::Deleted)
+            ->where(function ($query) {
+                $query->where('semester1_grade', '>', 0)
+                    ->orWhere('semester2_grade', '>', 0)
+                    ->orWhereHas('evaluations');
+            });
+
+        $totalRecords = (clone $baseQuery)->count();
+        $completedRecords = (clone $baseQuery)
+            ->whereHas('evaluations', fn ($query) => $query->where('semester', 'full_year'))
+            ->count();
+        $averageScore = (clone $baseQuery)->whereNotNull('full_year_grade')->avg('full_year_grade');
+        $needsReview = (clone $baseQuery)
+            ->whereHas('evaluations', fn ($query) => $query->whereIn('calculation_status', ['incomplete', 'invalid_input']))
+            ->count();
+
+        $reportCardStats = [
+            'total' => $totalRecords,
+            'completed' => $completedRecords,
+            'completion_rate' => $totalRecords > 0 ? round(($completedRecords / $totalRecords) * 100) : 0,
+            'average_score' => $averageScore !== null ? round((float) $averageScore, 1) : null,
+            'needs_review' => $needsReview,
+        ];
+
         return $dataTable->render(
             $this->view['index'],
             [
                 'status' => ActiveStatus::asSelectArray(),
                 'actionMultiple' => $actionMultiple,
+                'reportCardStats' => $reportCardStats,
                 'breadcrumbs' => $this->crums->add(__('Danh sách GPA')),
             ]
         );

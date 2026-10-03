@@ -1920,6 +1920,21 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false,
         ],
+        'progress' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-progress-check"></i><span>Tiến độ</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'addClass' => 'text-center align-middle text-nowrap',
+            'orderable' => false,
+            'searchable' => false,
+            'exportable' => false,
+            'printable' => false,
+        ],
     ],
     'brand' => [
         'checkbox' => [

@@ -29,6 +29,7 @@ class GPADataTable extends BaseDataTable
         $this->view = [
             'index' => 'admin.gpa.index',
             'children.fullname' => 'admin.gpa.datatable.name',
+            'action' => 'admin.gpa.datatable.action',
         ];
     }
 
@@ -107,7 +108,19 @@ class GPADataTable extends BaseDataTable
                     }
                     return $s2 > 0 ? number_format($s2, 2) : ($s1 > 0 ? number_format($s1, 2) : '');
                 }
-            }
+            },
+            'progress' => function ($row) {
+                $semesters = $row->evaluations->map(fn ($evaluation) => $evaluation->semester instanceof \BackedEnum
+                    ? $evaluation->semester->value
+                    : (string) $evaluation->semester)->unique();
+                $completed = $semesters->contains('full_year');
+                $count = $semesters->intersect(['semester_1', 'semester_2', 'full_year'])->count();
+
+                return view('admin.gpa.datatable.progress', compact('completed', 'count'))->render();
+            },
+            'action' => function ($row) {
+                return view($this->view['action'], ['row' => $row])->render();
+            },
         ];
     }
 
@@ -129,7 +142,7 @@ class GPADataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['children.fullname', 'class.name', 'semester1_grade', 'semester2_grade', 'full_year_grade', 'child_code', 'parent_code'];
+        $this->customRawColumns = ['children.fullname', 'class.name', 'semester1_grade', 'semester2_grade', 'full_year_grade', 'child_code', 'parent_code', 'progress', 'action'];
     }
 
     protected function setCustomFilterColumns(): void
