@@ -11,6 +11,7 @@ use App\Enums\ActiveStatus;
 use App\Models\Child;
 use App\Models\FetalGrowthStandard;
 use App\Models\Pregnancy;
+use App\Traits\ImageSystem;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -64,6 +65,8 @@ class PregnancyService implements PregnancyServiceInterface
         $image = $data['image'] ?? null;
         if ($image) {
             $data['image'] = $this->fileService->uploadAvatar('images/pregnancy', $image);
+        } else {
+            $data['image'] = ImageSystem::DEFAULT_IMAGE;
         }
         $data['week'] = $data['week'] ?? null;
         $data['weight'] = $data['weight'] ?? null;
@@ -81,7 +84,8 @@ class PregnancyService implements PregnancyServiceInterface
         $image = $data['image'] ?? null;
         $pregnancy = $this->repository->findOrFail($data['id']);
         if ($image) {
-            $data['image'] = $this->fileService->uploadAvatar('images/pregnancy', $image, $pregnancy->image);
+            $oldImage = ($pregnancy->image === ImageSystem::DEFAULT_IMAGE) ? null : $pregnancy->image;
+            $data['image'] = $this->fileService->uploadAvatar('images/pregnancy', $image, $oldImage);
         }
         $pregnancy->update($data);
 
@@ -95,7 +99,9 @@ class PregnancyService implements PregnancyServiceInterface
     public function delete($id): void
     {
         $response = $this->repository->findOrFail($id);
-        $this->fileService->deleteModelImages($response, ['image']);
+        if ($response->image && $response->image !== ImageSystem::DEFAULT_IMAGE) {
+            $this->fileService->deleteModelImages($response, ['image']);
+        }
         $this->repository->delete($id);
     }
 
