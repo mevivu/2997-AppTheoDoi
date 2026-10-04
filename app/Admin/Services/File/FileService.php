@@ -225,6 +225,37 @@ class FileService
     }
 
     /**
+     * Upload file (ảnh học bạ, tài liệu, media) lên Cloudflare R2
+     *
+     * @param UploadedFile $file File cần upload
+     * @param string $folder Thư mục trên R2 (mặc định: uploads)
+     * @param string|null $oldPath Đường dẫn tương đối hoặc URL cũ để xóa nếu có
+     * @param string|null $customFilename Tùy chọn đặt tên file (nếu null sẽ dùng hashName)
+     * @return array ['path' => 'folder/...', 'url' => 'https://pub-xxx.r2.dev/folder/...']
+     */
+    public function uploadFileToR2(UploadedFile $file, string $folder = 'uploads', ?string $oldPath = null, ?string $customFilename = null): array
+    {
+        if ($oldPath) {
+            $this->deleteR2File($oldPath);
+        }
+
+        $folder = trim($folder, '/');
+        $filename = $customFilename ?: $file->hashName();
+        $relativePath = $folder . '/' . $filename;
+
+        // Lưu trực tiếp vào disk r2
+        Storage::disk('r2')->putFileAs($folder, $file, $filename);
+
+        $baseUrl = config('filesystems.disks.r2.url') ?: env('CLOUDFLARE_R2_PUBLIC_URL', '');
+        $publicUrl = rtrim($baseUrl, '/') . '/' . ltrim($relativePath, '/');
+
+        return [
+            'path' => $relativePath,
+            'url' => $publicUrl,
+        ];
+    }
+
+    /**
      * Upload video lên Cloudflare R2
      *
      * @param UploadedFile $file File video cần upload
@@ -234,24 +265,7 @@ class FileService
      */
     public function uploadVideoToR2(UploadedFile $file, string $folder = 'videos/raw', ?string $oldPath = null): array
     {
-        if ($oldPath) {
-            $this->deleteR2File($oldPath);
-        }
-
-        $folder = trim($folder, '/');
-        $hashName = $file->hashName();
-        $relativePath = $folder . '/' . $hashName;
-
-        // Lưu trực tiếp vào disk r2
-        Storage::disk('r2')->putFileAs($folder, $file, $hashName);
-
-        $baseUrl = config('filesystems.disks.r2.url') ?: env('CLOUDFLARE_R2_PUBLIC_URL', '');
-        $publicUrl = rtrim($baseUrl, '/') . '/' . ltrim($relativePath, '/');
-
-        return [
-            'path' => $relativePath,
-            'url' => $publicUrl,
-        ];
+        return $this->uploadFileToR2($file, $folder, $oldPath);
     }
 
     /**

@@ -36,6 +36,7 @@ class ReportCardApiTest extends TestCase
     {
         parent::setUp();
         Storage::fake('local');
+        Storage::fake('r2');
 
         $this->childA = Child::query()->whereNotNull('user_id')->orderBy('id')->first();
         if (!$this->childA) {
@@ -150,6 +151,8 @@ class ReportCardApiTest extends TestCase
 
     public function test_upload_attachments_and_signed_url_streaming(): void
     {
+        config(['report_card.attachments.disk' => 'local']);
+
         $file1 = UploadedFile::fake()->image('report_card_front.jpg', 800, 600);
         $file2 = UploadedFile::fake()->image('report_card_back.png', 800, 600);
 
@@ -176,6 +179,34 @@ class ReportCardApiTest extends TestCase
         $tamperedUrl = preg_replace('/signature=[^&]+/', 'signature=invalid', $signedUrl);
         $tamperedResponse = $this->get($tamperedUrl);
         $tamperedResponse->assertStatus(403);
+    }
+
+    public function test_upload_attachments_to_r2_via_file_service(): void
+    {
+        config(['report_card.attachments.disk' => 'r2']);
+
+        $file1 = UploadedFile::fake()->image('r2_report_card.jpg', 1024, 768);
+
+        $uploadResponse = $this->postJson(
+            "/api/v1/child-evaluations/{$this->evaluationA->id}/attachments",
+            ['files' => [$file1]],
+            $this->authHeaders($this->userA)
+        );
+
+        $uploadResponse->assertStatus(200);
+        $attachments = $uploadResponse->json('data');
+        $this->assertCount(1, $attachments);
+
+        $attachment = ChildEvaluationAttachment::find($attachments[0]['id']);
+        $this->assertNotNull($attachment);
+        $this->assertEquals('r2', $attachment->disk);
+        $this->assertStringContainsString('report-cards', $attachment->file_path);
+
+        // Kiểm tra URL trả về là public URL R2
+        $this->assertStringContainsString('report-cards', $attachments[0]['url']);
+
+        // Kiểm tra file thực sự được lưu trên R2 disk
+        Storage::disk('r2')->assertExists($attachment->file_path);
     }
 
     public function test_upload_attachments_rejects_unauthorized_user(): void

@@ -2,6 +2,7 @@
 
 namespace App\Services\ReportCard;
 
+use App\Admin\Services\File\FileService;
 use App\Models\ChildEvaluation;
 use App\Models\ChildEvaluationAttachment;
 use Illuminate\Http\UploadedFile;
@@ -13,6 +14,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ReportCardAttachmentService
 {
+    protected FileService $fileService;
+
+    public function __construct(?FileService $fileService = null)
+    {
+        $this->fileService = $fileService ?? app(FileService::class);
+    }
+
     /**
      * @param ChildEvaluation $evaluation
      * @param UploadedFile[] $files
@@ -31,7 +39,7 @@ class ReportCardAttachmentService
         }
 
         $childId = $evaluation->classGrade?->child_id ?? 'unknown';
-        $disk = config('report_card.attachments.disk', 'local');
+        $disk = config('report_card.attachments.disk', 'r2');
         $created = [];
 
         $currentMaxSort = (int) $evaluation->attachments()->max('sort_order');
@@ -44,7 +52,13 @@ class ReportCardAttachmentService
 
             $uuidName = Str::uuid()->toString() . '.' . $extension;
             $dir = "report-cards/{$childId}";
-            $path = Storage::disk($disk)->putFileAs($dir, $file, $uuidName);
+
+            if ($disk === 'r2') {
+                $uploadResult = $this->fileService->uploadFileToR2($file, $dir, null, $uuidName);
+                $path = $uploadResult['path'];
+            } else {
+                $path = Storage::disk($disk)->putFileAs($dir, $file, $uuidName);
+            }
 
             $imgSize = @getimagesize($file->getPathname()) ?: [null, null];
 
@@ -77,8 +91,12 @@ class ReportCardAttachmentService
 
             if ($deleted) {
                 DB::afterCommit(function () use ($disk, $path) {
-                    if (Storage::disk($disk)->exists($path)) {
-                        Storage::disk($disk)->delete($path);
+                    if ($disk === 'r2') {
+                        $this->fileService->deleteR2File($path);
+                    } else {
+                        if (Storage::disk($disk)->exists($path)) {
+                            Storage::disk($disk)->delete($path);
+                        }
                     }
                 });
             }
@@ -102,6 +120,13 @@ class ReportCardAttachmentService
     {
         $disk = $attachment->disk;
         $path = $attachment->file_path;
+
+        if ($disk === 'r2') {
+            $baseUrl = rtrim(config('filesystems.disks.r2.url') ?: env('CLOUDFLARE_R2_PUBLIC_URL', ''), '/');
+            if ($baseUrl) {
+                return redirect()->away($baseUrl . '/' . ltrim($path, '/'));
+            }
+        }
 
         if (!Storage::disk($disk)->exists($path)) {
             abort(404, 'Không tìm thấy tệp ảnh học bạ.');

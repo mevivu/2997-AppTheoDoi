@@ -106,12 +106,20 @@ class ChildEvaluationAttachment extends Model
     }
 
     /**
-     * Đường dẫn truy cập ảnh học bạ có chữ ký bảo vệ (signed URL)
+     * Đường dẫn truy cập ảnh học bạ: link CDN Cloudflare R2 trực tiếp hoặc signed URL
      */
     public function getUrlAttribute(): ?string
     {
         if (!$this->exists) {
             return null;
+        }
+
+        // Nếu tệp lưu trên Cloudflare R2, trả về trực tiếp link CDN R2
+        if ($this->disk === 'r2') {
+            $baseUrl = rtrim(config('filesystems.disks.r2.url') ?: env('CLOUDFLARE_R2_PUBLIC_URL', ''), '/');
+            if ($baseUrl && !empty($this->file_path)) {
+                return $baseUrl . '/' . ltrim($this->file_path, '/');
+            }
         }
 
         try {

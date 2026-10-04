@@ -22,6 +22,6 @@ return [
     'attachments' => [
         'max_per_evaluation' => 10,
         'max_kb' => 5120, // 5MB
-        'disk' => env('REPORT_CARD_DISK', 'local'),
+        'disk' => env('REPORT_CARD_DISK', 'r2'),
     ],
 ];
