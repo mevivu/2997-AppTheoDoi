@@ -902,6 +902,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::get('/general', 'general')->name('general');
                 Route::get('/systems', 'system')->name('system');
                 Route::get('/affiliate', 'affiliate')->name('affiliate');
+                Route::get('/parent-rank', 'parentRank')->name('parent_rank');
             });
 
             Route::get('/user-shopping', 'userShopping')->name('user_shopping');

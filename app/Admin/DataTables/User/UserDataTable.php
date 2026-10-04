@@ -8,6 +8,7 @@ use App\Admin\Traits\Roles;
 use App\AES\AESHelper;
 use App\Enums\Package\PackageStatus;
 use App\Enums\User\AffiliateRank;
+use App\Enums\User\ParentRank;
 use App\Enums\User\UserServiceType;
 use App\Enums\User\UserStatus;
 use App\Models\Package;
@@ -99,7 +100,19 @@ class UserDataTable extends BaseDataTable
 
     protected function setCustomColumns(): void
     {
-        $this->customColumns = config('datatables_columns.user', []);
+        $cols = config('datatables_columns.user', []);
+        $newCols = [];
+        foreach ($cols as $key => $col) {
+            $newCols[$key] = $col;
+            if ($key === 'affiliate_rank') {
+                $newCols['parent_rank'] = [
+                    'title' => '<div class="header-cell-content"><i class="ti ti-crown"></i><span>Hạng Bố mẹ</span></div>',
+                    'addClass' => 'text-center align-middle',
+                    'orderable' => true,
+                ];
+            }
+        }
+        $this->customColumns = !empty($newCols) ? $newCols : $cols;
     }
 
     protected function setCustomEditColumns(): void
@@ -118,6 +131,15 @@ class UserDataTable extends BaseDataTable
             'affiliate_rank' => function ($item) {
                 $rank = $item->affiliate_rank ?? AffiliateRank::Silver;
                 return '<span class="badge ' . $rank->badge() . '"><i class="' . $rank->icon() . ' me-1"></i>' . $rank->name() . '</span>';
+            },
+            // Định dạng hiển thị Cấp bậc phân hạng Bố mẹ
+            'parent_rank' => function ($item) {
+                $rank = $item->parent_rank ?? ParentRank::NewMember;
+                if (!$rank instanceof ParentRank) {
+                    $rank = ParentRank::tryFrom((int) $rank) ?? ParentRank::NewMember;
+                }
+                $points = number_format((float) ($item->parent_rank_points ?? 0), 1);
+                return '<span class="badge ' . $rank->badge() . '" title="Điểm: ' . $points . ' / 100"><i class="' . $rank->icon() . ' me-1"></i>' . $rank->name() . ' (' . $points . 'đ)</span>';
             },
             'status' => $this->view['status'],
             'service_type' => $this->view['service_type'],
@@ -162,6 +184,7 @@ class UserDataTable extends BaseDataTable
             'code',
             'wallet_balance',
             'affiliate_rank',
+            'parent_rank',
             'email',
             'phone',
             'package_name',
@@ -173,6 +196,9 @@ class UserDataTable extends BaseDataTable
         $this->customFilterColumns = [
             'affiliate_rank' => function ($query, $keyword) {
                 $query->where('affiliate_rank', $keyword);
+            },
+            'parent_rank' => function ($query, $keyword) {
+                $query->where('parent_rank', $keyword);
             },
             'status' => function ($query, $keyword) {
                 $query->where('status', $keyword);

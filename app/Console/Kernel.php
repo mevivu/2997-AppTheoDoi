@@ -22,6 +22,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('session:clean-deleted --days=0')->everyMinute();
         $schedule->command('notification:clean-old --days=7')->dailyAt('02:00')->withoutOverlapping();
         $schedule->command('memo:calculate-rankings')->everyTwoHours()->withoutOverlapping();
+        $schedule->command('parent-rank:calculate')->dailyAt('01:00')->withoutOverlapping();
+        $schedule->command('parent-rank:calculate --period=prev --finalize')->monthlyOn(1, '00:30')->withoutOverlapping();
     }
 
     /**

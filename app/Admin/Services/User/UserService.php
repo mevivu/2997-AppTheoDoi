@@ -196,8 +196,10 @@ class UserService implements UserServiceInterface
                 $user->permissions()->detach();
             }
 
-            // 5. Xóa dữ liệu sử dụng tính năng và thông báo
+            // 5. Xóa dữ liệu sử dụng tính năng, phân hạng và thông báo
             FeatureUsage::where('user_id', $user->id)->delete();
+            \App\Models\UserDailyActivity::where('user_id', $user->id)->delete();
+            \App\Models\ParentRankSnapshot::where('user_id', $user->id)->delete();
             Notification::where('user_id', $user->id)
                 ->orWhere('user_id_attribute', $user->id)
                 ->delete();

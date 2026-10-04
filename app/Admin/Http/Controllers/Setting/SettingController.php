@@ -32,6 +32,7 @@ class SettingController extends Controller
             'general' => 'admin.settings.general',
             'system' => 'admin.settings.system',
             'affiliate' => 'admin.settings.affiliate',
+            'parent_rank' => 'admin.settings.parent-rank',
         ];
     }
 
@@ -55,6 +56,14 @@ class SettingController extends Controller
     {
         $settings = $this->repository->getByGroup([SettingGroup::Affiliate]);
         return view($this->view['affiliate'], [
+            'settings' => $settings
+        ]);
+    }
+
+    public function parentRank(): Factory|View|Application
+    {
+        $settings = $this->repository->getByGroup([SettingGroup::ParentRank]);
+        return view($this->view['parent_rank'], [
             'settings' => $settings
         ]);
     }

@@ -14,7 +14,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use App\Enums\User\{Gender, UserStatus, UserServiceType, AffiliateRank, KycStatus};
+use App\Enums\User\{Gender, UserStatus, UserServiceType, AffiliateRank, KycStatus, ParentRank};
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -120,6 +120,14 @@ class User extends Authenticatable implements JWTSubject
         'pending_referral_reward',
         /** Thời điểm user đồng ý Điều kiện & Điều khoản Affiliate */
         'affiliate_terms_accepted_at',
+        /** Cấp bậc phụ huynh hiện tại */
+        'parent_rank',
+        /** Điểm phân hạng phụ huynh hiện tại */
+        'parent_rank_points',
+        /** Kỳ đánh giá gần nhất (YYYY-MM) */
+        'parent_rank_period',
+        /** Thời điểm cập nhật phân hạng phụ huynh */
+        'parent_rank_updated_at',
 
     ];
 
@@ -154,6 +162,9 @@ class User extends Authenticatable implements JWTSubject
         'kyc_rejected_at' => 'datetime',
         'pending_referral_reward' => 'boolean',
         'affiliate_terms_accepted_at' => 'datetime',
+        'parent_rank' => ParentRank::class,
+        'parent_rank_points' => 'float',
+        'parent_rank_updated_at' => 'datetime',
     ];
 
     public function userPackages(): HasMany
@@ -193,6 +204,22 @@ class User extends Authenticatable implements JWTSubject
     public function affiliateHistories(): HasMany
     {
         return $this->hasMany(AffiliateHistory::class, 'user_id');
+    }
+
+    /**
+     * Nhật ký hoạt động hàng ngày (thời gian, tần suất sử dụng)
+     */
+    public function dailyActivities(): HasMany
+    {
+        return $this->hasMany(UserDailyActivity::class, 'user_id');
+    }
+
+    /**
+     * Lịch sử phân hạng phụ huynh qua các kỳ (tháng)
+     */
+    public function parentRankSnapshots(): HasMany
+    {
+        return $this->hasMany(ParentRankSnapshot::class, 'user_id');
     }
 
     /**

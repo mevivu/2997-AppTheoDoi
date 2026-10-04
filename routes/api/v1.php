@@ -89,13 +89,13 @@ Route::controller(App\Api\V1\Http\Controllers\Transaction\WithdrawController::cl
         Route::post('/request', 'requestWithdraw');
     });
 
-// Assessment
-Route::controller(\App\Api\V1\Http\Controllers\Assessment\AssessmentController::class)
-    ->prefix('/assessment')
-    ->as('assessment.')
-    ->group(function () {
-        Route::get('/', 'index');
-    });
+// Assessment (Đã comment lại theo yêu cầu do UI trang chủ không còn sử dụng)
+// Route::controller(\App\Api\V1\Http\Controllers\Assessment\AssessmentController::class)
+//     ->prefix('/assessment')
+//     ->as('assessment.')
+//     ->group(function () {
+//         Route::get('/', 'index');
+//     });
 // Child
 Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
     ->prefix('/children')
@@ -480,6 +480,17 @@ Route::controller(\App\Api\V1\Http\Controllers\Tracking\TrackingController::clas
     ->as('tracking.')
     ->group(function () {
         Route::post('/feature-usage', 'logFeatureUsage');
+        Route::post('/app-session', 'logAppSession')->middleware(['auth:api', 'throttle:30,1']);
+    });
+
+//***** -- Parent Rank -- ******* //
+Route::controller(\App\Api\V1\Http\Controllers\ParentRank\ParentRankController::class)
+    ->prefix('/parent-rank')
+    ->as('parentRank.')
+    ->group(function () {
+        Route::get('/me', 'me');
+        Route::get('/history', 'history');
+        Route::get('/tiers', 'tiers');
     });
 
 Route::fallback(function () {

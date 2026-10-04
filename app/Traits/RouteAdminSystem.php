@@ -362,6 +362,7 @@ class RouteAdminSystem
     const SETTING_GENERAL = 'admin.setting.general';
     const SETTING_SYSTEM = 'admin.setting.system';
     const SETTING_AFFILIATE = 'admin.setting.affiliate';
+    const SETTING_PARENT_RANK = 'admin.setting.parent_rank';
     const SETTING_UPDATE = 'admin.setting.update';
     const APP_VERSION_INDEX = 'admin.app-version.index';
     const APP_VERSION_CREATE = 'admin.app-version.create';

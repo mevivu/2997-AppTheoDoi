@@ -38,6 +38,9 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Services\Affiliate\AffiliateServiceInterface' => 'App\Services\Affiliate\AffiliateService',
         'App\Api\V1\Services\Video\VideoServiceInterface' => 'App\Api\V1\Services\Video\VideoService',
         'App\Api\V1\Services\Lesson\LessonServiceInterface' => 'App\Api\V1\Services\Lesson\LessonService',
+        'App\Services\Tracking\AppSessionTrackerInterface' => 'App\Services\Tracking\AppSessionTracker',
+        'App\Services\ChildScore\ChildScoreAggregatorInterface' => 'App\Services\ChildScore\ChildScoreAggregator',
+        'App\Services\ParentRank\ParentRankServiceInterface' => 'App\Services\ParentRank\ParentRankService',
     ];
 
     /**

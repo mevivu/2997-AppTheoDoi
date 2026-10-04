@@ -1042,6 +1042,13 @@ return [
                 'roles' => [],
                 'permissions' => ['settingGeneral'],
             ],
+            [
+                'title' => 'Phân hạng Bố mẹ',
+                'routeName' => RouteAdminSystem::SETTING_PARENT_RANK,
+                'icon' => '<i class="ti ti-crown"></i>',
+                'roles' => [],
+                'permissions' => ['settingGeneral'],
+            ],
         ]
     ],
     [
