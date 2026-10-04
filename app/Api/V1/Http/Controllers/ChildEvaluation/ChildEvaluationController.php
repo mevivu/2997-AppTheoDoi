@@ -25,6 +25,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Throwable;
 
 /**
  * @group Đánh giá năng lực
@@ -144,6 +145,7 @@ class ChildEvaluationController extends Controller
      *
      * @param ChildEvaluationRequest $request
      * @return JsonResponse
+     * @throws Throwable
      */
     public function update(ChildEvaluationRequest $request): JsonResponse
     {

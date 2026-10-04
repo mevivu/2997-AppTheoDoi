@@ -7,7 +7,17 @@ use App\Admin\Http\Requests\Children\ChildrenRequest;
 use App\Admin\Repositories\Children\ChildrenRepositoryInterface;
 use App\Admin\Services\Children\ChildrenServiceInterface;
 use App\Admin\DataTables\Children\ChildrenDataTable;
+use App\Api\V1\Services\ChildEvaluation\ChildEvaluationServiceInterface;
+use App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface;
+use App\Api\V1\Services\RatingPQ\RatingPQServiceInterface;
+use App\Api\V2\Http\Requests\HeightPrediction\HeightChartV2Request;
+use App\Api\V2\Http\Requests\HeightPrediction\HeightPredictionV2Request;
 use App\Enums\Child\BornStatus;
+use App\Models\ClassGrade;
+use App\Services\ReportCard\ReportCardEngine;
+use App\Services\ReportCard\ReportCardInputLoader;
+use App\Services\ReportCard\ReportCardPersister;
+use App\Services\ReportCard\ReportCardSummaryService;
 use App\Traits\ResponseController;
 use Exception;
 use App\Enums\Child\ChildStatus;
@@ -18,9 +28,12 @@ use App\Enums\User\Gender;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ChildrenController extends Controller
 {
@@ -106,9 +119,9 @@ class ChildrenController extends Controller
         // Chỉ tính toán dự báo chiều cao và PQ nếu trẻ đã sinh và có ngày sinh hợp lệ
         if ($instance->is_born != BornStatus::Unborn && $instance->birthday) {
             try {
-                $heightService = app(\App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface::class);
+                $heightService = app(HeightPredictionServiceInterface::class);
 
-                $heightRequest = new \App\Api\V2\Http\Requests\HeightPrediction\HeightPredictionV2Request();
+                $heightRequest = new HeightPredictionV2Request();
                 $heightRequest->setValidator(validator([
                     'child_id' => $id,
                     'puberty_months' => 0
@@ -118,7 +131,7 @@ class ChildrenController extends Controller
                 ]));
                 $heightPrediction = $heightService->indexV2($heightRequest);
 
-                $chartRequest = new \App\Api\V2\Http\Requests\HeightPrediction\HeightChartV2Request();
+                $chartRequest = new HeightChartV2Request();
                 $chartRequest->setValidator(validator([
                     'child_id' => $id,
                     'puberty_months' => 0,
@@ -129,14 +142,14 @@ class ChildrenController extends Controller
                     'target_height' => 'nullable|numeric|min:50|max:250'
                 ]));
                 $heightChart = $heightService->chartV2($chartRequest);
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Log::warning('Error calculating height prediction/chart V2 for child ' . $id . ': ' . $e->getMessage());
             }
 
             try {
-                $pqService = app(\App\Api\V1\Services\RatingPQ\RatingPQServiceInterface::class);
-                $pqOverall = $pqService->getOverallStats(new \Illuminate\Http\Request(['child_id' => $id]), (int)$id);
-            } catch (\Throwable $e) {
+                $pqService = app(RatingPQServiceInterface::class);
+                $pqOverall = $pqService->getOverallStats(new Request(['child_id' => $id]), (int)$id);
+            } catch (Throwable $e) {
                 Log::warning('Error calculating PQ overall for child ' . $id . ': ' . $e->getMessage());
             }
         }
@@ -211,7 +224,7 @@ class ChildrenController extends Controller
                         ],
                     ];
                 }
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Log::warning('Error calculating pregnancy overview for child ' . $id . ': ' . $e->getMessage());
             }
         }
@@ -219,9 +232,9 @@ class ChildrenController extends Controller
 
         $reportCardSummary = null;
         try {
-            $summaryService = app(\App\Services\ReportCard\ReportCardSummaryService::class);
+            $summaryService = app(ReportCardSummaryService::class);
             $reportCardSummary = $summaryService->getSummary((int) $id);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::warning('Error getting report card summary for child ' . $id . ': ' . $e->getMessage());
         }
 
@@ -244,7 +257,7 @@ class ChildrenController extends Controller
         );
     }
 
-    public function ajaxPredictHeightV2(Request $request): \Illuminate\Http\JsonResponse
+    public function ajaxPredictHeightV2(Request $request): JsonResponse
     {
         try {
             $childId = $request->input('child_id');
@@ -265,8 +278,8 @@ class ChildrenController extends Controller
                 ], 422);
             }
 
-            $heightService = app(\App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface::class);
-            $serviceRequest = new \App\Api\V2\Http\Requests\HeightPrediction\HeightPredictionV2Request();
+            $heightService = app(HeightPredictionServiceInterface::class);
+            $serviceRequest = new HeightPredictionV2Request();
             $serviceRequest->setValidator($validator);
 
             $result = $heightService->indexV2($serviceRequest);
@@ -276,7 +289,7 @@ class ChildrenController extends Controller
                 'message' => 'Tính toán dự báo chiều cao V2 thành công.',
                 'data' => $result,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('ajaxPredictHeightV2 error: ' . $e->getMessage());
             return response()->json([
                 'status' => 500,
@@ -285,7 +298,7 @@ class ChildrenController extends Controller
         }
     }
 
-    public function ajaxHeightChartV2(Request $request): \Illuminate\Http\JsonResponse
+    public function ajaxHeightChartV2(Request $request): JsonResponse
     {
         try {
             $childId = $request->input('child_id');
@@ -309,8 +322,8 @@ class ChildrenController extends Controller
                 ], 422);
             }
 
-            $heightService = app(\App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface::class);
-            $serviceRequest = new \App\Api\V2\Http\Requests\HeightPrediction\HeightChartV2Request();
+            $heightService = app(HeightPredictionServiceInterface::class);
+            $serviceRequest = new HeightChartV2Request();
             $serviceRequest->setValidator($validator);
 
             $result = $heightService->chartV2($serviceRequest);
@@ -320,7 +333,7 @@ class ChildrenController extends Controller
                 'message' => 'Lấy dữ liệu phác đồ chiều cao V2 thành công.',
                 'data' => $result,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('ajaxHeightChartV2 error: ' . $e->getMessage());
             return response()->json([
                 'status' => 500,
@@ -329,7 +342,7 @@ class ChildrenController extends Controller
         }
     }
 
-    public function ajaxDebugHeightV2(Request $request): \Illuminate\Http\JsonResponse
+    public function ajaxDebugHeightV2(Request $request): JsonResponse
     {
         try {
             $childId = $request->input('child_id');
@@ -353,7 +366,7 @@ class ChildrenController extends Controller
                 ], 422);
             }
 
-            $heightService = app(\App\Api\V1\Services\HeightPrediction\HeightPredictionServiceInterface::class);
+            $heightService = app(HeightPredictionServiceInterface::class);
             $debugData = $heightService->debugHeightRegimen((int)$childId, $pubertyMonths, $targetHeight);
 
             return response()->json([
@@ -361,7 +374,7 @@ class ChildrenController extends Controller
                 'message' => 'Lấy dữ liệu chẩn đoán công thức thành công.',
                 'data' => $debugData,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('ajaxDebugHeightV2 error: ' . $e->getMessage());
             return response()->json([
                 'status' => 500,
@@ -370,7 +383,7 @@ class ChildrenController extends Controller
         }
     }
 
-    public function ajaxDebugPQ(Request $request): \Illuminate\Http\JsonResponse
+    public function ajaxDebugPQ(Request $request): JsonResponse
     {
         try {
             $childId = $request->input('child_id');
@@ -388,7 +401,7 @@ class ChildrenController extends Controller
                 ], 422);
             }
 
-            $pqService = app(\App\Api\V1\Services\RatingPQ\RatingPQServiceInterface::class);
+            $pqService = app(RatingPQServiceInterface::class);
             $debugData = $pqService->debugPqCalculation((int)$childId);
 
             return response()->json([
@@ -396,7 +409,7 @@ class ChildrenController extends Controller
                 'message' => 'Lấy dữ liệu chẩn đoán thể chất PQ thành công.',
                 'data' => $debugData,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('ajaxDebugPQ error: ' . $e->getMessage());
             return response()->json([
                 'status' => 500,
@@ -405,7 +418,7 @@ class ChildrenController extends Controller
         }
     }
 
-    public function ajaxDebugReportCard(Request $request): \Illuminate\Http\JsonResponse
+    public function ajaxDebugReportCard(Request $request): JsonResponse
     {
         try {
             $childId = $request->input('child_id');
@@ -429,7 +442,7 @@ class ChildrenController extends Controller
                 ], 422);
             }
 
-            $classGrade = \App\Models\ClassGrade::where('child_id', $childId)
+            $classGrade = ClassGrade::where('child_id', $childId)
                 ->where('class_id', $classId)
                 ->first();
 
@@ -442,8 +455,8 @@ class ChildrenController extends Controller
 
             $evaluation = $classGrade->evaluations()->where('semester', $semester)->first();
 
-            $loader = app(\App\Services\ReportCard\ReportCardInputLoader::class);
-            $engine = app(\App\Services\ReportCard\ReportCardEngine::class);
+            $loader = app(ReportCardInputLoader::class);
+            $engine = app(ReportCardEngine::class);
 
             $input = $loader->load($classGrade, $semester);
             $calcResult = $engine->calculate($input);
@@ -493,7 +506,7 @@ class ChildrenController extends Controller
                     'snapshot' => $calcResult->snapshot(),
                 ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('ajaxDebugReportCard error: ' . $e->getMessage());
             return response()->json([
                 'status' => 500,
@@ -502,7 +515,7 @@ class ChildrenController extends Controller
         }
     }
 
-    public function ajaxRecalculateReportCard(Request $request): \Illuminate\Http\JsonResponse
+    public function ajaxRecalculateReportCard(Request $request): JsonResponse
     {
         try {
             $childId = $request->input('child_id');
@@ -527,21 +540,21 @@ class ChildrenController extends Controller
                 ], 422);
             }
 
-            $service = app(\App\Api\V1\Services\ChildEvaluation\ChildEvaluationServiceInterface::class);
+            $service = app(ChildEvaluationServiceInterface::class);
             $service->findAndCreateChildEvaluations($childId, $classId, $semester);
 
-            $classGrade = \App\Models\ClassGrade::where('child_id', $childId)
+            $classGrade = ClassGrade::where('child_id', $childId)
                 ->where('class_id', $classId)
                 ->firstOrFail();
 
-            $loader = app(\App\Services\ReportCard\ReportCardInputLoader::class);
-            $engine = app(\App\Services\ReportCard\ReportCardEngine::class);
-            $persister = app(\App\Services\ReportCard\ReportCardPersister::class);
+            $loader = app(ReportCardInputLoader::class);
+            $engine = app(ReportCardEngine::class);
+            $persister = app(ReportCardPersister::class);
 
             $input = $loader->load($classGrade, $semester);
             $calcResult = $engine->calculate($input);
 
-            \Illuminate\Support\Facades\Config::set('report_card.auto_classification', $applyFinal);
+            Config::set('report_card.auto_classification', $applyFinal);
             $saved = $persister->persist($classGrade, $semester, $calcResult, $input);
 
             return response()->json([
@@ -554,7 +567,7 @@ class ChildrenController extends Controller
                     'academic_performance' => $saved?->academic_performance?->value ?? $saved?->academic_performance,
                 ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('ajaxRecalculateReportCard error: ' . $e->getMessage());
             return response()->json([
                 'status' => 500,

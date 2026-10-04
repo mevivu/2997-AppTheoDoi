@@ -24,6 +24,7 @@ use App\Services\ReportCard\ReportCardService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 
 class ChildEvaluationService implements ChildEvaluationServiceInterface
@@ -124,7 +125,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
 
 
     /**
-     * @throws Exception
+     * @throws Exception|Throwable
      */
     public function update(Request $request): object
     {

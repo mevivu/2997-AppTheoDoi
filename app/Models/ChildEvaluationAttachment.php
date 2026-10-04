@@ -5,7 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\URL;
+use Throwable;
 
 /**
  * App\Models\ChildEvaluationAttachment
@@ -23,11 +25,11 @@ use Illuminate\Support\Facades\URL;
  * @property int|null $height Chiều cao ảnh (pixels)
  * @property int $sort_order Thứ tự sắp xếp hiển thị
  * @property int|null $uploaded_by ID người dùng tải ảnh lên
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read string|null $url
- * @property-read \App\Models\ChildEvaluation|null $childEvaluation
- * @property-read \App\Models\User|null $uploader
+ * @property-read ChildEvaluation|null $childEvaluation
+ * @property-read User|null $uploader
  */
 class ChildEvaluationAttachment extends Model
 {
@@ -128,7 +130,7 @@ class ChildEvaluationAttachment extends Model
                 now()->addMinutes(30),
                 ['attachmentId' => $this->id]
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return null;
         }
     }
