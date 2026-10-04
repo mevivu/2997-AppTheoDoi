@@ -320,6 +320,8 @@ class ParentRankService implements ParentRankServiceInterface
 
         if (!$snapshot) {
             $snapshot = $this->calculateAndSave($user, $currentPeriod, false);
+        } elseif (!$snapshot->is_final && (!$snapshot->calculated_at || $snapshot->calculated_at->diffInMinutes(now()) >= 10)) {
+            $snapshot = $this->calculateAndSave($user, $currentPeriod, false);
         }
 
         $rank = $snapshot->rank instanceof ParentRank ? $snapshot->rank : ParentRank::from((int) $snapshot->rank);
@@ -345,6 +347,14 @@ class ParentRankService implements ParentRankServiceInterface
                 default => 100.0,
             };
             $pointsNeeded = max(0.0, round($minPointsNext - $snapshot->total_points, 2));
+        }
+
+        $progressPercent = 100.0;
+        if ($nextRank && $minPointsNext !== null && ($minPointsNext > $minPointsCurrent)) {
+            $progressPercent = round(
+                max(0.0, min(100.0, (($snapshot->total_points - $minPointsCurrent) / ($minPointsNext - $minPointsCurrent)) * 100)),
+                1
+            );
         }
 
         $targets = $config['targets'];
@@ -408,9 +418,11 @@ class ParentRankService implements ParentRankServiceInterface
                 'color' => $rank->colorHex(),
                 'icon' => $rank->icon(),
                 'badge' => $rank->badge(),
+                'min_points' => $minPointsCurrent,
             ],
             'total_points' => (float) $snapshot->total_points,
             'position' => $snapshot->position,
+            'progress_percent' => $progressPercent,
             'next_rank' => $nextRank ? [
                 'value' => $nextRank->value,
                 'name' => $nextRank->name(),

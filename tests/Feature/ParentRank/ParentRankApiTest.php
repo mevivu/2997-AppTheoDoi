@@ -97,8 +97,9 @@ class ParentRankApiTest extends TestCase
             'data' => [
                 'period',
                 'is_final',
-                'rank' => ['value', 'name', 'badge', 'color', 'icon'],
+                'rank' => ['value', 'name', 'badge', 'color', 'icon', 'min_points'],
                 'total_points',
+                'progress_percent',
                 'suggestion',
                 'breakdown' => [
                     '*' => ['key', 'label', 'raw', 'unit', 'target', 'score', 'weight'],

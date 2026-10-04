@@ -57,6 +57,11 @@ class AuthResource extends JsonResource
             'affiliate_total_sales' => (float) ($this->affiliate_total_sales ?? 0),
             'affiliate_terms_accepted' => !empty($this->affiliate_terms_accepted_at),
             'affiliate_terms_accepted_at' => $this->affiliate_terms_accepted_at?->toISOString(),
+            'parent_rank' => $this->parent_rank?->value ?? 0,
+            'parent_rank_name' => $this->parent_rank?->name() ?? 'Thành viên mới',
+            'parent_rank_points' => (float) ($this->parent_rank_points ?? 0),
+            'parent_rank_badge' => $this->parent_rank?->badge() ?? 'bg-muted-lt',
+            'parent_rank_color' => $this->parent_rank?->colorHex() ?? '#94A3B8',
             'referrals_count' => $this->referrals()->count(),
             'referrer' => $this->referrer ? [
                 'id' => $this->referrer->id,
