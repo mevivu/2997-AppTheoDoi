@@ -1617,14 +1617,16 @@ return [
             'orderable' => false,
         ],
         'wallet_balance' => [
-            'title' => '<div class="header-cell-content"><i class="ti ti-wallet"></i><span>Ví</span></div>',
+            'title' => '<div class="header-cell-content"><i class="ti ti-wallet"></i><span>Ví hoa hồng</span></div>',
             'addClass' => 'text-center align-middle',
             'orderable' => true,
+            'width' => '155px',
         ],
         'affiliate_rank' => [
-            'title' => '<div class="header-cell-content"><i class="ti ti-medal"></i><span>Cấp bậc</span></div>',
+            'title' => '<div class="header-cell-content"><i class="ti ti-medal"></i><span>Hạng đối tác</span></div>',
             'addClass' => 'text-center align-middle',
             'orderable' => true,
+            'width' => '150px',
         ],
         'status' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',

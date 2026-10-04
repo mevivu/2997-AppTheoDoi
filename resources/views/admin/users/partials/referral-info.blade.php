@@ -5,22 +5,31 @@
     $histories = $user->affiliateHistories()->with(['sourceUser'])->latest()->take(50)->get();
 @endphp
 
+<style>
+    .affiliate-summary-card { border:1px solid #e4ebf0!important; background:#fff!important; box-shadow:0 4px 14px rgba(21,48,68,.05)!important; transition:.2s ease; }
+    .affiliate-summary-card:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(21,48,68,.09)!important; }
+    .affiliate-summary-icon { width:44px; height:44px; display:grid; place-items:center; border-radius:12px; font-size:21px; }
+    .affiliate-wallet-icon { color:#0f8f83; background:#e8f7f4; }
+    .affiliate-people-icon { color:#1769aa; background:#eaf4fc; }
+    .affiliate-code-icon { color:#b7791f; background:#fff7df; }
+    .affiliate-code-value { color:#8a5b12; letter-spacing:.04em; }
+</style>
 <div class="row g-4">
     <!-- Stat Overview: Số dư ví hoa hồng & Thống kê affiliate -->
     <div class="col-12">
         <div class="row g-3">
             <div class="col-sm-6 col-lg-4">
-                <div class="card card-sm border border-light-subtle rounded-3 shadow-none bg-primary-lt">
+                <div class="card card-sm rounded-3 affiliate-summary-card h-100">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-auto">
-                                <span class="bg-primary text-white avatar rounded-3">
+                                <span class="affiliate-summary-icon affiliate-wallet-icon">
                                     <i class="ti ti-wallet fs-2"></i>
                                 </span>
                             </div>
                             <div class="col">
                                 <div class="text-muted small fw-medium">{{ __('Số dư ví hoa hồng') }}</div>
-                                <div class="fs-2 fw-bold text-primary user-wallet-balance-display">
+                                <div class="fs-2 fw-bold text-success user-wallet-balance-display">
                                     {{ number_format($user->wallet_balance ?? 0, 0, ',', '.') }} đ
                                 </div>
                             </div>
@@ -29,17 +38,17 @@
                 </div>
             </div>
             <div class="col-sm-6 col-lg-4">
-                <div class="card card-sm border border-light-subtle rounded-3 shadow-none bg-green-lt">
+                <div class="card card-sm rounded-3 affiliate-summary-card h-100">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-auto">
-                                <span class="bg-success text-white avatar rounded-3">
+                                <span class="affiliate-summary-icon affiliate-people-icon">
                                     <i class="ti ti-users fs-2"></i>
                                 </span>
                             </div>
                             <div class="col">
                                 <div class="text-muted small fw-medium">{{ __('Thành viên đã giới thiệu') }}</div>
-                                <div class="fs-2 fw-bold text-success">
+                                <div class="fs-2 fw-bold text-primary">
                                     {{ $referrals->count() }} <span class="fs-4 text-muted fw-normal">thành viên</span>
                                 </div>
                             </div>
@@ -48,17 +57,17 @@
                 </div>
             </div>
             <div class="col-sm-12 col-lg-4">
-                <div class="card card-sm border border-light-subtle rounded-3 shadow-none bg-purple-lt">
+                <div class="card card-sm rounded-3 affiliate-summary-card h-100">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-auto">
-                                <span class="bg-purple text-white avatar rounded-3">
+                                <span class="affiliate-summary-icon affiliate-code-icon">
                                     <i class="ti ti-share fs-2"></i>
                                 </span>
                             </div>
                             <div class="col">
                                 <div class="text-muted small fw-medium">{{ __('Mã Affiliate cá nhân') }}</div>
-                                <div class="fs-2 fw-bold text-purple">
+                                <div class="fs-2 fw-bold affiliate-code-value">
                                     {{ $user->affiliate_code ?? '-' }}
                                 </div>
                             </div>

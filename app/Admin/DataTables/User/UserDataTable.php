@@ -122,15 +122,13 @@ class UserDataTable extends BaseDataTable
             // Định dạng hiển thị số dư ví thưởng / hoa hồng Affiliate
             'wallet_balance' => function ($item) {
                 $balance = (float) ($item->wallet_balance ?? 0);
-                if ($balance > 0) {
-                    return '<span class="badge bg-green-lt fw-bold font-monospace fs-4">' . number_format($balance, 0, ',', '.') . ' đ</span>';
-                }
-                return '<span class="text-muted font-monospace">0 đ</span>';
+                $amountClass = $balance > 0 ? 'text-success' : 'text-muted';
+                return '<div class="wallet-cell"><span class="wallet-cell-icon"><i class="ti ti-wallet"></i></span><span><small>Ví hoa hồng</small><strong class="' . $amountClass . '">' . number_format($balance, 0, ',', '.') . ' đ</strong></span></div>';
             },
             // Định dạng hiển thị Cấp bậc mẹ giới thiệu
             'affiliate_rank' => function ($item) {
                 $rank = $item->affiliate_rank ?? AffiliateRank::Silver;
-                return '<span class="badge ' . $rank->badge() . '"><i class="' . $rank->icon() . ' me-1"></i>' . $rank->name() . '</span>';
+                return '<div class="rank-cell"><span class="rank-cell-icon" style="color:' . $rank->colorHex() . ';background:' . $rank->colorHex() . '18"><i class="' . $rank->icon() . '"></i></span><span><small>Đối tác</small><strong>' . $rank->name() . '</strong></span></div>';
             },
             // Định dạng hiển thị Cấp bậc phân hạng Bố mẹ
             'parent_rank' => function ($item) {
@@ -139,8 +137,9 @@ class UserDataTable extends BaseDataTable
                     $rank = ParentRank::tryFrom((int) $rank) ?? ParentRank::NewMember;
                 }
                 $points = number_format((float) ($item->parent_rank_points ?? 0), 1);
-                $period = $item->parent_rank_period ? ' • Kỳ ' . $item->parent_rank_period : '';
-                return '<span class="badge ' . $rank->badge() . '" data-bs-toggle="tooltip" data-bs-placement="top" title="Điểm: ' . $points . ' / 100' . $period . ' • ' . $rank->name() . '"><i class="' . $rank->icon() . ' me-1"></i>' . $rank->name() . ' (' . $points . 'đ)</span>';
+                $period = $item->parent_rank_period ? 'Kỳ ' . $item->parent_rank_period : 'Kỳ hiện tại';
+                $progress = min(100, max(0, (float) ($item->parent_rank_points ?? 0)));
+                return '<div class="parent-rank-cell" title="' . $period . '"><div class="d-flex align-items-center justify-content-between gap-2"><span class="d-flex align-items-center gap-1 fw-semibold"><i class="' . $rank->icon() . '" style="color:' . $rank->colorHex() . '"></i>' . $rank->name() . '</span><strong>' . $points . 'đ</strong></div><div class="parent-rank-progress"><span style="width:' . $progress . '%;background:' . $rank->colorHex() . '"></span></div><small>' . $period . '</small></div>';
             },
             'status' => $this->view['status'],
             'service_type' => $this->view['service_type'],

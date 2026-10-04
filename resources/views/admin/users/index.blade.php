@@ -1,6 +1,19 @@
 @extends('admin.layouts.master')
 
 @push('libs-css')
+    <style>
+        #userTable tbody td { vertical-align: middle; }
+        .wallet-cell,.rank-cell { display:inline-flex; align-items:center; gap:9px; text-align:left; min-width:128px; padding:6px 8px; border:1px solid #e6edf2; border-radius:10px; background:#fbfdfe; }
+        .wallet-cell-icon,.rank-cell-icon { width:34px; height:34px; flex:0 0 auto; display:grid; place-items:center; border-radius:9px; font-size:18px; }
+        .wallet-cell-icon { color:#0f8f83; background:#e8f7f4; }
+        .wallet-cell small,.rank-cell small { display:block; color:#7a8595; font-size:10px; line-height:1.2; }
+        .wallet-cell strong,.rank-cell strong { display:block; color:#253247; font-size:12px; line-height:1.45; white-space:nowrap; }
+        .parent-rank-cell { min-width:150px; text-align:left; padding:7px 9px; border:1px solid #e6edf2; border-radius:10px; background:#fbfdfe; font-size:11px; }
+        .parent-rank-progress { height:4px; margin:6px 0 4px; overflow:hidden; border-radius:8px; background:#e9eef2; }
+        .parent-rank-progress span { display:block; height:100%; border-radius:8px; }
+        .parent-rank-cell small { color:#8a94a3; }
+        #userTable tbody tr:hover .wallet-cell,#userTable tbody tr:hover .rank-cell,#userTable tbody tr:hover .parent-rank-cell { border-color:#cbdde7; background:#f5fafc; }
+    </style>
 @endpush
 
 @section('content')
