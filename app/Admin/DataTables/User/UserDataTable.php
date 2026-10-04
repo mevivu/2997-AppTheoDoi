@@ -106,7 +106,7 @@ class UserDataTable extends BaseDataTable
             $newCols[$key] = $col;
             if ($key === 'affiliate_rank') {
                 $newCols['parent_rank'] = [
-                    'title' => '<div class="header-cell-content"><i class="ti ti-crown"></i><span>Hạng Bố mẹ</span></div>',
+                    'title' => '<div class="header-cell-content" title="Điểm tổng hợp 4 tiêu chí: Thời gian (30%), Tần suất (25%), Bài đánh giá (25%), Chỉ số con (20%)"><i class="ti ti-crown text-warning me-1"></i><span>Hạng Bố mẹ</span></div>',
                     'addClass' => 'text-center align-middle',
                     'orderable' => true,
                 ];
@@ -139,7 +139,8 @@ class UserDataTable extends BaseDataTable
                     $rank = ParentRank::tryFrom((int) $rank) ?? ParentRank::NewMember;
                 }
                 $points = number_format((float) ($item->parent_rank_points ?? 0), 1);
-                return '<span class="badge ' . $rank->badge() . '" title="Điểm: ' . $points . ' / 100"><i class="' . $rank->icon() . ' me-1"></i>' . $rank->name() . ' (' . $points . 'đ)</span>';
+                $period = $item->parent_rank_period ? ' • Kỳ ' . $item->parent_rank_period : '';
+                return '<span class="badge ' . $rank->badge() . '" data-bs-toggle="tooltip" data-bs-placement="top" title="Điểm: ' . $points . ' / 100' . $period . ' • ' . $rank->name() . '"><i class="' . $rank->icon() . ' me-1"></i>' . $rank->name() . ' (' . $points . 'đ)</span>';
             },
             'status' => $this->view['status'],
             'service_type' => $this->view['service_type'],

@@ -13,6 +13,7 @@
                                      :addRoute="route('admin.user.create')"
                                      :addText="__('Thêm mới')" />
                 <div class="card-body">
+                    @include('admin.users.partials.parent-rank-info')
                     <x-form id="formMultiple" :action="route('admin.user.multiple')" type="post" :validate="true">
                         <div class="table-responsive position-relative">
                             <x-admin.partials.toggle-column-datatable />
@@ -74,6 +75,13 @@
             if ($('#forceDeleteUserName').length) {
                 $('#forceDeleteUserName').text(displayName ? ('(' + displayName + ')') : '');
             }
+        });
+
+        // Toggle icon mở rộng thông tin phân hạng
+        $('#collapseParentRankInfo').on('show.bs.collapse', function () {
+            $('#iconToggleRankInfo').removeClass('ti-chevron-down').addClass('ti-chevron-up');
+        }).on('hide.bs.collapse', function () {
+            $('#iconToggleRankInfo').removeClass('ti-chevron-up').addClass('ti-chevron-down');
         });
     </script>
 @endpush
