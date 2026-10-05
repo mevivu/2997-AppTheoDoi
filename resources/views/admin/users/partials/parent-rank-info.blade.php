@@ -1,9 +1,9 @@
 @php
     $rankService = app(\App\Services\ParentRank\ParentRankServiceInterface::class);
     $rankConfig = $rankService->getConfig();
-    $weights = $rankConfig['weights'] ?? ['usage' => 30, 'frequency' => 25, 'assessment' => 25, 'child_score' => 20];
-    $targets = $rankConfig['targets'] ?? ['usage_minutes' => 600, 'active_days' => 20, 'assessments' => 5];
-    $thresholds = $rankConfig['thresholds'] ?? ['bronze' => 20, 'silver' => 40, 'gold' => 60, 'diamond' => 80];
+    $weights = $rankConfig['weights'] ?? ['usage' => 25, 'frequency' => 20, 'assessment' => 20, 'lesson_video' => 15, 'child_score' => 20];
+    $targets = $rankConfig['targets'] ?? ['usage_minutes' => 600, 'active_days' => 20, 'assessments' => 5, 'lesson_video_views' => 20];
+    $thresholds = $rankConfig['thresholds'] ?? ['c' => 40, 'b' => 60, 'a' => 80];
 @endphp
 
 <div class="card border border-primary-subtle bg-primary-lt rounded-3 mb-3 shadow-none">
@@ -32,7 +32,7 @@
     <!-- Tóm tắt nhanh hiển thị luôn khi chưa bấm mở rộng -->
     <div class="px-3 py-2 bg-white bg-opacity-75 border-bottom border-primary-subtle d-flex align-items-center justify-content-between flex-wrap gap-2 fs-6">
         <div class="d-flex align-items-center flex-wrap gap-3">
-            <span><i class="ti ti-calculator text-primary me-1"></i><strong>Công thức:</strong> Tổng điểm = (Thời gian × <strong>{{ $weights['usage'] }}%</strong>) + (Tần suất × <strong>{{ $weights['frequency'] }}%</strong>) + (Đánh giá × <strong>{{ $weights['assessment'] }}%</strong>) + (Chỉ số con × <strong>{{ $weights['child_score'] }}%</strong>)</span>
+            <span><i class="ti ti-calculator text-primary me-1"></i><strong>Công thức:</strong> Tổng điểm = (Thời gian × <strong>{{ $weights['usage'] }}%</strong>) + (Tần suất × <strong>{{ $weights['frequency'] }}%</strong>) + (Đánh giá × <strong>{{ $weights['assessment'] }}%</strong>) + (Video bài học × <strong>{{ $weights['lesson_video'] ?? 15 }}%</strong>) + (Chỉ số con × <strong>{{ $weights['child_score'] }}%</strong>)</span>
         </div>
         <div class="d-flex align-items-center flex-wrap gap-1">
             <span class="badge bg-muted-lt">Hạng D (&lt;{{ $thresholds['c'] ?? 40 }}đ)</span>
@@ -48,70 +48,88 @@
     <!-- Chi tiết mở rộng khi bấm xem -->
     <div class="collapse" id="collapseParentRankInfo">
         <div class="card-body bg-white p-3">
-            <div class="row g-3">
+            <div class="row g-3 row-cols-1 row-cols-md-2 row-cols-xl-5">
                 <!-- Tiêu chí 1: Thời gian -->
-                <div class="col-md-6 col-xl-3">
+                <div class="col">
                     <div class="p-3 rounded-3 border border-1 h-100 bg-body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="badge bg-blue-lt fw-bold">Tiêu chí 1</span>
-                            <span class="badge bg-primary text-white">{{ $weights['usage'] }}% trọng số</span>
+                            <span class="badge bg-primary text-white">{{ $weights['usage'] }}%</span>
                         </div>
                         <h4 class="m-0 mb-1 d-flex align-items-center gap-1 text-blue">
-                            <i class="ti ti-clock-play fs-2"></i> Thời gian dùng app
+                            <i class="ti ti-clock-play fs-2"></i> Thời gian dùng
                         </h4>
                         <div class="fs-6 text-muted mb-2">Mục tiêu: <strong>{{ number_format($targets['usage_minutes']) }} phút/tháng</strong> (~{{ round($targets['usage_minutes']/60, 1) }}h)</div>
                         <div class="bg-light p-2 rounded font-monospace fs-7 text-dark mb-1">
-                            min(100, (phút thực tế / {{ $targets['usage_minutes'] }}) × 100)
+                            min(100, (phút / {{ $targets['usage_minutes'] }}) × 100)
                         </div>
                         <small class="text-secondary d-block fs-8">• Ghi nhận tự động khi mở app (tối đa 16h/ngày, ngắt phiên khi nghỉ &gt; 5 phút).</small>
                     </div>
                 </div>
 
                 <!-- Tiêu chí 2: Tần suất -->
-                <div class="col-md-6 col-xl-3">
+                <div class="col">
                     <div class="p-3 rounded-3 border border-1 h-100 bg-body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="badge bg-green-lt fw-bold">Tiêu chí 2</span>
-                            <span class="badge bg-primary text-white">{{ $weights['frequency'] }}% trọng số</span>
+                            <span class="badge bg-primary text-white">{{ $weights['frequency'] }}%</span>
                         </div>
                         <h4 class="m-0 mb-1 d-flex align-items-center gap-1 text-green">
                             <i class="ti ti-calendar-check fs-2"></i> Tần suất mở app
                         </h4>
                         <div class="fs-6 text-muted mb-2">Mục tiêu: <strong>{{ $targets['active_days'] }} ngày/tháng</strong></div>
                         <div class="bg-light p-2 rounded font-monospace fs-7 text-dark mb-1">
-                            min(100, (số ngày mở / {{ $targets['active_days'] }}) × 100)
+                            min(100, (số ngày / {{ $targets['active_days'] }}) × 100)
                         </div>
                         <small class="text-secondary d-block fs-8">• Đếm số ngày phân biệt trong tháng mà phụ huynh có mở app.</small>
                     </div>
                 </div>
 
                 <!-- Tiêu chí 3: Số bài đánh giá -->
-                <div class="col-md-6 col-xl-3">
+                <div class="col">
                     <div class="p-3 rounded-3 border border-1 h-100 bg-body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="badge bg-purple-lt fw-bold">Tiêu chí 3</span>
-                            <span class="badge bg-primary text-white">{{ $weights['assessment'] }}% trọng số</span>
+                            <span class="badge bg-orange-lt fw-bold">Tiêu chí 3</span>
+                            <span class="badge bg-primary text-white">{{ $weights['assessment'] }}%</span>
                         </div>
-                        <h4 class="m-0 mb-1 d-flex align-items-center gap-1 text-purple">
-                            <i class="ti ti-clipboard-check fs-2"></i> Bài đánh giá cho con
+                        <h4 class="m-0 mb-1 d-flex align-items-center gap-1 text-orange">
+                            <i class="ti ti-clipboard-check fs-2"></i> Bài đánh giá con
                         </h4>
                         <div class="fs-6 text-muted mb-2">Mục tiêu: <strong>{{ $targets['assessments'] }} bài/tháng</strong></div>
                         <div class="bg-light p-2 rounded font-monospace fs-7 text-dark mb-1">
-                            min(100, (số bài làm / {{ $targets['assessments'] }}) × 100)
+                            min(100, (số bài / {{ $targets['assessments'] }}) × 100)
                         </div>
                         <small class="text-secondary d-block fs-8">• Tổng bài IQ + EQ + AQ + Thể chất (PQ) + Học bạ (GPA). Bỏ qua bài IQ rỗng.</small>
                     </div>
                 </div>
 
-                <!-- Tiêu chí 4: Chỉ số con -->
-                <div class="col-md-6 col-xl-3">
+                <!-- Tiêu chí 4: Lượt xem bài học & video -->
+                <div class="col">
                     <div class="p-3 rounded-3 border border-1 h-100 bg-body">
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="badge bg-yellow-lt fw-bold">Tiêu chí 4</span>
-                            <span class="badge bg-primary text-white">{{ $weights['child_score'] }}% trọng số</span>
+                            <span class="badge bg-purple-lt fw-bold">Tiêu chí 4</span>
+                            <span class="badge bg-primary text-white">{{ $weights['lesson_video'] ?? 15 }}%</span>
+                        </div>
+                        <h4 class="m-0 mb-1 d-flex align-items-center gap-1 text-purple">
+                            <i class="ti ti-video fs-2"></i> Bài học & Video
+                        </h4>
+                        <div class="fs-6 text-muted mb-2">Mục tiêu: <strong>{{ $targets['lesson_video_views'] ?? 20 }} lượt/tháng</strong></div>
+                        <div class="bg-light p-2 rounded font-monospace fs-7 text-dark mb-1">
+                            min(100, (lượt xem / {{ $targets['lesson_video_views'] ?? 20 }}) × 100)
+                        </div>
+                        <small class="text-secondary d-block fs-8">• Tổng số lượt xem bài học và video giáo dục trong tháng của tài khoản.</small>
+                    </div>
+                </div>
+
+                <!-- Tiêu chí 5: Chỉ số con -->
+                <div class="col">
+                    <div class="p-3 rounded-3 border border-1 h-100 bg-body">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="badge bg-yellow-lt fw-bold">Tiêu chí 5</span>
+                            <span class="badge bg-primary text-white">{{ $weights['child_score'] }}%</span>
                         </div>
                         <h4 class="m-0 mb-1 d-flex align-items-center gap-1 text-warning">
-                            <i class="ti ti-mood-smile fs-2"></i> Chỉ số con trung bình
+                            <i class="ti ti-mood-smile fs-2"></i> Chỉ số con TB
                         </h4>
                         <div class="fs-6 text-muted mb-2">Thang chuẩn hóa: <strong>0 – 100 điểm</strong></div>
                         <div class="bg-light p-2 rounded font-monospace fs-7 text-dark mb-1">
