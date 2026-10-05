@@ -89,13 +89,13 @@ Route::controller(App\Api\V1\Http\Controllers\Transaction\WithdrawController::cl
         Route::post('/request', 'requestWithdraw');
     });
 
-// Assessment (Đã comment lại theo yêu cầu do UI trang chủ không còn sử dụng)
-// Route::controller(\App\Api\V1\Http\Controllers\Assessment\AssessmentController::class)
-//     ->prefix('/assessment')
-//     ->as('assessment.')
-//     ->group(function () {
-//         Route::get('/', 'index');
-//     });
+// Assessment
+Route::controller(\App\Api\V1\Http\Controllers\Assessment\AssessmentController::class)
+    ->prefix('/assessment')
+    ->as('assessment.')
+    ->group(function () {
+        Route::get('/', 'index');
+    });
 // Child
 Route::controller(\App\Api\V1\Http\Controllers\Child\ChildController::class)
     ->prefix('/children')
