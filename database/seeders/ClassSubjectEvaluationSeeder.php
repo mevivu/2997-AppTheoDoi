@@ -80,6 +80,7 @@ class ClassSubjectEvaluationSeeder extends Seeder
                 ['subject_id' => 26, 'method' => 'comment', 'required' => true, 'order' => 9], // Âm nhạc
                 ['subject_id' => 27, 'method' => 'comment', 'required' => true, 'order' => 10], // Mĩ thuật
                 ['subject_id' => 16, 'method' => 'comment', 'required' => true, 'order' => 11], // HĐ trải nghiệm, hướng nghiệp
+                ['subject_id' => 18, 'method' => 'comment', 'required' => true, 'order' => 12], // ND GD địa phương
             ];
         }
 

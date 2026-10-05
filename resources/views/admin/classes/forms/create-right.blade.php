@@ -16,6 +16,8 @@
         </div>
     </div>
 
+    @include('admin.classes.forms.education-level')
+
     {{-- Floating Form Actions --}}
     <x-admin.form-actions
         :submit-title="__('Lưu lớp học')"

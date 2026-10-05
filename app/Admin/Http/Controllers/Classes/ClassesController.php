@@ -8,7 +8,9 @@ use App\Admin\Http\Requests\Classes\ClassesRequest;
 use App\Admin\Repositories\Classes\ClassesRepositoryInterface;
 use App\Admin\Services\Classes\ClassesServiceInterface;
 use App\Enums\ActiveStatus;
+use App\Enums\Class\EducationLevel;
 use App\Enums\Class\LevelGroup;
+use App\Enums\ReportCard\EvaluationMethod;
 use App\Models\SchoolClass;
 use App\Models\Subject;
 use App\Traits\ResponseController;
@@ -60,6 +62,10 @@ class ClassesController extends Controller
         return view($this->view['create'], [
             'status' => ActiveStatus::asSelectArray(),
             'level_group' => LevelGroup::asSelectArray(),
+            'educationLevels' => $this->educationLevelOptions(),
+            'methodOptions' => EvaluationMethod::optionsByEducationLevel(),
+            'subjectConfigs' => [],
+            'currentEducationLevel' => old('education_level', EducationLevel::LowerSecondary->value),
             'breadcrumbs' => $this->crums->add('DS Lớp')->add('Thêm'),
         ]);
     }
@@ -89,7 +95,18 @@ class ClassesController extends Controller
     public function edit(int $id): Factory|View|Application
     {
         $Subject = Subject::where('status', ActiveStatus::Active->value)->pluck('name', 'id');
+        /** @var SchoolClass $response */
         $response = $this->repository->findOrFail($id);
+        $response->load(['subjects' => fn ($q) => $q->orderByPivot('sort_order')]);
+        $level = $response->resolvedEducationLevel();
+
+        $subjectConfigs = $response->subjects->map(fn (Subject $s) => [
+            'id' => $s->id,
+            'name' => $s->name,
+            'evaluation_method' => $s->pivot->evaluation_method,
+            'is_required' => (bool) ($s->pivot->is_required ?? true),
+            'sort_order' => $s->pivot->sort_order,
+        ])->values()->all();
 
         return view(
             $this->view['edit'],
@@ -98,9 +115,23 @@ class ClassesController extends Controller
                 'response' => $response,
                 'level_group' => LevelGroup::asSelectArray(),
                 'status' => ActiveStatus::asSelectArray(),
+                'educationLevels' => $this->educationLevelOptions(),
+                'methodOptions' => EvaluationMethod::optionsByEducationLevel(),
+                'subjectConfigs' => $subjectConfigs,
+                'currentEducationLevel' => $level->value,
                 'breadcrumbs' => $this->crums->add('Danh sách Lớp ', route($this->route['index']))->add('Cập nhật'),
             ]
         );
+    }
+
+    private function educationLevelOptions(): array
+    {
+        $options = [];
+        foreach (EducationLevel::cases() as $level) {
+            $options[$level->value] = $level->getTranslatedName();
+        }
+
+        return $options;
     }
 
     public function index(ClassesDatable $datable)

@@ -32,6 +32,8 @@
                     @endforeach
                 </x-select>
             </div>
+
+            @include('admin.classes.forms.subject-config')
         </div>
     </div>
 </div>
