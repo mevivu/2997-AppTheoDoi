@@ -76,6 +76,8 @@ class ParentRankController extends Controller
                     'rank' => [
                         'value' => $rankEnum->value,
                         'name' => $rankEnum->name(),
+                        'short_name' => $rankEnum->shortName(),
+                        'description' => $rankEnum->description(),
                         'color' => $rankEnum->colorHex(),
                         'icon' => $rankEnum->icon(),
                         'badge' => $rankEnum->badge(),
@@ -86,6 +88,7 @@ class ParentRankController extends Controller
                     'usage_minutes' => (int) $snap->usage_minutes,
                     'active_days' => (int) $snap->active_days,
                     'assessment_count' => (int) $snap->assessment_count,
+                    'lesson_video_views' => (int) ($snap->lesson_video_views ?? 0),
                     'child_score_avg' => (float) $snap->child_score_avg,
                     'calculated_at' => $snap->calculated_at ? $snap->calculated_at->toDateTimeString() : null,
                 ];
@@ -97,7 +100,7 @@ class ParentRankController extends Controller
     /**
      * Danh Sách Tất Cả Cấp Bậc và Tiêu Chuẩn Phấn Đấu
      *
-     * API công khai trả về thông tin tất cả các cấp bậc (Đồng, Bạc, Vàng, Kim Cương...)
+     * API công khai trả về thông tin 4 cấp bậc (Hạng D, C, B, A)
      * cùng các ngưỡng điểm và trọng số cấu hình để hiển thị giao diện giới thiệu.
      */
     public function tiers(): JsonResponse
@@ -108,27 +111,21 @@ class ParentRankController extends Controller
         $tiers = [];
         foreach (ParentRank::cases() as $case) {
             $minPoints = match ($case) {
-                ParentRank::NewMember => 0.0,
-                ParentRank::Bronze => (float) ($th['bronze'] ?? 20),
-                ParentRank::Silver => (float) ($th['silver'] ?? 40),
-                ParentRank::Gold => (float) ($th['gold'] ?? 60),
-                ParentRank::Diamond => (float) ($th['diamond'] ?? 80),
+                ParentRank::D => 0.0,
+                ParentRank::C => (float) ($th['c'] ?? 40),
+                ParentRank::B => (float) ($th['b'] ?? 60),
+                ParentRank::A => (float) ($th['a'] ?? 80),
             };
 
             $tiers[] = [
                 'value' => $case->value,
                 'name' => $case->name(),
+                'short_name' => $case->shortName(),
                 'color' => $case->colorHex(),
                 'icon' => $case->icon(),
                 'badge' => $case->badge(),
                 'min_points' => $minPoints,
-                'description' => match ($case) {
-                    ParentRank::NewMember => 'Dành cho phụ huynh mới bắt đầu đồng hành cùng con.',
-                    ParentRank::Bronze => 'Duy trì hoạt động và làm các bài kiểm tra cơ bản cho con.',
-                    ParentRank::Silver => 'Tích cực tương tác, theo dõi sát sao sự phát triển của con.',
-                    ParentRank::Gold => 'Phụ huynh gương mẫu, đồng hành toàn diện trong học tập và sức khỏe của con.',
-                    ParentRank::Diamond => 'Cấp bậc danh dự cao nhất dành cho phụ huynh xuất sắc nhất tháng.',
-                },
+                'description' => $case->description(),
             ];
         }
 

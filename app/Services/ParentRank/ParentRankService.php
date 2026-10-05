@@ -7,6 +7,7 @@ use App\Enums\User\ParentRank;
 use App\Enums\VerifiedStatus;
 use App\Models\Child;
 use App\Models\ChildEvaluation;
+use App\Models\FeatureUsage;
 use App\Models\ParentRankSnapshot;
 use App\Models\Rating;
 use App\Models\RatingPQ;
@@ -40,6 +41,10 @@ class ParentRankService implements ParentRankServiceInterface
             'parent_rank_target_usage_minutes',
             'parent_rank_target_active_days',
             'parent_rank_target_assessments',
+            'parent_rank_target_lesson_video_views',
+            'parent_rank_points_c',
+            'parent_rank_points_b',
+            'parent_rank_points_a',
             'parent_rank_points_bronze',
             'parent_rank_points_silver',
             'parent_rank_points_gold',
@@ -60,12 +65,12 @@ class ParentRankService implements ParentRankServiceInterface
                 'usage_minutes' => (int) ($settings['parent_rank_target_usage_minutes'] ?? 600),
                 'active_days' => (int) ($settings['parent_rank_target_active_days'] ?? 20),
                 'assessments' => (int) ($settings['parent_rank_target_assessments'] ?? 5),
+                'lesson_video_views' => (int) ($settings['parent_rank_target_lesson_video_views'] ?? 20),
             ],
             'thresholds' => [
-                'bronze' => (float) ($settings['parent_rank_points_bronze'] ?? 20),
-                'silver' => (float) ($settings['parent_rank_points_silver'] ?? 40),
-                'gold' => (float) ($settings['parent_rank_points_gold'] ?? 60),
-                'diamond' => (float) ($settings['parent_rank_points_diamond'] ?? 80),
+                'c' => (float) ($settings['parent_rank_points_c'] ?? $settings['parent_rank_points_silver'] ?? 40),
+                'b' => (float) ($settings['parent_rank_points_b'] ?? $settings['parent_rank_points_gold'] ?? 60),
+                'a' => (float) ($settings['parent_rank_points_a'] ?? $settings['parent_rank_points_diamond'] ?? 80),
             ],
         ];
     }
@@ -94,12 +99,22 @@ class ParentRankService implements ParentRankServiceInterface
         // 3. Chỉ số điểm phát triển trung bình của con
         $childScoreAvg = $this->childScoreAggregator->getAverageNormalizedScoreForUser($user->id);
 
+        // 4. Số lần xem bài học và video giáo dục trong tháng
+        $lessonVideoViews = FeatureUsage::where('user_id', $user->id)
+            ->where(function ($q) {
+                $q->whereIn('feature_code', ['lesson_education', 'video_education'])
+                  ->orWhereIn('action', ['watch_lesson', 'watch_video']);
+            })
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->count();
+
         return [
             'usage_minutes' => $usageMinutes,
             'active_days' => $activeDays,
             'session_count' => $sessionCount,
             'assessment_count' => $assessmentCount,
             'child_score_avg' => $childScoreAvg,
+            'lesson_video_views' => $lessonVideoViews,
         ];
     }
 
@@ -198,20 +213,17 @@ class ParentRankService implements ParentRankServiceInterface
         $config = $config ?? $this->getConfig();
         $th = $config['thresholds'];
 
-        if ($totalPoints >= ($th['diamond'] ?? 80)) {
-            return ParentRank::Diamond;
+        if ($totalPoints >= ($th['a'] ?? 80)) {
+            return ParentRank::A;
         }
-        if ($totalPoints >= ($th['gold'] ?? 60)) {
-            return ParentRank::Gold;
+        if ($totalPoints >= ($th['b'] ?? 60)) {
+            return ParentRank::B;
         }
-        if ($totalPoints >= ($th['silver'] ?? 40)) {
-            return ParentRank::Silver;
-        }
-        if ($totalPoints >= ($th['bronze'] ?? 20)) {
-            return ParentRank::Bronze;
+        if ($totalPoints >= ($th['c'] ?? 40)) {
+            return ParentRank::C;
         }
 
-        return ParentRank::NewMember;
+        return ParentRank::D;
     }
 
     /**
@@ -234,6 +246,7 @@ class ParentRankService implements ParentRankServiceInterface
                 'active_days' => $metrics['active_days'],
                 'session_count' => $metrics['session_count'],
                 'assessment_count' => $metrics['assessment_count'],
+                'lesson_video_views' => $metrics['lesson_video_views'] ?? 0,
                 'child_score_avg' => $metrics['child_score_avg'],
                 'score_usage' => $scores['score_usage'],
                 'score_frequency' => $scores['score_frequency'],
@@ -329,21 +342,19 @@ class ParentRankService implements ParentRankServiceInterface
         $th = $config['thresholds'];
 
         $minPointsCurrent = match ($rank) {
-            ParentRank::NewMember => 0.0,
-            ParentRank::Bronze => (float) ($th['bronze'] ?? 20),
-            ParentRank::Silver => (float) ($th['silver'] ?? 40),
-            ParentRank::Gold => (float) ($th['gold'] ?? 60),
-            ParentRank::Diamond => (float) ($th['diamond'] ?? 80),
+            ParentRank::D => 0.0,
+            ParentRank::C => (float) ($th['c'] ?? 40),
+            ParentRank::B => (float) ($th['b'] ?? 60),
+            ParentRank::A => (float) ($th['a'] ?? 80),
         };
 
         $minPointsNext = null;
         $pointsNeeded = 0.0;
         if ($nextRank) {
             $minPointsNext = match ($nextRank) {
-                ParentRank::Bronze => (float) ($th['bronze'] ?? 20),
-                ParentRank::Silver => (float) ($th['silver'] ?? 40),
-                ParentRank::Gold => (float) ($th['gold'] ?? 60),
-                ParentRank::Diamond => (float) ($th['diamond'] ?? 80),
+                ParentRank::C => (float) ($th['c'] ?? 40),
+                ParentRank::B => (float) ($th['b'] ?? 60),
+                ParentRank::A => (float) ($th['a'] ?? 80),
                 default => 100.0,
             };
             $pointsNeeded = max(0.0, round($minPointsNext - $snapshot->total_points, 2));
@@ -372,7 +383,7 @@ class ParentRankService implements ParentRankServiceInterface
             ],
             [
                 'key' => 'frequency',
-                'label' => 'Tần suất mở app',
+                'label' => 'Số ngày vào app',
                 'raw' => (int) $snapshot->active_days,
                 'unit' => 'ngày',
                 'target' => (int) ($targets['active_days'] ?? 20),
@@ -399,15 +410,61 @@ class ParentRankService implements ParentRankServiceInterface
             ],
         ];
 
-        // Gợi ý tiêu chí yếu nhất để user tập trung cải thiện
-        $sortedByScore = collect($breakdown)->sortBy('score')->first();
-        $suggestion = match ($sortedByScore['key'] ?? '') {
-            'usage' => 'Dành thêm thời gian cùng con trải nghiệm các bài tập, video học tập mỗi ngày nhé!',
-            'frequency' => 'Hãy duy trì thói quen mở app hằng ngày để theo dõi sát sao quá trình phát triển của con.',
-            'assessment' => 'Hãy làm thêm các bài đánh giá IQ, EQ, AQ hoặc cập nhật điểm học bạ cho con trong tháng này.',
-            'child_score' => 'Khuyến khích con rèn luyện thêm các nội dung bài học để cải thiện các chỉ số toàn diện.',
-            default => 'Tiếp tục duy trì hoạt động tích cực để nâng hạng thành viên nhé!',
-        };
+        // 5 tiêu chí cảnh báo mức độ đồng hành (< 50% tiêu chuẩn)
+        $targetUsage = max(1, (int) ($targets['usage_minutes'] ?? 600));
+        $targetDays = max(1, (int) ($targets['active_days'] ?? 20));
+        $targetAssessments = max(1, (int) ($targets['assessments'] ?? 5));
+        $targetViews = max(1, (int) ($targets['lesson_video_views'] ?? 20));
+
+        $usageMinutes = (int) $snapshot->usage_minutes;
+        $activeDays = (int) $snapshot->active_days;
+        $assessmentCount = (int) $snapshot->assessment_count;
+        $lessonVideoViews = (int) ($snapshot->lesson_video_views ?? 0);
+
+        $suggestions = [];
+
+        // Tiêu chí 1 & 2: Thời gian sử dụng app/tháng HOẶC Số ngày đăng nhập/tháng < 50%
+        if ($usageMinutes < ($targetUsage * 0.5) || $activeDays < ($targetDays * 0.5)) {
+            $suggestions[] = 'Bố mẹ nên dành thêm thời gian kiểm tra các chỉ số và năng lực của con thường xuyên để theo dõi sự phát triển.';
+        }
+
+        // Tiêu chí 3: Số bài đánh giá/tháng < 50%
+        if ($assessmentCount < ($targetAssessments * 0.5)) {
+            $suggestions[] = 'Bố mẹ nên cập nhật chiều cao và cân nặng cho con hàng tháng và các chỉ số IQ, AQ, EQ, học bạ điện tử định kỳ để theo dõi tăng trưởng chính xác hơn.';
+        }
+
+        // Tiêu chí 4: Số lần xem bài học/video/tháng < 50%
+        if ($lessonVideoViews < ($targetViews * 0.5)) {
+            $suggestions[] = 'Bố mẹ nên cho con luyện tập thêm các bài học và bài tập trong ứng dụng để phát triển các năng lực.';
+        }
+
+        // Tiêu chí 5: Điểm trung bình các năng lực
+        // Trường hợp có >1 con thì lấy con nào <5 điểm cảnh báo, nhiều con cùng <5 thì cảnh báo min(con 1,2,3..)
+        $childrenAnalysis = $this->childScoreAggregator->getChildrenCompetencyAnalysis($user->id);
+        $childrenUnder5 = array_values(array_filter($childrenAnalysis, function ($item) {
+            return $item['average'] !== null && $item['average'] < 5.0;
+        }));
+
+        if (!empty($childrenUnder5)) {
+            usort($childrenUnder5, fn($a, $b) => $a['average'] <=> $b['average']);
+            $lowestChild = $childrenUnder5[0];
+
+            $msg = 'Con và bố mẹ cần tiếp tục luyện tập để cải thiện các chỉ số năng lực.';
+            if (!empty($lowestChild['lowest_competency'])) {
+                $compCode = $lowestChild['lowest_competency']['code'];
+                $compRank = $lowestChild['lowest_competency']['rank'];
+                if ($compRank > 1) {
+                    $targetRank = $compRank - 1;
+                    $msg .= " (ví dụ: {$compCode} #{$compRank} → #{$targetRank})";
+                }
+            }
+            $suggestions[] = $msg;
+        }
+
+        // Nếu tất cả các chỉ số đều đạt (không có cảnh báo < 50%), hiển thị câu khích lệ theo hạng hiện tại
+        if (empty($suggestions)) {
+            $suggestions[] = $rank->description();
+        }
 
         return [
             'period' => $snapshot->period,
@@ -415,6 +472,8 @@ class ParentRankService implements ParentRankServiceInterface
             'rank' => [
                 'value' => $rank->value,
                 'name' => $rank->name(),
+                'short_name' => $rank->shortName(),
+                'description' => $rank->description(),
                 'color' => $rank->colorHex(),
                 'icon' => $rank->icon(),
                 'badge' => $rank->badge(),
@@ -426,12 +485,15 @@ class ParentRankService implements ParentRankServiceInterface
             'next_rank' => $nextRank ? [
                 'value' => $nextRank->value,
                 'name' => $nextRank->name(),
+                'short_name' => $nextRank->shortName(),
+                'description' => $nextRank->description(),
                 'color' => $nextRank->colorHex(),
                 'icon' => $nextRank->icon(),
                 'min_points' => $minPointsNext,
                 'points_needed' => $pointsNeeded,
             ] : null,
-            'suggestion' => $suggestion,
+            'suggestions' => $suggestions,
+            'suggestion' => implode("\n\n", $suggestions),
             'breakdown' => $breakdown,
             'calculated_at' => $snapshot->calculated_at ? $snapshot->calculated_at->toDateTimeString() : null,
         ];

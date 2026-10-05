@@ -120,7 +120,7 @@ class CalculateParentRanksCommand extends Command
 
         if ($dryRun) {
             $processedCount = 0;
-            $rankCounts = [0 => 0, 1 => 0, 2 => 0, 3 => 0, 4 => 0];
+            $rankCounts = [0 => 0, 1 => 0, 2 => 0, 3 => 0];
 
             $query->chunk(200, function ($users) use ($period, $config, &$processedCount, &$rankCounts, $bar) {
                 foreach ($users as $user) {
@@ -143,11 +143,10 @@ class CalculateParentRanksCommand extends Command
             $this->table(
                 ['Hạng', 'Số lượng tài khoản'],
                 [
-                    ['Thành viên mới (<20đ)', $rankCounts[0] ?? 0],
-                    ['Đồng (≥20đ)', $rankCounts[1] ?? 0],
-                    ['Bạc (≥40đ)', $rankCounts[2] ?? 0],
-                    ['Vàng (≥60đ)', $rankCounts[3] ?? 0],
-                    ['Kim Cương (≥80đ)', $rankCounts[4] ?? 0],
+                    ['Hạng D (<40đ)', $rankCounts[0] ?? 0],
+                    ['Hạng C (≥40đ)', $rankCounts[1] ?? 0],
+                    ['Hạng B (≥60đ)', $rankCounts[2] ?? 0],
+                    ['Hạng A (≥80đ)', $rankCounts[3] ?? 0],
                 ]
             );
 

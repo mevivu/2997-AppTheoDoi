@@ -29,4 +29,13 @@ interface ChildScoreAggregatorInterface
      * @return float
      */
     public function getAverageNormalizedScoreForUser(int $userId): float;
+
+    /**
+     * Lấy phân tích chi tiết các chỉ số năng lực của từng con thuộc phụ huynh
+     * Phục vụ cảnh báo và định hướng nâng cao năng lực (IQ, EQ, AQ, PQ, GPA)
+     *
+     * @param int $userId
+     * @return array
+     */
+    public function getChildrenCompetencyAnalysis(int $userId): array;
 }

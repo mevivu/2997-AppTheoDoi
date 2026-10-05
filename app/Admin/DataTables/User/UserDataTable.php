@@ -132,9 +132,9 @@ class UserDataTable extends BaseDataTable
             },
             // Định dạng hiển thị Cấp bậc phân hạng Bố mẹ
             'parent_rank' => function ($item) {
-                $rank = $item->parent_rank ?? ParentRank::NewMember;
+                $rank = $item->parent_rank ?? ParentRank::D;
                 if (!$rank instanceof ParentRank) {
-                    $rank = ParentRank::tryFrom((int) $rank) ?? ParentRank::NewMember;
+                    $rank = ParentRank::tryFrom((int) $rank) ?? ParentRank::D;
                 }
                 $points = number_format((float) ($item->parent_rank_points ?? 0), 1);
                 $period = $item->parent_rank_period ? 'Kỳ ' . $item->parent_rank_period : 'Kỳ hiện tại';

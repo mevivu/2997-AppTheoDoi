@@ -37,6 +37,8 @@ class ParentRankSnapshot extends Model
         'session_count',
         /** Tổng số bài đánh giá đã làm cho con trong kỳ */
         'assessment_count',
+        /** Số lần xem bài học và video giáo dục trong kỳ */
+        'lesson_video_views',
         /** Điểm trung bình các chỉ số của con (thang điểm 0-100) */
         'child_score_avg',
         /** Điểm chuẩn hóa tiêu chí thời gian sử dụng (0-100) */
@@ -49,7 +51,7 @@ class ParentRankSnapshot extends Model
         'score_child',
         /** Tổng điểm phân hạng trong kỳ (thang điểm 0-100) */
         'total_points',
-        /** Cấp bậc phụ huynh đạt được (0: Mới, 1: Đồng, 2: Bạc, 3: Vàng, 4: Kim Cương) */
+        /** Cấp bậc phụ huynh đạt được (0: D, 1: C, 2: B, 3: A) */
         'rank',
         /** Thứ hạng xếp hạng trong kỳ (Leaderboard) */
         'position',
@@ -71,6 +73,7 @@ class ParentRankSnapshot extends Model
         'active_days' => 'integer',
         'session_count' => 'integer',
         'assessment_count' => 'integer',
+        'lesson_video_views' => 'integer',
         'child_score_avg' => 'float',
         'score_usage' => 'float',
         'score_frequency' => 'float',

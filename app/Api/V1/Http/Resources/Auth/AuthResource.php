@@ -58,7 +58,7 @@ class AuthResource extends JsonResource
             'affiliate_terms_accepted' => !empty($this->affiliate_terms_accepted_at),
             'affiliate_terms_accepted_at' => $this->affiliate_terms_accepted_at?->toISOString(),
             'parent_rank' => $this->parent_rank?->value ?? 0,
-            'parent_rank_name' => $this->parent_rank?->name() ?? 'Thành viên mới',
+            'parent_rank_name' => $this->parent_rank?->name() ?? 'Hạng D – Bố mẹ cần hỗ trợ thêm',
             'parent_rank_points' => (float) ($this->parent_rank_points ?? 0),
             'parent_rank_badge' => $this->parent_rank?->badge() ?? 'bg-muted-lt',
             'parent_rank_color' => $this->parent_rank?->colorHex() ?? '#94A3B8',

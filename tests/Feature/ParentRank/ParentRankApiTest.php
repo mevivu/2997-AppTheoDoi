@@ -58,7 +58,7 @@ class ParentRankApiTest extends TestCase
     }
 
     /**
-     * API tiers công khai (yêu cầu X-TOKEN-ACCESS) trả về danh sách 5 cấp bậc
+     * API tiers công khai (yêu cầu X-TOKEN-ACCESS) trả về danh sách 4 cấp bậc (D, C, B, A)
      */
     public function test_get_parent_rank_tiers(): void
     {
@@ -79,7 +79,7 @@ class ParentRankApiTest extends TestCase
             ],
         ]);
 
-        $this->assertCount(5, $response->json('data.tiers'));
+        $this->assertCount(4, $response->json('data.tiers'));
     }
 
     /**

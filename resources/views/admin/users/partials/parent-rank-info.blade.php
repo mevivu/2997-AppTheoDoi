@@ -35,15 +35,13 @@
             <span><i class="ti ti-calculator text-primary me-1"></i><strong>Công thức:</strong> Tổng điểm = (Thời gian × <strong>{{ $weights['usage'] }}%</strong>) + (Tần suất × <strong>{{ $weights['frequency'] }}%</strong>) + (Đánh giá × <strong>{{ $weights['assessment'] }}%</strong>) + (Chỉ số con × <strong>{{ $weights['child_score'] }}%</strong>)</span>
         </div>
         <div class="d-flex align-items-center flex-wrap gap-1">
-            <span class="badge bg-muted-lt">Mới (&lt;{{ $thresholds['bronze'] }}đ)</span>
+            <span class="badge bg-muted-lt">Hạng D (&lt;{{ $thresholds['c'] ?? 40 }}đ)</span>
             <i class="ti ti-arrow-right text-muted fs-7"></i>
-            <span class="badge bg-orange-lt">Đồng (≥{{ $thresholds['bronze'] }}đ)</span>
+            <span class="badge bg-orange-lt">Hạng C (≥{{ $thresholds['c'] ?? 40 }}đ)</span>
             <i class="ti ti-arrow-right text-muted fs-7"></i>
-            <span class="badge bg-secondary-lt">Bạc (≥{{ $thresholds['silver'] }}đ)</span>
+            <span class="badge bg-cyan-lt">Hạng B (≥{{ $thresholds['b'] ?? 60 }}đ)</span>
             <i class="ti ti-arrow-right text-muted fs-7"></i>
-            <span class="badge bg-yellow-lt">Vàng (≥{{ $thresholds['gold'] }}đ)</span>
-            <i class="ti ti-arrow-right text-muted fs-7"></i>
-            <span class="badge bg-cyan-lt">Kim Cương (≥{{ $thresholds['diamond'] }}đ)</span>
+            <span class="badge bg-yellow-lt">Hạng A (≥{{ $thresholds['a'] ?? 80 }}đ)</span>
         </div>
     </div>
 

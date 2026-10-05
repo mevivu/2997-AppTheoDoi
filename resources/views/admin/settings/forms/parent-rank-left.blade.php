@@ -102,13 +102,13 @@
                 <i class="ti ti-target-arrow text-info fs-3"></i>
                 <div>
                     <h3 class="card-title mb-0">{{ __('Mục Tiêu Tiêu Chuẩn Trong Tháng') }}</h3>
-                    <div class="small text-muted">{{ __('Mốc hoàn thành để đạt 100 điểm thành phần của từng tiêu chí') }}</div>
+                    <div class="small text-muted">{{ __('Mốc hoàn thành để đạt tiêu chuẩn và phục vụ cảnh báo mức độ đồng hành') }}</div>
                 </div>
             </div>
         </div>
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label" for="input_parent_rank_target_usage_minutes">
                         {{ __('Thời gian dùng app chuẩn/tháng (Phút)') }}
                     </label>
@@ -118,7 +118,7 @@
                     <div class="form-hint">{{ __('Ví dụ: 600 phút = 10 giờ trong tháng') }}</div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label" for="input_parent_rank_target_active_days">
                         {{ __('Số ngày vào app chuẩn/tháng (Ngày)') }}
                     </label>
@@ -128,7 +128,7 @@
                     <div class="form-hint">{{ __('Ví dụ: 20 ngày/tháng') }}</div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label class="form-label" for="input_parent_rank_target_assessments">
                         {{ __('Số bài đánh giá chuẩn/tháng (Bài)') }}
                     </label>
@@ -136,6 +136,16 @@
                            id="input_parent_rank_target_assessments" name="parent_rank_target_assessments"
                            value="{{ $settingsByKey->get('parent_rank_target_assessments')?->plain_value ?? 5 }}">
                     <div class="form-hint">{{ __('Ví dụ: 5 bài/tháng') }}</div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label" for="input_parent_rank_target_lesson_video_views">
+                        {{ __('Số lượt xem bài/video chuẩn/tháng') }}
+                    </label>
+                    <input type="number" step="1" min="1" class="form-control"
+                           id="input_parent_rank_target_lesson_video_views" name="parent_rank_target_lesson_video_views"
+                           value="{{ $settingsByKey->get('parent_rank_target_lesson_video_views')?->plain_value ?? 20 }}">
+                    <div class="form-hint">{{ __('Ví dụ: 20 lượt/tháng') }}</div>
                 </div>
             </div>
         </div>
@@ -147,7 +157,7 @@
             <div class="d-flex align-items-center gap-2">
                 <i class="ti ti-trophy text-warning fs-3"></i>
                 <div>
-                    <h3 class="card-title mb-0">{{ __('Ngưỡng Điểm Phân Hạng Thành Viên (0 - 100)') }}</h3>
+                    <h3 class="card-title mb-0">{{ __('Ngưỡng Điểm Phân Hạng Thành Viên Chăm Con 360 (0 - 100)') }}</h3>
                     <div class="small text-muted">{{ __('Mức điểm tối thiểu để được nâng lên từng cấp bậc thành viên') }}</div>
                 </div>
             </div>
@@ -155,55 +165,72 @@
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-3">
-                    <div class="p-3 border rounded text-center bg-orange-lt">
-                        <i class="ti ti-shield fs-1 text-orange mb-1"></i>
-                        <h4 class="fw-bold mb-2">{{ __('Hạng Đồng') }}</h4>
-                        <label class="form-label small" for="input_parent_rank_points_bronze">{{ __('Điểm sàn tối thiểu') }}</label>
-                        <input type="number" step="1" min="0" max="100" class="form-control text-center fw-bold"
-                               id="input_parent_rank_points_bronze" name="parent_rank_points_bronze"
-                               value="{{ $settingsByKey->get('parent_rank_points_bronze')?->plain_value ?? 20 }}">
-                        <div class="small text-muted mt-2">&ge; 20 điểm</div>
+                    <div class="p-3 border rounded text-center bg-muted-lt h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <i class="ti ti-mood-smile fs-1 text-muted mb-1"></i>
+                            <h4 class="fw-bold mb-1">{{ __('Hạng D') }}</h4>
+                            <div class="small text-muted mb-2">{{ __('Bố mẹ cần hỗ trợ thêm') }}</div>
+                        </div>
+                        <div>
+                            <div class="badge bg-secondary fs-6 py-2 px-3">&lt; 40 điểm</div>
+                            <div class="small text-muted mt-2">{{ __('Mặc định ban đầu') }}</div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-md-3">
-                    <div class="p-3 border rounded text-center bg-secondary-lt">
-                        <i class="ti ti-medal fs-1 text-secondary mb-1"></i>
-                        <h4 class="fw-bold mb-2">{{ __('Hạng Bạc') }}</h4>
-                        <label class="form-label small" for="input_parent_rank_points_silver">{{ __('Điểm sàn tối thiểu') }}</label>
-                        <input type="number" step="1" min="0" max="100" class="form-control text-center fw-bold"
-                               id="input_parent_rank_points_silver" name="parent_rank_points_silver"
-                               value="{{ $settingsByKey->get('parent_rank_points_silver')?->plain_value ?? 40 }}">
-                        <div class="small text-muted mt-2">&ge; 40 điểm</div>
+                    <div class="p-3 border rounded text-center bg-orange-lt h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <i class="ti ti-shield fs-1 text-orange mb-1"></i>
+                            <h4 class="fw-bold mb-1">{{ __('Hạng C') }}</h4>
+                            <div class="small text-muted mb-2">{{ __('Bố mẹ đang cố gắng') }}</div>
+                        </div>
+                        <div>
+                            <label class="form-label small" for="input_parent_rank_points_c">{{ __('Điểm sàn tối thiểu') }}</label>
+                            <input type="number" step="1" min="0" max="100" class="form-control text-center fw-bold"
+                                   id="input_parent_rank_points_c" name="parent_rank_points_c"
+                                   value="{{ $settingsByKey->get('parent_rank_points_c')?->plain_value ?? 40 }}">
+                            <div class="small text-muted mt-2">&ge; 40 điểm</div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-md-3">
-                    <div class="p-3 border rounded text-center bg-yellow-lt">
-                        <i class="ti ti-crown fs-1 text-warning mb-1"></i>
-                        <h4 class="fw-bold mb-2">{{ __('Hạng Vàng') }}</h4>
-                        <label class="form-label small" for="input_parent_rank_points_gold">{{ __('Điểm sàn tối thiểu') }}</label>
-                        <input type="number" step="1" min="0" max="100" class="form-control text-center fw-bold"
-                               id="input_parent_rank_points_gold" name="parent_rank_points_gold"
-                               value="{{ $settingsByKey->get('parent_rank_points_gold')?->plain_value ?? 60 }}">
-                        <div class="small text-muted mt-2">&ge; 60 điểm</div>
+                    <div class="p-3 border rounded text-center bg-cyan-lt h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <i class="ti ti-medal fs-1 text-cyan mb-1"></i>
+                            <h4 class="fw-bold mb-1">{{ __('Hạng B') }}</h4>
+                            <div class="small text-muted mb-2">{{ __('Bố mẹ tích cực') }}</div>
+                        </div>
+                        <div>
+                            <label class="form-label small" for="input_parent_rank_points_b">{{ __('Điểm sàn tối thiểu') }}</label>
+                            <input type="number" step="1" min="0" max="100" class="form-control text-center fw-bold"
+                                   id="input_parent_rank_points_b" name="parent_rank_points_b"
+                                   value="{{ $settingsByKey->get('parent_rank_points_b')?->plain_value ?? 60 }}">
+                            <div class="small text-muted mt-2">&ge; 60 điểm</div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-md-3">
-                    <div class="p-3 border rounded text-center bg-cyan-lt">
-                        <i class="ti ti-diamond fs-1 text-cyan mb-1"></i>
-                        <h4 class="fw-bold mb-2">{{ __('Hạng Kim Cương') }}</h4>
-                        <label class="form-label small" for="input_parent_rank_points_diamond">{{ __('Điểm sàn tối thiểu') }}</label>
-                        <input type="number" step="1" min="0" max="100" class="form-control text-center fw-bold"
-                               id="input_parent_rank_points_diamond" name="parent_rank_points_diamond"
-                               value="{{ $settingsByKey->get('parent_rank_points_diamond')?->plain_value ?? 80 }}">
-                        <div class="small text-muted mt-2">&ge; 80 điểm</div>
+                    <div class="p-3 border rounded text-center bg-yellow-lt h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <i class="ti ti-crown fs-1 text-warning mb-1"></i>
+                            <h4 class="fw-bold mb-1">{{ __('Hạng A') }}</h4>
+                            <div class="small text-muted mb-2">{{ __('Bố mẹ gương mẫu') }}</div>
+                        </div>
+                        <div>
+                            <label class="form-label small" for="input_parent_rank_points_a">{{ __('Điểm sàn tối thiểu') }}</label>
+                            <input type="number" step="1" min="0" max="100" class="form-control text-center fw-bold"
+                                   id="input_parent_rank_points_a" name="parent_rank_points_a"
+                                   value="{{ $settingsByKey->get('parent_rank_points_a')?->plain_value ?? 80 }}">
+                            <div class="small text-muted mt-2">&ge; 80 điểm</div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="text-center text-muted small mt-3">
-                {{ __('Ghi chú: Người dùng có tổng điểm dưới điểm sàn Hạng Đồng sẽ được gắn cấp "Thành viên mới".') }}
+                {{ __('Ghi chú: Người dùng có tổng điểm dưới điểm sàn Hạng C sẽ được gắn cấp "Hạng D – Bố mẹ cần hỗ trợ thêm".') }}
             </div>
         </div>
     </div>

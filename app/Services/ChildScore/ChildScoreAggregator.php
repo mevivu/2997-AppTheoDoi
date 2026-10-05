@@ -134,4 +134,60 @@ class ChildScoreAggregator implements ChildScoreAggregatorInterface
             return null;
         }
     }
+
+    /**
+     * Lấy phân tích chi tiết các chỉ số năng lực của từng con thuộc phụ huynh
+     * Phục vụ cảnh báo và định hướng nâng cao năng lực (IQ, EQ, AQ, PQ, GPA)
+     */
+    public function getChildrenCompetencyAnalysis(int $userId): array
+    {
+        $children = Child::where('user_id', $userId)->get();
+        if ($children->isEmpty()) {
+            return [];
+        }
+
+        $result = [];
+
+        foreach ($children as $child) {
+            $rawScores = $this->getLatestScores($child->id); // ['iq' => ..., 'eq' => ..., 'aq' => ..., 'gpa' => ..., 'pq' => ...]
+            $validScores = array_filter($rawScores, fn($s) => !is_null($s));
+
+            if (empty($validScores)) {
+                $avg = null;
+                $lowestComp = null;
+            } else {
+                $avg = round(array_sum($validScores) / count($validScores), 2);
+
+                // Sắp xếp các chỉ số giảm dần để xác định thứ tự (#1 cao nhất, #5 thấp nhất)
+                arsort($validScores);
+                $ranking = [];
+                $pos = 1;
+                foreach ($validScores as $code => $val) {
+                    $ranking[$code] = $pos++;
+                }
+
+                // Lấy năng lực có điểm thấp nhất
+                asort($validScores);
+                $lowestCode = array_key_first($validScores);
+                $lowestVal = $validScores[$lowestCode];
+                $lowestRank = $ranking[$lowestCode] ?? count($validScores);
+
+                $lowestComp = [
+                    'code' => strtoupper($lowestCode),
+                    'score' => $lowestVal,
+                    'rank' => $lowestRank,
+                ];
+            }
+
+            $result[] = [
+                'child_id' => $child->id,
+                'child_name' => $child->fullname ?? ('Bé #' . $child->id),
+                'scores' => $rawScores,
+                'average' => $avg,
+                'lowest_competency' => $lowestComp,
+            ];
+        }
+
+        return $result;
+    }
 }
