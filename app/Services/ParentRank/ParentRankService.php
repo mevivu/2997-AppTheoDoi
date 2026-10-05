@@ -454,27 +454,48 @@ class ParentRankService implements ParentRankServiceInterface
             $suggestions[] = 'Bố mẹ nên cho con luyện tập thêm các bài học và bài tập trong ứng dụng để phát triển các năng lực.';
         }
 
-        // Tiêu chí 5: Điểm trung bình các năng lực
-        // Trường hợp có >1 con thì lấy con nào <5 điểm cảnh báo, nhiều con cùng <5 thì cảnh báo min(con 1,2,3..)
+        // Tiêu chí 5: Điểm các chỉ số năng lực
+        // Trường hợp có bé có chỉ số < 5 điểm (hoặc điểm TB < 5.0)
+        // Hiển thị các lĩnh vực có điểm thấp nhất (min) và < 5 (VD: EQ = 2, GPA = 3)
         $childrenAnalysis = $this->childScoreAggregator->getChildrenCompetencyAnalysis($user->id);
-        $childrenUnder5 = array_values(array_filter($childrenAnalysis, function ($item) {
-            return $item['average'] !== null && $item['average'] < 5.0;
+        $childrenWithWeakScores = array_values(array_filter($childrenAnalysis, function ($item) {
+            return !empty($item['under_5_competencies']) || ($item['average'] !== null && $item['average'] < 5.0);
         }));
 
-        if (!empty($childrenUnder5)) {
-            usort($childrenUnder5, fn($a, $b) => $a['average'] <=> $b['average']);
-            $lowestChild = $childrenUnder5[0];
-
-            $msg = 'Con và bố mẹ cần tiếp tục luyện tập để cải thiện các chỉ số năng lực.';
-            if (!empty($lowestChild['lowest_competency'])) {
-                $compCode = $lowestChild['lowest_competency']['code'];
-                $compRank = $lowestChild['lowest_competency']['rank'];
-                if ($compRank > 1) {
-                    $targetRank = $compRank - 1;
-                    $msg .= " (ví dụ: {$compCode} #{$compRank} → #{$targetRank})";
+        if (!empty($childrenWithWeakScores)) {
+            // Sắp xếp ưu tiên con có điểm chỉ số thấp nhất (min_score trước, nếu bằng nhau so điểm TB)
+            usort($childrenWithWeakScores, function ($a, $b) {
+                $minA = $a['min_score'] ?? 10.0;
+                $minB = $b['min_score'] ?? 10.0;
+                if ($minA == $minB) {
+                    return ($a['average'] ?? 10.0) <=> ($b['average'] ?? 10.0);
                 }
+                return $minA <=> $minB;
+            });
+
+            $targetChild = $childrenWithWeakScores[0];
+            $weakComps = $targetChild['under_5_competencies'] ?? [];
+
+            // Nếu không có under_5_competencies nhưng average < 5 thì lấy lowest_competency
+            if (empty($weakComps) && !empty($targetChild['lowest_competency'])) {
+                $weakComps = [$targetChild['lowest_competency']];
             }
-            $suggestions[] = $msg;
+
+            if (!empty($weakComps)) {
+                // Lấy tối đa 2 lĩnh vực thấp nhất (min) và < 5
+                $topWeak = array_slice($weakComps, 0, 2);
+                $formattedList = [];
+                foreach ($topWeak as $c) {
+                    $scoreVal = (float) ($c['score'] ?? 0);
+                    $formattedScore = ($scoreVal == (int) $scoreVal) ? (int) $scoreVal : number_format($scoreVal, 1);
+                    $formattedList[] = "{$c['code']} = {$formattedScore}";
+                }
+                $listStr = implode(', ', $formattedList);
+                $prefix = count($topWeak) > 1 ? 'các chỉ số' : 'chỉ số';
+                $suggestions[] = "Con và bố mẹ cần tiếp tục luyện tập để cải thiện {$prefix}: {$listStr}.";
+            } else {
+                $suggestions[] = 'Con và bố mẹ cần tiếp tục luyện tập để cải thiện các chỉ số năng lực.';
+            }
         }
 
         // Nếu tất cả các chỉ số đều đạt (không có cảnh báo < 50%), hiển thị câu khích lệ theo hạng hiện tại

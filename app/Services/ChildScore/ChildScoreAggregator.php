@@ -43,11 +43,11 @@ class ChildScoreAggregator implements ChildScoreAggregatorInterface
         $pqScore = $this->calculatePQScore($childId);
 
         return [
-            'iq' => $latestIq ? (float) $latestIq->score : null,
-            'eq' => $latestEq ? (float) $latestEq->score : null,
-            'aq' => $latestAq ? (float) $latestAq->score : null,
-            'gpa' => $latestGpa ? (float) $latestGpa->full_year_grade : null,
-            'pq' => $pqScore,
+            'iq' => $latestIq ? max(0.0, min(10.0, (float) $latestIq->score)) : null,
+            'eq' => $latestEq ? max(0.0, min(10.0, (float) $latestEq->score)) : null,
+            'aq' => $latestAq ? max(0.0, min(10.0, (float) $latestAq->score)) : null,
+            'gpa' => $latestGpa ? max(0.0, min(10.0, (float) $latestGpa->full_year_grade)) : null,
+            'pq' => $pqScore !== null ? max(0.0, min(10.0, (float) $pqScore)) : null,
         ];
     }
 
@@ -125,10 +125,10 @@ class ChildScoreAggregator implements ChildScoreAggregatorInterface
 
             if ($age > 5) {
                 $totalScore = $bmiPercent + $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
-                return min(round($totalScore / 5, 1), 10.0);
+                return max(0.0, min(round($totalScore / 5, 1), 10.0));
             } else {
                 $totalScore = $endurancePercent + $strengthPercent + $currentHeight + $heightAdulthood;
-                return min(round($totalScore / 4, 1), 10.0);
+                return max(0.0, min(round($totalScore / 4, 1), 10.0));
             }
         } catch (Throwable $e) {
             return null;
@@ -155,27 +155,30 @@ class ChildScoreAggregator implements ChildScoreAggregatorInterface
             if (empty($validScores)) {
                 $avg = null;
                 $lowestComp = null;
+                $under5Comps = [];
             } else {
                 $avg = round(array_sum($validScores) / count($validScores), 2);
 
-                // Sắp xếp các chỉ số giảm dần để xác định thứ tự (#1 cao nhất, #5 thấp nhất)
-                arsort($validScores);
-                $ranking = [];
-                $pos = 1;
+                // Sắp xếp các chỉ số tăng dần để ưu tiên điểm thấp nhất (min trước)
+                asort($validScores);
+
+                // Lọc các lĩnh vực có điểm < 5
+                $under5Comps = [];
                 foreach ($validScores as $code => $val) {
-                    $ranking[$code] = $pos++;
+                    if ((float) $val < 5.0) {
+                        $under5Comps[] = [
+                            'code' => strtoupper($code),
+                            'score' => (float) $val,
+                        ];
+                    }
                 }
 
-                // Lấy năng lực có điểm thấp nhất
-                asort($validScores);
                 $lowestCode = array_key_first($validScores);
                 $lowestVal = $validScores[$lowestCode];
-                $lowestRank = $ranking[$lowestCode] ?? count($validScores);
 
                 $lowestComp = [
                     'code' => strtoupper($lowestCode),
-                    'score' => $lowestVal,
-                    'rank' => $lowestRank,
+                    'score' => (float) $lowestVal,
                 ];
             }
 
@@ -185,6 +188,8 @@ class ChildScoreAggregator implements ChildScoreAggregatorInterface
                 'scores' => $rawScores,
                 'average' => $avg,
                 'lowest_competency' => $lowestComp,
+                'under_5_competencies' => $under5Comps,
+                'min_score' => !empty($validScores) ? min($validScores) : null,
             ];
         }
 
