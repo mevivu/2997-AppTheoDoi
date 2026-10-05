@@ -53,7 +53,7 @@
                         <i class="ti ti-clock text-primary me-1"></i>
                         {{ __('1. Thời gian dùng app (%)') }}
                     </label>
-                    <input type="number" step="1" min="0" max="100" class="form-control weight-input"
+                    <input type="number" step="any" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_usage" name="parent_rank_weight_usage"
                            value="{{ $settingsByKey->get('parent_rank_weight_usage')?->plain_value ?? 25 }}">
                     <div class="form-hint">{{ __('Đóng góp của tổng phút dùng app trong tháng (mặc định: 25%)') }}</div>
@@ -64,7 +64,7 @@
                         <i class="ti ti-calendar-event text-success me-1"></i>
                         {{ __('2. Tần suất mở app (%)') }}
                     </label>
-                    <input type="number" step="1" min="0" max="100" class="form-control weight-input"
+                    <input type="number" step="any" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_frequency" name="parent_rank_weight_frequency"
                            value="{{ $settingsByKey->get('parent_rank_weight_frequency')?->plain_value ?? 20 }}">
                     <div class="form-hint">{{ __('Đóng góp của số ngày vào app trong tháng (mặc định: 20%)') }}</div>
@@ -75,7 +75,7 @@
                         <i class="ti ti-checklist text-warning me-1"></i>
                         {{ __('3. Số bài đánh giá cho con (%)') }}
                     </label>
-                    <input type="number" step="1" min="0" max="100" class="form-control weight-input"
+                    <input type="number" step="any" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_assessment" name="parent_rank_weight_assessment"
                            value="{{ $settingsByKey->get('parent_rank_weight_assessment')?->plain_value ?? 20 }}">
                     <div class="form-hint">{{ __('Đóng góp của số bài trắc nghiệm/học bạ cho con (mặc định: 20%)') }}</div>
@@ -86,7 +86,7 @@
                         <i class="ti ti-video text-purple me-1"></i>
                         {{ __('4. Lượt xem bài học & video (%)') }}
                     </label>
-                    <input type="number" step="1" min="0" max="100" class="form-control weight-input"
+                    <input type="number" step="any" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_lesson_video" name="parent_rank_weight_lesson_video"
                            value="{{ $settingsByKey->get('parent_rank_weight_lesson_video')?->plain_value ?? 15 }}">
                     <div class="form-hint">{{ __('Đóng góp của số lượt xem bài học & video (mặc định: 15%)') }}</div>
@@ -97,7 +97,7 @@
                         <i class="ti ti-heart-rate-monitor text-danger me-1"></i>
                         {{ __('5. Chỉ số phát triển của con (%)') }}
                     </label>
-                    <input type="number" step="1" min="0" max="100" class="form-control weight-input"
+                    <input type="number" step="any" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_child_score" name="parent_rank_weight_child_score"
                            value="{{ $settingsByKey->get('parent_rank_weight_child_score')?->plain_value ?? 20 }}">
                     <div class="form-hint">{{ __('Đóng góp của điểm trung bình IQ, EQ, AQ, PQ, GPA (mặc định: 20%)') }}</div>
@@ -123,7 +123,7 @@
                     <label class="form-label" for="input_parent_rank_target_usage_minutes">
                         {{ __('Thời gian dùng app chuẩn/tháng (Phút)') }}
                     </label>
-                    <input type="number" step="10" min="1" class="form-control"
+                    <input type="number" step="1" min="0" class="form-control"
                            id="input_parent_rank_target_usage_minutes" name="parent_rank_target_usage_minutes"
                            value="{{ $settingsByKey->get('parent_rank_target_usage_minutes')?->plain_value ?? 600 }}">
                     <div class="form-hint">{{ __('Ví dụ: 600 phút = 10 giờ trong tháng') }}</div>
@@ -133,7 +133,7 @@
                     <label class="form-label" for="input_parent_rank_target_active_days">
                         {{ __('Số ngày vào app chuẩn/tháng (Ngày)') }}
                     </label>
-                    <input type="number" step="1" min="1" max="31" class="form-control"
+                    <input type="number" step="1" min="0" max="31" class="form-control"
                            id="input_parent_rank_target_active_days" name="parent_rank_target_active_days"
                            value="{{ $settingsByKey->get('parent_rank_target_active_days')?->plain_value ?? 20 }}">
                     <div class="form-hint">{{ __('Ví dụ: 20 ngày/tháng') }}</div>
@@ -143,7 +143,7 @@
                     <label class="form-label" for="input_parent_rank_target_assessments">
                         {{ __('Số bài đánh giá chuẩn/tháng (Bài)') }}
                     </label>
-                    <input type="number" step="1" min="1" class="form-control"
+                    <input type="number" step="1" min="0" class="form-control"
                            id="input_parent_rank_target_assessments" name="parent_rank_target_assessments"
                            value="{{ $settingsByKey->get('parent_rank_target_assessments')?->plain_value ?? 5 }}">
                     <div class="form-hint">{{ __('Ví dụ: 5 bài/tháng') }}</div>
@@ -153,7 +153,7 @@
                     <label class="form-label" for="input_parent_rank_target_lesson_video_views">
                         {{ __('Lượt xem bài học / video chuẩn/tháng (Lượt)') }}
                     </label>
-                    <input type="number" step="1" min="1" class="form-control"
+                    <input type="number" step="1" min="0" class="form-control"
                            id="input_parent_rank_target_lesson_video_views" name="parent_rank_target_lesson_video_views"
                            value="{{ $settingsByKey->get('parent_rank_target_lesson_video_views')?->plain_value ?? 20 }}">
                     <div class="form-hint">{{ __('Ví dụ: 20 lượt/tháng') }}</div>
@@ -198,7 +198,7 @@
                         </div>
                         <div>
                             <label class="form-label small" for="input_parent_rank_points_c">{{ __('Điểm sàn tối thiểu') }}</label>
-                            <input type="number" step="1" min="0" max="100" class="form-control text-center fw-bold"
+                            <input type="number" step="any" min="0" max="100" class="form-control text-center fw-bold"
                                    id="input_parent_rank_points_c" name="parent_rank_points_c"
                                    value="{{ $settingsByKey->get('parent_rank_points_c')?->plain_value ?? 40 }}">
                             <div class="small text-muted mt-2">&ge; 40 điểm</div>
@@ -215,7 +215,7 @@
                         </div>
                         <div>
                             <label class="form-label small" for="input_parent_rank_points_b">{{ __('Điểm sàn tối thiểu') }}</label>
-                            <input type="number" step="1" min="0" max="100" class="form-control text-center fw-bold"
+                            <input type="number" step="any" min="0" max="100" class="form-control text-center fw-bold"
                                    id="input_parent_rank_points_b" name="parent_rank_points_b"
                                    value="{{ $settingsByKey->get('parent_rank_points_b')?->plain_value ?? 60 }}">
                             <div class="small text-muted mt-2">&ge; 60 điểm</div>
@@ -232,7 +232,7 @@
                         </div>
                         <div>
                             <label class="form-label small" for="input_parent_rank_points_a">{{ __('Điểm sàn tối thiểu') }}</label>
-                            <input type="number" step="1" min="0" max="100" class="form-control text-center fw-bold"
+                            <input type="number" step="any" min="0" max="100" class="form-control text-center fw-bold"
                                    id="input_parent_rank_points_a" name="parent_rank_points_a"
                                    value="{{ $settingsByKey->get('parent_rank_points_a')?->plain_value ?? 80 }}">
                             <div class="small text-muted mt-2">&ge; 80 điểm</div>
@@ -270,14 +270,14 @@
             <div class="row g-3 mb-4">
                 <div class="col-md-4">
                     <label class="form-label" for="input_parent_rank_warning_ratio">{{ __('Ngưỡng cảnh báo so với mục tiêu tháng (%)') }}</label>
-                    <input type="number" step="1" min="1" max="100" class="form-control"
+                    <input type="number" step="any" min="0" max="100" class="form-control"
                            id="input_parent_rank_warning_ratio" name="parent_rank_warning_ratio"
                            value="{{ $settingsByKey->get('parent_rank_warning_ratio')?->plain_value ?? 50 }}">
                     <div class="form-hint">{{ __('Dưới mức % này so với mục tiêu tháng thì hiện gợi ý (mặc định: 50%). Áp dụng cho 3 cảnh báo đầu.') }}</div>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label" for="input_parent_rank_competency_threshold">{{ __('Ngưỡng điểm chỉ số năng lực yếu (0 - 10)') }}</label>
-                    <input type="number" step="0.5" min="0" max="10" class="form-control"
+                    <input type="number" step="any" min="0" max="10" class="form-control"
                            id="input_parent_rank_competency_threshold" name="parent_rank_competency_threshold"
                            value="{{ $settingsByKey->get('parent_rank_competency_threshold')?->plain_value ?? 5 }}">
                     <div class="form-hint">{{ __('IQ/EQ/AQ/PQ/GPA thấp hơn mức này sẽ được nhắc cải thiện (mặc định: 5).') }}</div>
