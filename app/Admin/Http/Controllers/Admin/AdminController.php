@@ -64,7 +64,7 @@ class AdminController extends Controller
         $instance = $this->service->store($request);
 		$instance->syncRoles($request->roles);
 
-        return to_route($this->route['edit'], $instance->id);
+        return to_route($this->route['edit'], $instance->id)->with('success', __('notifySuccess'));
 
     }
 
