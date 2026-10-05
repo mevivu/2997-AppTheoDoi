@@ -114,7 +114,7 @@
                                     </div>
                                     <div class="child-stat-content">
                                         <div class="child-stat-label">{{ __('DỰ BÁO CC') }}</div>
-                                        <div class="child-stat-val text-info">{{ ($latestPq && $predHeight > 0) ? $predHeight . ' cm' : '--' }}</div>
+                                        <div class="child-stat-val text-info">{{ ($latestPq && $predHeight > 0) ? number_format($predHeight, 1) . ' cm' : '--' }}</div>
                                     </div>
                                 </div>
 

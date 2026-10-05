@@ -224,7 +224,7 @@
                     <span class="step-title">{{ __('Thiết lập Mục Tiêu Chiều Cao & Chạy Phác Đồ') }}</span>
                 </div>
                 <div class="fs-12 text-muted">
-                    {{ __('Dự đoán gốc:') }} <strong class="text-indigo" id="ref-pred-height">{{ number_format($predHeight, 0) }}</strong> cm
+                    {{ __('Dự đoán gốc:') }} <strong class="text-indigo" id="ref-pred-height">{{ number_format($predHeight, 1) }}</strong> cm
                 </div>
             </div>
             <div class="step-card-body p-3">

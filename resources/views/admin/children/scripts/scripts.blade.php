@@ -257,6 +257,8 @@
                     }
 
                     var targetText = t ? '<span class="text-rose fw-semibold">' + t.toFixed(1) + ' cm</span>' : '<span class="text-muted">--</span>';
+                    var g = (p.genetic_height !== undefined && p.genetic_height !== null) ? p.genetic_height : null;
+                    var geneticText = g !== null ? '<span class="fw-semibold" style="color: #0891b2;">' + parseFloat(g).toFixed(1) + ' cm</span>' : '<span class="text-muted">--</span>';
 
                     html += '<tr class="' + isCurrentClass + '">' +
                         '<td>' + ageLabel + '</td>' +
@@ -264,6 +266,7 @@
                         '<td>' + growthDelta + '</td>' +
                         '<td><span class="text-muted fw-semibold">' + (w ? w.toFixed(1) + ' cm' : '--') + '</span></td>' +
                         '<td>' + targetText + '</td>' +
+                        '<td>' + geneticText + '</td>' +
                         '<td>' + whoDiffText + '</td>' +
                         '</tr>';
                 }
@@ -450,8 +453,8 @@
                             currentPredHeight = data.predicting_adult_height;
 
                             // Update UI Step 2 cards
-                            $('#display-pred-height').text(Math.round(data.predicting_adult_height));
-                            $('#ref-pred-height').text(Math.round(data.predicting_adult_height));
+                            $('#display-pred-height').text(parseFloat(data.predicting_adult_height).toFixed(1));
+                            $('#ref-pred-height').text(parseFloat(data.predicting_adult_height).toFixed(1));
 
                             var whoDiff = data.height_comparison.height_who_current;
                             $('#display-who-diff').text((whoDiff > 0 ? '+' : '') + parseFloat(whoDiff).toFixed(1));
@@ -459,7 +462,7 @@
                             $('#display-speed-change').text(parseFloat(data.speed_change).toFixed(1));
 
                             // Update Mini Header Card
-                            $('.child-hero-stats-grid .text-info').text(Math.round(data.predicting_adult_height) + ' cm');
+                            $('.child-hero-stats-grid .text-info').text(parseFloat(data.predicting_adult_height).toFixed(1) + ' cm');
 
                             // Update default target input if needed
                             var currentTarget = parseFloat($('#input_target_height').val()) || 0;

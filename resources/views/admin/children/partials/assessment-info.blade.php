@@ -301,7 +301,7 @@
                                                 {{ __('Chiều cao trưởng thành') }}
                                             </td>
                                             <td class="text-center fw-bold">
-                                                {{ ($predHeight > 0) ? $predHeight . ' cm' : (($heightPrediction['predicting_adult_height'] ?? 0) > 0 ? $heightPrediction['predicting_adult_height'] . ' cm' : '--') }}
+                                                {{ ($predHeight > 0) ? number_format($predHeight, 1) . ' cm' : (($heightPrediction['predicting_adult_height'] ?? 0) > 0 ? number_format($heightPrediction['predicting_adult_height'], 1) . ' cm' : '--') }}
                                             </td>
                                             <td class="text-center">
                                                 @php
