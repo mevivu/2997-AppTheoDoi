@@ -37,6 +37,7 @@ class ParentRankService implements ParentRankServiceInterface
             'parent_rank_weight_usage',
             'parent_rank_weight_frequency',
             'parent_rank_weight_assessment',
+            'parent_rank_weight_lesson_video',
             'parent_rank_weight_child_score',
             'parent_rank_target_usage_minutes',
             'parent_rank_target_active_days',
@@ -56,9 +57,10 @@ class ParentRankService implements ParentRankServiceInterface
         return [
             'active' => ($settings['parent_rank_active'] ?? '1') === '1',
             'weights' => [
-                'usage' => (float) ($settings['parent_rank_weight_usage'] ?? 30),
-                'frequency' => (float) ($settings['parent_rank_weight_frequency'] ?? 25),
-                'assessment' => (float) ($settings['parent_rank_weight_assessment'] ?? 25),
+                'usage' => (float) ($settings['parent_rank_weight_usage'] ?? 25),
+                'frequency' => (float) ($settings['parent_rank_weight_frequency'] ?? 20),
+                'assessment' => (float) ($settings['parent_rank_weight_assessment'] ?? 20),
+                'lesson_video' => (float) ($settings['parent_rank_weight_lesson_video'] ?? 15),
                 'child_score' => (float) ($settings['parent_rank_weight_child_score'] ?? 20),
             ],
             'targets' => [
@@ -173,11 +175,13 @@ class ParentRankService implements ParentRankServiceInterface
         $targetUsage = max(1, (int) ($targets['usage_minutes'] ?? 600));
         $targetDays = max(1, (int) ($targets['active_days'] ?? 20));
         $targetAssessments = max(1, (int) ($targets['assessments'] ?? 5));
+        $targetLessonVideo = max(1, (int) ($targets['lesson_video_views'] ?? 20));
 
         // Chuẩn hóa điểm thành phần về thang 0 - 100
         $scoreUsage = min(100.0, round(((float) $metrics['usage_minutes'] / $targetUsage) * 100, 2));
         $scoreFrequency = min(100.0, round(((float) $metrics['active_days'] / $targetDays) * 100, 2));
         $scoreAssessment = min(100.0, round(((float) $metrics['assessment_count'] / $targetAssessments) * 100, 2));
+        $scoreLessonVideo = min(100.0, round(((float) ($metrics['lesson_video_views'] ?? 0) / $targetLessonVideo) * 100, 2));
         $scoreChild = min(100.0, max(0.0, (float) ($metrics['child_score_avg'] ?? 0)));
 
         $totalWeight = array_sum($weights);
@@ -186,10 +190,11 @@ class ParentRankService implements ParentRankServiceInterface
         }
 
         $totalPoints = (
-            ($scoreUsage * $weights['usage']) +
-            ($scoreFrequency * $weights['frequency']) +
-            ($scoreAssessment * $weights['assessment']) +
-            ($scoreChild * $weights['child_score'])
+            ($scoreUsage * ($weights['usage'] ?? 25)) +
+            ($scoreFrequency * ($weights['frequency'] ?? 20)) +
+            ($scoreAssessment * ($weights['assessment'] ?? 20)) +
+            ($scoreLessonVideo * ($weights['lesson_video'] ?? 15)) +
+            ($scoreChild * ($weights['child_score'] ?? 20))
         ) / $totalWeight;
 
         $totalPoints = round($totalPoints, 2);
@@ -199,6 +204,7 @@ class ParentRankService implements ParentRankServiceInterface
             'score_usage' => $scoreUsage,
             'score_frequency' => $scoreFrequency,
             'score_assessment' => $scoreAssessment,
+            'score_lesson_video' => $scoreLessonVideo,
             'score_child' => $scoreChild,
             'total_points' => $totalPoints,
             'rank' => $rank,
@@ -251,6 +257,7 @@ class ParentRankService implements ParentRankServiceInterface
                 'score_usage' => $scores['score_usage'],
                 'score_frequency' => $scores['score_frequency'],
                 'score_assessment' => $scores['score_assessment'],
+                'score_lesson_video' => $scores['score_lesson_video'],
                 'score_child' => $scores['score_child'],
                 'total_points' => $scores['total_points'],
                 'rank' => $scores['rank'],
@@ -379,7 +386,7 @@ class ParentRankService implements ParentRankServiceInterface
                 'unit' => 'phút',
                 'target' => (int) ($targets['usage_minutes'] ?? 600),
                 'score' => (float) $snapshot->score_usage,
-                'weight' => (float) ($weights['usage'] ?? 30),
+                'weight' => (float) ($weights['usage'] ?? 25),
             ],
             [
                 'key' => 'frequency',
@@ -388,7 +395,7 @@ class ParentRankService implements ParentRankServiceInterface
                 'unit' => 'ngày',
                 'target' => (int) ($targets['active_days'] ?? 20),
                 'score' => (float) $snapshot->score_frequency,
-                'weight' => (float) ($weights['frequency'] ?? 25),
+                'weight' => (float) ($weights['frequency'] ?? 20),
             ],
             [
                 'key' => 'assessment',
@@ -397,7 +404,16 @@ class ParentRankService implements ParentRankServiceInterface
                 'unit' => 'bài',
                 'target' => (int) ($targets['assessments'] ?? 5),
                 'score' => (float) $snapshot->score_assessment,
-                'weight' => (float) ($weights['assessment'] ?? 25),
+                'weight' => (float) ($weights['assessment'] ?? 20),
+            ],
+            [
+                'key' => 'lesson_video',
+                'label' => 'Xem bài học & video',
+                'raw' => (int) ($snapshot->lesson_video_views ?? 0),
+                'unit' => 'lượt',
+                'target' => (int) ($targets['lesson_video_views'] ?? 20),
+                'score' => (float) ($snapshot->score_lesson_video ?? 0.0),
+                'weight' => (float) ($weights['lesson_video'] ?? 15),
             ],
             [
                 'key' => 'child_score',

@@ -26,14 +26,14 @@
         </div>
     </div>
 
-    {{-- Card 2: Trọng số 4 tiêu chí (%) --}}
+    {{-- Card 2: Trọng số 5 tiêu chí (%) --}}
     <div class="card rank-tier-card shadow-sm">
         <div class="card-header d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center gap-2">
                 <i class="ti ti-chart-pie text-indigo fs-3"></i>
                 <div>
-                    <h3 class="card-title mb-0">{{ __('Trọng số 4 Tiêu chí Đánh giá') }}</h3>
-                    <div class="small text-muted">{{ __('Tổng trọng số của 4 tiêu chí phải bằng đúng 100%') }}</div>
+                    <h3 class="card-title mb-0">{{ __('Trọng số 5 Tiêu chí Đánh giá') }}</h3>
+                    <div class="small text-muted">{{ __('Tổng trọng số của 5 tiêu chí phải bằng đúng 100%') }}</div>
                 </div>
             </div>
             <div class="d-flex align-items-center gap-2">
@@ -44,47 +44,58 @@
         <div class="card-body">
             <div id="weightWarning" class="alert alert-danger d-none mb-3 py-2 px-3 small">
                 <i class="ti ti-alert-triangle me-1"></i>
-                {{ __('Cảnh báo: Tổng 4 trọng số hiện đang khác 100%. Vui lòng điều chỉnh lại để công thức tính điểm chính xác.') }}
+                {{ __('Cảnh báo: Tổng 5 trọng số hiện đang khác 100%. Vui lòng điều chỉnh lại để công thức tính điểm chính xác.') }}
             </div>
 
             <div class="row g-3">
-                <div class="col-md-6">
+                <div class="col-md-6 col-lg-4">
                     <label class="form-label" for="input_parent_rank_weight_usage">
                         <i class="ti ti-clock text-primary me-1"></i>
-                        {{ __('1. Thời gian sử dụng app (%)') }}
+                        {{ __('1. Thời gian dùng app (%)') }}
                     </label>
                     <input type="number" step="1" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_usage" name="parent_rank_weight_usage"
-                           value="{{ $settingsByKey->get('parent_rank_weight_usage')?->plain_value ?? 30 }}">
-                    <div class="form-hint">{{ __('Đóng góp của tổng phút dùng app trong tháng (mặc định: 30%)') }}</div>
+                           value="{{ $settingsByKey->get('parent_rank_weight_usage')?->plain_value ?? 25 }}">
+                    <div class="form-hint">{{ __('Đóng góp của tổng phút dùng app trong tháng (mặc định: 25%)') }}</div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6 col-lg-4">
                     <label class="form-label" for="input_parent_rank_weight_frequency">
                         <i class="ti ti-calendar-event text-success me-1"></i>
                         {{ __('2. Tần suất mở app (%)') }}
                     </label>
                     <input type="number" step="1" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_frequency" name="parent_rank_weight_frequency"
-                           value="{{ $settingsByKey->get('parent_rank_weight_frequency')?->plain_value ?? 25 }}">
-                    <div class="form-hint">{{ __('Đóng góp của số ngày vào app trong tháng (mặc định: 25%)') }}</div>
+                           value="{{ $settingsByKey->get('parent_rank_weight_frequency')?->plain_value ?? 20 }}">
+                    <div class="form-hint">{{ __('Đóng góp của số ngày vào app trong tháng (mặc định: 20%)') }}</div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6 col-lg-4">
                     <label class="form-label" for="input_parent_rank_weight_assessment">
                         <i class="ti ti-checklist text-warning me-1"></i>
                         {{ __('3. Số bài đánh giá cho con (%)') }}
                     </label>
                     <input type="number" step="1" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_assessment" name="parent_rank_weight_assessment"
-                           value="{{ $settingsByKey->get('parent_rank_weight_assessment')?->plain_value ?? 25 }}">
-                    <div class="form-hint">{{ __('Đóng góp của số bài trắc nghiệm/học bạ cho con (mặc định: 25%)') }}</div>
+                           value="{{ $settingsByKey->get('parent_rank_weight_assessment')?->plain_value ?? 20 }}">
+                    <div class="form-hint">{{ __('Đóng góp của số bài trắc nghiệm/học bạ cho con (mặc định: 20%)') }}</div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-6 col-lg-4">
+                    <label class="form-label" for="input_parent_rank_weight_lesson_video">
+                        <i class="ti ti-video text-purple me-1"></i>
+                        {{ __('4. Lượt xem bài học & video (%)') }}
+                    </label>
+                    <input type="number" step="1" min="0" max="100" class="form-control weight-input"
+                           id="input_parent_rank_weight_lesson_video" name="parent_rank_weight_lesson_video"
+                           value="{{ $settingsByKey->get('parent_rank_weight_lesson_video')?->plain_value ?? 15 }}">
+                    <div class="form-hint">{{ __('Đóng góp của số lượt xem bài học & video (mặc định: 15%)') }}</div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
                     <label class="form-label" for="input_parent_rank_weight_child_score">
                         <i class="ti ti-heart-rate-monitor text-danger me-1"></i>
-                        {{ __('4. Chỉ số phát triển của con (%)') }}
+                        {{ __('5. Chỉ số phát triển của con (%)') }}
                     </label>
                     <input type="number" step="1" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_child_score" name="parent_rank_weight_child_score"
@@ -102,13 +113,13 @@
                 <i class="ti ti-target-arrow text-info fs-3"></i>
                 <div>
                     <h3 class="card-title mb-0">{{ __('Mục Tiêu Tiêu Chuẩn Trong Tháng') }}</h3>
-                    <div class="small text-muted">{{ __('Mốc hoàn thành để đạt tiêu chuẩn và phục vụ cảnh báo mức độ đồng hành') }}</div>
+                    <div class="small text-muted">{{ __('Mốc hoàn thành để đạt 100 điểm thành phần của từng tiêu chí & phục vụ cảnh báo đồng hành') }}</div>
                 </div>
             </div>
         </div>
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-3">
+                <div class="col-md-6 col-lg-3">
                     <label class="form-label" for="input_parent_rank_target_usage_minutes">
                         {{ __('Thời gian dùng app chuẩn/tháng (Phút)') }}
                     </label>
@@ -118,7 +129,7 @@
                     <div class="form-hint">{{ __('Ví dụ: 600 phút = 10 giờ trong tháng') }}</div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-6 col-lg-3">
                     <label class="form-label" for="input_parent_rank_target_active_days">
                         {{ __('Số ngày vào app chuẩn/tháng (Ngày)') }}
                     </label>
@@ -128,7 +139,7 @@
                     <div class="form-hint">{{ __('Ví dụ: 20 ngày/tháng') }}</div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-6 col-lg-3">
                     <label class="form-label" for="input_parent_rank_target_assessments">
                         {{ __('Số bài đánh giá chuẩn/tháng (Bài)') }}
                     </label>
@@ -138,9 +149,9 @@
                     <div class="form-hint">{{ __('Ví dụ: 5 bài/tháng') }}</div>
                 </div>
 
-                <div class="col-md-3">
+                <div class="col-md-6 col-lg-3">
                     <label class="form-label" for="input_parent_rank_target_lesson_video_views">
-                        {{ __('Số lượt xem bài/video chuẩn/tháng') }}
+                        {{ __('Lượt xem bài học / video chuẩn/tháng (Lượt)') }}
                     </label>
                     <input type="number" step="1" min="1" class="form-control"
                            id="input_parent_rank_target_lesson_video_views" name="parent_rank_target_lesson_video_views"

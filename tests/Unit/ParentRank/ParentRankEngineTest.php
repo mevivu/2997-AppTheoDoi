@@ -21,9 +21,10 @@ class ParentRankEngineTest extends TestCase
         $this->defaultConfig = [
             'is_active' => true,
             'weights' => [
-                'usage' => 30,
-                'frequency' => 25,
-                'assessment' => 25,
+                'usage' => 25,
+                'frequency' => 20,
+                'assessment' => 20,
+                'lesson_video' => 15,
                 'child_score' => 20,
             ],
             'targets' => [
@@ -77,6 +78,7 @@ class ParentRankEngineTest extends TestCase
         $this->assertSame(0.0, $result['score_usage']);
         $this->assertSame(0.0, $result['score_frequency']);
         $this->assertSame(0.0, $result['score_assessment']);
+        $this->assertSame(0.0, $result['score_lesson_video']);
         $this->assertSame(0.0, $result['score_child']);
         $this->assertSame(0.0, $result['total_points']);
         $this->assertSame(ParentRank::D, $result['rank']);
@@ -101,6 +103,7 @@ class ParentRankEngineTest extends TestCase
         $this->assertSame(100.0, $result['score_usage']);
         $this->assertSame(100.0, $result['score_frequency']);
         $this->assertSame(100.0, $result['score_assessment']);
+        $this->assertSame(100.0, $result['score_lesson_video']);
         $this->assertSame(100.0, $result['score_child']);
         $this->assertSame(100.0, $result['total_points']);
         $this->assertSame(ParentRank::A, $result['rank']);
@@ -112,12 +115,12 @@ class ParentRankEngineTest extends TestCase
     public function test_compute_score_weight_proportions(): void
     {
         $metrics = [
-            'usage_minutes' => 300,    // 50% của 600 -> điểm 50 -> đóng góp 50 * 0.3 = 15
-            'active_days' => 10,       // 50% của 20  -> điểm 50 -> đóng góp 50 * 0.25 = 12.5
+            'usage_minutes' => 300,    // 50% của 600 -> điểm 50 -> đóng góp 50 * 0.25 = 12.5
+            'active_days' => 10,       // 50% của 20  -> điểm 50 -> đóng góp 50 * 0.20 = 10.0
             'session_count' => 15,
-            'assessment_count' => 2.5, // 50% của 5   -> điểm 50 -> đóng góp 50 * 0.25 = 12.5
-            'child_score_avg' => 50.0, // 50 điểm     -> điểm 50 -> đóng góp 50 * 0.2 = 10
-            'lesson_video_views' => 10,
+            'assessment_count' => 2.5, // 50% của 5   -> điểm 50 -> đóng góp 50 * 0.20 = 10.0
+            'child_score_avg' => 50.0, // 50 điểm     -> điểm 50 -> đóng góp 50 * 0.20 = 10.0
+            'lesson_video_views' => 10,// 50% của 20  -> điểm 50 -> đóng góp 50 * 0.15 = 7.5
         ];
 
         $result = $this->service->computeScores($metrics, $this->defaultConfig);
@@ -125,6 +128,7 @@ class ParentRankEngineTest extends TestCase
         $this->assertSame(50.0, $result['score_usage']);
         $this->assertSame(50.0, $result['score_frequency']);
         $this->assertSame(50.0, $result['score_assessment']);
+        $this->assertSame(50.0, $result['score_lesson_video']);
         $this->assertSame(50.0, $result['score_child']);
         $this->assertEquals(50.0, $result['total_points']);
         $this->assertSame(ParentRank::C, $result['rank']); // 50 điểm đạt Hạng C (40 - <60)

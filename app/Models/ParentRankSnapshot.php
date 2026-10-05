@@ -47,6 +47,8 @@ class ParentRankSnapshot extends Model
         'score_frequency',
         /** Điểm chuẩn hóa tiêu chí số bài đánh giá (0-100) */
         'score_assessment',
+        /** Điểm chuẩn hóa tiêu chí xem bài học & video (0-100) */
+        'score_lesson_video',
         /** Điểm chuẩn hóa tiêu chí chỉ số của con (0-100) */
         'score_child',
         /** Tổng điểm phân hạng trong kỳ (thang điểm 0-100) */
@@ -78,6 +80,7 @@ class ParentRankSnapshot extends Model
         'score_usage' => 'float',
         'score_frequency' => 'float',
         'score_assessment' => 'float',
+        'score_lesson_video' => 'float',
         'score_child' => 'float',
         'total_points' => 'float',
         'rank' => ParentRank::class,

@@ -99,8 +99,9 @@
                 var wUsage = parseFloat($('#input_parent_rank_weight_usage').val()) || 0;
                 var wFreq = parseFloat($('#input_parent_rank_weight_frequency').val()) || 0;
                 var wAssess = parseFloat($('#input_parent_rank_weight_assessment').val()) || 0;
+                var wLesson = parseFloat($('#input_parent_rank_weight_lesson_video').val()) || 0;
                 var wChild = parseFloat($('#input_parent_rank_weight_child_score').val()) || 0;
-                var total = wUsage + wFreq + wAssess + wChild;
+                var total = wUsage + wFreq + wAssess + wLesson + wChild;
 
                 $('#totalWeightDisplay').text(total.toFixed(0) + '%');
                 if (Math.abs(total - 100) < 0.01) {
