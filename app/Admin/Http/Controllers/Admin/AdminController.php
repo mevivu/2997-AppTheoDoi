@@ -7,6 +7,7 @@ use App\Admin\Http\Requests\Admin\AdminRequest;
 use App\Admin\Repositories\Admin\AdminRepositoryInterface;
 use App\Admin\Services\Admin\AdminServiceInterface;
 use App\Admin\DataTables\Admin\AdminDataTable;
+use App\Traits\ResponseController;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -14,6 +15,8 @@ use Illuminate\Http\RedirectResponse;
 
 class AdminController extends Controller
 {
+    use ResponseController;
+
     public function __construct(
         AdminRepositoryInterface $repository,
         AdminServiceInterface $service
@@ -60,12 +63,9 @@ class AdminController extends Controller
 
     public function store(AdminRequest $request): RedirectResponse
     {
-
-        $instance = $this->service->store($request);
-		$instance->syncRoles($request->roles);
-
-        return to_route($this->route['edit'], $instance->id)->with('success', __('notifySuccess'));
-
+        return $this->handleResponse($request, function ($request) {
+            return $this->service->store($request);
+        }, $this->route['index'], $this->route['edit']);
     }
 
     /**
@@ -88,19 +88,15 @@ class AdminController extends Controller
 
     public function update(AdminRequest $request): RedirectResponse
     {
-
-        $this->service->update($request);
-
-        return back()->with('success', __('notifySuccess'));
-
+        return $this->handleUpdateResponse($request, function ($request) {
+            return $this->service->update($request);
+        });
     }
 
     public function delete($id): RedirectResponse
     {
-
-        $this->service->delete($id);
-
-        return to_route($this->route['index'])->with('success', __('notifySuccess'));
-
+        return $this->handleDeleteResponse(function () use ($id) {
+            return $this->service->delete($id);
+        }, $this->route['index']);
     }
 }

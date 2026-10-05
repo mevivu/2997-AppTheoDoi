@@ -30,7 +30,13 @@ class AdminService implements AdminServiceInterface
 
         $this->data['password'] = bcrypt($this->data['password']);
 
-        return $this->repository->create($this->data);
+        $instance = $this->repository->create($this->data);
+
+        if ($instance) {
+            $this->repository->syncModelRoles($instance->id, $request->roles ?? []);
+        }
+
+        return $instance;
     }
 
     public function update(Request $request){
