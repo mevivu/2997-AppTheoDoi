@@ -229,7 +229,31 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             $prevPredHeight = $predH;
         }
 
-        return round($prevPredHeight, 0);
+        // Tính toán yếu tố di truyền 10% nếu có chiều cao cha mẹ
+        $parentUser = $child->user;
+        $fatherHeight = (float)($parentUser?->father_height ?? 0);
+        $motherHeight = (float)($parentUser?->mother_height ?? 0);
+        $genderVal = $gender instanceof Gender ? $gender->value : (int)$gender;
+
+        if ($fatherHeight > 0 && $motherHeight > 0) {
+            if ($genderVal == 1) {
+                $midParentHeight = round(($fatherHeight + $motherHeight + 13) / 2 + 5, 1);
+            } else {
+                $midParentHeight = round(($fatherHeight + $motherHeight - 13) / 2 + 3, 1);
+            }
+            $whoAdultHeight = $whoHeights[$maxAge] ?? ($genderVal == 1 ? 176.5 : 163.2);
+            if ($whoAdultHeight <= 0) {
+                $wAdult = $this->getWho(19 * 12, $gender);
+                $whoAdultHeight = $wAdult ? (float)$wAdult->height : ($genderVal == 1 ? 176.5 : 163.2);
+            }
+            $geneticRatio = ($whoAdultHeight > 0) ? round($midParentHeight / $whoAdultHeight, 4) : null;
+            $geneticAt19 = $geneticRatio !== null ? round($whoAdultHeight * $geneticRatio, 1) : $midParentHeight;
+            $finalMatureHeight = round(($prevPredHeight * 0.9) + ($geneticAt19 * 0.1), 1);
+        } else {
+            $finalMatureHeight = round($prevPredHeight, 1);
+        }
+
+        return $finalMatureHeight;
     }
 
 
@@ -652,11 +676,37 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             }
         }
 
-        // 2. Tính đường DỰ ĐOÁN
+        // Tính toán di truyền cha mẹ
+        $parentUser = $child->user;
+        $fatherHeight = (float)($parentUser?->father_height ?? 0);
+        $motherHeight = (float)($parentUser?->mother_height ?? 0);
+        $genderVal = $gender instanceof Gender ? $gender->value : (int)$gender;
+        $midParentHeight = 0.0;
+        if ($fatherHeight > 0 && $motherHeight > 0) {
+            if ($genderVal == 1) {
+                $midParentHeight = round(($fatherHeight + $motherHeight + 13) / 2 + 5, 1);
+            } else {
+                $midParentHeight = round(($fatherHeight + $motherHeight - 13) / 2 + 3, 1);
+            }
+        }
+        $whoAdultHeight = $whoHeights[$maxAge] ?? ($genderVal == 1 ? 176.5 : 163.2);
+        if ($whoAdultHeight <= 0) {
+            $wAdult = $this->getWho(19 * 12, $gender);
+            $whoAdultHeight = $wAdult ? (float)$wAdult->height : ($genderVal == 1 ? 176.5 : 163.2);
+        }
+        $geneticRatio = ($midParentHeight > 0 && $whoAdultHeight > 0)
+            ? round($midParentHeight / $whoAdultHeight, 4)
+            : null;
+
+        $currentGeneticHeight = $geneticRatio !== null ? round($whoCurrentHeight * $geneticRatio, 1) : null;
+
+        // 2. Tính đường DỰ ĐOÁN (kết hợp 90% tăng trưởng + 10% di truyền nếu có thông tin cha mẹ)
         $predictionLine = [
             [
                 'age' => (float)$currentAge,
                 'height' => round($currentHeight, 1),
+                'raw_height' => round($currentHeight, 1),
+                'genetic_height' => $currentGeneticHeight,
                 'is_current' => true,
             ],
         ];
@@ -681,13 +731,25 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 $predH = $prevPredHeight + $whoDelta;
             }
             $prevPredHeight = $predH;
-            $predictionHeights[$age] = $predH;
+
+            $whoAtAge = $whoHeights[$age] ?? 0.0;
+            $geneticAtAge = $geneticRatio !== null ? round($whoAtAge * $geneticRatio, 1) : null;
+            $finalPredH = $geneticAtAge !== null
+                ? round(($predH * 0.9) + ($geneticAtAge * 0.1), 1)
+                : round($predH, 1);
+
+            $predictionHeights[$age] = $finalPredH;
             $predictionLine[] = [
                 'age' => (float)$age,
-                'height' => round($predH, 1),
+                'height' => $finalPredH,
+                'raw_height' => round($predH, 1),
+                'genetic_height' => $geneticAtAge,
                 'is_current' => false,
             ];
         }
+
+        // Dự đoán chiều cao trưởng thành khớp với mốc 19 tuổi của phác đồ
+        $predictedAdultHeight = $predictionHeights[$maxAge] ?? $this->calculateMatureHeightAt19($child, $currentHeight, $latestRecordDateCopy, $pubertyMonths);
 
         // 3. Tính đường MỤC TIÊU (nếu có target_height)
         $rawTarget = isset($data['target_height']) && (float)$data['target_height'] > 0
@@ -698,7 +760,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $finalTargetHeight = null;
 
         if ($rawTarget !== null) {
-            $predMatureHeight = $prevPredHeight ? round($prevPredHeight, 1) : (float)$predictedAdultHeight;
+            $predMatureHeight = (float)$predictedAdultHeight;
             // Không cho mục tiêu nhỏ hơn dự đoán: nếu nhỏ hơn thì lấy bằng dự đoán
             $finalTargetHeight = max($rawTarget, (float)$predMatureHeight);
             $predTotalGrowth = $predMatureHeight - $currentHeight;
@@ -826,8 +888,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             }
         }
 
-        $displayTarget = $finalTargetHeight ? round($finalTargetHeight) : null;
-        $displayPred = $predictedAdultHeight ? round($predictedAdultHeight) : null;
+        $displayTarget = $finalTargetHeight ? round($finalTargetHeight, 1) : null;
+        $displayPred = $predictedAdultHeight ? round($predictedAdultHeight, 1) : null;
 
         return [
             'child_name' => $childName,
@@ -1035,7 +1097,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             ];
         }
 
-        $predictedAdultHeight = round($prevPredH, 0);
+        $lastRow = end($simulationMatrix);
+        $predictedAdultHeight = $lastRow['final_pred_height'] ?? round($prevPredH, 1);
 
         // Tính toán phân bổ đường mục tiêu
         $finalTargetHeight = null;

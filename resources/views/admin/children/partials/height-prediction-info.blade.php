@@ -150,7 +150,7 @@
                             <span class="badge-soft-indigo">±5 cm</span>
                         </div>
                         <div class="d-flex align-items-baseline gap-1">
-                            <span class="stat-slim-val text-indigo" id="display-pred-height">{{ number_format($predHeight, 0) }}</span>
+                            <span class="stat-slim-val text-indigo" id="display-pred-height">{{ number_format($predHeight, 1) }}</span>
                             <span class="stat-slim-unit">cm</span>
                         </div>
                         <div class="stat-slim-sub">
@@ -319,11 +319,12 @@
                         <table class="table table-slim text-center align-middle mb-0" id="table-milestones">
                             <thead>
                                 <tr>
-                                    <th style="width: 110px;">{{ __('Độ tuổi') }}</th>
-                                    <th style="width: 150px; color: #d97706;">{{ __('Dự đoán') }}</th>
-                                    <th style="width: 130px;">{{ __('Mức tăng/năm') }}</th>
-                                    <th style="width: 150px; color: #64748b;">{{ __('Chuẩn WHO') }}</th>
-                                    <th style="width: 160px; color: #e05263;">{{ __('Mục tiêu') }}</th>
+                                    <th style="width: 100px;">{{ __('Độ tuổi') }}</th>
+                                    <th style="width: 130px; color: #d97706;" title="Dự đoán tăng trưởng có kết hợp 10% yếu tố di truyền">{{ __('Dự đoán') }}</th>
+                                    <th style="width: 110px;">{{ __('Mức tăng/năm') }}</th>
+                                    <th style="width: 120px; color: #64748b;">{{ __('Chuẩn WHO') }}</th>
+                                    <th style="width: 120px; color: #e05263;">{{ __('Mục tiêu') }}</th>
+                                    <th style="width: 120px; color: #0891b2;" title="Chiều cao tiềm năng di truyền theo lứa tuổi">{{ __('Di truyền') }}</th>
                                     <th>{{ __('So sánh / Đánh giá') }}</th>
                                 </tr>
                             </thead>
