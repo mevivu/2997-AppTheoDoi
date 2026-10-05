@@ -115,6 +115,28 @@
 
             $('.weight-input').on('input change', checkWeights);
             checkWeights();
+
+            // Xem trước câu gợi ý chỉ số năng lực (thay biến mẫu)
+            function renderCompetencyPreview() {
+                var tpl = $('#input_parent_rank_suggest_text_competency').val() || '';
+                var maxDisplay = parseInt($('#input_parent_rank_competency_max_display').val(), 10) || 2;
+                var sample = ['EQ = 2', 'GPA = 3', 'AQ = 4', 'IQ = 4.5', 'PQ = 4.8'].slice(0, Math.max(1, Math.min(5, maxDisplay)));
+                var text = tpl
+                    .split('{child}').join('Bé An')
+                    .split('{label}').join(sample.length > 1 ? 'các chỉ số' : 'chỉ số')
+                    .split('{list}').join(sample.join(', '));
+                $('#competencyPreview').text(text);
+            }
+
+            $('#input_parent_rank_suggest_text_competency, #input_parent_rank_competency_max_display')
+                .on('input change', renderCompetencyPreview);
+            renderCompetencyPreview();
+
+            // Khôi phục câu mặc định
+            $('.btn-reset-suggest').on('click', function() {
+                var $target = $($(this).data('target'));
+                $target.val($target.data('default')).trigger('input');
+            });
         });
     </script>
 @endpush

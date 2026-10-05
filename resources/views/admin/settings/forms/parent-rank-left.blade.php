@@ -245,4 +245,103 @@
             </div>
         </div>
     </div>
+
+    {{-- Card 5: Cảnh báo & Gợi ý đồng hành --}}
+    @php
+        $suggestDefaults = \App\Services\ParentRank\ParentRankService::DEFAULT_SUGGESTION_TEXTS;
+        $suggestSwitches = [
+            'usage' => ['icon' => 'ti-clock', 'label' => __('Thời gian dùng app / số ngày vào app')],
+            'assessment' => ['icon' => 'ti-checklist', 'label' => __('Số bài đánh giá cho con')],
+            'content' => ['icon' => 'ti-video', 'label' => __('Lượt xem bài học & video')],
+            'competency' => ['icon' => 'ti-heart-rate-monitor', 'label' => __('Chỉ số năng lực của con thấp')],
+        ];
+    @endphp
+    <div class="card rank-tier-card shadow-sm">
+        <div class="card-header">
+            <div class="d-flex align-items-center gap-2">
+                <i class="ti ti-bulb text-success fs-3"></i>
+                <div>
+                    <h3 class="card-title mb-0">{{ __('Cảnh báo & Gợi ý "Gợi ý từ Chăm Con 360"') }}</h3>
+                    <div class="small text-muted">{{ __('Cấu hình ngưỡng, bật/tắt và nội dung các câu gợi ý hiển thị cho phụ huynh trên app') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label" for="input_parent_rank_warning_ratio">{{ __('Ngưỡng cảnh báo so với mục tiêu tháng (%)') }}</label>
+                    <input type="number" step="1" min="1" max="100" class="form-control"
+                           id="input_parent_rank_warning_ratio" name="parent_rank_warning_ratio"
+                           value="{{ $settingsByKey->get('parent_rank_warning_ratio')?->plain_value ?? 50 }}">
+                    <div class="form-hint">{{ __('Dưới mức % này so với mục tiêu tháng thì hiện gợi ý (mặc định: 50%). Áp dụng cho 3 cảnh báo đầu.') }}</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="input_parent_rank_competency_threshold">{{ __('Ngưỡng điểm chỉ số năng lực yếu (0 - 10)') }}</label>
+                    <input type="number" step="0.5" min="0" max="10" class="form-control"
+                           id="input_parent_rank_competency_threshold" name="parent_rank_competency_threshold"
+                           value="{{ $settingsByKey->get('parent_rank_competency_threshold')?->plain_value ?? 5 }}">
+                    <div class="form-hint">{{ __('IQ/EQ/AQ/PQ/GPA thấp hơn mức này sẽ được nhắc cải thiện (mặc định: 5).') }}</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="input_parent_rank_competency_max_display">{{ __('Số lĩnh vực yếu tối đa hiển thị') }}</label>
+                    <input type="number" step="1" min="1" max="5" class="form-control"
+                           id="input_parent_rank_competency_max_display" name="parent_rank_competency_max_display"
+                           value="{{ $settingsByKey->get('parent_rank_competency_max_display')?->plain_value ?? 2 }}">
+                    <div class="form-hint">{{ __('Lấy các lĩnh vực có điểm thấp nhất trước (mặc định: 2).') }}</div>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column gap-4">
+                @foreach ($suggestSwitches as $key => $meta)
+                    @php
+                        $enableSetting = $settingsByKey->get("parent_rank_suggest_enable_{$key}");
+                        $textValue = $settingsByKey->get("parent_rank_suggest_text_{$key}")?->plain_value;
+                        $textValue = trim((string) $textValue) !== '' ? $textValue : $suggestDefaults[$key];
+                    @endphp
+                    <div class="border rounded p-3">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="fw-bold">
+                                <i class="ti {{ $meta['icon'] }} me-1"></i>
+                                {{ __('Cảnh báo') }}: {{ $meta['label'] }}
+                            </div>
+                            <div class="form-check form-switch mb-0">
+                                <input type="hidden" name="parent_rank_suggest_enable_{{ $key }}" value="0">
+                                <input class="form-check-input" type="checkbox"
+                                       id="parent_rank_suggest_enable_{{ $key }}"
+                                       name="parent_rank_suggest_enable_{{ $key }}" value="1"
+                                       {{ ($enableSetting?->plain_value ?? '1') === '0' ? '' : 'checked' }}>
+                            </div>
+                        </div>
+                        <textarea class="form-control suggest-text" rows="2" maxlength="300"
+                                  id="input_parent_rank_suggest_text_{{ $key }}"
+                                  name="parent_rank_suggest_text_{{ $key }}"
+                                  data-key="{{ $key }}"
+                                  data-default="{{ $suggestDefaults[$key] }}">{{ $textValue }}</textarea>
+                        <div class="d-flex align-items-start justify-content-between gap-2 mt-1">
+                            <div class="form-hint mb-0">
+                                @if ($key === 'competency')
+                                    {{ __('Biến có thể dùng:') }}
+                                    <code>{child}</code> {{ __('(Bé An / Con)') }},
+                                    <code>{label}</code> {{ __('(chỉ số / các chỉ số)') }},
+                                    <code>{list}</code> {{ __('(VD: EQ = 2, GPA = 3)') }}.
+                                @else
+                                    {{ __('Để trống sẽ dùng câu mặc định.') }}
+                                @endif
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-secondary btn-reset-suggest flex-shrink-0"
+                                    data-target="#input_parent_rank_suggest_text_{{ $key }}">
+                                {{ __('Khôi phục mặc định') }}
+                            </button>
+                        </div>
+                        @if ($key === 'competency')
+                            <div class="mt-2 p-2 rounded small" style="background:#f0fdf4;color:#166534;">
+                                <strong>{{ __('Xem trước:') }}</strong>
+                                <span id="competencyPreview"></span>
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
 </div>

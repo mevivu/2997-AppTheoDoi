@@ -35,7 +35,8 @@ interface ChildScoreAggregatorInterface
      * Phục vụ cảnh báo và định hướng nâng cao năng lực (IQ, EQ, AQ, PQ, GPA)
      *
      * @param int $userId
+     * @param float $weakThreshold Chỉ số thấp hơn ngưỡng này (thang 0 - 10) được xem là cần cải thiện
      * @return array
      */
-    public function getChildrenCompetencyAnalysis(int $userId): array;
+    public function getChildrenCompetencyAnalysis(int $userId, float $weakThreshold = 5.0): array;
 }

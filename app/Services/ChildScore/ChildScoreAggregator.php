@@ -138,8 +138,10 @@ class ChildScoreAggregator implements ChildScoreAggregatorInterface
     /**
      * Lấy phân tích chi tiết các chỉ số năng lực của từng con thuộc phụ huynh
      * Phục vụ cảnh báo và định hướng nâng cao năng lực (IQ, EQ, AQ, PQ, GPA)
+     *
+     * @param float $weakThreshold Chỉ số thấp hơn ngưỡng này (thang 0 - 10) được xem là cần cải thiện
      */
-    public function getChildrenCompetencyAnalysis(int $userId): array
+    public function getChildrenCompetencyAnalysis(int $userId, float $weakThreshold = 5.0): array
     {
         $children = Child::where('user_id', $userId)->get();
         if ($children->isEmpty()) {
@@ -155,18 +157,18 @@ class ChildScoreAggregator implements ChildScoreAggregatorInterface
             if (empty($validScores)) {
                 $avg = null;
                 $lowestComp = null;
-                $under5Comps = [];
+                $weakComps = [];
             } else {
                 $avg = round(array_sum($validScores) / count($validScores), 2);
 
                 // Sắp xếp các chỉ số tăng dần để ưu tiên điểm thấp nhất (min trước)
                 asort($validScores);
 
-                // Lọc các lĩnh vực có điểm < 5
-                $under5Comps = [];
+                // Lọc các lĩnh vực có điểm thấp hơn ngưỡng cấu hình
+                $weakComps = [];
                 foreach ($validScores as $code => $val) {
-                    if ((float) $val < 5.0) {
-                        $under5Comps[] = [
+                    if ((float) $val < $weakThreshold) {
+                        $weakComps[] = [
                             'code' => strtoupper($code),
                             'score' => (float) $val,
                         ];
@@ -184,11 +186,12 @@ class ChildScoreAggregator implements ChildScoreAggregatorInterface
 
             $result[] = [
                 'child_id' => $child->id,
+                'child_fullname' => trim((string) ($child->fullname ?? '')),
                 'child_name' => $child->fullname ?? ('Bé #' . $child->id),
                 'scores' => $rawScores,
                 'average' => $avg,
                 'lowest_competency' => $lowestComp,
-                'under_5_competencies' => $under5Comps,
+                'weak_competencies' => $weakComps,
                 'min_score' => !empty($validScores) ? min($validScores) : null,
             ];
         }

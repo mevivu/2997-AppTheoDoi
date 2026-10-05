@@ -50,6 +50,17 @@ class ParentRankService implements ParentRankServiceInterface
             'parent_rank_points_silver',
             'parent_rank_points_gold',
             'parent_rank_points_diamond',
+            'parent_rank_warning_ratio',
+            'parent_rank_competency_threshold',
+            'parent_rank_competency_max_display',
+            'parent_rank_suggest_enable_usage',
+            'parent_rank_suggest_enable_assessment',
+            'parent_rank_suggest_enable_content',
+            'parent_rank_suggest_enable_competency',
+            'parent_rank_suggest_text_usage',
+            'parent_rank_suggest_text_assessment',
+            'parent_rank_suggest_text_content',
+            'parent_rank_suggest_text_competency',
         ];
 
         $settings = DB::table('settings')->whereIn('setting_key', $keys)->pluck('plain_value', 'setting_key');
@@ -73,6 +84,54 @@ class ParentRankService implements ParentRankServiceInterface
                 'c' => (float) ($settings['parent_rank_points_c'] ?? $settings['parent_rank_points_silver'] ?? 40),
                 'b' => (float) ($settings['parent_rank_points_b'] ?? $settings['parent_rank_points_gold'] ?? 60),
                 'a' => (float) ($settings['parent_rank_points_a'] ?? $settings['parent_rank_points_diamond'] ?? 80),
+            ],
+            'suggestion' => $this->buildSuggestionConfig($settings->all()),
+        ];
+    }
+
+    /**
+     * Văn bản gợi ý mặc định (dùng khi admin chưa cấu hình hoặc để trống)
+     */
+    public const DEFAULT_SUGGESTION_TEXTS = [
+        'usage' => 'Bố mẹ nên dành thêm thời gian kiểm tra các chỉ số và năng lực của con thường xuyên để theo dõi sự phát triển.',
+        'assessment' => 'Bố mẹ nên cập nhật chiều cao và cân nặng cho con hàng tháng và các chỉ số IQ, AQ, EQ, học bạ điện tử định kỳ để theo dõi tăng trưởng chính xác hơn.',
+        'content' => 'Bố mẹ nên cho con luyện tập thêm các bài học và bài tập trong ứng dụng để phát triển các năng lực.',
+        'competency' => '{child} cần tiếp tục luyện tập để cải thiện {label}: {list}.',
+    ];
+
+    /**
+     * Chuẩn hóa cấu hình cảnh báo & gợi ý từ bảng settings (kẹp giá trị, fallback mặc định)
+     */
+    protected function buildSuggestionConfig(array $settings): array
+    {
+        $clamp = fn($value, float $min, float $max, float $default) => is_numeric($value)
+            ? max($min, min($max, (float) $value))
+            : $default;
+
+        $enabled = fn(string $key) => ($settings[$key] ?? '1') !== '0';
+
+        $text = function (string $key, string $default) use ($settings) {
+            $value = trim((string) ($settings[$key] ?? ''));
+            return $value !== '' ? $value : $default;
+        };
+
+        $defaults = self::DEFAULT_SUGGESTION_TEXTS;
+
+        return [
+            'warning_ratio' => $clamp($settings['parent_rank_warning_ratio'] ?? null, 1, 100, 50) / 100,
+            'competency_threshold' => $clamp($settings['parent_rank_competency_threshold'] ?? null, 0, 10, 5),
+            'competency_max_display' => (int) $clamp($settings['parent_rank_competency_max_display'] ?? null, 1, 5, 2),
+            'enabled' => [
+                'usage' => $enabled('parent_rank_suggest_enable_usage'),
+                'assessment' => $enabled('parent_rank_suggest_enable_assessment'),
+                'content' => $enabled('parent_rank_suggest_enable_content'),
+                'competency' => $enabled('parent_rank_suggest_enable_competency'),
+            ],
+            'texts' => [
+                'usage' => $text('parent_rank_suggest_text_usage', $defaults['usage']),
+                'assessment' => $text('parent_rank_suggest_text_assessment', $defaults['assessment']),
+                'content' => $text('parent_rank_suggest_text_content', $defaults['content']),
+                'competency' => $text('parent_rank_suggest_text_competency', $defaults['competency']),
             ],
         ];
     }
@@ -426,7 +485,12 @@ class ParentRankService implements ParentRankServiceInterface
             ],
         ];
 
-        // 5 tiêu chí cảnh báo mức độ đồng hành (< 50% tiêu chuẩn)
+        // Cảnh báo mức độ đồng hành: ngưỡng, bật/tắt và nội dung câu do admin cấu hình
+        $suggestionCfg = $config['suggestion'] ?? $this->buildSuggestionConfig([]);
+        $ratio = $suggestionCfg['warning_ratio'];
+        $enabledMap = $suggestionCfg['enabled'];
+        $texts = $suggestionCfg['texts'];
+
         $targetUsage = max(1, (int) ($targets['usage_minutes'] ?? 600));
         $targetDays = max(1, (int) ($targets['active_days'] ?? 20));
         $targetAssessments = max(1, (int) ($targets['assessments'] ?? 5));
@@ -439,66 +503,35 @@ class ParentRankService implements ParentRankServiceInterface
 
         $suggestions = [];
 
-        // Tiêu chí 1 & 2: Thời gian sử dụng app/tháng HOẶC Số ngày đăng nhập/tháng < 50%
-        if ($usageMinutes < ($targetUsage * 0.5) || $activeDays < ($targetDays * 0.5)) {
-            $suggestions[] = 'Bố mẹ nên dành thêm thời gian kiểm tra các chỉ số và năng lực của con thường xuyên để theo dõi sự phát triển.';
+        // Tiêu chí 1 & 2: Thời gian sử dụng app/tháng HOẶC Số ngày đăng nhập/tháng thấp hơn ngưỡng
+        if ($enabledMap['usage'] && ($usageMinutes < ($targetUsage * $ratio) || $activeDays < ($targetDays * $ratio))) {
+            $suggestions[] = $texts['usage'];
         }
 
-        // Tiêu chí 3: Số bài đánh giá/tháng < 50%
-        if ($assessmentCount < ($targetAssessments * 0.5)) {
-            $suggestions[] = 'Bố mẹ nên cập nhật chiều cao và cân nặng cho con hàng tháng và các chỉ số IQ, AQ, EQ, học bạ điện tử định kỳ để theo dõi tăng trưởng chính xác hơn.';
+        // Tiêu chí 3: Số bài đánh giá/tháng thấp hơn ngưỡng
+        if ($enabledMap['assessment'] && $assessmentCount < ($targetAssessments * $ratio)) {
+            $suggestions[] = $texts['assessment'];
         }
 
-        // Tiêu chí 4: Số lần xem bài học/video/tháng < 50%
-        if ($lessonVideoViews < ($targetViews * 0.5)) {
-            $suggestions[] = 'Bố mẹ nên cho con luyện tập thêm các bài học và bài tập trong ứng dụng để phát triển các năng lực.';
+        // Tiêu chí 4: Số lần xem bài học/video/tháng thấp hơn ngưỡng
+        if ($enabledMap['content'] && $lessonVideoViews < ($targetViews * $ratio)) {
+            $suggestions[] = $texts['content'];
         }
 
-        // Tiêu chí 5: Điểm các chỉ số năng lực
-        // Trường hợp có bé có chỉ số < 5 điểm (hoặc điểm TB < 5.0)
-        // Hiển thị các lĩnh vực có điểm thấp nhất (min) và < 5 (VD: EQ = 2, GPA = 3)
-        $childrenAnalysis = $this->childScoreAggregator->getChildrenCompetencyAnalysis($user->id);
-        $childrenWithWeakScores = array_values(array_filter($childrenAnalysis, function ($item) {
-            return !empty($item['under_5_competencies']) || ($item['average'] !== null && $item['average'] < 5.0);
-        }));
-
-        if (!empty($childrenWithWeakScores)) {
-            // Sắp xếp ưu tiên con có điểm chỉ số thấp nhất (min_score trước, nếu bằng nhau so điểm TB)
-            usort($childrenWithWeakScores, function ($a, $b) {
-                $minA = $a['min_score'] ?? 10.0;
-                $minB = $b['min_score'] ?? 10.0;
-                if ($minA == $minB) {
-                    return ($a['average'] ?? 10.0) <=> ($b['average'] ?? 10.0);
-                }
-                return $minA <=> $minB;
-            });
-
-            $targetChild = $childrenWithWeakScores[0];
-            $weakComps = $targetChild['under_5_competencies'] ?? [];
-
-            // Nếu không có under_5_competencies nhưng average < 5 thì lấy lowest_competency
-            if (empty($weakComps) && !empty($targetChild['lowest_competency'])) {
-                $weakComps = [$targetChild['lowest_competency']];
-            }
-
-            if (!empty($weakComps)) {
-                // Lấy tối đa 2 lĩnh vực thấp nhất (min) và < 5
-                $topWeak = array_slice($weakComps, 0, 2);
-                $formattedList = [];
-                foreach ($topWeak as $c) {
-                    $scoreVal = (float) ($c['score'] ?? 0);
-                    $formattedScore = ($scoreVal == (int) $scoreVal) ? (int) $scoreVal : number_format($scoreVal, 1);
-                    $formattedList[] = "{$c['code']} = {$formattedScore}";
-                }
-                $listStr = implode(', ', $formattedList);
-                $prefix = count($topWeak) > 1 ? 'các chỉ số' : 'chỉ số';
-                $suggestions[] = "Con và bố mẹ cần tiếp tục luyện tập để cải thiện {$prefix}: {$listStr}.";
-            } else {
-                $suggestions[] = 'Con và bố mẹ cần tiếp tục luyện tập để cải thiện các chỉ số năng lực.';
+        // Tiêu chí 5: Chỉ số năng lực thấp hơn ngưỡng điểm (VD: EQ = 2, GPA = 3)
+        if ($enabledMap['competency']) {
+            $competencyMessage = $this->buildCompetencySuggestion(
+                $user->id,
+                $suggestionCfg['competency_threshold'],
+                $suggestionCfg['competency_max_display'],
+                $texts['competency']
+            );
+            if ($competencyMessage !== null) {
+                $suggestions[] = $competencyMessage;
             }
         }
 
-        // Nếu tất cả các chỉ số đều đạt (không có cảnh báo < 50%), hiển thị câu khích lệ theo hạng hiện tại
+        // Nếu không có cảnh báo nào, hiển thị câu khích lệ theo hạng hiện tại
         if (empty($suggestions)) {
             $suggestions[] = $rank->description();
         }
@@ -534,5 +567,46 @@ class ParentRankService implements ParentRankServiceInterface
             'breakdown' => $breakdown,
             'calculated_at' => $snapshot->calculated_at ? $snapshot->calculated_at->toDateTimeString() : null,
         ];
+    }
+
+    /**
+     * Dựng câu gợi ý các chỉ số năng lực yếu nhất (< ngưỡng) của bé yếu nhất.
+     * Trả về null nếu không có bé nào có chỉ số dưới ngưỡng.
+     */
+    protected function buildCompetencySuggestion(int $userId, float $threshold, int $maxDisplay, string $template): ?string
+    {
+        $analysis = $this->childScoreAggregator->getChildrenCompetencyAnalysis($userId, $threshold);
+
+        $weakChildren = array_values(array_filter($analysis, fn($item) => !empty($item['weak_competencies'])));
+        if (empty($weakChildren)) {
+            return null;
+        }
+
+        // Ưu tiên bé có điểm chỉ số thấp nhất, nếu bằng nhau thì so điểm trung bình
+        usort($weakChildren, function ($a, $b) {
+            $minA = $a['min_score'] ?? 10.0;
+            $minB = $b['min_score'] ?? 10.0;
+            if ($minA == $minB) {
+                return ($a['average'] ?? 10.0) <=> ($b['average'] ?? 10.0);
+            }
+            return $minA <=> $minB;
+        });
+
+        $child = $weakChildren[0];
+        $topWeak = array_slice($child['weak_competencies'], 0, max(1, $maxDisplay));
+
+        $items = array_map(function ($c) {
+            $score = (float) ($c['score'] ?? 0);
+            $formatted = ($score == (int) $score) ? (string) (int) $score : number_format($score, 1);
+            return "{$c['code']} = {$formatted}";
+        }, $topWeak);
+
+        $childName = trim((string) ($child['child_fullname'] ?? ''));
+
+        return strtr($template, [
+            '{child}' => $childName !== '' ? 'Bé ' . $childName : 'Con',
+            '{label}' => count($topWeak) > 1 ? 'các chỉ số' : 'chỉ số',
+            '{list}' => implode(', ', $items),
+        ]);
     }
 }
