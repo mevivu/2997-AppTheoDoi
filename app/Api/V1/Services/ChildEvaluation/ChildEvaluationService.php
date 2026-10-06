@@ -163,15 +163,19 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
 
             $childEvaluation = $this->repository->update($childEvaluationId, $data);
             $classGrade = ClassGrade::whereKey($childEvaluation->class_grade_id)->lockForUpdate()->first();
+            $class = $classGrade?->class;
+            $educationLevel = $class?->resolvedEducationLevel() ?? EducationLevel::fromClassId($classGrade->class_id);
+            $isPrimary = ($educationLevel === EducationLevel::Primary);
+
             $semester = $childEvaluation->semester;
 
             if (!empty($subjects)) {
                 $this->createSubjectGrade($subjects, $childEvaluationId);
             }
-            if (!empty($qualities)) {
+            if ($isPrimary && !empty($qualities)) {
                 $this->createChildQuality($qualities, $childEvaluationId);
             }
-            if (!empty($capabilities)) {
+            if ($isPrimary && !empty($capabilities)) {
                 $this->createChildCapability($capabilities, $childEvaluationId);
             }
 
@@ -451,11 +455,20 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             }
         }
 
-        $childEvaluation->load(['subjectGrades.subject', 'qualities', 'capabilities', 'attachments']);
+        $educationLevel = $class->resolvedEducationLevel();
+        $isPrimary = ($educationLevel === EducationLevel::Primary);
+
+        $relations = ['subjectGrades.subject', 'attachments'];
+        if ($isPrimary) {
+            $relations[] = 'qualities';
+            $relations[] = 'capabilities';
+        }
+        $childEvaluation->load($relations);
+
         $classes = $this->classesRepository->getBy(['status' => ActiveStatus::Active]);
         $subjects = $class->subjects()->withPivot('evaluation_method', 'is_required', 'sort_order')->orderByPivot('sort_order')->get();
-        $capabilities = $this->capabilityRepository->getBy(['status' => ActiveStatus::Active]);
-        $qualities = $this->qualityRepository->getBy(['status' => ActiveStatus::Active]);
+        $capabilities = $isPrimary ? $this->capabilityRepository->getBy(['status' => ActiveStatus::Active]) : [];
+        $qualities = $isPrimary ? $this->qualityRepository->getBy(['status' => ActiveStatus::Active]) : [];
         return [
             'detail' => [
                 'child_evaluation' => $childEvaluation,
@@ -466,7 +479,7 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
                 'capabilities' => $capabilities,
                 'qualities' => $qualities,
                 'semester' => SemesterStatus::asSelectArray(),
-                'education_level' => $class->resolvedEducationLevel()->value,
+                'education_level' => $educationLevel->value,
             ]
         ];
     }
