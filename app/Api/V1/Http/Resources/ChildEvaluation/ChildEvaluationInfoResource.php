@@ -42,7 +42,8 @@ class ChildEvaluationInfoResource extends JsonResource
                 'conduct_ratings' => ConductRating::asSelectArrayRemovePending(),
                 'capability_status' => EvaluationStatus::asSelectArrayTranslate(),
                 'academic_performance' => AcademicRating::asSelectArrayRemovePending(),
-                'quality_status' => EvaluationStatus::asSelectArrayTranslate()
+                'quality_status' => EvaluationStatus::asSelectArrayTranslate(),
+                'education_level' => $system['education_level'] ?? null,
             ]
 
         ];
