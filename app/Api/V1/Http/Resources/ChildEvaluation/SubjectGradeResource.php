@@ -2,7 +2,7 @@
 
 namespace App\Api\V1\Http\Resources\ChildEvaluation;
 
-use App\Enums\Class\LevelGroup;
+use App\Enums\Class\EducationLevel;
 use App\Enums\Semester\SemesterStatus;
 use Exception;
 use Illuminate\Contracts\Support\Arrayable;
@@ -22,31 +22,47 @@ class SubjectGradeResource extends JsonResource
     public function toArray($request): array|JsonSerializable|Arrayable
     {
         $subject = $this->subject;
-//        $evaluation = $this->childEvaluation;
-//        $classGrade = $evaluation->classGrade;
-//        $levelGroup = $classGrade->class?->level_group;
-//
         $subjectId = $this->subject_id;
-//
-//        // Tải các đánh giá 2 học kỳ (eager loaded từ controller/service trước đó)
-//        $allEvaluations = $classGrade->evaluations;
-//
-//        $semester1 = $allEvaluations->firstWhere('semester', SemesterStatus::Semester1);
-//        $semester2 = $allEvaluations->firstWhere('semester', SemesterStatus::Semester2);
-//
-//        $semester1Grade = $semester1?->subjectGrades->firstWhere('subject_id', $subjectId)?->grade;
-//        $semester2Grade = $semester2?->subjectGrades->firstWhere('subject_id', $subjectId)?->grade;
-//
-//        // Tính điểm cả năm theo công thức
-//        $fullYearSubjectGrade = null;
-//        if ($semester2Grade !== null) {
-//            if ($levelGroup === LevelGroup::Junior) {
-//                $fullYearSubjectGrade = $semester2Grade;
-//            } else {
-//                $s1 = $semester1Grade ?? 0;
-//                $fullYearSubjectGrade = round(($s1 + 2 * $semester2Grade) / 3, 2);
-//            }
-//        }
+        $fullYearGrade = $this->full_year_grade;
+        $source = $this->full_year_grade_source instanceof \BackedEnum
+            ? $this->full_year_grade_source->value
+            : $this->full_year_grade_source;
+
+        // Nếu trường full_year_grade trong DB chưa có nhưng đang ở học kỳ Cả năm, tự động tính fallback
+        $evaluation = $this->childEvaluation;
+        $semValue = $evaluation?->semester instanceof \BackedEnum
+            ? $evaluation->semester->value
+            : $evaluation?->semester;
+
+        if ($fullYearGrade === null && $semValue === SemesterStatus::FullYear->value && $evaluation) {
+            $classGrade = $evaluation->classGrade;
+            if ($classGrade) {
+                $class = $classGrade->class;
+                $educationLevel = $class?->resolvedEducationLevel() ?? EducationLevel::fromClassId($classGrade->class_id);
+                $isPrimary = ($educationLevel === EducationLevel::Primary);
+
+                $allEvaluations = $classGrade->evaluations;
+                $semester1 = $allEvaluations->firstWhere('semester', SemesterStatus::Semester1);
+                $semester2 = $allEvaluations->firstWhere('semester', SemesterStatus::Semester2);
+
+                $s1 = $semester1?->subjectGrades->firstWhere('subject_id', $subjectId)?->grade;
+                $s2 = $semester2?->subjectGrades->firstWhere('subject_id', $subjectId)?->grade;
+
+                if ($isPrimary) {
+                    // Lớp 1-5: Điểm tbm cả năm = điểm hk2
+                    if ($s2 !== null && $s2 !== '') {
+                        $fullYearGrade = (float) $s2;
+                        $source = 'auto';
+                    }
+                } else {
+                    // Lớp 6-12: Điểm tbm Cả năm = (hk1 + hk2*2)/3
+                    if ($s1 !== null && $s1 !== '' && $s2 !== null && $s2 !== '') {
+                        $fullYearGrade = round(((float)$s1 + 2 * (float)$s2) / 3, 1);
+                        $source = 'auto';
+                    }
+                }
+            }
+        }
 
         return [
             'id' => $this->id,
@@ -54,12 +70,9 @@ class SubjectGradeResource extends JsonResource
             'grade' => $this->grade,
             'remark' => $this->remark,
             'achievement_level' => $this->achievement_level,
-            'name' => $subject->name,
-            'full_year_grade' => $this->full_year_grade,
-            'full_year_grade_source' => $this->full_year_grade_source,
+            'name' => $subject?->name,
+            'full_year_grade' => $fullYearGrade !== null ? (float) $fullYearGrade : null,
+            'full_year_grade_source' => $source,
         ];
     }
-
-
-
 }

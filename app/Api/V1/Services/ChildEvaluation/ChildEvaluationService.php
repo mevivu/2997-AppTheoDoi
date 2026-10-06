@@ -15,6 +15,7 @@ use App\Api\V1\Support\AuthSupport;
 use App\Enums\ActiveStatus;
 use App\Enums\ChildEvaluation\AcademicRating;
 use App\Enums\ChildEvaluation\ConductRating;
+use App\Enums\Class\EducationLevel;
 use App\Enums\Class\LevelGroup;
 use App\Enums\ReportCard\FullYearGradeSource;
 use App\Enums\Semester\SemesterStatus;
@@ -97,13 +98,14 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     private function updateScoreClassGrade($semester, ClassGrade $classGrade, $averageScore): void
     {
         $class = $classGrade->class;
-        $levelGroup = $class?->level_group;
+        $educationLevel = $class?->resolvedEducationLevel() ?? EducationLevel::fromClassId($classGrade->class_id);
+        $isPrimary = ($educationLevel === EducationLevel::Primary);
 
         if ($semester == SemesterStatus::Semester1) {
             $classGrade->semester1_grade = $averageScore;
 
-            // Nếu là Senior và đã có điểm HK2 thì tính điểm cả năm
-            if ($levelGroup === LevelGroup::Senior && !is_null($classGrade->semester2_grade)) {
+            // Nếu là Lớp 6-12 và đã có điểm HK2 thì tính điểm cả năm
+            if (!$isPrimary && !is_null($classGrade->semester2_grade)) {
                 $classGrade->full_year_grade = round(($averageScore + 2 * $classGrade->semester2_grade) / 3, 2);
             }
 
@@ -111,16 +113,20 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         } else {
             $classGrade->semester2_grade = $averageScore;
 
-            if ($levelGroup === LevelGroup::Junior) {
+            if ($isPrimary) {
+                // Lớp 1-5: Cả năm = Điểm HK2
                 $classGrade->full_year_grade = $averageScore;
             } else {
-                $s1 = $classGrade->semester1_grade ?? 0;
-                $classGrade->full_year_grade = round(($s1 + 2 * $averageScore) / 3, 2);
+                // Lớp 6-12: Cả năm = (HK1 + 2 * HK2) / 3
+                if (!is_null($classGrade->semester1_grade)) {
+                    $classGrade->full_year_grade = round(($classGrade->semester1_grade + 2 * $averageScore) / 3, 2);
+                } else {
+                    $classGrade->full_year_grade = $averageScore;
+                }
             }
 
             $classGrade->save();
         }
-
     }
 
 
@@ -170,8 +176,16 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             }
 
             if ($childEvaluation->semester == SemesterStatus::FullYear) {
+                $this->autoSyncFullYearEvaluation($classGrade, $childEvaluation);
                 $fullYearGrade = $this->calculateFullYearGradeFromSubjects($subjects);
-                $classGrade?->update(['full_year_grade' => $fullYearGrade]);
+                if ($fullYearGrade !== null) {
+                    $classGrade?->update(['full_year_grade' => $fullYearGrade]);
+                }
+            } else {
+                if ($classGrade) {
+                    $this->updateScoreClassGrade($semester, $classGrade, $childEvaluation->average_score);
+                    $this->autoSyncFullYearEvaluation($classGrade);
+                }
             }
 
             // Tự động tính toán lại học bạ bằng engine nếu cờ tính năng được bật
@@ -184,6 +198,110 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     }
 
     /**
+     * Tự động tính toán và đồng bộ điểm cả năm của các môn học và điểm tổng kết cả năm:
+     * - Lớp 1-5 (Tiểu học): Điểm tbm cả năm = Điểm HK2 (theo TT27).
+     * - Lớp 6-12 (THCS & THPT): Điểm tbm cả năm = round((HK1 + HK2 * 2) / 3, 1) (theo TT22).
+     */
+    public function autoSyncFullYearEvaluation(ClassGrade $classGrade, ?ChildEvaluation $fullYearEvaluation = null): ?ChildEvaluation
+    {
+        $class = $classGrade->class;
+        $educationLevel = $class?->resolvedEducationLevel() ?? EducationLevel::fromClassId($classGrade->class_id);
+        $isPrimary = ($educationLevel === EducationLevel::Primary);
+
+        $allEvaluations = $classGrade->evaluations()->with('subjectGrades')->get();
+        $sem1 = $allEvaluations->firstWhere('semester', SemesterStatus::Semester1);
+        $sem2 = $allEvaluations->firstWhere('semester', SemesterStatus::Semester2);
+
+        if (!$fullYearEvaluation) {
+            $fullYearEvaluation = $allEvaluations->firstWhere('semester', SemesterStatus::FullYear);
+        }
+
+        if (!$fullYearEvaluation) {
+            return null;
+        }
+
+        $sem1SubjectGrades = $sem1 ? $sem1->subjectGrades->keyBy('subject_id') : collect();
+        $sem2SubjectGrades = $sem2 ? $sem2->subjectGrades->keyBy('subject_id') : collect();
+        $existingFullYearGrades = $fullYearEvaluation->subjectGrades->keyBy('subject_id');
+
+        $subjectIds = $sem1SubjectGrades->keys()
+            ->merge($sem2SubjectGrades->keys())
+            ->merge($existingFullYearGrades->keys())
+            ->unique();
+
+        $allSubjectFullYearScores = [];
+
+        foreach ($subjectIds as $subjectId) {
+            $existing = $existingFullYearGrades->get($subjectId);
+
+            $sourceVal = $existing?->full_year_grade_source instanceof \BackedEnum
+                ? $existing->full_year_grade_source->value
+                : $existing?->full_year_grade_source;
+
+            // Nếu người dùng đã tự nhập tay hoặc chủ động ghi đè, tôn trọng lựa chọn của người dùng
+            if ($sourceVal === FullYearGradeSource::Overridden->value || $sourceVal === FullYearGradeSource::Manual->value) {
+                if ($existing && $existing->full_year_grade !== null) {
+                    $allSubjectFullYearScores[] = (float) $existing->full_year_grade;
+                }
+                continue;
+            }
+
+            $s1Grade = $sem1SubjectGrades->get($subjectId)?->grade;
+            $s2Grade = $sem2SubjectGrades->get($subjectId)?->grade;
+
+            $computedGrade = null;
+
+            if ($isPrimary) {
+                // Lớp 1-5: Điểm tbm cả năm = điểm hk2
+                if ($s2Grade !== null && $s2Grade !== '') {
+                    $computedGrade = (float) $s2Grade;
+                }
+            } else {
+                // Lớp 6-12: Điểm tbm Cả năm = (hk1 + hk2*2)/3, làm tròn 1 chữ số thập phân theo TT22
+                if ($s1Grade !== null && $s1Grade !== '' && $s2Grade !== null && $s2Grade !== '') {
+                    $computedGrade = round(((float) $s1Grade + 2 * (float) $s2Grade) / 3, 1);
+                }
+            }
+
+            $payload = [];
+            if ($computedGrade !== null) {
+                $payload['full_year_grade'] = $computedGrade;
+                $payload['full_year_grade_source'] = FullYearGradeSource::Auto;
+                $allSubjectFullYearScores[] = $computedGrade;
+            }
+
+            // Với tiểu học, nếu môn đánh giá mức đạt được (T, H, C), lấy kết quả HK2 làm cả năm
+            if ($isPrimary && empty($existing?->achievement_level)) {
+                $s2Level = $sem2SubjectGrades->get($subjectId)?->achievement_level;
+                if ($s2Level) {
+                    $payload['achievement_level'] = $s2Level;
+                }
+            }
+
+            if (!empty($payload)) {
+                $this->subjectGradeRepository->updateOrCreate(
+                    [
+                        'child_evaluation_id' => $fullYearEvaluation->id,
+                        'subject_id' => $subjectId,
+                    ],
+                    $payload
+                );
+            } elseif ($existing && $existing->full_year_grade !== null) {
+                $allSubjectFullYearScores[] = (float) $existing->full_year_grade;
+            }
+        }
+
+        // Cập nhật điểm trung bình của Cả năm và class_grade->full_year_grade
+        if (!empty($allSubjectFullYearScores)) {
+            $avgScore = round(array_sum($allSubjectFullYearScores) / count($allSubjectFullYearScores), 2);
+            $fullYearEvaluation->update(['average_score' => $avgScore]);
+            $classGrade->update(['full_year_grade' => $avgScore]);
+        }
+
+        return $fullYearEvaluation;
+    }
+
+    /**
      * Tính điểm cả năm từ các full_year_grade của các môn học
      */
     private function calculateFullYearGradeFromSubjects($subjects): ?float
@@ -192,8 +310,8 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $count = 0;
 
         foreach ($subjects as $subject) {
-            if (isset($subject['full_year_grade']) && !is_null($subject['full_year_grade'])) {
-                $totalScore += $subject['full_year_grade'];
+            if (isset($subject['full_year_grade']) && !is_null($subject['full_year_grade']) && is_numeric($subject['full_year_grade'])) {
+                $totalScore += (float) $subject['full_year_grade'];
                 $count++;
             }
         }
@@ -208,15 +326,19 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     {
         foreach ($subjects as $subjectData) {
             $payload = [
-                'grade' => $subjectData['grade'] ?? null,
-                'full_year_grade' => $subjectData['full_year_grade'] ?? null,
                 'remark' => $subjectData['remark'] ?? null,
                 'achievement_level' => $subjectData['achievement_level'] ?? null,
             ];
 
+            if (array_key_exists('grade', $subjectData)) {
+                $payload['grade'] = $subjectData['grade'];
+            }
+
             if (!empty($subjectData['override_full_year_grade'])) {
+                $payload['full_year_grade'] = $subjectData['full_year_grade'] ?? null;
                 $payload['full_year_grade_source'] = FullYearGradeSource::Overridden;
-            } elseif (array_key_exists('full_year_grade', $subjectData) && $subjectData['full_year_grade'] !== null) {
+            } elseif (array_key_exists('full_year_grade', $subjectData) && $subjectData['full_year_grade'] !== null && $subjectData['full_year_grade'] !== '') {
+                $payload['full_year_grade'] = $subjectData['full_year_grade'];
                 $payload['full_year_grade_source'] = FullYearGradeSource::Manual;
             }
 
@@ -320,7 +442,16 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
         $childId = $data['child_id'];
         $class = $this->classesRepository->findOrFail($classId);
         $childEvaluation = $this->findAndCreateChildEvaluations($childId, $classId, $semester);
-        $childEvaluation->load(['subjectGrades', 'qualities', 'capabilities', 'attachments']);
+
+        $semVal = $semester instanceof \BackedEnum ? $semester->value : $semester;
+        if ($semVal === SemesterStatus::FullYear->value) {
+            $classGrade = $childEvaluation->classGrade ?? ClassGrade::whereKey($childEvaluation->class_grade_id)->first();
+            if ($classGrade) {
+                $this->autoSyncFullYearEvaluation($classGrade, $childEvaluation);
+            }
+        }
+
+        $childEvaluation->load(['subjectGrades.subject', 'qualities', 'capabilities', 'attachments']);
         $classes = $this->classesRepository->getBy(['status' => ActiveStatus::Active]);
         $subjects = $class->subjects()->withPivot('evaluation_method', 'is_required', 'sort_order')->orderByPivot('sort_order')->get();
         $capabilities = $this->capabilityRepository->getBy(['status' => ActiveStatus::Active]);

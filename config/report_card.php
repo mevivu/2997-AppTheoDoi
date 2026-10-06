@@ -14,7 +14,7 @@ return [
     /**
      * Tự động tính toán và điền/tạo điểm cả năm cho học sinh
      */
-    'auto_full_year' => env('REPORT_CARD_AUTO_FULL_YEAR', false),
+    'auto_full_year' => env('REPORT_CARD_AUTO_FULL_YEAR', true),
 
     /**
      * Cấu hình tệp đính kèm học bạ

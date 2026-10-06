@@ -8,6 +8,7 @@ enum FullYearGradeSource: string
 {
     use Enum;
 
+    case Auto = 'auto';
     case Manual = 'manual';
     case Computed = 'computed';
     case Overridden = 'overridden';
@@ -15,8 +16,8 @@ enum FullYearGradeSource: string
     public function getTranslatedName(): string
     {
         return match ($this) {
+            self::Auto, self::Computed => 'Hệ thống tính',
             self::Manual => 'Nhập tay',
-            self::Computed => 'Hệ thống tính',
             self::Overridden => 'Chủ động điều chỉnh',
         };
     }
