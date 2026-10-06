@@ -150,7 +150,10 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
                 unset($data['academic_performance']);
             }
 
-            if (!empty($subjects)) {
+            $currentEvaluation = $this->repository->find($childEvaluationId);
+            $isFullYear = ($currentEvaluation?->semester === SemesterStatus::FullYear || $currentEvaluation?->semester === 'full_year');
+
+            if (!$isFullYear && !empty($subjects)) {
                 $averageScore = $this->calculateAverageScore($subjects);
                 $data['average_score'] = $averageScore;
             }
@@ -181,10 +184,6 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
 
             if ($childEvaluation->semester == SemesterStatus::FullYear) {
                 $this->autoSyncFullYearEvaluation($classGrade, $childEvaluation);
-                $fullYearGrade = $this->calculateFullYearGradeFromSubjects($subjects);
-                if ($fullYearGrade !== null) {
-                    $classGrade?->update(['full_year_grade' => $fullYearGrade]);
-                }
             } else {
                 if ($classGrade) {
                     $this->updateScoreClassGrade($semester, $classGrade, $childEvaluation->average_score);
@@ -275,10 +274,17 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
             }
 
             // Với tiểu học, nếu môn đánh giá mức đạt được (T, H, C), lấy kết quả HK2 làm cả năm
-            if ($isPrimary && empty($existing?->achievement_level)) {
+            if ($isPrimary) {
                 $s2Level = $sem2SubjectGrades->get($subjectId)?->achievement_level;
                 if ($s2Level) {
                     $payload['achievement_level'] = $s2Level;
+                }
+                // Đồng bộ nhận xét từ HK2 sang Cả năm nếu Cả năm chưa có nhận xét
+                if (empty($existing?->remark)) {
+                    $s2Remark = $sem2SubjectGrades->get($subjectId)?->remark;
+                    if ($s2Remark) {
+                        $payload['remark'] = $s2Remark;
+                    }
                 }
             }
 
@@ -306,24 +312,6 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
     }
 
     /**
-     * Tính điểm cả năm từ các full_year_grade của các môn học
-     */
-    private function calculateFullYearGradeFromSubjects($subjects): ?float
-    {
-        $totalScore = 0;
-        $count = 0;
-
-        foreach ($subjects as $subject) {
-            if (isset($subject['full_year_grade']) && !is_null($subject['full_year_grade']) && is_numeric($subject['full_year_grade'])) {
-                $totalScore += (float) $subject['full_year_grade'];
-                $count++;
-            }
-        }
-
-        return $count > 0 ? round($totalScore / $count, 2) : null;
-    }
-
-    /**
      * @throws Exception
      */
     public function createSubjectGrade(array $subjects, int $childEvaluationId): void
@@ -338,9 +326,15 @@ class ChildEvaluationService implements ChildEvaluationServiceInterface
                 $payload['grade'] = $subjectData['grade'];
             }
 
-            if (!empty($subjectData['override_full_year_grade'])) {
-                $payload['full_year_grade'] = $subjectData['full_year_grade'] ?? null;
-                $payload['full_year_grade_source'] = FullYearGradeSource::Overridden;
+            if (array_key_exists('override_full_year_grade', $subjectData)) {
+                if ($subjectData['override_full_year_grade'] === false || $subjectData['override_full_year_grade'] === 0 || $subjectData['override_full_year_grade'] === '0') {
+                    // Người dùng muốn khôi phục về điểm tính tự động / điểm HK2
+                    $payload['full_year_grade'] = null;
+                    $payload['full_year_grade_source'] = FullYearGradeSource::Auto;
+                } elseif (!empty($subjectData['override_full_year_grade'])) {
+                    $payload['full_year_grade'] = $subjectData['full_year_grade'] ?? null;
+                    $payload['full_year_grade_source'] = FullYearGradeSource::Overridden;
+                }
             } elseif (array_key_exists('full_year_grade', $subjectData) && $subjectData['full_year_grade'] !== null && $subjectData['full_year_grade'] !== '') {
                 $payload['full_year_grade'] = $subjectData['full_year_grade'];
                 $payload['full_year_grade_source'] = FullYearGradeSource::Manual;

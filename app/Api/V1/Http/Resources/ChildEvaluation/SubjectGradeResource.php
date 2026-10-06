@@ -34,7 +34,10 @@ class SubjectGradeResource extends JsonResource
             ? $evaluation->semester->value
             : $evaluation?->semester;
 
-        if ($fullYearGrade === null && $semValue === SemesterStatus::FullYear->value && $evaluation) {
+        $autoGrade = null;
+        $s2Grade = null;
+
+        if ($evaluation) {
             $classGrade = $evaluation->classGrade;
             if ($classGrade) {
                 $class = $classGrade->class;
@@ -47,19 +50,23 @@ class SubjectGradeResource extends JsonResource
 
                 $s1 = $semester1?->subjectGrades->firstWhere('subject_id', $subjectId)?->grade;
                 $s2 = $semester2?->subjectGrades->firstWhere('subject_id', $subjectId)?->grade;
+                $s2Grade = ($s2 !== null && $s2 !== '') ? (float) $s2 : null;
 
                 if ($isPrimary) {
                     // Lớp 1-5: Điểm tbm cả năm = điểm hk2
-                    if ($s2 !== null && $s2 !== '') {
-                        $fullYearGrade = (float) $s2;
-                        $source = 'auto';
+                    if ($s2Grade !== null) {
+                        $autoGrade = $s2Grade;
                     }
                 } else {
                     // Lớp 6-12: Điểm tbm Cả năm = (hk1 + hk2*2)/3
-                    if ($s1 !== null && $s1 !== '' && $s2 !== null && $s2 !== '') {
-                        $fullYearGrade = round(((float)$s1 + 2 * (float)$s2) / 3, 1);
-                        $source = 'auto';
+                    if ($s1 !== null && $s1 !== '' && $s2Grade !== null) {
+                        $autoGrade = round(((float)$s1 + 2 * $s2Grade) / 3, 1);
                     }
+                }
+
+                if ($fullYearGrade === null && $semValue === SemesterStatus::FullYear->value && $autoGrade !== null) {
+                    $fullYearGrade = $autoGrade;
+                    $source = 'auto';
                 }
             }
         }
@@ -73,6 +80,8 @@ class SubjectGradeResource extends JsonResource
             'name' => $subject?->name,
             'full_year_grade' => $fullYearGrade !== null ? (float) $fullYearGrade : null,
             'full_year_grade_source' => $source,
+            'auto_full_year_grade' => $autoGrade,
+            'semester2_grade' => $s2Grade,
         ];
     }
 }
