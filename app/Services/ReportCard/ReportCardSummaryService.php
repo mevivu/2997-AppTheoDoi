@@ -5,17 +5,34 @@ namespace App\Services\ReportCard;
 use App\Enums\Class\EducationLevel;
 use App\Enums\Semester\SemesterStatus;
 use App\Models\ClassGrade;
+use App\Models\SchoolClass;
 use App\Services\ReportCard\Support\RatingLadder;
 
 class ReportCardSummaryService
 {
+    protected ReportCardMatrixBuilder $matrixBuilder;
+
+    public function __construct(?ReportCardMatrixBuilder $matrixBuilder = null)
+    {
+        $this->matrixBuilder = $matrixBuilder ?? app(ReportCardMatrixBuilder::class);
+    }
+
     public function getSummary(int $childId): array
     {
+        $allClasses = SchoolClass::query()
+            ->with(['subjects' => fn($q) => $q->withPivot('evaluation_method', 'is_required', 'sort_order')->orderByPivot('sort_order')])
+            ->get()
+            ->keyBy('id');
+
         $classGrades = ClassGrade::query()
             ->where('child_id', $childId)
             ->with([
                 'class',
-                'evaluations' => fn($q) => $q->withCount('attachments')->with('subjectGrades.subject'),
+                'evaluations' => fn($q) => $q->withCount('attachments')->with([
+                    'subjectGrades.subject',
+                    'qualities.quality',
+                    'capabilities.capability',
+                ]),
             ])
             ->get()
             ->keyBy('class_id');
@@ -107,6 +124,8 @@ class ReportCardSummaryService
                 ];
             }
 
+            $matrix = $this->matrixBuilder->buildStageMatrix($level, $classGrades, $allClasses);
+
             $stages[] = [
                 'education_level' => $level,
                 'label' => $def['label'],
@@ -116,6 +135,7 @@ class ReportCardSummaryService
                 'rating_distribution' => $ratingDist,
                 'average_trend' => $averageTrend,
                 'classes' => $classDataList,
+                'matrix' => $matrix,
             ];
         }
 

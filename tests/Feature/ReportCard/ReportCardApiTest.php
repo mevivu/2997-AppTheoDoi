@@ -138,6 +138,27 @@ class ReportCardApiTest extends TestCase
         $this->assertEquals('lower_secondary', $data['stages'][1]['education_level']);
         $this->assertEquals('upper_secondary', $data['stages'][2]['education_level']);
         $this->assertArrayHasKey('highlights', $data);
+
+        // Verify matrix in stages
+        foreach ($data['stages'] as $stage) {
+            $this->assertArrayHasKey('matrix', $stage);
+            $matrix = $stage['matrix'];
+            $this->assertArrayHasKey('columns', $matrix);
+            $this->assertArrayHasKey('sections', $matrix);
+            $this->assertArrayHasKey('legend', $matrix);
+
+            $sectionKeys = array_column($matrix['sections'], 'key');
+            $this->assertContains('subjects', $sectionKeys);
+            $this->assertContains('qualities', $sectionKeys);
+            $this->assertContains('capabilities', $sectionKeys);
+
+            foreach ($matrix['sections'] as $sec) {
+                $this->assertNotEmpty($sec['rows']);
+                foreach ($sec['rows'] as $row) {
+                    $this->assertArrayHasKey('cells', $row);
+                }
+            }
+        }
     }
 
     public function test_summary_denies_other_users_child(): void

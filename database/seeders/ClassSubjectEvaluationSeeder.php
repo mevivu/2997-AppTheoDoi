@@ -64,6 +64,15 @@ class ClassSubjectEvaluationSeeder extends Seeder
             ];
         }
 
+        // Ensure Civic Education subject exists
+        $civicSubject = DB::table('subjects')->where('name', 'Giáo dục công dân')->first();
+        $civicId = $civicSubject?->id ?? DB::table('subjects')->insertGetId([
+            'name' => 'Giáo dục công dân',
+            'status' => 'active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         // Classes 6-9 (ids: 6, 7, 8, 9)
         foreach ([6, 7, 8, 9] as $classId) {
             $configs[$classId] = [
@@ -71,16 +80,17 @@ class ClassSubjectEvaluationSeeder extends Seeder
                 ['subject_id' => 13, 'method' => 'score', 'required' => true, 'order' => 1], // Ngữ văn
                 ['subject_id' => 2, 'method' => 'score', 'required' => true, 'order' => 2],  // Toán
                 ['subject_id' => 3, 'method' => 'score', 'required' => true, 'order' => 3],  // Ngoại ngữ 1
-                ['subject_id' => 17, 'method' => 'score', 'required' => true, 'order' => 4], // Khoa học tự nhiên
+                ['subject_id' => $civicId, 'method' => 'score', 'required' => true, 'order' => 4], // GD công dân
                 ['subject_id' => 6, 'method' => 'score', 'required' => true, 'order' => 5],  // Lịch sử và Địa lí
-                ['subject_id' => 14, 'method' => 'score', 'required' => true, 'order' => 6], // Tin học
+                ['subject_id' => 17, 'method' => 'score', 'required' => true, 'order' => 6], // Khoa học tự nhiên
                 ['subject_id' => 15, 'method' => 'score', 'required' => true, 'order' => 7], // Công nghệ
+                ['subject_id' => 14, 'method' => 'score', 'required' => true, 'order' => 8], // Tin học
                 // Comment
-                ['subject_id' => 9, 'method' => 'comment', 'required' => true, 'order' => 8], // GD thể chất
-                ['subject_id' => 26, 'method' => 'comment', 'required' => true, 'order' => 9], // Âm nhạc
-                ['subject_id' => 27, 'method' => 'comment', 'required' => true, 'order' => 10], // Mĩ thuật
-                ['subject_id' => 16, 'method' => 'comment', 'required' => true, 'order' => 11], // HĐ trải nghiệm, hướng nghiệp
-                ['subject_id' => 18, 'method' => 'comment', 'required' => true, 'order' => 12], // ND GD địa phương
+                ['subject_id' => 9, 'method' => 'comment', 'required' => true, 'order' => 9], // GD thể chất
+                ['subject_id' => 26, 'method' => 'comment', 'required' => true, 'order' => 10], // Âm nhạc
+                ['subject_id' => 27, 'method' => 'comment', 'required' => true, 'order' => 11], // Mĩ thuật
+                ['subject_id' => 16, 'method' => 'comment', 'required' => true, 'order' => 12], // HĐ trải nghiệm, hướng nghiệp
+                ['subject_id' => 18, 'method' => 'comment', 'required' => true, 'order' => 13], // ND GD địa phương
             ];
         }
 

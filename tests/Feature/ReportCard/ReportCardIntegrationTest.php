@@ -63,8 +63,11 @@ class ReportCardIntegrationTest extends TestCase
 
     private function getPayloadWithSubjects(float $mathGrade = 8.5): array
     {
-        // 7 score subjects (2, 13, 3, 17, 6, 14, 15), 4 comment subjects (9, 26, 27, 16)
+        $civicId = Subject::where('name', 'Giáo dục công dân')->value('id');
         $scoreIds = [2, 13, 3, 17, 6, 14, 15];
+        if ($civicId) {
+            $scoreIds[] = $civicId;
+        }
         $commentIds = [9, 26, 27, 16];
 
         $subjects = [];
