@@ -91,7 +91,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         return [
             'advice_message' => $adviceMessage,
             'oldest_record_exists' => $oldestRecordExists,
-            'speed_change' => $heightChange,
+            'speed_change' => max(0.0, (float)$heightChange),
             'predicting_adult_height' => $predictingAdultHeight,
             'puberty_months' => $pubertyMonths,
             'height_comparison' => [
@@ -273,7 +273,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         $oldestHeight = $oldestRecord ? $oldestRecord->height : 0;
 
-        $heightChange = round(($currentHeight - $oldestHeight) * (365.3 / $countDays), 1);
+        $heightChange = max(0.0, round(($currentHeight - $oldestHeight) * (365.3 / $countDays), 1));
         return [
             'height_change' => $heightChange,
             'oldest_record' => $oldestRecord
@@ -508,7 +508,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             'child' => new ChildResource($child),
             'current_age' => $currentAge,
             'current_height' => $currentHeight,
-            'speed_change' => $rawSpeed,
+            'speed_change' => max(0.0, (float)$rawSpeed),
             'predicted_adult_height' => $predictedAdultHeight,
             'puberty_end_age' => $pubertyEndAge,
             'target_height' => $finalTargetHeight,
@@ -565,7 +565,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         return [
             'oldest_record_exists' => $oldestRecordExists,
-            'speed_change' => $heightChange,
+            'speed_change' => max(0.0, (float)$heightChange),
             'predicting_adult_height' => $predictingAdultHeight,
             'puberty_months' => $pubertyMonths,
             'height_comparison' => [
@@ -811,7 +811,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             'child' => new ChildResource($child),
             'current_age' => $currentAge,
             'current_height' => $currentHeight,
-            'speed_change' => $rawSpeed,
+            'speed_change' => max(0.0, (float)$rawSpeed),
             'predicted_adult_height' => $predictedAdultHeight,
             'target_height' => $finalTargetHeight,
             'puberty_end_age' => $pubertyEndAge,
@@ -981,12 +981,16 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         $oldestHeight = $oldestRecord ? (float)$oldestRecord->height : 0.0;
         $rawHeightDiff = round($currentHeight - $oldestHeight, 2);
 
-        $rawSpeedAnnualized = $rawSpeed;
+        $rawSpeedAnnualized = max(0.0, $rawSpeed);
         $speedFormula = '';
         if ($countDays > 0 && $oldestRecord) {
-            $speedFormula = "({$currentHeight} - {$oldestHeight}) x (365.3 / {$countDays} ngày) = {$rawSpeedAnnualized} cm/năm";
+            if ($rawHeightDiff < 0) {
+                $speedFormula = "({$currentHeight} - {$oldestHeight} < 0) -> Tốc độ tăng trưởng = 0 cm/năm";
+            } else {
+                $speedFormula = "({$currentHeight} - {$oldestHeight}) x (365.3 / {$countDays} ngày) = {$rawSpeedAnnualized} cm/năm";
+            }
         } elseif ($oldestRecord) {
-            $speedFormula = "{$currentHeight} - {$oldestHeight} = {$rawSpeedAnnualized} cm/năm";
+            $speedFormula = $rawHeightDiff < 0 ? "({$currentHeight} - {$oldestHeight} < 0) -> Tốc độ tăng trưởng = 0 cm/năm" : "{$currentHeight} - {$oldestHeight} = {$rawSpeedAnnualized} cm/năm";
         } else {
             $speedFormula = "Chưa có bản ghi PQ cách 1 năm -> Tốc độ = 0 cm/năm";
         }
