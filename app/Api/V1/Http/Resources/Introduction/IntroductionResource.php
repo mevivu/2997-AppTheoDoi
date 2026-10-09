@@ -17,6 +17,12 @@ class IntroductionResource extends JsonResource
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
+        $plainExcerpt = '';
+        if (!empty($this->excerpt)) {
+            $formatted = preg_replace('/<(?:br|\/p|\/div|\/li|h[1-6]|\/h[1-6])\s*\/?>/i', ' ', (string) $this->excerpt);
+            $plainExcerpt = preg_replace('/\s+/', ' ', trim(html_entity_decode(strip_tags($formatted), ENT_QUOTES | ENT_HTML5, 'UTF-8')));
+        }
+
         return [
             'id' => $this->id,
             'title' => $this->title,
@@ -26,6 +32,7 @@ class IntroductionResource extends JsonResource
             'image' => formatImageUrl($this->image),
             'icon' => $this->icon,
             'excerpt' => $this->excerpt,
+            'plain_excerpt' => $plainExcerpt,
             'content' => $this->content,
             'sort_order' => $this->sort_order,
             'created_at' => format_datetime($this->created_at),
