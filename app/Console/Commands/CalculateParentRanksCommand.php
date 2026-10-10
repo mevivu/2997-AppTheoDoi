@@ -19,7 +19,7 @@ class CalculateParentRanksCommand extends Command
      * @var string
      */
     protected $signature = 'parent-rank:calculate
-                            {--period= : Kỳ đánh giá theo định dạng YYYY-MM (mặc định: tháng hiện tại, truyền "prev" để tính tháng trước)}
+                            {--period= : Kỳ đánh giá theo định dạng YYYY-Q{n} (VD: 2026-Q4) hoặc YYYY-MM (mặc định: quý hiện tại, truyền "prev" để tính quý trước)}
                             {--user_id= : ID phụ huynh cụ thể cần tính lại thứ hạng}
                             {--finalize : Đánh dấu đã chốt sổ kỳ này (is_final = true)}
                             {--dry-run : Chạy thử và in kết quả ra màn hình mà không lưu vào DB}';
@@ -29,7 +29,7 @@ class CalculateParentRanksCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Tự động tính toán điểm số và cập nhật cấp bậc phân hạng Bố mẹ (Parent Rank) theo kỳ tháng';
+    protected $description = 'Tự động tính toán điểm số và cập nhật cấp bậc phân hạng Bố mẹ (Parent Rank) định kỳ 3 tháng (theo quý)';
 
     protected ParentRankServiceInterface $parentRankService;
 
@@ -48,16 +48,16 @@ class CalculateParentRanksCommand extends Command
     {
         $this->info('=== BẮT ĐẦU TÍNH TOÁN PHÂN HẠNG BỐ MẸ ===');
 
-        // Xác định kỳ tính toán (YYYY-MM)
+        // Xác định kỳ tính toán (YYYY-Q{n})
         $periodOption = $this->option('period');
         $now = Carbon::now('Asia/Ho_Chi_Minh');
 
         if ($periodOption === 'prev') {
-            $period = $now->copy()->subMonth()->format('Y-m');
+            $period = $this->parentRankService->getPreviousPeriod($now);
         } elseif (!empty($periodOption)) {
             $period = $periodOption;
         } else {
-            $period = $now->format('Y-m');
+            $period = $this->parentRankService->getCurrentPeriod();
         }
 
         $userId = $this->option('user_id');

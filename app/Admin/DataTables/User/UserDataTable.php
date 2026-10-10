@@ -137,7 +137,9 @@ class UserDataTable extends BaseDataTable
                     $rank = ParentRank::tryFrom((int) $rank) ?? ParentRank::D;
                 }
                 $points = number_format((float) ($item->parent_rank_points ?? 0), 1);
-                $period = $item->parent_rank_period ? 'Kỳ ' . $item->parent_rank_period : 'Kỳ hiện tại';
+                $period = $item->parent_rank_period
+                    ? (preg_match('/^(\d{4})-Q([1-4])$/i', $item->parent_rank_period, $m) ? "Quý {$m[2]}/{$m[1]}" : 'Kỳ ' . $item->parent_rank_period)
+                    : 'Kỳ hiện tại';
                 $progress = min(100, max(0, (float) ($item->parent_rank_points ?? 0)));
                 return '<div class="parent-rank-cell" title="' . $period . '"><div class="d-flex align-items-center justify-content-between gap-2"><span class="d-flex align-items-center gap-1 fw-semibold"><i class="' . $rank->icon() . '" style="color:' . $rank->colorHex() . '"></i>' . $rank->name() . '</span><strong>' . $points . 'đ</strong></div><div class="parent-rank-progress"><span style="width:' . $progress . '%;background:' . $rank->colorHex() . '"></span></div><small>' . $period . '</small></div>';
             },

@@ -137,12 +137,69 @@ class ParentRankService implements ParentRankServiceInterface
     }
 
     /**
-     * Thu thập các chỉ số thực tế trong tháng của một phụ huynh
+     * Lấy mã kỳ hiện tại (mặc định định dạng 3 tháng theo quý: YYYY-Q{1..4}, VD: 2026-Q4)
+     */
+    public function getCurrentPeriod(): string
+    {
+        $now = Carbon::now('Asia/Ho_Chi_Minh');
+        return $now->format('Y') . '-Q' . $now->quarter;
+    }
+
+    /**
+     * Lấy mã kỳ quý trước đó (VD: 2026-Q3)
+     */
+    public function getPreviousPeriod(?Carbon $date = null): string
+    {
+        $base = ($date ?? Carbon::now('Asia/Ho_Chi_Minh'))->copy()->subQuarter();
+        return $base->format('Y') . '-Q' . $base->quarter;
+    }
+
+    /**
+     * Phân giải chuỗi kỳ (YYYY-Q{n} hoặc YYYY-MM) thành khoảng thời gian [startDate, endDate]
+     *
+     * @return array{Carbon, Carbon}
+     */
+    public function getPeriodDateRange(string $period): array
+    {
+        // 1. Định dạng YYYY-Q{1..4} (VD: 2026-Q4)
+        if (preg_match('/^(\d{4})-Q([1-4])$/i', $period, $matches)) {
+            $year = (int) $matches[1];
+            $quarter = (int) $matches[2];
+            $startMonth = ($quarter - 1) * 3 + 1;
+            $startDate = Carbon::create($year, $startMonth, 1, 0, 0, 0, 'Asia/Ho_Chi_Minh')->startOfDay();
+            $endDate = $startDate->copy()->addMonths(2)->endOfMonth();
+            return [$startDate, $endDate];
+        }
+
+        // 2. Tương thích ngược: Định dạng YYYY-MM (VD: 2026-10)
+        $startDate = Carbon::parse($period . '-01 00:00:00', 'Asia/Ho_Chi_Minh');
+        $endDate = $startDate->copy()->endOfMonth();
+        return [$startDate, $endDate];
+    }
+
+    /**
+     * Định dạng chuỗi hiển thị thân thiện tiếng Việt cho kỳ đánh giá
+     */
+    public function formatPeriodLabel(?string $period): string
+    {
+        if (empty($period)) {
+            return '';
+        }
+        if (preg_match('/^(\d{4})-Q([1-4])$/i', $period, $matches)) {
+            return "Quý {$matches[2]}/{$matches[1]}";
+        }
+        if (preg_match('/^(\d{4})-(\d{2})$/', $period, $matches)) {
+            return "Tháng " . (int) $matches[2] . "/{$matches[1]}";
+        }
+        return $period;
+    }
+
+    /**
+     * Thu thập các chỉ số thực tế trong kỳ (3 tháng / quý) của một phụ huynh
      */
     public function collectMetrics(User $user, string $period): array
     {
-        $startDate = Carbon::parse($period . '-01 00:00:00', 'Asia/Ho_Chi_Minh');
-        $endDate = $startDate->copy()->endOfMonth();
+        [$startDate, $endDate] = $this->getPeriodDateRange($period);
 
         // 1. Chỉ số thời gian dùng app và tần suất từ user_daily_activities
         $activityStats = UserDailyActivity::where('user_id', $user->id)
@@ -155,12 +212,12 @@ class ParentRankService implements ParentRankServiceInterface
         $sessionCount = (int) ($activityStats->total_sessions ?? 0);
 
         // 2. Chỉ số số bài đánh giá thực hiện cho con
-        $assessmentCount = $this->countAssessmentsInMonth($user->id, $startDate, $endDate);
+        $assessmentCount = $this->countAssessmentsInPeriod($user->id, $startDate, $endDate);
 
         // 3. Chỉ số điểm phát triển trung bình của con
         $childScoreAvg = $this->childScoreAggregator->getAverageNormalizedScoreForUser($user->id);
 
-        // 4. Số lần xem bài học và video giáo dục trong tháng
+        // 4. Số lần xem bài học và video giáo dục trong kỳ
         $lessonVideoViews = FeatureUsage::where('user_id', $user->id)
             ->where(function ($q) {
                 $q->whereIn('feature_code', ['lesson_education', 'video_education'])
@@ -182,7 +239,7 @@ class ParentRankService implements ParentRankServiceInterface
     /**
      * Đếm số bài đánh giá thực tế đã làm cho các con trong khoảng thời gian (loại trừ các bản ghi rỗng tạo sẵn)
      */
-    protected function countAssessmentsInMonth(int $userId, Carbon $startDate, Carbon $endDate): int
+    protected function countAssessmentsInPeriod(int $userId, Carbon $startDate, Carbon $endDate): int
     {
         $childrenIds = Child::where('user_id', $userId)->pluck('id')->toArray();
         if (empty($childrenIds)) {
@@ -220,6 +277,14 @@ class ParentRankService implements ParentRankServiceInterface
             ->count();
 
         return $iqCount + $eqAqCount + $pqCount + $gpaCount;
+    }
+
+    /**
+     * Alias cho countAssessmentsInPeriod (tương thích ngược)
+     */
+    protected function countAssessmentsInMonth(int $userId, Carbon $startDate, Carbon $endDate): int
+    {
+        return $this->countAssessmentsInPeriod($userId, $startDate, $endDate);
     }
 
     /**
@@ -327,7 +392,7 @@ class ParentRankService implements ParentRankServiceInterface
         );
 
         // Nếu kỳ đang tính là kỳ hiện tại hoặc người dùng chưa có hạng kỳ này, cập nhật vào bảng users
-        $currentPeriod = Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m');
+        $currentPeriod = $this->getCurrentPeriod();
         if ($period === $currentPeriod || empty($user->parent_rank_period) || $period >= $user->parent_rank_period) {
             $user->update([
                 'parent_rank' => $scores['rank'],
@@ -389,7 +454,7 @@ class ParentRankService implements ParentRankServiceInterface
      */
     public function getUserProgress(User $user): array
     {
-        $currentPeriod = Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m');
+        $currentPeriod = $this->getCurrentPeriod();
         $config = $this->getConfig();
 
         // 1. Tìm snapshot kỳ hiện tại, nếu chưa có thì tính ngay on-the-fly
@@ -538,6 +603,7 @@ class ParentRankService implements ParentRankServiceInterface
 
         return [
             'period' => $snapshot->period,
+            'period_label' => $this->formatPeriodLabel($snapshot->period),
             'is_final' => (bool) $snapshot->is_final,
             'rank' => [
                 'value' => $rank->value,

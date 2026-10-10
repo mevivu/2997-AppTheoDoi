@@ -73,6 +73,7 @@ class ParentRankController extends Controller
                 $rankEnum = $snap->rank instanceof ParentRank ? $snap->rank : ParentRank::from((int) $snap->rank);
                 return [
                     'period' => $snap->period,
+                    'period_label' => $this->parentRankService->formatPeriodLabel($snap->period),
                     'rank' => [
                         'value' => $rankEnum->value,
                         'name' => $rankEnum->name(),

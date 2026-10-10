@@ -69,4 +69,30 @@ interface ParentRankServiceInterface
      * @return array
      */
     public function getUserProgress(User $user): array;
+
+    /**
+     * Lấy mã kỳ hiện tại (mặc định định dạng 3 tháng theo quý: YYYY-Q{1..4}, VD: 2026-Q4)
+     */
+    public function getCurrentPeriod(): string;
+
+    /**
+     * Lấy mã kỳ quý trước đó (VD: 2026-Q3)
+     */
+    public function getPreviousPeriod(?\Carbon\Carbon $date = null): string;
+
+    /**
+     * Phân giải chuỗi kỳ (YYYY-Q{n} hoặc YYYY-MM) thành khoảng thời gian [startDate, endDate]
+     *
+     * @param string $period
+     * @return array{\Carbon\Carbon, \Carbon\Carbon}
+     */
+    public function getPeriodDateRange(string $period): array;
+
+    /**
+     * Định dạng chuỗi hiển thị thân thiện tiếng Việt cho kỳ đánh giá
+     *
+     * @param string|null $period
+     * @return string
+     */
+    public function formatPeriodLabel(?string $period): string;
 }

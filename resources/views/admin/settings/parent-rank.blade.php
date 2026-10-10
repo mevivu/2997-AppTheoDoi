@@ -75,7 +75,7 @@
                 class="mb-4"
                 icon="crown"
                 :title="__('Cài đặt Phân hạng Bố mẹ')"
-                :subtitle="__('Cấu hình tiêu chí tính điểm, mục tiêu tháng và ngưỡng phân hạng thành viên Bố mẹ')"
+                :subtitle="__('Cấu hình tiêu chí tính điểm, mục tiêu 3 tháng (quý) và ngưỡng phân hạng thành viên Bố mẹ')"
                 :back-route="route('admin.dashboard')"
             />
 

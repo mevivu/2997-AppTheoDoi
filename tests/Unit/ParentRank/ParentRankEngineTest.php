@@ -154,4 +154,36 @@ class ParentRankEngineTest extends TestCase
         $this->assertSame(ParentRank::A, ParentRank::B->getNextRank());
         $this->assertNull(ParentRank::A->getNextRank());
     }
+
+    /**
+     * Kiểm tra các helper xử lý chu kỳ 3 tháng (theo quý)
+     */
+    public function test_quarterly_period_helpers(): void
+    {
+        // 1. Phân giải dải thời gian của quý (2026-Q4: 01/10 đến 31/12)
+        [$startQ4, $endQ4] = $this->service->getPeriodDateRange('2026-Q4');
+        $this->assertSame('2026-10-01', $startQ4->toDateString());
+        $this->assertSame('2026-12-31', $endQ4->toDateString());
+
+        // 2. Phân giải dải thời gian của quý 1 (2026-Q1: 01/01 đến 31/03)
+        [$startQ1, $endQ1] = $this->service->getPeriodDateRange('2026-Q1');
+        $this->assertSame('2026-01-01', $startQ1->toDateString());
+        $this->assertSame('2026-03-31', $endQ1->toDateString());
+
+        // 3. Phân giải dải thời gian của tháng cũ (2026-08: 01/08 đến 31/08)
+        [$startM, $endM] = $this->service->getPeriodDateRange('2026-08');
+        $this->assertSame('2026-08-01', $startM->toDateString());
+        $this->assertSame('2026-08-31', $endM->toDateString());
+
+        // 4. Lấy quý trước
+        $octDate = \Carbon\Carbon::create(2026, 10, 15, 0, 0, 0, 'Asia/Ho_Chi_Minh');
+        $this->assertSame('2026-Q3', $this->service->getPreviousPeriod($octDate));
+
+        $janDate = \Carbon\Carbon::create(2027, 1, 5, 0, 0, 0, 'Asia/Ho_Chi_Minh');
+        $this->assertSame('2026-Q4', $this->service->getPreviousPeriod($janDate));
+
+        // 5. Định dạng nhãn hiển thị tiếng Việt
+        $this->assertSame('Quý 4/2026', $this->service->formatPeriodLabel('2026-Q4'));
+        $this->assertSame('Tháng 10/2026', $this->service->formatPeriodLabel('2026-10'));
+    }
 }

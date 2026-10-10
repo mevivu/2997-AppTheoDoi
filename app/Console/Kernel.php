@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('notification:clean-old --days=7')->dailyAt('02:00')->withoutOverlapping();
         $schedule->command('memo:calculate-rankings')->everyTwoHours()->withoutOverlapping();
         $schedule->command('parent-rank:calculate')->dailyAt('01:00')->withoutOverlapping();
-        $schedule->command('parent-rank:calculate --period=prev --finalize')->monthlyOn(1, '00:30')->withoutOverlapping();
+        $schedule->command('parent-rank:calculate --period=prev --finalize')->cron('30 0 1 1,4,7,10 *')->withoutOverlapping();
     }
 
     /**

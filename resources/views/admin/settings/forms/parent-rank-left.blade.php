@@ -21,7 +21,7 @@
         </div>
         <div class="card-body">
             <p class="text-muted mb-0 small">
-                {{ __('Khi được bật, hệ thống sẽ tự động tổng hợp thời gian dùng app, tần suất mở app, số bài đánh giá và điểm số các chỉ số của con để tính điểm và phân hạng phụ huynh hàng tháng.') }}
+                {{ __('Khi được bật, hệ thống sẽ tự động tổng hợp thời gian dùng app, tần suất mở app, số bài đánh giá và điểm số các chỉ số của con để tính điểm và phân hạng phụ huynh định kỳ 3 tháng (theo quý).') }}
             </p>
         </div>
     </div>
@@ -56,7 +56,7 @@
                     <input type="number" step="any" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_usage" name="parent_rank_weight_usage"
                            value="{{ $settingsByKey->get('parent_rank_weight_usage')?->plain_value ?? 25 }}">
-                    <div class="form-hint">{{ __('Đóng góp của tổng phút dùng app trong tháng (mặc định: 25%)') }}</div>
+                    <div class="form-hint">{{ __('Đóng góp của tổng phút dùng app trong kỳ 3 tháng (mặc định: 25%)') }}</div>
                 </div>
 
                 <div class="col-md-6 col-lg-4">
@@ -67,7 +67,7 @@
                     <input type="number" step="any" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_frequency" name="parent_rank_weight_frequency"
                            value="{{ $settingsByKey->get('parent_rank_weight_frequency')?->plain_value ?? 20 }}">
-                    <div class="form-hint">{{ __('Đóng góp của số ngày vào app trong tháng (mặc định: 20%)') }}</div>
+                    <div class="form-hint">{{ __('Đóng góp của số ngày vào app trong kỳ 3 tháng (mặc định: 20%)') }}</div>
                 </div>
 
                 <div class="col-md-6 col-lg-4">
@@ -78,7 +78,7 @@
                     <input type="number" step="any" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_assessment" name="parent_rank_weight_assessment"
                            value="{{ $settingsByKey->get('parent_rank_weight_assessment')?->plain_value ?? 20 }}">
-                    <div class="form-hint">{{ __('Đóng góp của số bài trắc nghiệm/học bạ cho con (mặc định: 20%)') }}</div>
+                    <div class="form-hint">{{ __('Đóng góp của số bài trắc nghiệm/học bạ cho con trong kỳ 3 tháng (mặc định: 20%)') }}</div>
                 </div>
 
                 <div class="col-md-6 col-lg-4">
@@ -89,7 +89,7 @@
                     <input type="number" step="any" min="0" max="100" class="form-control weight-input"
                            id="input_parent_rank_weight_lesson_video" name="parent_rank_weight_lesson_video"
                            value="{{ $settingsByKey->get('parent_rank_weight_lesson_video')?->plain_value ?? 15 }}">
-                    <div class="form-hint">{{ __('Đóng góp của số lượt xem bài học & video (mặc định: 15%)') }}</div>
+                    <div class="form-hint">{{ __('Đóng góp của số lượt xem bài học & video trong kỳ 3 tháng (mặc định: 15%)') }}</div>
                 </div>
 
                 <div class="col-md-6 col-lg-4">
@@ -106,14 +106,14 @@
         </div>
     </div>
 
-    {{-- Card 3: Mục tiêu tiêu chuẩn tháng --}}
+    {{-- Card 3: Mục tiêu tiêu chuẩn 3 tháng (Quý) --}}
     <div class="card rank-tier-card shadow-sm">
         <div class="card-header">
             <div class="d-flex align-items-center gap-2">
                 <i class="ti ti-target-arrow text-info fs-3"></i>
                 <div>
-                    <h3 class="card-title mb-0">{{ __('Mục Tiêu Tiêu Chuẩn Trong Tháng') }}</h3>
-                    <div class="small text-muted">{{ __('Mốc hoàn thành để đạt 100 điểm thành phần của từng tiêu chí & phục vụ cảnh báo đồng hành') }}</div>
+                    <h3 class="card-title mb-0">{{ __('Mục Tiêu Tiêu Chuẩn Trong 3 Tháng (Quý)') }}</h3>
+                    <div class="small text-muted">{{ __('Mốc hoàn thành để đạt 100 điểm thành phần của từng tiêu chí & phục vụ cảnh báo đồng hành trong kỳ 3 tháng') }}</div>
                 </div>
             </div>
         </div>
@@ -121,42 +121,42 @@
             <div class="row g-3">
                 <div class="col-md-6 col-lg-3">
                     <label class="form-label" for="input_parent_rank_target_usage_minutes">
-                        {{ __('Thời gian dùng app chuẩn/tháng (Phút)') }}
+                        {{ __('Thời gian dùng app chuẩn / 3 tháng (Phút)') }}
                     </label>
                     <input type="number" step="1" min="0" class="form-control"
                            id="input_parent_rank_target_usage_minutes" name="parent_rank_target_usage_minutes"
-                           value="{{ $settingsByKey->get('parent_rank_target_usage_minutes')?->plain_value ?? 600 }}">
-                    <div class="form-hint">{{ __('Ví dụ: 600 phút = 10 giờ trong tháng') }}</div>
+                           value="{{ $settingsByKey->get('parent_rank_target_usage_minutes')?->plain_value ?? 1800 }}">
+                    <div class="form-hint">{{ __('Ví dụ: 1800 phút = 30 giờ trong 3 tháng') }}</div>
                 </div>
 
                 <div class="col-md-6 col-lg-3">
                     <label class="form-label" for="input_parent_rank_target_active_days">
-                        {{ __('Số ngày vào app chuẩn/tháng (Ngày)') }}
+                        {{ __('Số ngày vào app chuẩn / 3 tháng (Ngày)') }}
                     </label>
-                    <input type="number" step="1" min="0" max="31" class="form-control"
+                    <input type="number" step="1" min="0" max="92" class="form-control"
                            id="input_parent_rank_target_active_days" name="parent_rank_target_active_days"
-                           value="{{ $settingsByKey->get('parent_rank_target_active_days')?->plain_value ?? 20 }}">
-                    <div class="form-hint">{{ __('Ví dụ: 20 ngày/tháng') }}</div>
+                           value="{{ $settingsByKey->get('parent_rank_target_active_days')?->plain_value ?? 60 }}">
+                    <div class="form-hint">{{ __('Ví dụ: 60 ngày / 3 tháng') }}</div>
                 </div>
 
                 <div class="col-md-6 col-lg-3">
                     <label class="form-label" for="input_parent_rank_target_assessments">
-                        {{ __('Số bài đánh giá chuẩn/tháng (Bài)') }}
+                        {{ __('Số bài đánh giá chuẩn / 3 tháng (Bài)') }}
                     </label>
                     <input type="number" step="1" min="0" class="form-control"
                            id="input_parent_rank_target_assessments" name="parent_rank_target_assessments"
-                           value="{{ $settingsByKey->get('parent_rank_target_assessments')?->plain_value ?? 5 }}">
-                    <div class="form-hint">{{ __('Ví dụ: 5 bài/tháng') }}</div>
+                           value="{{ $settingsByKey->get('parent_rank_target_assessments')?->plain_value ?? 15 }}">
+                    <div class="form-hint">{{ __('Ví dụ: 15 bài / 3 tháng') }}</div>
                 </div>
 
                 <div class="col-md-6 col-lg-3">
                     <label class="form-label" for="input_parent_rank_target_lesson_video_views">
-                        {{ __('Lượt xem bài học / video chuẩn/tháng (Lượt)') }}
+                        {{ __('Lượt xem bài học / video chuẩn / 3 tháng (Lượt)') }}
                     </label>
                     <input type="number" step="1" min="0" class="form-control"
                            id="input_parent_rank_target_lesson_video_views" name="parent_rank_target_lesson_video_views"
-                           value="{{ $settingsByKey->get('parent_rank_target_lesson_video_views')?->plain_value ?? 20 }}">
-                    <div class="form-hint">{{ __('Ví dụ: 20 lượt/tháng') }}</div>
+                           value="{{ $settingsByKey->get('parent_rank_target_lesson_video_views')?->plain_value ?? 60 }}">
+                    <div class="form-hint">{{ __('Ví dụ: 60 lượt / 3 tháng') }}</div>
                 </div>
             </div>
         </div>
@@ -269,11 +269,11 @@
         <div class="card-body">
             <div class="row g-3 mb-4">
                 <div class="col-md-4">
-                    <label class="form-label" for="input_parent_rank_warning_ratio">{{ __('Ngưỡng cảnh báo so với mục tiêu tháng (%)') }}</label>
+                    <label class="form-label" for="input_parent_rank_warning_ratio">{{ __('Ngưỡng cảnh báo so với mục tiêu 3 tháng (%)') }}</label>
                     <input type="number" step="any" min="0" max="100" class="form-control"
                            id="input_parent_rank_warning_ratio" name="parent_rank_warning_ratio"
                            value="{{ $settingsByKey->get('parent_rank_warning_ratio')?->plain_value ?? 50 }}">
-                    <div class="form-hint">{{ __('Dưới mức % này so với mục tiêu tháng thì hiện gợi ý (mặc định: 50%). Áp dụng cho 3 cảnh báo đầu.') }}</div>
+                    <div class="form-hint">{{ __('Dưới mức % này so với mục tiêu 3 tháng thì hiện gợi ý (mặc định: 50%). Áp dụng cho 3 cảnh báo đầu.') }}</div>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label" for="input_parent_rank_competency_threshold">{{ __('Ngưỡng điểm chỉ số năng lực yếu (0 - 10)') }}</label>
