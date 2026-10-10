@@ -118,6 +118,14 @@
             </div>
         </div>
         <div class="card-body">
+            <div class="alert alert-info bg-info-lt border-0 d-flex gap-2 mb-3 py-2 px-3 small">
+                <i class="ti ti-info-circle fs-3 text-info flex-shrink-0 mt-1"></i>
+                <div>
+                    <div><strong>{{ __('Cơ chế chặn trần (Max 100%):') }}</strong> {{ __('4 chỉ số trải nghiệm trên tính theo công thức') }} <code>Min(Thực tế / Mục tiêu, 100%)</code>. {{ __('Nếu phụ huynh vượt chỉ tiêu (ví dụ đạt 200%), điểm thành phần vẫn giữ tối đa 100 điểm, tương ứng điểm đóng góp không vượt quá tỷ trọng đã cài đặt. Riêng chỉ số "Điểm phát triển của con" tính theo điểm số năng lực thực tế.') }}</div>
+                    <div class="mt-1 text-muted"><strong>{{ __('Lưu ý chu kỳ:') }}</strong> {{ __('Hệ thống tổng hợp dữ liệu thực tế theo Quý (3 tháng), nên các mốc mục tiêu ở đây cần được nhập tương ứng cho cả kỳ 3 tháng.') }}</div>
+                </div>
+            </div>
+
             <div class="row g-3">
                 <div class="col-md-6 col-lg-3">
                     <label class="form-label" for="input_parent_rank_target_usage_minutes">
