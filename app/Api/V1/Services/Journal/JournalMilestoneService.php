@@ -112,10 +112,32 @@ class JournalMilestoneService implements JournalMilestoneServiceInterface
             }
         }
 
+        // Sắp xếp các giai đoạn: đưa giai đoạn hiện tại của bé và các giai đoạn gần nhất lên đầu
+        $allStageKeys = array_map(fn($case) => $case->value, MilestoneStage::cases());
+        $targetIdx = array_search($suggestedStage->value, $allStageKeys, true);
+        if ($targetIdx === false) {
+            $targetIdx = 0;
+        }
+
+        $stagesList = array_values($stagesConfig);
+        usort($stagesList, function ($a, $b) use ($allStageKeys, $targetIdx) {
+            $idxA = array_search($a['key'], $allStageKeys, true);
+            $idxB = array_search($b['key'], $allStageKeys, true);
+            $distA = abs($idxA - $targetIdx);
+            $distB = abs($idxB - $targetIdx);
+
+            if ($distA !== $distB) {
+                return $distA <=> $distB;
+            }
+
+            // Nếu cùng khoảng cách, ưu tiên giai đoạn kế tiếp (tương lai) trước quá khứ
+            return $idxB <=> $idxA;
+        });
+
         return [
             'suggested_stage' => $suggestedStage->value,
             'suggested_stage_label' => $suggestedStage->label(),
-            'stages' => array_values($stagesConfig),
+            'stages' => $stagesList,
         ];
     }
 
