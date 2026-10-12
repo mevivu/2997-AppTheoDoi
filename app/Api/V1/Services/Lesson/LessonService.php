@@ -167,6 +167,7 @@ class LessonService implements LessonServiceInterface
             'lesson_category_id' => $request->input('lesson_category_id', $request->input('category_id')),
             'age_group_id' => $request->input('age_group_id'),
             'pillar' => $request->input('pillar'),
+            'category_keys' => $request->input('category_keys'),
             'access_type' => $request->input('access_type'),
             'difficulty' => $request->input('difficulty'),
             'keyword' => $request->input('keyword'),

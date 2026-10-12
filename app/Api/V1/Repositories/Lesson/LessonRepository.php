@@ -47,6 +47,16 @@ class LessonRepository extends AdminRepository implements LessonRepositoryInterf
             });
         }
 
+        // Lọc theo danh sách keys danh mục chuyên môn (VD: language, math_logic, emotion_recognition...)
+        if (!empty($filters['category_keys'])) {
+            $categoryKeys = is_array($filters['category_keys'])
+                ? $filters['category_keys']
+                : explode(',', (string) $filters['category_keys']);
+            $query->whereHas('category', function ($q) use ($categoryKeys) {
+                $q->whereIn('key', array_map('trim', $categoryKeys));
+            });
+        }
+
         // Lọc theo phân quyền truy cập (free, vip)
         if (!empty($filters['access_type']) && $filters['access_type'] !== 'all') {
             $accessType = $filters['access_type'] instanceof LessonAccessType ? $filters['access_type']->value : $filters['access_type'];

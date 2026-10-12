@@ -192,10 +192,11 @@ Route::controller(\App\Api\V1\Http\Controllers\Rating\RatingController::class)
     ->as('rating.')
     ->group(function () {
         Route::get('/', 'index');
-        Route::get('/{id}', 'show');
+        Route::get('/{id}', 'show')->whereNumber('id');
+        Route::get('/{id}/recommendations', 'getRecommendations')->whereNumber('id');
         Route::post('/iq', 'storeIQ');
         Route::post('/eq-aq', 'storeEQAndAQ');
-        Route::delete('/{id}', 'delete');
+        Route::delete('/{id}', 'delete')->whereNumber('id');
     });
 
 // Rating V2 (IQ V2 với Memo Game)

@@ -153,8 +153,16 @@ class RatingService implements RatingServiceInterface
         $data['score'] = min(10, floor($correctCount / 1.5));
         $data['result'] = $result;
         $data['type'] = $type;
-        $data['description'] = $this->getDescriptionByTypeAndScore($type, $data['score']);
-        $data['label'] = $this->getLabelByTypeAndScore($type, $data['score']);
+
+        // Lưu snapshot điểm chi tiết các nhóm năng lực IQ
+        $data['category_scores'] = \App\Services\Assessment\CategoryScoreCalculator::calculateIq($groupTotals, $groupCorrects);
+
+        // Phân bậc điểm, nhãn, nhận định và hành động cho bố mẹ
+        $band = \App\Services\Assessment\AssessmentBandResolver::resolve($type, $data['score']);
+        $data['description'] = $band['description'];
+        $data['label'] = $band['label'];
+        $data['parent_action'] = $band['parent_action'];
+
         $description = "Đã xuất sắc nhận được kết quả đánh giá trực tuyến\nbằng cách hoàn thành Bài kiểm tra IQ nâng cao của\nCHAMCON360.";
         $path = $this->createCertificate($childName, $result, $description, now());
         $data['badge_image'] = $path;
@@ -260,16 +268,25 @@ class RatingService implements RatingServiceInterface
     {
         $data = $request->validated();
         $answers = $data['answers'] ?? [];
-        $type = $data['type'];
-        $totalCount = count($answers) * 2;
+        $type = $data['type'] == QuestionType::AQ->value ? QuestionType::AQ->value : QuestionType::EQ->value;
 
-        $scoreData = $this->calculateScores($answers, $totalCount);
+        // Tính điểm chuẩn hoá từng nhóm năng lực (sửa lỗi lệch ánh xạ cột và ghi đè câu hỏi)
+        $calcResult = \App\Services\Assessment\CategoryScoreCalculator::calculateEqAq(
+            $answers,
+            $type,
+            $this->answerRepository
+        );
 
-        $data = array_merge($data, $scoreData);
+        $data = array_merge($data, $calcResult['raw_columns']);
+        $data['score'] = $calcResult['score'];
+        $data['category_scores'] = $calcResult['category_scores'];
 
-        $type = $type == QuestionType::AQ->value ? QuestionType::AQ->value : QuestionType::EQ->value;
-        $data['description'] = $this->getDescriptionByTypeAndScore($type, $data['score']);
-        $data['label'] = $this->getLabelByTypeAndScore($type, $data['score']);
+        // Xác định phân bậc, nhãn, đặc điểm và hành động cho bố mẹ
+        $band = \App\Services\Assessment\AssessmentBandResolver::resolve($type, $data['score']);
+        $data['label'] = $band['label'];
+        $data['description'] = $band['description'];
+        $data['parent_action'] = $band['parent_action'];
+
         return $this->repository->create($data);
     }
 

@@ -77,11 +77,16 @@ class Rating extends Model
         /** Chủ đề memo game */
         'memo_theme_id',
         /** Cấu hình độ tuổi memo game */
-        'memo_age_config_id'
+        'memo_age_config_id',
+        /** Hành động cho bố mẹ */
+        'parent_action',
+        /** Snapshot điểm danh mục */
+        'category_scores',
     ];
     protected $casts = [
         'type' => QuestionType::class,
         'status' => VerifiedStatus::class,
+        'category_scores' => 'array',
     ];
 
     public function child(): BelongsTo

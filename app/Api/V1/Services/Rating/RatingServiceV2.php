@@ -143,8 +143,15 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
         $data['game_mistakes'] = $data['game_mistakes'] ?? null;
         $data['memo_theme_id'] = $data['memo_theme_id'] ?? null;
         $data['memo_age_config_id'] = $data['memo_age_config_id'] ?? null;
-        $data['description'] = $this->getDescriptionByTypeAndScore($type, $data['score']);
-        $data['label'] = $this->getLabelByTypeAndScore($type, $data['score']);
+
+        // Lưu snapshot điểm chi tiết các nhóm năng lực IQ V2 (đã gồm Memo Game trong Memory)
+        $data['category_scores'] = \App\Services\Assessment\CategoryScoreCalculator::calculateIq($groupTotals, $groupCorrects);
+
+        // Phân bậc điểm, nhãn, nhận định và hành động cho bố mẹ
+        $band = \App\Services\Assessment\AssessmentBandResolver::resolve($type, $data['score']);
+        $data['description'] = $band['description'];
+        $data['label'] = $band['label'];
+        $data['parent_action'] = $band['parent_action'];
 
         $certDescription = "Đã xuất sắc nhận được kết quả đánh giá trực tuyến\nbằng cách hoàn thành Bài kiểm tra IQ nâng cao V2 của\nCHAMCON360.";
         $path = $this->createCertificate($childName, $result, $certDescription, now());

@@ -172,7 +172,7 @@ class RatingController extends Controller
         try {
             $response = $this->service->storeEQAndAQ($request);
             DB::commit();
-            return $this->jsonResponseSuccess($response);
+            return $this->jsonResponseSuccess(new RatingResource($response));
         } catch (Exception $exception) {
             DB::rollBack();
             $this->logError(MessageSystem::SERVER_ERROR, $exception);
@@ -270,4 +270,31 @@ class RatingController extends Controller
         }
     }
 
+    /**
+     * Lấy gợi ý hành động và video cải thiện cho bài đánh giá
+     *
+     * @authenticated
+     * @urlParam id int required ID của bài đánh giá. Example: 1
+     */
+    public function getRecommendations(int $id): JsonResponse
+    {
+        try {
+            Validator::validateExists($this->repository, $id);
+            $rating = $this->repository->findOrFail($id);
+
+            // Kiểm tra bảo mật quyền sở hữu hồ sơ bé
+            $user = auth('api')->user();
+            if ($user && $rating->child_id && !$user->children()->where('id', $rating->child_id)->exists()) {
+                return $this->jsonResponseError('Bạn không có quyền truy cập hồ sơ đánh giá này.', 403);
+            }
+
+            $analysis = app(\App\Services\Assessment\AssessmentRecommendationService::class)->buildAnalysis($rating);
+            return $this->jsonResponseSuccess($analysis);
+        } catch (NotFoundException|BadRequestException $e) {
+            return $this->jsonResponseError($e->getMessage());
+        } catch (Exception $exception) {
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
+        }
+    }
 }

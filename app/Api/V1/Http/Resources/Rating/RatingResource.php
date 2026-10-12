@@ -19,17 +19,39 @@ class RatingResource extends JsonResource
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
+        $analysis = app(\App\Services\Assessment\AssessmentRecommendationService::class)->buildAnalysis($this->resource);
+
         return [
             'id' => $this->id,
             'child_id' => $this->child_id,
             'score' => $this->score,
             'result' => $this->result,
+            'tag' => $this->tag,
             'description' => $this->description,
             'type' => $this->type,
             'status' => $this->status,
             'label' => $this->label,
             'badge_image' => formatImageUrl($this->badge_image),
+            'parent_action' => $this->parent_action ?? ($analysis['parent_action'] ?? null),
+            'category_scores' => $this->category_scores ?? ($analysis['categories'] ?? null),
+            'analysis' => $analysis,
+            // Giữ lại các cột điểm chi tiết cũ để tương thích ngược 100% với App
+            'self_regulation' => $this->self_regulation,
+            'social_awareness' => $this->social_awareness,
+            'relationship_management' => $this->relationship_management,
+            'decision_making' => $this->decision_making,
+            'optimism' => $this->optimism,
+            'endurance' => $this->endurance,
+            'flexibility' => $this->flexibility,
+            'perseverance' => $this->perseverance,
+            'positivity' => $this->positivity,
+            'self_reflection' => $this->self_reflection,
+            'linguistic' => $this->linguistic,
+            'logic_math' => $this->logic_math,
+            'visual' => $this->visual,
+            'memory' => $this->memory,
             'created_at' => format_datetime($this->created_at),
+            'updated_at' => format_datetime($this->updated_at),
         ];
     }
 }
