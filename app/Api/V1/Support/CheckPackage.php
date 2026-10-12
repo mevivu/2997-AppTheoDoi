@@ -13,15 +13,20 @@ trait CheckPackage
     public function checkUserPackage($time): bool
     {
         $user = $this->getCurrentUser();
-        $package = $user->userPackages->first();
-        $isContentVisible = true;
-        if ($package->current_type == PackageType::Normal) {
-//            $day = Carbon::now()->subDay();
-            $year =Carbon::now()->subYear();
-            $isContentVisible = $time >= $year;
+        if (!$user) {
+            return true;
         }
-        return $isContentVisible;
 
+        $package = $user->userPackages?->first();
+        $currentType = $package?->current_type ?? PackageType::Normal;
+        $isContentVisible = true;
+
+        if ($currentType == PackageType::Normal && $time) {
+            $year = Carbon::now()->subYear();
+            $isContentVisible = Carbon::parse($time)->gte($year);
+        }
+
+        return $isContentVisible;
     }
 
 }

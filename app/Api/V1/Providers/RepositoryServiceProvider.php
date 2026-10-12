@@ -23,6 +23,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Api\V1\Repositories\Package\PackageRepositoryInterface' => 'App\Api\V1\Repositories\Package\PackageRepository',
         'App\Api\V1\Repositories\UserPackage\UserPackageRepositoryInterface' => 'App\Api\V1\Repositories\UserPackage\UserPackageRepository',
         'App\Api\V1\Repositories\Journal\JournalRepositoryInterface' => 'App\Api\V1\Repositories\Journal\JournalRepository',
+        'App\Api\V1\Repositories\Journal\JournalMilestoneRepositoryInterface' => 'App\Api\V1\Repositories\Journal\JournalMilestoneRepository',
         'App\Api\V1\Repositories\Pregnancy\PregnancyRepositoryInterface' => 'App\Api\V1\Repositories\Pregnancy\PregnancyRepository',
         'App\Api\V1\Repositories\Rating\RatingRepositoryInterface' => 'App\Api\V1\Repositories\Rating\RatingRepository',
         'App\Api\V1\Repositories\RatingPQ\RatingPQRepositoryInterface' => 'App\Api\V1\Repositories\RatingPQ\RatingPQRepository',

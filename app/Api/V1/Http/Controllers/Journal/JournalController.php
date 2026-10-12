@@ -136,7 +136,9 @@ class JournalController extends Controller
     {
         try {
             $response = $this->service->store($request);
-            return $this->jsonResponseSuccess(new JournalResource($response));
+            return $this->jsonResponseSuccess(new JournalResource($response), '', 201);
+        } catch (BadRequestException $exception) {
+            return $this->jsonResponseError($exception->getMessage(), 422);
         } catch (Exception $exception) {
             $this->logError('Create prescription journal failed:', $exception);
             return $this->jsonResponseError('Create prescription journal failed', 500);
@@ -188,9 +190,13 @@ class JournalController extends Controller
         try {
             $response = $this->service->update($request);
             return $this->jsonResponseSuccess(new JournalResource($response));
+        } catch (NotFoundException $exception) {
+            return $this->jsonResponseError($exception->getMessage(), 404);
+        } catch (BadRequestException $exception) {
+            return $this->jsonResponseError($exception->getMessage(), 422);
         } catch (Exception $exception) {
-            $this->logError('Create prescription journal failed:', $exception);
-            return $this->jsonResponseError('Create prescription journal failed', 500);
+            $this->logError('Update journal failed:', $exception);
+            return $this->jsonResponseError('Update journal failed', 500);
         }
 
     }
@@ -236,10 +242,12 @@ class JournalController extends Controller
     {
         try {
             Validator::validateExists($this->repository, $id);
-            $response = $this->repository->findOrFail($id);
+            $response = $this->service->show($id);
             return $this->jsonResponseSuccess(new JournalResource($response));
-        } catch (NotFoundException|BadRequestException $e) {
-            return $this->jsonResponseError($e->getMessage());
+        } catch (NotFoundException $e) {
+            return $this->jsonResponseError($e->getMessage(), 404);
+        } catch (BadRequestException $e) {
+            return $this->jsonResponseError($e->getMessage(), 400);
         } catch (Exception $exception) {
             $this->logError('Show failed:', $exception);
             return $this->jsonResponseError('Show failed', 500);
@@ -280,8 +288,10 @@ class JournalController extends Controller
             Validator::validateExists($this->repository, $id);
             $this->service->delete($id);
             return $this->jsonResponseSuccessNoData();
-        } catch (NotFoundException|BadRequestException $e) {
-            return $this->jsonResponseError($e->getMessage());
+        } catch (NotFoundException $e) {
+            return $this->jsonResponseError($e->getMessage(), 404);
+        } catch (BadRequestException $e) {
+            return $this->jsonResponseError($e->getMessage(), 400);
         } catch (Exception $exception) {
             $this->logError('Deleted failed:', $exception);
             return $this->jsonResponseError('Deleted failed', 500);

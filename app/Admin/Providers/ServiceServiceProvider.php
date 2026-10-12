@@ -29,6 +29,7 @@ class ServiceServiceProvider extends ServiceProvider
         'App\Admin\Services\PostCategory\PostCategoryServiceInterface' => 'App\Admin\Services\PostCategory\PostCategoryService',
         'App\Admin\Services\Expected\ExpectedServiceInterface' => 'App\Admin\Services\Expected\ExpectedService',
         'App\Admin\Services\Journal\JournalServiceInterface' => 'App\Admin\Services\Journal\JournalService',
+        'App\Admin\Services\Journal\JournalMilestoneServiceInterface' => 'App\Admin\Services\Journal\JournalMilestoneService',
         'App\Admin\Services\Pregnancy\PregnancyServiceInterface' => 'App\Admin\Services\Pregnancy\PregnancyService',
         'App\Admin\Services\Support\SupportServiceInterface' => 'App\Admin\Services\Support\SupportService',
         'App\Admin\Services\Transaction\TransactionServiceInterface' => 'App\Admin\Services\Transaction\TransactionService',

@@ -136,16 +136,24 @@ Route::controller(App\Api\V1\Http\Controllers\Purchase\PurchaseController::class
         Route::post('/google-play/webhook', 'googlePlayWebhook');
     });
 
+// Journal Milestones
+Route::controller(\App\Api\V1\Http\Controllers\Journal\JournalMilestoneController::class)
+    ->prefix('/journal-milestones')
+    ->as('journal.milestone.')
+    ->group(function () {
+        Route::get('/', 'index');
+    });
+
 // Journal
 Route::controller(\App\Api\V1\Http\Controllers\Journal\JournalController::class)
     ->prefix('/journals')
     ->as('journal.')
     ->group(function () {
         Route::get('/', 'index');
-        Route::get('/{id}', 'show');
+        Route::get('/{id}', 'show')->whereNumber('id');
         Route::post('/', 'store');
         Route::post('/update', 'update');
-        Route::delete('/{id}', 'delete');
+        Route::delete('/{id}', 'delete')->whereNumber('id');
     });
 //Quality
 Route::controller(\App\Api\V1\Http\Controllers\Quality\QualityController::class)

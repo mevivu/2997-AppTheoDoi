@@ -106,6 +106,14 @@ class RouteAdminSystem
     const JOURNAL_PRESCRIPTION = 'admin.journal.prescription';
     const JOURNAL_MOMENT = 'admin.journal.moment';
 
+    /** JOURNAL MILESTONE */
+    const JOURNAL_MILESTONE_INDEX = 'admin.journal_milestone.index';
+    const JOURNAL_MILESTONE_CREATE = 'admin.journal_milestone.create';
+    const JOURNAL_MILESTONE_EDIT = 'admin.journal_milestone.edit';
+    const JOURNAL_MILESTONE_STORE = 'admin.journal_milestone.store';
+    const JOURNAL_MILESTONE_UPDATE = 'admin.journal_milestone.update';
+    const JOURNAL_MILESTONE_DELETE = 'admin.journal_milestone.delete';
+
     /** PREGNANCY */
     const PREGNANCY_INDEX = 'admin.pregnancy.index';
     const PREGNANCY_CREATE = 'admin.pregnancy.create';

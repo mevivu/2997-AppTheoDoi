@@ -31,7 +31,14 @@ class JournalResource extends JsonResource
             'content' => $this->content,
             'image' => $this->image ? json_decode($this->image) : null,
             'created_at' => format_date($this->created_at),
-            'checked' => $isContentVisible
+            'checked' => $isContentVisible,
+            'milestone_id' => $this->milestone_id,
+            'milestone' => $this->milestone ? [
+                'id' => $this->milestone->id,
+                'name' => $this->milestone->name,
+                'slug' => $this->milestone->slug,
+                'stage' => $this->milestone->stage instanceof \BackedEnum ? $this->milestone->stage->value : (string)$this->milestone->stage,
+            ] : null,
         ];
     }
 }

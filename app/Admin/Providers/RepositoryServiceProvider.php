@@ -40,6 +40,7 @@ class RepositoryServiceProvider extends ServiceProvider
         'App\Admin\Repositories\Answer\AnswerRepositoryInterface' => 'App\Admin\Repositories\Answer\AnswerRepository',
         'App\Admin\Repositories\Expected\ExpectedRepositoryInterface' => 'App\Admin\Repositories\Expected\ExpectedRepository',
         'App\Admin\Repositories\Journal\JournalRepositoryInterface' => 'App\Admin\Repositories\Journal\JournalRepository',
+        'App\Admin\Repositories\Journal\JournalMilestoneRepositoryInterface' => 'App\Admin\Repositories\Journal\JournalMilestoneRepository',
         'App\Admin\Repositories\Pregnancy\PregnancyRepositoryInterface' => 'App\Admin\Repositories\Pregnancy\PregnancyRepository',
         'App\Admin\Repositories\Rating\RatingRepositoryInterface' => 'App\Admin\Repositories\Rating\RatingRepository',
         'App\Admin\Repositories\RatingPQ\RatingPQRepositoryInterface' => 'App\Admin\Repositories\RatingPQ\RatingPQRepository',

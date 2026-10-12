@@ -215,7 +215,7 @@ return [
         'routeName' => null,
         'icon' => '<i class="ti ti-external-link"></i>',
         'roles' => [],
-        'permissions' => ['createJournal', 'viewJournal'],
+        'permissions' => ['createJournal', 'viewJournal', 'viewJournalMilestone'],
         'sub' => [
             [
                 'title' => 'Thêm Nhật ký',
@@ -237,6 +237,13 @@ return [
                 'icon' => '<i class="ti ti-comet"></i>',
                 'roles' => [],
                 'permissions' => ['viewJournal'],
+            ],
+            [
+                'title' => 'Cột mốc gợi ý',
+                'routeName' => RouteAdminSystem::JOURNAL_MILESTONE_INDEX,
+                'icon' => '<i class="ti ti-flag"></i>',
+                'roles' => [],
+                'permissions' => ['viewJournalMilestone'],
             ]
 
         ]

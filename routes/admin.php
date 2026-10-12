@@ -616,6 +616,26 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
                 Route::delete('/delete/{id}', 'delete')->name('delete');
             });
         });
+    //Journal Milestones
+    Route::controller(\App\Admin\Http\Controllers\Journal\JournalMilestoneController::class)
+        ->prefix('/cot-moc-nhat-ky')
+        ->as('journal_milestone.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:viewJournalMilestone', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+            });
+            Route::group(['middleware' => ['permission:createJournalMilestone', 'auth:admin']], function () {
+                Route::get('/add', 'create')->name('create');
+                Route::post('/add', 'store')->name('store');
+            });
+            Route::group(['middleware' => ['permission:updateJournalMilestone', 'auth:admin']], function () {
+                Route::put('/edit', 'update')->name('update');
+            });
+            Route::group(['middleware' => ['permission:deleteJournalMilestone', 'auth:admin']], function () {
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+            });
+        });
     //Notification
     Route::controller(App\Admin\Http\Controllers\Notification\NotificationController::class)
         ->prefix('/thong-bao')
