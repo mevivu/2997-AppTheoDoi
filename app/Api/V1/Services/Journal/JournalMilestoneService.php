@@ -62,30 +62,20 @@ class JournalMilestoneService implements JournalMilestoneServiceInterface
             ->get()
             ->keyBy('milestone_id');
 
-        // Nhóm theo các giai đoạn
-        $stagesConfig = [
-            MilestoneStage::Newborn->value => [
-                'key' => MilestoneStage::Newborn->value,
-                'label' => MilestoneStage::Newborn->label(),
+        // Nhóm theo tất cả các giai đoạn phát triển
+        $stagesConfig = [];
+        foreach (MilestoneStage::cases() as $stageCase) {
+            $stagesConfig[$stageCase->value] = [
+                'key' => $stageCase->value,
+                'label' => $stageCase->label(),
+                'short_label' => $stageCase->shortLabel(),
+                'icon' => $stageCase->icon(),
+                'color' => $stageCase->color(),
                 'milestones' => [],
                 'achieved_count' => 0,
                 'total' => 0,
-            ],
-            MilestoneStage::Toddler->value => [
-                'key' => MilestoneStage::Toddler->value,
-                'label' => MilestoneStage::Toddler->label(),
-                'milestones' => [],
-                'achieved_count' => 0,
-                'total' => 0,
-            ],
-            MilestoneStage::Preschool->value => [
-                'key' => MilestoneStage::Preschool->value,
-                'label' => MilestoneStage::Preschool->label(),
-                'milestones' => [],
-                'achieved_count' => 0,
-                'total' => 0,
-            ],
-        ];
+            ];
+        }
 
         foreach ($milestones as $milestone) {
             $stageKey = $milestone->stage instanceof \BackedEnum ? $milestone->stage->value : (string)$milestone->stage;
@@ -152,7 +142,9 @@ class JournalMilestoneService implements JournalMilestoneServiceInterface
                 MilestoneStage::Newborn->value => [$ageFrom ??= 0, $ageTo ??= 12],
                 MilestoneStage::Toddler->value => [$ageFrom ??= 12, $ageTo ??= 36],
                 MilestoneStage::Preschool->value => [$ageFrom ??= 36, $ageTo ??= 72],
-                default => [$ageFrom ??= 0, $ageTo ??= 72],
+                MilestoneStage::PrimarySchool->value => [$ageFrom ??= 72, $ageTo ??= 132],
+                MilestoneStage::SecondarySchool->value => [$ageFrom ??= 132, $ageTo ??= 216],
+                default => [$ageFrom ??= 0, $ageTo ??= 216],
             };
         }
 

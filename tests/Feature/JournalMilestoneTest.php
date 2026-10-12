@@ -525,4 +525,84 @@ class JournalMilestoneTest extends TestCase
             'title' => 'Nhật ký khoảnh khắc đặc biệt',
         ]);
     }
+
+    /**
+     * 20. Trẻ ở độ tuổi tiểu học (ví dụ 8 tuổi = 96 tháng) có suggested_stage là primary_school
+     */
+    public function test_get_journal_milestones_for_primary_school_child_suggests_primary_school(): void
+    {
+        $primaryChild = Child::create([
+            'user_id' => $this->userA->id,
+            'fullname' => 'Bé Tiểu học',
+            'birthday' => Carbon::now()->subMonths(96)->toDateString(),
+            'is_born' => BornStatus::Born,
+        ]);
+
+        $response = $this->actingAs($this->userA, 'api')
+            ->getJson("/api/v1/journal-milestones?child_id={$primaryChild->id}");
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('data.suggested_stage', 'primary_school');
+
+        $stages = collect($response->json('data.stages'));
+        $this->assertCount(5, $stages);
+
+        $primaryStage = $stages->firstWhere('key', 'primary_school');
+        $this->assertNotNull($primaryStage);
+        $this->assertNotEmpty($primaryStage['milestones']);
+    }
+
+    /**
+     * 21. Trẻ ở độ tuổi trung học (ví dụ 14 tuổi = 168 tháng) có suggested_stage là secondary_school
+     */
+    public function test_get_journal_milestones_for_secondary_school_child_suggests_secondary_school(): void
+    {
+        $secondaryChild = Child::create([
+            'user_id' => $this->userA->id,
+            'fullname' => 'Bé Trung học',
+            'birthday' => Carbon::now()->subMonths(168)->toDateString(),
+            'is_born' => BornStatus::Born,
+        ]);
+
+        $response = $this->actingAs($this->userA, 'api')
+            ->getJson("/api/v1/journal-milestones?child_id={$secondaryChild->id}");
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('data.suggested_stage', 'secondary_school');
+
+        $stages = collect($response->json('data.stages'));
+        $secondaryStage = $stages->firstWhere('key', 'secondary_school');
+        $this->assertNotNull($secondaryStage);
+        $this->assertNotEmpty($secondaryStage['milestones']);
+    }
+
+    /**
+     * 22. Tạo mốc tùy chỉnh ở giai đoạn primary_school và secondary_school thành công
+     */
+    public function test_user_can_create_custom_milestone_in_primary_and_secondary_stages(): void
+    {
+        $response1 = $this->actingAs($this->userA, 'api')
+            ->postJson('/api/v1/journal-milestones', [
+                'child_id' => $this->childA->id,
+                'stage' => 'primary_school',
+                'name' => 'Giải nhất hội khỏe Phù Đổng cấp trường',
+                'icon' => '🥇',
+            ]);
+        $response1->assertStatus(200);
+        $response1->assertJsonPath('data.stage', 'primary_school');
+        $response1->assertJsonPath('data.age_from_month', 72);
+        $response1->assertJsonPath('data.age_to_month', 132);
+
+        $response2 = $this->actingAs($this->userA, 'api')
+            ->postJson('/api/v1/journal-milestones', [
+                'child_id' => $this->childA->id,
+                'stage' => 'secondary_school',
+                'name' => 'Đạt IELTS 7.5',
+                'icon' => '🎓',
+            ]);
+        $response2->assertStatus(200);
+        $response2->assertJsonPath('data.stage', 'secondary_school');
+        $response2->assertJsonPath('data.age_from_month', 132);
+        $response2->assertJsonPath('data.age_to_month', 216);
+    }
 }

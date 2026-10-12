@@ -64,6 +64,18 @@
     }
     .active-kpi-preschool::after { background: #8b5cf6; }
 
+    .active-kpi-primary_school {
+        border-color: #f97316 !important;
+        background: linear-gradient(180deg, #ffffff 0%, #fff7ed 100%) !important;
+    }
+    .active-kpi-primary_school::after { background: #f97316; }
+
+    .active-kpi-secondary_school {
+        border-color: #6366f1 !important;
+        background: linear-gradient(180deg, #ffffff 0%, #eef2ff 100%) !important;
+    }
+    .active-kpi-secondary_school::after { background: #6366f1; }
+
     .kpi-icon-avatar {
         width: 48px;
         height: 48px;
@@ -122,6 +134,12 @@
     .segmented-pill-item.active-purple {
         color: #7c3aed;
     }
+    .segmented-pill-item.active-orange {
+        color: #ea580c;
+    }
+    .segmented-pill-item.active-indigo {
+        color: #4f46e5;
+    }
     .pill-counter {
         display: inline-flex;
         align-items: center;
@@ -151,6 +169,14 @@
         background: #7c3aed;
         color: #ffffff;
     }
+    .segmented-pill-item.active-orange .pill-counter {
+        background: #ea580c;
+        color: #ffffff;
+    }
+    .segmented-pill-item.active-indigo .pill-counter {
+        background: #4f46e5;
+        color: #ffffff;
+    }
 </style>
 @endpush
 
@@ -160,100 +186,59 @@
             <!-- 1. Top KPI Summary Cards (Bento Grid) -->
             <div class="row g-3 mb-4">
                 <!-- Card 1: Tất cả cột mốc -->
-                <div class="col-6 col-lg-3">
+                <div class="col-6 col-md-4 col-xl-2">
                     <a href="{{ route('admin.journal_milestone.index') }}" 
-                       class="card milestone-kpi-card p-3 {{ empty($currentStage) ? 'active-kpi active-kpi-all' : '' }}">
+                       class="card milestone-kpi-card p-3 h-100 {{ empty($currentStage) ? 'active-kpi active-kpi-all' : '' }}">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
-                                <span class="kpi-sub-title text-muted text-uppercase fw-bold">{{ __('Tất cả cột mốc') }}</span>
+                                <span class="kpi-sub-title text-muted text-uppercase fw-bold">{{ __('Tất cả') }}</span>
                                 <div class="kpi-value text-dark fw-extrabold mt-1">{{ number_format($totalCount) }}</div>
                                 <div class="kpi-meta text-muted mt-1 fs-12">
-                                    <i class="ti ti-layers-intersect me-1"></i>{{ __('3 giai đoạn phát triển') }}
+                                    <i class="ti ti-layers-intersect me-1"></i>{{ count($stages) }} giai đoạn
                                 </div>
                             </div>
                             <div class="kpi-icon-avatar bg-primary-lt text-primary">
-                                <i class="ti ti-flag-3 fs-22"></i>
+                                <i class="ti ti-flag-3 fs-20"></i>
                             </div>
                         </div>
                         @if(empty($currentStage))
                             <span class="badge bg-primary text-white position-absolute top-0 end-0 m-2 px-2 py-0.5 fs-11 rounded-pill">
-                                <i class="ti ti-check me-0.5"></i>{{ __('Đang lọc') }}
+                                <i class="ti ti-check me-0.5"></i>
                             </span>
                         @endif
                     </a>
                 </div>
 
-                <!-- Card 2: Sơ sinh (0–1 tuổi) -->
-                <div class="col-6 col-lg-3">
-                    <a href="{{ route('admin.journal_milestone.index', ['stage' => 'newborn']) }}" 
-                       class="card milestone-kpi-card p-3 {{ $currentStage === 'newborn' ? 'active-kpi active-kpi-newborn' : '' }}">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="kpi-sub-title text-azure text-uppercase fw-bold">{{ __('Sơ sinh (0–1 tuổi)') }}</span>
-                                <div class="kpi-value text-dark fw-extrabold mt-1">{{ number_format($stageCounts['newborn'] ?? 0) }}</div>
-                                <div class="kpi-meta text-muted mt-1 fs-12">
-                                    <i class="ti ti-clock me-1"></i>{{ __('0 – 12 tháng tuổi') }}
+                @foreach($stages as $stage)
+                    @php
+                        $isActive = ($currentStage === $stage->value);
+                        $stageColor = $stage->color();
+                        $stageIcon = $stage->icon();
+                        $ageRange = $stage->ageRangeMonths();
+                    @endphp
+                    <div class="col-6 col-md-4 col-xl-2">
+                        <a href="{{ route('admin.journal_milestone.index', ['stage' => $stage->value]) }}" 
+                           class="card milestone-kpi-card p-3 h-100 {{ $isActive ? 'active-kpi active-kpi-' . $stage->value : '' }}">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <span class="kpi-sub-title text-{{ $stageColor }} text-uppercase fw-bold">{{ $stage->shortLabel() }}</span>
+                                    <div class="kpi-value text-dark fw-extrabold mt-1">{{ number_format($stageCounts[$stage->value] ?? 0) }}</div>
+                                    <div class="kpi-meta text-muted mt-1 fs-12">
+                                        <i class="ti ti-clock me-1"></i>{{ $ageRange[0] }}–{{ $ageRange[1] }} tháng
+                                    </div>
+                                </div>
+                                <div class="kpi-icon-avatar bg-{{ $stageColor }}-lt text-{{ $stageColor }}">
+                                    <i class="ti {{ $stageIcon }} fs-20"></i>
                                 </div>
                             </div>
-                            <div class="kpi-icon-avatar bg-azure-lt text-azure">
-                                <i class="ti ti-baby-bottle fs-22"></i>
-                            </div>
-                        </div>
-                        @if($currentStage === 'newborn')
-                            <span class="badge bg-azure text-white position-absolute top-0 end-0 m-2 px-2 py-0.5 fs-11 rounded-pill">
-                                <i class="ti ti-check me-0.5"></i>{{ __('Đang lọc') }}
-                            </span>
-                        @endif
-                    </a>
-                </div>
-
-                <!-- Card 3: Tập đi (1–3 tuổi) -->
-                <div class="col-6 col-lg-3">
-                    <a href="{{ route('admin.journal_milestone.index', ['stage' => 'toddler']) }}" 
-                       class="card milestone-kpi-card p-3 {{ $currentStage === 'toddler' ? 'active-kpi active-kpi-toddler' : '' }}">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="kpi-sub-title text-success text-uppercase fw-bold">{{ __('Tập đi (1–3 tuổi)') }}</span>
-                                <div class="kpi-value text-dark fw-extrabold mt-1">{{ number_format($stageCounts['toddler'] ?? 0) }}</div>
-                                <div class="kpi-meta text-muted mt-1 fs-12">
-                                    <i class="ti ti-clock me-1"></i>{{ __('12 – 36 tháng tuổi') }}
-                                </div>
-                            </div>
-                            <div class="kpi-icon-avatar bg-success-lt text-success">
-                                <i class="ti ti-walk fs-22"></i>
-                            </div>
-                        </div>
-                        @if($currentStage === 'toddler')
-                            <span class="badge bg-success text-white position-absolute top-0 end-0 m-2 px-2 py-0.5 fs-11 rounded-pill">
-                                <i class="ti ti-check me-0.5"></i>{{ __('Đang lọc') }}
-                            </span>
-                        @endif
-                    </a>
-                </div>
-
-                <!-- Card 4: Mẫu giáo (3–6 tuổi) -->
-                <div class="col-6 col-lg-3">
-                    <a href="{{ route('admin.journal_milestone.index', ['stage' => 'preschool']) }}" 
-                       class="card milestone-kpi-card p-3 {{ $currentStage === 'preschool' ? 'active-kpi active-kpi-preschool' : '' }}">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div>
-                                <span class="kpi-sub-title text-purple text-uppercase fw-bold">{{ __('Mẫu giáo (3–6 tuổi)') }}</span>
-                                <div class="kpi-value text-dark fw-extrabold mt-1">{{ number_format($stageCounts['preschool'] ?? 0) }}</div>
-                                <div class="kpi-meta text-muted mt-1 fs-12">
-                                    <i class="ti ti-clock me-1"></i>{{ __('36 – 72 tháng tuổi') }}
-                                </div>
-                            </div>
-                            <div class="kpi-icon-avatar bg-purple-lt text-purple">
-                                <i class="ti ti-palette fs-22"></i>
-                            </div>
-                        </div>
-                        @if($currentStage === 'preschool')
-                            <span class="badge bg-purple text-white position-absolute top-0 end-0 m-2 px-2 py-0.5 fs-11 rounded-pill">
-                                <i class="ti ti-check me-0.5"></i>{{ __('Đang lọc') }}
-                            </span>
-                        @endif
-                    </a>
-                </div>
+                            @if($isActive)
+                                <span class="badge bg-{{ $stageColor }} text-white position-absolute top-0 end-0 m-2 px-2 py-0.5 fs-11 rounded-pill">
+                                    <i class="ti ti-check me-0.5"></i>
+                                </span>
+                            @endif
+                        </a>
+                    </div>
+                @endforeach
             </div>
 
             <!-- 2. Main Data Table Card -->
@@ -282,21 +267,13 @@
                         @foreach($stages as $stage)
                             @php
                                 $isActive = ($currentStage === $stage->value);
-                                $stageIcon = match($stage) {
-                                    \App\Enums\Journal\MilestoneStage::Newborn => 'ti-baby-bottle',
-                                    \App\Enums\Journal\MilestoneStage::Toddler => 'ti-walk',
-                                    \App\Enums\Journal\MilestoneStage::Preschool => 'ti-palette',
-                                };
-                                $stageColor = match($stage) {
-                                    \App\Enums\Journal\MilestoneStage::Newborn => 'azure',
-                                    \App\Enums\Journal\MilestoneStage::Toddler => 'green',
-                                    \App\Enums\Journal\MilestoneStage::Preschool => 'purple',
-                                };
+                                $stageIcon = $stage->icon();
+                                $stageColor = $stage->color();
                             @endphp
                             <a href="{{ route('admin.journal_milestone.index', ['stage' => $stage->value]) }}"
                                class="segmented-pill-item {{ $isActive ? 'active active-' . $stageColor : '' }}">
                                 <i class="ti {{ $stageIcon }}"></i>
-                                <span>{{ $stage->label() }}</span>
+                                <span>{{ $stage->shortLabel() }}</span>
                                 <span class="pill-counter">{{ $stageCounts[$stage->value] ?? 0 }}</span>
                             </a>
                         @endforeach

@@ -59,11 +59,10 @@ class JournalMilestoneController extends Controller
             ->pluck('count', 'stage')
             ->toArray();
 
-        $stageCounts = [
-            MilestoneStage::Newborn->value => (int) ($rawCounts[MilestoneStage::Newborn->value] ?? 0),
-            MilestoneStage::Toddler->value => (int) ($rawCounts[MilestoneStage::Toddler->value] ?? 0),
-            MilestoneStage::Preschool->value => (int) ($rawCounts[MilestoneStage::Preschool->value] ?? 0),
-        ];
+        $stageCounts = [];
+        foreach (MilestoneStage::cases() as $case) {
+            $stageCounts[$case->value] = (int) ($rawCounts[$case->value] ?? 0);
+        }
 
         $totalCount = array_sum($stageCounts);
         $currentStage = request('stage');
@@ -88,11 +87,10 @@ class JournalMilestoneController extends Controller
             ->pluck('count', 'stage')
             ->toArray();
 
-        $stageCounts = [
-            MilestoneStage::Newborn->value => (int) ($rawCounts[MilestoneStage::Newborn->value] ?? 0),
-            MilestoneStage::Toddler->value => (int) ($rawCounts[MilestoneStage::Toddler->value] ?? 0),
-            MilestoneStage::Preschool->value => (int) ($rawCounts[MilestoneStage::Preschool->value] ?? 0),
-        ];
+        $stageCounts = [];
+        foreach (MilestoneStage::cases() as $case) {
+            $stageCounts[$case->value] = (int) ($rawCounts[$case->value] ?? 0);
+        }
 
         $totalCount = array_sum($stageCounts);
         $currentStage = request('stage');
