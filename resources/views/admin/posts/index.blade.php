@@ -8,7 +8,7 @@
         <div class="container-fluid">
             <div class="card custom-shadow">
                 <x-admin.page-header :title="__('Danh sách bài viết')"
-                                     :subtitle="__('Quản lý các bài viết tin tức và cẩm nang chăm sóc trẻ')"
+                                     :subtitle="__('Quản lý các bài viết tin tức và thông tin ứng dụng')"
                                      icon="ti ti-news"
                                      :addRoute="route('admin.post.create')"
                                      :addText="__('Thêm bài viết')" />

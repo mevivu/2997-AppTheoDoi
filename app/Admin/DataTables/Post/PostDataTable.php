@@ -32,28 +32,23 @@ class PostDataTable extends BaseDataTable
             'editlink' => 'admin.posts.datatable.editlink',
             'status' => 'admin.posts.datatable.status',
             'is_featured' => 'admin.posts.datatable.is-featured',
-            'post_type' => 'admin.posts.datatable.post-type',
             'checkbox' => 'admin.common.checkbox',
         ];
     }
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [2, 3, 4, 5, 6];
+        $this->columnAllSearch = [2, 3, 4, 5];
 
-        $this->columnSearchDate = [6];
+        $this->columnSearchDate = [5];
 
         $this->columnSearchSelect = [
             [
                 'column' => 3,
-                'data' => PostType::asSelectArray()
-            ],
-            [
-                'column' => 4,
                 'data' => PostStatus::asSelectArray()
             ],
             [
-                'column' => 5,
+                'column' => 4,
                 'data' => FeaturedStatus::asSelectArray()
             ],
         ];
@@ -61,7 +56,15 @@ class PostDataTable extends BaseDataTable
 
     public function query()
     {
-        return $this->repository->getQueryBuilderOrderBy('id', 'DESC');
+        return $this->repository->getQueryBuilderOrderBy('id', 'DESC')
+            ->where(function ($query) {
+                $query->where('type', '!=', PostType::Knowledge)
+                    ->orWhereNull('type');
+            })
+            ->where(function ($query) {
+                $query->where('post_type', '!=', PostType::Knowledge->value)
+                    ->orWhereNull('post_type');
+            });
     }
 
     protected function setCustomColumns(): void
@@ -74,7 +77,6 @@ class PostDataTable extends BaseDataTable
         $this->customEditColumns = [
             'image' => $this->view['image'],
             'title' => $this->view['editlink'],
-            'post_type' => $this->view['post_type'],
             'status' => $this->view['status'],
             'is_featured' => $this->view['is_featured'],
             'created_at' => '{{ date("d-m-Y", strtotime($created_at)) }}',
@@ -91,7 +93,7 @@ class PostDataTable extends BaseDataTable
 
     protected function setCustomRawColumns(): void
     {
-        $this->customRawColumns = ['image', 'title', 'post_type', 'status', 'is_featured', 'action', 'checkbox'];
+        $this->customRawColumns = ['image', 'title', 'status', 'is_featured', 'action', 'checkbox'];
     }
 
 

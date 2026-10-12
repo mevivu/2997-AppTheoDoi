@@ -1826,11 +1826,6 @@ return [
             'orderable' => false,
             'addClass' => 'text-center align-middle',
         ],
-        'post_type' => [
-            'title' => '<div class="header-cell-content"><i class="ti ti-category"></i><span>Phân loại</span></div>',
-            'orderable' => false,
-            'addClass' => 'text-center align-middle',
-        ],
         'status' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
             'orderable' => false,
