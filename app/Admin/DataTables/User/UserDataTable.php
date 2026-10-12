@@ -57,7 +57,7 @@ class UserDataTable extends BaseDataTable
 
         // Thứ tự cột: 0:checkbox (ẩn), 1:code, 2:fullname, 3:email, 4:phone, 5:wallet_balance, 6:affiliate_rank, 7:status, 8:package_name, 9:service_type, 10:action
         // Bật tìm kiếm cho các cột có dữ liệu tìm kiếm (Cột 5 Ví và 10 Thao tác để trống ô tìm kiếm)
-        $this->columnAllSearch = [1, 2, 3, 4, 6, 7, 8, 9];
+        $this->columnAllSearch = [1, 2, 3, 4, 6, 7, 8, 9, 10];
 
         $this->columnSearchSelect = [
             [
@@ -66,14 +66,18 @@ class UserDataTable extends BaseDataTable
             ],
             [
                 'column' => 7,
-                'data' => UserStatus::asSelectArray()
+                'data' => ParentRank::asSelectArray()
             ],
             [
                 'column' => 8,
-                'data' => $packages
+                'data' => UserStatus::asSelectArray()
             ],
             [
                 'column' => 9,
+                'data' => $packages
+            ],
+            [
+                'column' => 10,
                 'data' => UserServiceType::asSelectArray()
             ],
         ];
@@ -206,7 +210,16 @@ class UserDataTable extends BaseDataTable
                 $query->where('status', $keyword);
             },
             'service_type' => function ($query, $keyword) {
-                $query->where('service_type', $keyword);
+                if ((int) $keyword === UserServiceType::Email->value) {
+                    $query->where(function ($q) {
+                        $q->where('service_type', UserServiceType::Email->value)
+                            ->orWhereNull('service_type');
+                    });
+                } elseif (is_numeric($keyword)) {
+                    $query->where('service_type', (int) $keyword);
+                } else {
+                    $query->where('service_type', $keyword);
+                }
             },
             'package_name' => function ($query, $keyword) {
                 if (is_numeric($keyword)) {

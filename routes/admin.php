@@ -907,6 +907,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
             Route::get('/user-shopping', 'userShopping')->name('user_shopping');
             Route::put('/update', 'update')->name('update');
+            Route::post('/upload-video', 'uploadVideo')->name('upload_video');
         });
 
 

@@ -56,6 +56,19 @@ enum ParentRank: int
     }
 
     /**
+     * Mảng dùng cho select dropdown lọc DataTable
+     */
+    public static function asSelectArray(): array
+    {
+        return [
+            self::D->value => 'Hạng D',
+            self::C->value => 'Hạng C',
+            self::B->value => 'Hạng B',
+            self::A->value => 'Hạng A',
+        ];
+    }
+
+    /**
      * Tên hiển thị (Alias của name())
      */
     public function label(): string

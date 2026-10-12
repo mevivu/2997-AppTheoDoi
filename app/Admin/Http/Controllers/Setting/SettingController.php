@@ -10,8 +10,11 @@ use App\Enums\Setting\SettingGroup;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use App\Admin\Services\File\FileService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SettingController extends Controller
 {
@@ -97,5 +100,45 @@ class SettingController extends Controller
         }
         $this->repository->updateMultipleRecord($data);
         return back()->with('success', __('notifySuccess'));
+    }
+
+    /**
+     * Upload video hướng dẫn trực tiếp lên Cloudflare R2
+     *
+     * @param Request $request
+     * @param FileService $fileService
+     * @return JsonResponse
+     */
+    public function uploadVideo(Request $request, FileService $fileService): JsonResponse
+    {
+        $request->validate([
+            'video' => 'required|file|mimes:mp4,mov,avi,webm,mkv|max:204800', // Tối đa 200MB
+        ], [
+            'video.required' => 'Vui lòng chọn file video cần upload.',
+            'video.file' => 'Dữ liệu tải lên không hợp lệ.',
+            'video.mimes' => 'Định dạng video phải là mp4, mov, avi, webm hoặc mkv.',
+            'video.max' => 'Dung lượng video tối đa là 200MB.',
+        ]);
+
+        try {
+            $file = $request->file('video');
+            $result = $fileService->uploadVideoToR2($file, 'videos/evaluations');
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Upload video thành công lên Cloudflare R2!',
+                'data' => [
+                    'url' => $result['url'],
+                    'path' => $result['path'],
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('[SettingController::uploadVideo] ' . $e->getMessage());
+
+            return response()->json([
+                'status' => 500,
+                'message' => 'Lỗi upload video lên Cloudflare R2: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }
