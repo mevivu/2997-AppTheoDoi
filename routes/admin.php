@@ -623,6 +623,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->group(function () {
             Route::group(['middleware' => ['permission:viewJournalMilestone', 'auth:admin']], function () {
                 Route::get('/', 'index')->name('index');
+                Route::get('/nguoi-dung', 'user')->name('user');
                 Route::get('/edit/{id}', 'edit')->name('edit');
             });
             Route::group(['middleware' => ['permission:createJournalMilestone', 'auth:admin']], function () {

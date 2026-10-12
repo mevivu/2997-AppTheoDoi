@@ -4,6 +4,7 @@ namespace App\Api\V1\Http\Requests\Journal;
 
 use App\Api\V1\Http\Requests\BaseRequest;
 use App\Enums\Journal\JournalType;
+use App\Enums\Permission\PermissionType;
 use App\Models\Journal;
 use App\Models\JournalMilestone;
 
@@ -39,6 +40,11 @@ class JournalUpdateRequest extends BaseRequest
                     $milestone = JournalMilestone::find($milestoneId);
                     if (!$milestone || !$milestone->is_active) {
                         $validator->errors()->add('milestone_id', 'Cột mốc này hiện không khả dụng.');
+                        return;
+                    }
+
+                    if (($milestone->type === PermissionType::USER || $milestone->type?->value === PermissionType::USER->value) && $milestone->child_id != $journal->child_id) {
+                        $validator->errors()->add('milestone_id', 'Cột mốc này không thuộc về bé.');
                         return;
                     }
 

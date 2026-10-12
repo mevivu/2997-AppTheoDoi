@@ -5,6 +5,7 @@ namespace App\Admin\DataTables\Journal;
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Repositories\Journal\JournalMilestoneRepositoryInterface;
 use App\Enums\Journal\MilestoneStage;
+use App\Enums\Permission\PermissionType;
 use Illuminate\Database\Eloquent\Builder;
 
 class JournalMilestoneDataTable extends BaseDataTable
@@ -34,7 +35,8 @@ class JournalMilestoneDataTable extends BaseDataTable
     public function query(): Builder
     {
         $stage = request('stage');
-        $query = $this->repository->getQueryBuilderOrderBy('position', 'asc');
+        $query = $this->repository->getQueryBuilderOrderBy('position', 'asc')
+            ->where('type', PermissionType::ADMIN);
 
         if ($stage && in_array($stage, MilestoneStage::getValues())) {
             $query->where('stage', $stage);

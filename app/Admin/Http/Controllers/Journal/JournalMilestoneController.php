@@ -3,11 +3,13 @@
 namespace App\Admin\Http\Controllers\Journal;
 
 use App\Admin\DataTables\Journal\JournalMilestoneDataTable;
+use App\Admin\DataTables\Journal\UserJournalMilestoneDataTable;
 use App\Admin\Http\Controllers\Controller;
 use App\Admin\Http\Requests\Journal\JournalMilestoneRequest;
 use App\Admin\Repositories\Journal\JournalMilestoneRepositoryInterface;
 use App\Admin\Services\Journal\JournalMilestoneServiceInterface;
 use App\Enums\Journal\MilestoneStage;
+use App\Models\JournalMilestone;
 use App\Traits\ResponseController;
 use Exception;
 use Illuminate\Contracts\Foundation\Application;
@@ -34,6 +36,7 @@ class JournalMilestoneController extends Controller
             'index' => 'admin.journal_milestones.index',
             'create' => 'admin.journal_milestones.create',
             'edit' => 'admin.journal_milestones.edit',
+            'user' => 'admin.journal_milestones.user',
         ];
     }
 
@@ -44,12 +47,14 @@ class JournalMilestoneController extends Controller
             'create' => 'admin.journal_milestone.create',
             'edit' => 'admin.journal_milestone.edit',
             'delete' => 'admin.journal_milestone.delete',
+            'user' => 'admin.journal_milestone.user',
         ];
     }
 
     public function index(JournalMilestoneDataTable $dataTable)
     {
-        $rawCounts = \App\Models\JournalMilestone::selectRaw('stage, count(*) as count')
+        $rawCounts = JournalMilestone::admin()
+            ->selectRaw('stage, count(*) as count')
             ->groupBy('stage')
             ->pluck('count', 'stage')
             ->toArray();
@@ -71,6 +76,35 @@ class JournalMilestoneController extends Controller
                 'totalCount' => $totalCount,
                 'currentStage' => $currentStage,
                 'breadcrumbs' => $this->crums->add('DS cột mốc gợi ý'),
+            ]
+        );
+    }
+
+    public function user(UserJournalMilestoneDataTable $dataTable)
+    {
+        $rawCounts = JournalMilestone::user()
+            ->selectRaw('stage, count(*) as count')
+            ->groupBy('stage')
+            ->pluck('count', 'stage')
+            ->toArray();
+
+        $stageCounts = [
+            MilestoneStage::Newborn->value => (int) ($rawCounts[MilestoneStage::Newborn->value] ?? 0),
+            MilestoneStage::Toddler->value => (int) ($rawCounts[MilestoneStage::Toddler->value] ?? 0),
+            MilestoneStage::Preschool->value => (int) ($rawCounts[MilestoneStage::Preschool->value] ?? 0),
+        ];
+
+        $totalCount = array_sum($stageCounts);
+        $currentStage = request('stage');
+
+        return $dataTable->render(
+            $this->view['user'],
+            [
+                'stages' => MilestoneStage::cases(),
+                'stageCounts' => $stageCounts,
+                'totalCount' => $totalCount,
+                'currentStage' => $currentStage,
+                'breadcrumbs' => $this->crums->add('Cột mốc người dùng'),
             ]
         );
     }

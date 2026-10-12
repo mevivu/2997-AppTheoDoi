@@ -142,6 +142,9 @@ Route::controller(\App\Api\V1\Http\Controllers\Journal\JournalMilestoneControlle
     ->as('journal.milestone.')
     ->group(function () {
         Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::put('/{id}', 'update')->whereNumber('id');
+        Route::delete('/{id}', 'destroy')->whereNumber('id');
     });
 
 // Journal

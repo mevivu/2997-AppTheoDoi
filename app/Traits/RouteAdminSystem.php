@@ -108,6 +108,7 @@ class RouteAdminSystem
 
     /** JOURNAL MILESTONE */
     const JOURNAL_MILESTONE_INDEX = 'admin.journal_milestone.index';
+    const JOURNAL_MILESTONE_USER = 'admin.journal_milestone.user';
     const JOURNAL_MILESTONE_CREATE = 'admin.journal_milestone.create';
     const JOURNAL_MILESTONE_EDIT = 'admin.journal_milestone.edit';
     const JOURNAL_MILESTONE_STORE = 'admin.journal_milestone.store';

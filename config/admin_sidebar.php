@@ -244,6 +244,13 @@ return [
                 'icon' => '<i class="ti ti-flag"></i>',
                 'roles' => [],
                 'permissions' => ['viewJournalMilestone'],
+            ],
+            [
+                'title' => 'Cột mốc người dùng',
+                'routeName' => RouteAdminSystem::JOURNAL_MILESTONE_USER,
+                'icon' => '<i class="ti ti-users"></i>',
+                'roles' => [],
+                'permissions' => ['viewJournalMilestone'],
             ]
 
         ]

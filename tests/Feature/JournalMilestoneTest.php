@@ -312,4 +312,217 @@ class JournalMilestoneTest extends TestCase
         $response->assertStatus(200);
         $this->assertFalse($response->json('data.journals.0.checked'));
     }
+
+    /**
+     * 12. Phụ huynh thêm cột mốc riêng thành công
+     */
+    public function test_user_can_create_custom_milestone(): void
+    {
+        $response = $this->actingAs($this->userA, 'api')
+            ->postJson('/api/v1/journal-milestones', [
+                'child_id' => $this->childA->id,
+                'stage' => 'newborn',
+                'name' => 'Lần đầu đi tắm biển',
+                'icon' => '🌊',
+                'age_from_month' => 6,
+                'age_to_month' => 12,
+            ]);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('data.name', 'Lần đầu đi tắm biển');
+        $response->assertJsonPath('data.child_id', $this->childA->id);
+        $response->assertJsonPath('data.user_id', $this->userA->id);
+
+        $this->assertDatabaseHas('journal_milestones', [
+            'name' => 'Lần đầu đi tắm biển',
+            'child_id' => $this->childA->id,
+            'user_id' => $this->userA->id,
+            'type' => 'user',
+        ]);
+    }
+
+    /**
+     * 13. Chống IDOR: User B không thể tạo mốc cho con của User A
+     */
+    public function test_user_b_cannot_create_milestone_for_user_a_child(): void
+    {
+        $response = $this->actingAs($this->userB, 'api')
+            ->postJson('/api/v1/journal-milestones', [
+                'child_id' => $this->childA->id,
+                'stage' => 'newborn',
+                'name' => 'Hacker mốc',
+            ]);
+
+        $response->assertStatus(400); // BaseRequest returns 400 on validation failure
+        $this->assertArrayHasKey('child_id', $response->json('message_validate'));
+    }
+
+    /**
+     * 14. Lấy danh sách cột mốc hiển thị mốc riêng của bé A kèm cờ is_custom: true
+     */
+    public function test_milestones_list_includes_custom_milestone_for_child(): void
+    {
+        $custom = JournalMilestone::create([
+            'stage' => MilestoneStage::Newborn,
+            'type' => \App\Enums\Permission\PermissionType::USER,
+            'child_id' => $this->childA->id,
+            'user_id' => $this->userA->id,
+            'name' => 'Mẹ cắt tóc máu',
+            'slug' => 'user-' . $this->childA->id . '-toc-mau',
+            'icon' => '✂️',
+            'age_from_month' => 1,
+            'age_to_month' => 3,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->userA, 'api')
+            ->getJson("/api/v1/journal-milestones?child_id={$this->childA->id}");
+
+        $response->assertStatus(200);
+
+        $stages = collect($response->json('data.stages'));
+        $newbornStage = $stages->firstWhere('key', 'newborn');
+        $newbornMilestones = collect($newbornStage['milestones']);
+
+        $found = $newbornMilestones->firstWhere('id', $custom->id);
+        $this->assertNotNull($found);
+        $this->assertTrue($found['is_custom']);
+        $this->assertTrue($found['can_delete']);
+    }
+
+    /**
+     * 15. Bé B không nhìn thấy mốc riêng của bé A
+     */
+    public function test_child_b_cannot_see_child_a_custom_milestone(): void
+    {
+        $customA = JournalMilestone::create([
+            'stage' => MilestoneStage::Newborn,
+            'type' => \App\Enums\Permission\PermissionType::USER,
+            'child_id' => $this->childA->id,
+            'user_id' => $this->userA->id,
+            'name' => 'Mốc tuyệt mật của bé A',
+            'slug' => 'user-' . $this->childA->id . '-tuyet-mat',
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->userB, 'api')
+            ->getJson("/api/v1/journal-milestones?child_id={$this->childB->id}");
+
+        $response->assertStatus(200);
+
+        $stages = collect($response->json('data.stages'));
+        $newbornMilestones = collect($stages->firstWhere('key', 'newborn')['milestones']);
+
+        $found = $newbornMilestones->firstWhere('id', $customA->id);
+        $this->assertNull($found);
+    }
+
+    /**
+     * 16. User A cập nhật mốc riêng thành công
+     */
+    public function test_user_a_can_update_own_custom_milestone(): void
+    {
+        $custom = JournalMilestone::create([
+            'stage' => MilestoneStage::Newborn,
+            'type' => \App\Enums\Permission\PermissionType::USER,
+            'child_id' => $this->childA->id,
+            'user_id' => $this->userA->id,
+            'name' => 'Tên ban đầu',
+            'slug' => 'user-' . $this->childA->id . '-test-update',
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->userA, 'api')
+            ->putJson("/api/v1/journal-milestones/{$custom->id}", [
+                'name' => 'Tên đã cập nhật',
+                'icon' => '⭐',
+            ]);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('journal_milestones', [
+            'id' => $custom->id,
+            'name' => 'Tên đã cập nhật',
+            'icon' => '⭐',
+        ]);
+    }
+
+    /**
+     * 17. Chống IDOR: User B không thể sửa mốc riêng của User A
+     */
+    public function test_user_b_cannot_update_user_a_custom_milestone(): void
+    {
+        $custom = JournalMilestone::create([
+            'stage' => MilestoneStage::Newborn,
+            'type' => \App\Enums\Permission\PermissionType::USER,
+            'child_id' => $this->childA->id,
+            'user_id' => $this->userA->id,
+            'name' => 'Mốc của A',
+            'slug' => 'user-' . $this->childA->id . '-test-a',
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($this->userB, 'api')
+            ->putJson("/api/v1/journal-milestones/{$custom->id}", [
+                'name' => 'Bị sửa bởi B',
+            ]);
+
+        $response->assertStatus(400);
+    }
+
+    /**
+     * 18. Không được phép sửa hoặc xoá mốc hệ thống (type = admin)
+     */
+    public function test_cannot_update_or_delete_admin_system_milestone(): void
+    {
+        // Thử cập nhật mốc admin
+        $responsePut = $this->actingAs($this->userA, 'api')
+            ->putJson("/api/v1/journal-milestones/{$this->milestone1->id}", [
+                'name' => 'Sửa mốc hệ thống',
+            ]);
+        $responsePut->assertStatus(400);
+
+        // Thử xoá mốc admin
+        $responseDelete = $this->actingAs($this->userA, 'api')
+            ->deleteJson("/api/v1/journal-milestones/{$this->milestone1->id}");
+        $responseDelete->assertStatus(400);
+    }
+
+    /**
+     * 19. Xoá mốc riêng thành công và set milestone_id = null cho nhật ký đã gắn
+     */
+    public function test_delete_custom_milestone_nullifies_journal_milestone_id(): void
+    {
+        $custom = JournalMilestone::create([
+            'stage' => MilestoneStage::Newborn,
+            'type' => \App\Enums\Permission\PermissionType::USER,
+            'child_id' => $this->childA->id,
+            'user_id' => $this->userA->id,
+            'name' => 'Mốc sẽ bị xoá',
+            'slug' => 'user-' . $this->childA->id . '-to-delete',
+            'is_active' => true,
+        ]);
+
+        $journal = Journal::create([
+            'child_id' => $this->childA->id,
+            'milestone_id' => $custom->id,
+            'title' => 'Nhật ký khoảnh khắc đặc biệt',
+            'content' => 'Nội dung khoảnh khắc',
+            'type' => JournalType::Moment->value,
+        ]);
+
+        $response = $this->actingAs($this->userA, 'api')
+            ->deleteJson("/api/v1/journal-milestones/{$custom->id}");
+
+        $response->assertStatus(200);
+
+        // Cột mốc đã bị xoá
+        $this->assertDatabaseMissing('journal_milestones', ['id' => $custom->id]);
+
+        // Nhật ký vẫn còn nguyên nhưng milestone_id được chuyển về null
+        $this->assertDatabaseHas('journals', [
+            'id' => $journal->id,
+            'milestone_id' => null,
+            'title' => 'Nhật ký khoảnh khắc đặc biệt',
+        ]);
+    }
 }

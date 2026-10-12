@@ -76,6 +76,11 @@ class JournalMilestoneService implements JournalMilestoneServiceInterface
     {
         $milestone = $this->repository->findOrFail($id);
 
+        if ($milestone->type === \App\Enums\Permission\PermissionType::USER || $milestone->type?->value === \App\Enums\Permission\PermissionType::USER->value) {
+            $milestone->journals()->update(['milestone_id' => null]);
+            return (bool)$this->repository->delete($id);
+        }
+
         if ($milestone->journals()->exists()) {
             throw new Exception('Không thể xoá cột mốc này vì đã có nhật ký của trẻ tham chiếu. Vui lòng chuyển trạng thái sang "Tắt" thay vì xoá để đảm bảo tính toàn vẹn dữ liệu.');
         }
