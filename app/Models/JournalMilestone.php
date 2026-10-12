@@ -95,6 +95,11 @@ class JournalMilestone extends Model
     /**
      * Scope lọc cột mốc do phụ huynh tự thêm
      */
+    public function scopeOfUser(Builder $query): Builder
+    {
+        return $query->where('type', PermissionType::USER);
+    }
+
     public function scopeUser(Builder $query): Builder
     {
         return $query->where('type', PermissionType::USER);

@@ -9,6 +9,7 @@ use App\Admin\Http\Requests\Journal\JournalMilestoneRequest;
 use App\Admin\Repositories\Journal\JournalMilestoneRepositoryInterface;
 use App\Admin\Services\Journal\JournalMilestoneServiceInterface;
 use App\Enums\Journal\MilestoneStage;
+use App\Enums\Permission\PermissionType;
 use App\Models\JournalMilestone;
 use App\Traits\ResponseController;
 use Exception;
@@ -81,7 +82,7 @@ class JournalMilestoneController extends Controller
 
     public function user(UserJournalMilestoneDataTable $dataTable)
     {
-        $rawCounts = JournalMilestone::user()
+        $rawCounts = JournalMilestone::where('type', PermissionType::USER)
             ->selectRaw('stage, count(*) as count')
             ->groupBy('stage')
             ->pluck('count', 'stage')
