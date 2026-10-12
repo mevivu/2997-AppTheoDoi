@@ -49,10 +49,27 @@ class JournalMilestoneController extends Controller
 
     public function index(JournalMilestoneDataTable $dataTable)
     {
+        $rawCounts = \App\Models\JournalMilestone::selectRaw('stage, count(*) as count')
+            ->groupBy('stage')
+            ->pluck('count', 'stage')
+            ->toArray();
+
+        $stageCounts = [
+            MilestoneStage::Newborn->value => (int) ($rawCounts[MilestoneStage::Newborn->value] ?? 0),
+            MilestoneStage::Toddler->value => (int) ($rawCounts[MilestoneStage::Toddler->value] ?? 0),
+            MilestoneStage::Preschool->value => (int) ($rawCounts[MilestoneStage::Preschool->value] ?? 0),
+        ];
+
+        $totalCount = array_sum($stageCounts);
+        $currentStage = request('stage');
+
         return $dataTable->render(
             $this->view['index'],
             [
                 'stages' => MilestoneStage::cases(),
+                'stageCounts' => $stageCounts,
+                'totalCount' => $totalCount,
+                'currentStage' => $currentStage,
                 'breadcrumbs' => $this->crums->add('DS cột mốc gợi ý'),
             ]
         );
