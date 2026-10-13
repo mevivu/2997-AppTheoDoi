@@ -11,9 +11,7 @@
             'theme_color' => '#e11d48',
             'desc' => 'Đo lường năng lực nhận diện, thấu hiểu và quản lý cảm xúc của trẻ.',
             'video' => $settings->firstWhere('setting_key', 'evaluation_guide_video_eq'),
-            'title' => $settings->firstWhere('setting_key', 'evaluation_guide_title_eq'),
             'desc_setting' => $settings->firstWhere('setting_key', 'evaluation_guide_desc_eq'),
-            'note' => $settings->firstWhere('setting_key', 'evaluation_guide_note_eq'),
         ],
         'aq' => [
             'key' => 'aq',
@@ -26,9 +24,7 @@
             'theme_color' => '#0284c7',
             'desc' => 'Đo lường bản lĩnh, ý chí kiên trì và cách vượt qua trở ngại, nghịch cảnh.',
             'video' => $settings->firstWhere('setting_key', 'evaluation_guide_video_aq'),
-            'title' => $settings->firstWhere('setting_key', 'evaluation_guide_title_aq'),
             'desc_setting' => $settings->firstWhere('setting_key', 'evaluation_guide_desc_aq'),
-            'note' => $settings->firstWhere('setting_key', 'evaluation_guide_note_aq'),
         ],
         'iq' => [
             'key' => 'iq',
@@ -41,9 +37,7 @@
             'theme_color' => '#7c3aed',
             'desc' => 'Đánh giá tư duy logic, nhận thức không gian và năng lực phân tích của trẻ.',
             'video' => $settings->firstWhere('setting_key', 'evaluation_guide_video_iq'),
-            'title' => $settings->firstWhere('setting_key', 'evaluation_guide_title_iq'),
             'desc_setting' => $settings->firstWhere('setting_key', 'evaluation_guide_desc_iq'),
-            'note' => $settings->firstWhere('setting_key', 'evaluation_guide_note_iq'),
         ],
         'common' => [
             'key' => 'common',
@@ -54,11 +48,9 @@
             'border_class' => 'border-secondary-subtle',
             'bg_light' => '#f8fafc',
             'theme_color' => '#64748b',
-            'desc' => 'Video và lưu ý dự phòng nếu một bài đánh giá chưa được cấu hình riêng.',
+            'desc' => 'Video và bài viết hướng dẫn dự phòng nếu một bài đánh giá chưa được cấu hình riêng.',
             'video' => $settings->firstWhere('setting_key', 'evaluation_guide_video'),
-            'title' => null,
-            'desc_setting' => null,
-            'note' => $settings->firstWhere('setting_key', 'evaluation_guide_note'),
+            'desc_setting' => $settings->firstWhere('setting_key', 'evaluation_guide_note'),
         ],
     ];
 @endphp
@@ -72,7 +64,7 @@
             </span>
             <div>
                 <h4 class="mb-0 fw-bold fs-16 text-dark">{{ __('Cấu hình Video & Hướng Dẫn Từng Loại Đánh Giá') }}</h4>
-                <p class="text-muted fs-13 mb-0">{{ __('Tách riêng video và nội dung giải thích (Chỉ số là gì, lời khuyên) cho EQ, AQ, IQ hiển thị trên App') }}</p>
+                <p class="text-muted fs-13 mb-0">{{ __('Tách riêng video và bài viết hướng dẫn (soạn thảo chi tiết) cho EQ, AQ, IQ hiển thị trên App') }}</p>
             </div>
         </div>
         <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-12 px-2 py-1">
@@ -108,17 +100,9 @@
                     $vKey = $vSetting ? $vSetting->setting_key : ($tKey === 'common' ? 'evaluation_guide_video' : "evaluation_guide_video_{$tKey}");
                     $vVal = $vSetting ? $vSetting->plain_value : '';
 
-                    $titleSetting = $item['title'];
-                    $titleKey = $titleSetting ? $titleSetting->setting_key : "evaluation_guide_title_{$tKey}";
-                    $titleVal = $titleSetting ? $titleSetting->plain_value : ($tKey === 'eq' ? 'Chỉ số EQ là gì?' : ($tKey === 'aq' ? 'Chỉ số AQ là gì?' : ($tKey === 'iq' ? 'Chỉ số IQ là gì?' : '')));
-
                     $descSetting = $item['desc_setting'];
-                    $descKey = $descSetting ? $descSetting->setting_key : "evaluation_guide_desc_{$tKey}";
+                    $descKey = $descSetting ? $descSetting->setting_key : ($tKey === 'common' ? 'evaluation_guide_note' : "evaluation_guide_desc_{$tKey}");
                     $descVal = $descSetting ? $descSetting->plain_value : '';
-
-                    $noteSetting = $item['note'];
-                    $noteKey = $noteSetting ? $noteSetting->setting_key : ($tKey === 'common' ? 'evaluation_guide_note' : "evaluation_guide_note_{$tKey}");
-                    $noteVal = $noteSetting ? $noteSetting->plain_value : '';
                 @endphp
 
                 <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
@@ -301,95 +285,37 @@
                         </div>
                     </div>
 
-                    {{-- 2. KHUNG SOẠN NỘI DUNG ĐỊNH NGHĨA & HƯỚNG DẪN DÀNH CHO APP --}}
-                    @if($tKey !== 'common')
-                        <div class="card border rounded-3 mb-3 shadow-2xs">
-                            <div class="card-header bg-white py-2 px-3 border-bottom">
-                                <span class="fw-bold fs-14 text-dark d-flex align-items-center gap-1">
-                                    <i class="ti ti-pencil fs-5 text-success"></i>
-                                    <span>2. Soạn nội dung thẻ định nghĩa & giải thích trên App</span>
-                                </span>
-                            </div>
-                            <div class="card-body p-3">
-                                {{-- Tiêu đề câu hỏi --}}
-                                <div class="mb-3">
-                                    <label for="{{ $titleKey }}" class="form-label fw-semibold fs-13 d-flex align-items-center justify-content-between">
-                                        <span>
-                                            <i class="ti ti-help-circle text-primary me-1"></i>
-                                            Tiêu đề câu hỏi định nghĩa (App)
-                                            <span class="text-danger">*</span>
-                                        </span>
-                                        <span class="badge bg-light text-muted border fs-11">Ví dụ: {{ $titleVal }}</span>
-                                    </label>
-                                    <input type="text"
-                                           class="form-control"
-                                           id="{{ $titleKey }}"
-                                           name="{{ $titleKey }}"
-                                           value="{{ $titleVal }}"
-                                           placeholder="Ví dụ: {{ $titleVal }}"
-                                           required>
-                                    <div class="form-text fs-12 text-muted">
-                                        {{ __('Tiêu đề được hiển thị nổi bật trong thẻ định nghĩa bên dưới video trên App di động.') }}
-                                    </div>
-                                </div>
-
-                                {{-- Nội dung giải thích --}}
-                                <div class="mb-3">
-                                    <label for="{{ $descKey }}" class="form-label fw-semibold fs-13 d-flex align-items-center gap-1">
-                                        <i class="ti ti-align-left text-success me-1"></i>
-                                        Nội dung giải thích chi tiết
+                    {{-- 2. BÀI VIẾT HƯỚNG DẪN ĐÁNH GIÁ (TRÌNH SOẠN THẢO BÀI VIẾT) --}}
+                    <div class="card border rounded-3 mb-3 shadow-2xs">
+                        <div class="card-header bg-white py-2 px-3 border-bottom d-flex align-items-center justify-content-between">
+                            <span class="fw-bold fs-14 text-dark d-flex align-items-center gap-1">
+                                <i class="ti ti-article fs-5 text-primary"></i>
+                                <span>2. Bài viết hướng dẫn đánh giá (Soạn thảo chi tiết hiển thị trên App)</span>
+                            </span>
+                            <span class="badge bg-primary-subtle text-primary border border-primary-subtle fs-11">
+                                <i class="ti ti-edit me-1"></i>Trình soạn thảo bài viết
+                            </span>
+                        </div>
+                        <div class="card-body p-3">
+                            <div class="mb-2">
+                                <label for="{{ $descKey }}" class="form-label fw-semibold fs-13 d-flex align-items-center justify-content-between mb-2">
+                                    <span>
+                                        <i class="ti ti-file-text text-primary me-1"></i>
+                                        Nội dung bài viết hướng dẫn {{ $item['name'] }}
                                         <span class="text-danger">*</span>
-                                    </label>
-                                    <textarea class="form-control"
-                                              id="{{ $descKey }}"
-                                              name="{{ $descKey }}"
-                                              rows="4"
-                                              placeholder="Nhập nội dung giải thích {{ $item['name'] }} là gì, ý nghĩa đối với trẻ...">{{ $descVal }}</textarea>
-                                    <div class="form-text fs-12 text-muted">
-                                        {{ __('Nội dung giải thích rõ ràng, súc tích giúp phụ huynh hiểu tầm quan trọng của chỉ số trước khi đánh giá.') }}
-                                    </div>
-                                </div>
-
-                                {{-- Lời khuyên & Lưu ý trước khi làm bài --}}
-                                <div class="mb-2">
-                                    <label for="{{ $noteKey }}" class="form-label fw-semibold fs-13 d-flex align-items-center gap-1">
-                                        <i class="ti ti-bulb text-warning me-1"></i>
-                                        Lời khuyên & Lưu ý dành cho Phụ huynh
-                                    </label>
-                                    <textarea class="form-control"
-                                              id="{{ $noteKey }}"
-                                              name="{{ $noteKey }}"
-                                              rows="3"
-                                              placeholder="Nhập lưu ý hoặc lời khuyên cho bố mẹ khi quan sát con...">{{ $noteVal }}</textarea>
-                                    <div class="form-text fs-12 text-muted">
-                                        {{ __('Lưu ý hiển thị nhắc nhở bố mẹ quan sát hành vi thực tế hoặc chuẩn bị không gian cho bé.') }}
-                                    </div>
+                                    </span>
+                                    <span class="text-muted fs-12 fw-normal">Hỗ trợ tiêu đề, định dạng in đậm, danh sách, hình ảnh,...</span>
+                                </label>
+                                <textarea class="ckeditor visually-hidden"
+                                          id="{{ $descKey }}"
+                                          name="{{ $descKey }}"
+                                          placeholder="Soạn nội dung bài viết hướng dẫn đánh giá {{ $item['name'] }}...">{{ $descVal }}</textarea>
+                                <div class="form-text fs-12 text-muted mt-2">
+                                    {{ __('Nội dung bài viết được định dạng đầy đủ và hiển thị trực quan bên dưới video hướng dẫn trên ứng dụng di động cho phụ huynh đọc.') }}
                                 </div>
                             </div>
                         </div>
-                    @else
-                        {{-- Fallback Lưu ý chung --}}
-                        <div class="card border rounded-3 mb-3 shadow-2xs">
-                            <div class="card-header bg-white py-2 px-3 border-bottom">
-                                <span class="fw-bold fs-14 text-dark d-flex align-items-center gap-1">
-                                    <i class="ti ti-bulb fs-5 text-warning"></i>
-                                    <span>2. Lời khuyên & Lưu ý chung (Dự phòng)</span>
-                                </span>
-                            </div>
-                            <div class="card-body p-3">
-                                <div class="mb-2">
-                                    <label for="{{ $noteKey }}" class="form-label fw-semibold fs-13">
-                                        Lời khuyên chung
-                                    </label>
-                                    <textarea class="form-control"
-                                              id="{{ $noteKey }}"
-                                              name="{{ $noteKey }}"
-                                              rows="3"
-                                              placeholder="Nhập lưu ý chung...">{{ $noteVal }}</textarea>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
+                    </div>
 
                 </div>
             @endforeach
@@ -704,6 +630,35 @@
                 if (mainInput && mainInput.value) {
                     self.renderPreview(type, mainInput.value);
                 }
+            });
+
+            // Đảm bảo updateElement khi submit form
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function() {
+                    if (window.CKEDITOR && CKEDITOR.instances) {
+                        for (let inst in CKEDITOR.instances) {
+                            try {
+                                CKEDITOR.instances[inst].updateElement();
+                            } catch(e) {}
+                        }
+                    }
+                });
+            }
+
+            // Tự động resize CKEditor khi chuyển Tab để không bị vỡ giao diện
+            document.querySelectorAll('button[data-bs-toggle="pill"]').forEach(function(tabBtn) {
+                tabBtn.addEventListener('shown.bs.tab', function () {
+                    if (window.CKEDITOR && CKEDITOR.instances) {
+                        for (let inst in CKEDITOR.instances) {
+                            if (CKEDITOR.instances[inst]) {
+                                try {
+                                    CKEDITOR.instances[inst].resize();
+                                } catch(e) {}
+                            }
+                        }
+                    }
+                });
             });
         }
     };
