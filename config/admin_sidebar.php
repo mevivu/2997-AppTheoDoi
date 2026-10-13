@@ -1044,6 +1044,13 @@ return [
                 'permissions' => ['settingGeneral'],
             ],
             [
+                'title' => 'Đánh giá',
+                'routeName' => RouteAdminSystem::SETTING_EVALUATION,
+                'icon' => '<i class="ti ti-clipboard-check"></i>',
+                'roles' => [],
+                'permissions' => ['settingGeneral'],
+            ],
+            [
                 'title' => 'system_revenue',
                 'routeName' => RouteAdminSystem::SETTING_SYSTEM,
                 'icon' => '<i class="ti ti-server-cog"></i>',

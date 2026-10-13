@@ -33,6 +33,7 @@ class SettingController extends Controller
     {
         return [
             'general' => 'admin.settings.general',
+            'evaluation' => 'admin.settings.evaluation',
             'system' => 'admin.settings.system',
             'affiliate' => 'admin.settings.affiliate',
             'parent_rank' => 'admin.settings.parent-rank',
@@ -44,6 +45,13 @@ class SettingController extends Controller
         $settings = $this->repository->getByGroup([SettingGroup::General]);
 
         return view($this->view['general'], compact('settings'));
+    }
+
+    public function evaluation(): Factory|View|Application
+    {
+        $settings = $this->repository->getByGroup([SettingGroup::Evaluation]);
+
+        return view($this->view['evaluation'], compact('settings'));
     }
 
 

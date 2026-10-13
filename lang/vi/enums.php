@@ -222,6 +222,7 @@ return [
         SettingGroup::UserDiscount => 'Chiết khấu mua hàng theo cấp TV',
         SettingGroup::UserUpgrade => 'SL SP nâng cấp TV',
         SettingGroup::Affiliate => 'Affiliate',
+        SettingGroup::Evaluation => 'Đánh giá',
     ],
     ModuleStatus::class => [
         ModuleStatus::ChuaXong => 'Chưa xong',

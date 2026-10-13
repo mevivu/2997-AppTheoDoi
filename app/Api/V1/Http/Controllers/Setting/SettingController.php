@@ -71,7 +71,7 @@ class SettingController extends Controller
     public function general(): JsonResponse
     {
         try {
-            $general = $this->settingRepository->getByGroup([SettingGroup::General]);
+            $general = $this->settingRepository->getByGroup([SettingGroup::General, SettingGroup::Evaluation]);
             $settingResponse = SettingResource::collection($general);
 
             return $this->jsonResponseSuccess($settingResponse);

@@ -369,6 +369,7 @@ class RouteAdminSystem
 
     /** SETTING & APP VERSION */
     const SETTING_GENERAL = 'admin.setting.general';
+    const SETTING_EVALUATION = 'admin.setting.evaluation';
     const SETTING_SYSTEM = 'admin.setting.system';
     const SETTING_AFFILIATE = 'admin.setting.affiliate';
     const SETTING_PARENT_RANK = 'admin.setting.parent_rank';
