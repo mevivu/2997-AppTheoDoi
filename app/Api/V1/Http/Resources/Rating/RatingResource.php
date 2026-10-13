@@ -50,6 +50,11 @@ class RatingResource extends JsonResource
             'logic_math' => $this->logic_math,
             'visual' => $this->visual,
             'memory' => $this->memory,
+            'version' => $this->version,
+            'game_score' => $this->game_score,
+            'game_duration_spent' => $this->game_duration_spent,
+            'game_pairs_matched' => $this->game_pairs_matched,
+            'game_mistakes' => $this->game_mistakes,
             'created_at' => format_datetime($this->created_at),
             'updated_at' => format_datetime($this->updated_at),
         ];

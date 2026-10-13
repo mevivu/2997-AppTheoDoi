@@ -133,7 +133,7 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
         $result = "{$scoreValue}/{$totalValue}";
 
         $divisor = $totalItems > 0 ? ($totalItems / 10.0) : 1.5;
-        $data['score'] = min(10, (int) floor($totalCorrect / $divisor));
+        $data['score'] = min(10, (int) round($totalCorrect / $divisor));
         $data['result'] = $result;
         $data['type'] = $type;
         $data['version'] = 'v2';
