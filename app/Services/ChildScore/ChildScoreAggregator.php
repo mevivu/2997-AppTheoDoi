@@ -16,12 +16,32 @@ class ChildScoreAggregator implements ChildScoreAggregatorInterface
      */
     public function getLatestScores(int $childId): array
     {
-        $latestIq = Rating::where('child_id', $childId)
-            ->where('type', QuestionType::IQ)
-            ->whereNotNull('score')
-            ->orderByDesc('age')
-            ->orderByDesc('created_at')
-            ->first();
+        $child = Child::find($childId);
+        $childAge = $child?->age;
+
+        $latestIq = null;
+        if ($childAge) {
+            $latestIq = Rating::where('child_id', $childId)
+                ->where('type', QuestionType::IQ)
+                ->where('age', $childAge)
+                ->whereNotNull('score')
+                ->where('score', '>', 0)
+                ->orderByDesc('updated_at')
+                ->first();
+        }
+        if (!$latestIq) {
+            $latestIq = Rating::where('child_id', $childId)
+                ->where('type', QuestionType::IQ)
+                ->whereNotNull('score')
+                ->where('score', '>', 0)
+                ->orderByDesc('updated_at')
+                ->first()
+                ?? Rating::where('child_id', $childId)
+                    ->where('type', QuestionType::IQ)
+                    ->whereNotNull('score')
+                    ->orderByDesc('updated_at')
+                    ->first();
+        }
 
         $latestEq = Rating::where('child_id', $childId)
             ->where('type', QuestionType::EQ)

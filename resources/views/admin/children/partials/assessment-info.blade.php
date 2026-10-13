@@ -1,9 +1,17 @@
 @php
     use App\Enums\Question\QuestionType;
     use App\Traits\RouteAdminSystem;
-    $latestIq = $children->ratings()->where('type', QuestionType::IQ)->latest()->first();
-    $latestEq = $children->ratings()->where('type', QuestionType::EQ)->latest()->first();
-    $latestAq = $children->ratings()->where('type', QuestionType::AQ)->latest()->first();
+    $childAge = $children->age;
+    $latestIq = null;
+    if ($childAge) {
+        $latestIq = $children->ratings()->where('type', QuestionType::IQ)->where('age', $childAge)->whereNotNull('score')->where('score', '>', 0)->orderByDesc('updated_at')->first();
+    }
+    if (!$latestIq) {
+        $latestIq = $children->ratings()->where('type', QuestionType::IQ)->whereNotNull('score')->where('score', '>', 0)->orderByDesc('updated_at')->first()
+            ?? $children->ratings()->where('type', QuestionType::IQ)->whereNotNull('score')->orderByDesc('updated_at')->first();
+    }
+    $latestEq = $children->ratings()->where('type', QuestionType::EQ)->whereNotNull('score')->latest()->first();
+    $latestAq = $children->ratings()->where('type', QuestionType::AQ)->whereNotNull('score')->latest()->first();
     $latestPq = $children->ratingPQs()->latest()->first();
 
     // Memo Game (Trí nhớ) & Thành tích cá nhân
@@ -50,7 +58,7 @@
                         </div>
                     </div>
                     <div class="assessment-score-badge bg-purple-lt text-purple">
-                        {{ $latestIq ? $latestIq->score . ' ' . __('điểm') : __('Chưa có') }}
+                        {{ ($latestIq && $latestIq->score !== null && $latestIq->score !== '') ? $latestIq->score . ' ' . __('điểm') : __('Chưa có') }}
                     </div>
                 </div>
 
@@ -61,13 +69,13 @@
                     </div>
                     <div class="assessment-subscore-item">
                         <div class="subscore-name">{{ __('Ngày đánh giá gần nhất') }}</div>
-                        <div class="subscore-val">{{ $latestIq ? format_datetime($latestIq->created_at) : __('Chưa có') }}</div>
+                        <div class="subscore-val">{{ ($latestIq && $latestIq->updated_at) ? format_datetime($latestIq->updated_at) : __('Chưa có') }}</div>
                     </div>
                 </div>
             </div>
 
             <div class="pt-3 border-top d-flex justify-content-between align-items-center">
-                <span class="text-muted fs-12">{{ __('Tổng số bài đã làm:') }} <strong>{{ $children->ratings()->where('type', QuestionType::IQ)->count() }}</strong></span>
+                <span class="text-muted fs-12">{{ __('Tổng số bài đã làm:') }} <strong>{{ $children->ratings()->where('type', QuestionType::IQ)->whereNotNull('score')->count() }}</strong></span>
                 <a href="{{ route('admin.rating.iq', ['child_id' => $children->id]) }}" class="btn btn-sm btn-purple-lt d-flex align-items-center gap-1" target="_blank">
                     <span>{{ __('Xem lịch sử IQ') }}</span> <i class="ti ti-arrow-right fs-12"></i>
                 </a>

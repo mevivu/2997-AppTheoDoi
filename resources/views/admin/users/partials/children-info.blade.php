@@ -22,9 +22,17 @@
 
     @forelse($children as $child)
         @php
-            $latestIq = $child->ratings()->where('type', QuestionType::IQ)->latest()->first();
-            $latestEq = $child->ratings()->where('type', QuestionType::EQ)->latest()->first();
-            $latestAq = $child->ratings()->where('type', QuestionType::AQ)->latest()->first();
+            $childAge = $child->age;
+            $latestIq = null;
+            if ($childAge) {
+                $latestIq = $child->ratings()->where('type', QuestionType::IQ)->where('age', $childAge)->whereNotNull('score')->where('score', '>', 0)->orderByDesc('updated_at')->first();
+            }
+            if (!$latestIq) {
+                $latestIq = $child->ratings()->where('type', QuestionType::IQ)->whereNotNull('score')->where('score', '>', 0)->orderByDesc('updated_at')->first()
+                    ?? $child->ratings()->where('type', QuestionType::IQ)->whereNotNull('score')->orderByDesc('updated_at')->first();
+            }
+            $latestEq = $child->ratings()->where('type', QuestionType::EQ)->whereNotNull('score')->latest()->first();
+            $latestAq = $child->ratings()->where('type', QuestionType::AQ)->whereNotNull('score')->latest()->first();
             $latestPq = $child->ratingPQs()->latest()->first();
 
             // Child initials
@@ -90,19 +98,19 @@
                         <!-- IQ Score -->
                         <div class="child-score-box box-iq">
                             <div class="score-label">🧠 IQ</div>
-                            <div class="score-val">{{ $latestIq ? $latestIq->score : '--' }}</div>
+                            <div class="score-val">{{ ($latestIq && $latestIq->score !== null && $latestIq->score !== '') ? $latestIq->score : '--' }}</div>
                         </div>
 
                         <!-- EQ Score -->
                         <div class="child-score-box box-eq">
                             <div class="score-label">❤️ EQ</div>
-                            <div class="score-val">{{ $latestEq ? $latestEq->score : '--' }}</div>
+                            <div class="score-val">{{ ($latestEq && $latestEq->score !== null && $latestEq->score !== '') ? $latestEq->score : '--' }}</div>
                         </div>
 
                         <!-- AQ Score -->
                         <div class="child-score-box box-aq">
                             <div class="score-label">🧗 AQ</div>
-                            <div class="score-val">{{ $latestAq ? $latestAq->score : '--' }}</div>
+                            <div class="score-val">{{ ($latestAq && $latestAq->score !== null && $latestAq->score !== '') ? $latestAq->score : '--' }}</div>
                         </div>
 
                         <!-- PQ Score -->

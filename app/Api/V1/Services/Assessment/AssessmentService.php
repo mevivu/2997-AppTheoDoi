@@ -15,6 +15,7 @@ use App\Enums\OpenStatus;
 use App\Enums\Question\QuestionType;
 use App\Enums\VerifiedStatus;
 use App\Models\Assessment;
+use App\Models\Child;
 use App\Models\Rating;
 use App\Models\RatingPQ;
 use Illuminate\Http\Request;
@@ -134,11 +135,39 @@ class AssessmentService implements AssessmentServiceInterface
 
     public function getLatestRatingByTypeIQ(int $childId, QuestionType $type): ?Rating
     {
+        $child = Child::find($childId);
+        $childAge = $child?->age;
+
+        // 1. Ưu tiên bài test đúng độ tuổi hiện tại của bé và có điểm > 0
+        if ($childAge) {
+            $exactAgeRating = Rating::where('child_id', $childId)
+                ->where('type', $type)
+                ->where('age', $childAge)
+                ->whereNotNull('score')
+                ->where('score', '>', 0)
+                ->orderByDesc('updated_at')
+                ->first();
+            if ($exactAgeRating) {
+                return $exactAgeRating;
+            }
+        }
+
+        // 2. Ưu tiên bài test có điểm hợp lệ (> 0) được cập nhật gần nhất
+        $latestValidRating = Rating::where('child_id', $childId)
+            ->where('type', $type)
+            ->whereNotNull('score')
+            ->where('score', '>', 0)
+            ->orderByDesc('updated_at')
+            ->first();
+        if ($latestValidRating) {
+            return $latestValidRating;
+        }
+
+        // 3. Dự phòng: Bài test mới nhất có điểm (kể cả điểm 0)
         return Rating::where('child_id', $childId)
             ->where('type', $type)
             ->whereNotNull('score')
-            ->orderByDesc('age')   // Tuổi cao nhất
-            ->orderByDesc('created_at') // Nếu có nhiều bản ghi cùng tuổi, lấy bản mới nhất
+            ->orderByDesc('updated_at')
             ->first();
     }
 

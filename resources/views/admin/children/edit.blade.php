@@ -9,9 +9,17 @@
     $decryptedParentPhone = $parentUser?->phone ? AESHelper::decrypt($parentUser->phone) : '';
     $parentPackage = $parentUser?->userPackages()->where('status', 'active')->first();
 
-    $latestIq = $children->ratings()->where('type', QuestionType::IQ)->latest()->first();
-    $latestEq = $children->ratings()->where('type', QuestionType::EQ)->latest()->first();
-    $latestAq = $children->ratings()->where('type', QuestionType::AQ)->latest()->first();
+    $childAge = $children->age;
+    $latestIq = null;
+    if ($childAge) {
+        $latestIq = $children->ratings()->where('type', QuestionType::IQ)->where('age', $childAge)->whereNotNull('score')->where('score', '>', 0)->orderByDesc('updated_at')->first();
+    }
+    if (!$latestIq) {
+        $latestIq = $children->ratings()->where('type', QuestionType::IQ)->whereNotNull('score')->where('score', '>', 0)->orderByDesc('updated_at')->first()
+            ?? $children->ratings()->where('type', QuestionType::IQ)->whereNotNull('score')->orderByDesc('updated_at')->first();
+    }
+    $latestEq = $children->ratings()->where('type', QuestionType::EQ)->whereNotNull('score')->latest()->first();
+    $latestAq = $children->ratings()->where('type', QuestionType::AQ)->whereNotNull('score')->latest()->first();
     $latestPq = $children->ratingPQs()->latest()->first();
 
     $predHeight = $heightPrediction['predicting_adult_height'] ?? 0;
