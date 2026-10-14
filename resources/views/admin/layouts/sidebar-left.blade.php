@@ -42,6 +42,31 @@
         </div>
     </div>
 
+    <!-- Recently Visited & Pinned Quick Access Section -->
+    <div id="sidebarRecentSection" class="sidebar-recent-section d-none"
+         data-admin-id="{{ auth('admin')->id() ?? 'guest' }}">
+        <div class="sidebar-recent-header d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-1 min-w-0">
+                <i class="ti ti-clock-play text-primary" style="font-size: 14px;"></i>
+                <span class="sidebar-recent-heading text-uppercase fw-bold">{{ __('Truy cập gần đây') }}</span>
+                <span id="sidebarRecentCount" class="sidebar-recent-count-badge">0</span>
+            </div>
+            <div class="sidebar-recent-header-actions d-flex align-items-center gap-1">
+                <button type="button" id="btnClearSidebarRecent"
+                        class="btn-recent-header-action"
+                        title="{{ __('Xóa lịch sử gần đây (giữ lại mục đã ghim)') }}">
+                    <i class="ti ti-eraser"></i>
+                </button>
+                <button type="button" id="btnToggleSidebarRecent"
+                        class="btn-recent-header-action"
+                        title="{{ __('Thu gọn / Mở rộng') }}">
+                    <i class="ti ti-chevron-up" id="iconToggleSidebarRecent"></i>
+                </button>
+            </div>
+        </div>
+        <ul class="recent-menu-list" id="sidebarRecentList"></ul>
+    </div>
+
     <!-- Navigation Menu Container -->
     <nav class="sidebar-menu">
         <ul class="menu-list" id="accordionSidebar">
@@ -666,6 +691,268 @@
             margin-left: 0 !important;
         }
     }
+
+    /* ==========================================
+       RECENTLY VISITED & PINNED SECTION STYLES
+       ========================================== */
+    .sidebar-recent-section {
+        margin: 8px 10px 4px 10px;
+        padding: 6px;
+        background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+    }
+
+    .sidebar-recent-header {
+        padding: 2px 6px 4px 6px;
+        user-select: none;
+    }
+
+    .sidebar-recent-heading {
+        font-size: 10.5px;
+        letter-spacing: 0.4px;
+        color: #1e40af;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sidebar-recent-count-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 17px;
+        height: 16px;
+        padding: 0 5px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #2563eb;
+        background: #dbeafe;
+        border-radius: 10px;
+        line-height: 1;
+    }
+
+    .btn-recent-header-action {
+        border: none;
+        background: transparent;
+        color: #64748b;
+        width: 22px;
+        height: 22px;
+        border-radius: 5px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        padding: 0;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .btn-recent-header-action:hover {
+        color: #2563eb;
+        background: #e2e8f0;
+    }
+
+    .recent-menu-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 195px;
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+
+    .recent-menu-list::-webkit-scrollbar {
+        display: none;
+    }
+
+    .sidebar-recent-section.is-collapsed .recent-menu-list {
+        display: none;
+    }
+
+    .sidebar-recent-section.is-collapsed .sidebar-recent-header {
+        padding-bottom: 2px;
+    }
+
+    .recent-menu-item {
+        position: relative;
+        margin: 2px 0;
+    }
+
+    .recent-menu-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 7px;
+        border-radius: 7px;
+        color: #334155;
+        text-decoration: none !important;
+        transition: all 0.15s ease;
+        border: 1px solid transparent;
+    }
+
+    .recent-menu-link:hover {
+        background: #ffffff;
+        color: #2563eb;
+        border-color: #dbeafe;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    }
+
+    .recent-menu-link.active {
+        background: #eff6ff;
+        color: #2563eb;
+        border-color: #bfdbfe;
+        font-weight: 600;
+    }
+
+    .recent-item-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        color: #2563eb;
+        flex-shrink: 0;
+        position: relative;
+    }
+
+    .recent-item-icon i,
+    .recent-item-icon svg {
+        font-size: 14px;
+        width: 14px;
+        height: 14px;
+    }
+
+    .recent-menu-item.is-pinned .recent-item-icon {
+        background: #fffbeb;
+        border-color: #fde68a;
+        color: #d97706;
+    }
+
+    .recent-pin-dot {
+        display: none;
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #f59e0b;
+        border: 1.5px solid #ffffff;
+    }
+
+    .recent-item-content {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+    }
+
+    .recent-item-title {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: inherit;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .recent-item-parent {
+        font-size: 10.5px;
+        color: #64748b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-top: 1px;
+    }
+
+    .recent-item-actions {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        flex-shrink: 0;
+    }
+
+    .btn-recent-item-action {
+        border: none;
+        background: transparent;
+        color: #94a3b8;
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        padding: 0;
+        cursor: pointer;
+        opacity: 0;
+        transition: all 0.15s ease;
+    }
+
+    .recent-menu-item:hover .btn-recent-item-action {
+        opacity: 1;
+    }
+
+    .btn-recent-pin.is-pinned {
+        opacity: 1;
+        color: #f59e0b;
+    }
+
+    .btn-recent-pin:hover {
+        color: #d97706 !important;
+        background: #fef3c7;
+    }
+
+    .btn-recent-remove:hover {
+        color: #ef4444 !important;
+        background: #fee2e2;
+    }
+
+    /* Mini Sidebar Mode (80px) Support for Recent Section */
+    body.sidebar-mini:not(.mobile-sidebar-open) .sidebar-recent-section {
+        margin: 6px 6px 2px 6px;
+        padding: 4px 2px;
+    }
+
+    body.sidebar-mini:not(.mobile-sidebar-open) .sidebar-recent-header,
+    body.sidebar-mini:not(.mobile-sidebar-open) .recent-item-content,
+    body.sidebar-mini:not(.mobile-sidebar-open) .recent-item-actions {
+        display: none !important;
+    }
+
+    body.sidebar-mini:not(.mobile-sidebar-open) .sidebar-recent-section.is-collapsed .recent-menu-list {
+        display: block;
+    }
+
+    body.sidebar-mini:not(.mobile-sidebar-open) .recent-menu-link {
+        justify-content: center;
+        padding: 6px 4px;
+    }
+
+    body.sidebar-mini:not(.mobile-sidebar-open) .recent-item-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+
+    body.sidebar-mini:not(.mobile-sidebar-open) .recent-item-icon i,
+    body.sidebar-mini:not(.mobile-sidebar-open) .recent-item-icon svg {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+    }
+
+    body.sidebar-mini:not(.mobile-sidebar-open) .recent-menu-item.is-pinned .recent-pin-dot {
+        display: block;
+    }
 </style>
 
 <script src="{{ asset('public/libs/jquery/jquery.min.js') }}"></script>
@@ -764,8 +1051,13 @@
                 $headings.show();
                 $('.submenu-item').show();
                 $('#sidebarNoResult').remove();
+                if (typeof renderRecentSidebarItems === 'function') {
+                    renderRecentSidebarItems();
+                }
                 return;
             }
+
+            $('#sidebarRecentSection').addClass('d-none');
 
             $menuItems.each(function () {
                 const $item = $(this);
@@ -861,6 +1153,286 @@
                 }
             });
         }
+
+        // =========================================================================
+        // RECENTLY VISITED & PINNED MODULES LOGIC (Max 5 items, Per-Admin Scoped)
+        // =========================================================================
+        const $recentSection = $('#sidebarRecentSection');
+        const $recentList = $('#sidebarRecentList');
+        const $recentCountBadge = $('#sidebarRecentCount');
+        const $iconToggleRecent = $('#iconToggleSidebarRecent');
+        const adminId = $recentSection.attr('data-admin-id') || 'guest';
+        const RECENT_STORAGE_KEY = 'admin_sidebar_recent_v1_' + adminId;
+        const RECENT_COLLAPSED_KEY = 'admin_sidebar_recent_collapsed_' + adminId;
+        const MAX_RECENT_ITEMS = 5;
+
+        function normalizeSidebarUrl(url) {
+            if (!url) return '';
+            return String(url).split(/[?#]/)[0].replace(/\/+$/, '');
+        }
+
+        function escapeHtml(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Thu thập danh sách tất cả các link hợp lệ mà tài khoản Admin hiện tại được phân quyền
+        const permittedLinksMap = {};
+        $('#accordionSidebar .submenu-link, #accordionSidebar > .menu-item:not(.has-submenu) > .menu-link').each(function () {
+            const $link = $(this);
+            const href = $link.attr('href');
+            if (!href || href === '#') return;
+
+            const normUrl = normalizeSidebarUrl(href);
+            if (!normUrl) return;
+
+            const isSubmenu = $link.hasClass('submenu-link');
+            const title = $.trim($link.find(isSubmenu ? '.submenu-text' : '.menu-title').first().text());
+            const parentTitle = isSubmenu
+                ? $.trim($link.closest('.menu-item').find('> .menu-link .menu-title').first().text())
+                : '';
+
+            const $iconClone = $link.find(isSubmenu ? '.submenu-icon' : '.menu-icon').first().clone();
+            $iconClone.find('.mini-badge-dot, .sidebar-badge-counter').remove();
+            const iconHtml = $.trim($iconClone.html()) || '<i class="ti ti-circle"></i>';
+
+            permittedLinksMap[normUrl] = {
+                url: href,
+                normUrl: normUrl,
+                title: title,
+                parentTitle: parentTitle,
+                iconHtml: iconHtml
+            };
+        });
+
+        function loadRecentItems() {
+            try {
+                const raw = localStorage.getItem(RECENT_STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                if (!Array.isArray(parsed)) return [];
+
+                // Chỉ giữ lại các mục nằm trong danh sách được phân quyền của Admin hiện tại
+                const validItems = [];
+                const seenUrls = {};
+
+                for (let i = 0; i < parsed.length; i++) {
+                    const item = parsed[i];
+                    if (!item || !item.url) continue;
+                    const normUrl = normalizeSidebarUrl(item.url);
+                    if (!normUrl || seenUrls[normUrl] || !permittedLinksMap[normUrl]) continue;
+
+                    seenUrls[normUrl] = true;
+                    const meta = permittedLinksMap[normUrl];
+                    validItems.push({
+                        url: meta.url,
+                        normUrl: normUrl,
+                        title: meta.title,
+                        parentTitle: meta.parentTitle,
+                        iconHtml: meta.iconHtml,
+                        pinned: Boolean(item.pinned),
+                        visitedAt: Number(item.visitedAt) || 0,
+                        pinnedAt: Number(item.pinnedAt) || 0
+                    });
+                }
+
+                return sortAndTrimRecentItems(validItems);
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function sortAndTrimRecentItems(items) {
+            const pinned = items.filter(function (x) { return x.pinned; })
+                .sort(function (a, b) { return (b.pinnedAt || b.visitedAt) - (a.pinnedAt || a.visitedAt); });
+            const unpinned = items.filter(function (x) { return !x.pinned; })
+                .sort(function (a, b) { return b.visitedAt - a.visitedAt; });
+
+            return pinned.concat(unpinned).slice(0, MAX_RECENT_ITEMS);
+        }
+
+        function saveRecentItems(items) {
+            try {
+                const trimmed = sortAndTrimRecentItems(items);
+                localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(trimmed));
+                return trimmed;
+            } catch (e) {
+                return items;
+            }
+        }
+
+        function recordSidebarVisit(href) {
+            const normUrl = normalizeSidebarUrl(href);
+            if (!normUrl || !permittedLinksMap[normUrl]) return;
+
+            const meta = permittedLinksMap[normUrl];
+            const items = loadRecentItems();
+            const now = Date.now();
+            let found = false;
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].normUrl === normUrl) {
+                    items[i].visitedAt = now;
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                // Nếu danh sách đã đầy 5 mục mà thêm mục mới, giữ tối đa (MAX_RECENT_ITEMS - 1) mục cũ ưu tiên đã ghim
+                items.push({
+                    url: meta.url,
+                    normUrl: normUrl,
+                    title: meta.title,
+                    parentTitle: meta.parentTitle,
+                    iconHtml: meta.iconHtml,
+                    pinned: false,
+                    visitedAt: now,
+                    pinnedAt: 0
+                });
+            }
+
+            saveRecentItems(items);
+        }
+
+        const activeNormUrl = ($activeTarget && $activeTarget.length)
+            ? normalizeSidebarUrl($activeTarget.attr('href'))
+            : normalizeSidebarUrl(currentUrl);
+
+        // Tự động ghi nhận trang đang mở hiện tại vào Truy cập gần đây
+        if (activeNormUrl && permittedLinksMap[activeNormUrl]) {
+            recordSidebarVisit(permittedLinksMap[activeNormUrl].url);
+        }
+
+        // Khôi phục trạng thái thu gọn/mở rộng khối Truy cập gần đây
+        if (localStorage.getItem(RECENT_COLLAPSED_KEY) === '1') {
+            $recentSection.addClass('is-collapsed');
+            $iconToggleRecent.removeClass('ti-chevron-up').addClass('ti-chevron-down');
+        }
+
+        function renderRecentSidebarItems() {
+            const items = loadRecentItems();
+            const query = $.trim($searchInput.val());
+
+            if (!items.length || query.length > 0) {
+                $recentSection.addClass('d-none');
+                return;
+            }
+
+            $recentSection.removeClass('d-none');
+            $recentCountBadge.text(items.length);
+            $recentList.empty();
+
+            items.forEach(function (item) {
+                const isActive = item.normUrl === activeNormUrl;
+                const isPinned = Boolean(item.pinned);
+                const fullTooltip = item.parentTitle
+                    ? (item.parentTitle + ' • ' + item.title)
+                    : item.title;
+
+                const parentSubtitleHtml = item.parentTitle
+                    ? `<span class="recent-item-parent">${escapeHtml(item.parentTitle)}</span>`
+                    : '';
+
+                const $li = $(`
+                    <li class="recent-menu-item ${isPinned ? 'is-pinned' : ''}" data-norm-url="${escapeHtml(item.normUrl)}">
+                        <a href="${escapeHtml(item.url)}" class="recent-menu-link ${isActive ? 'active' : ''}" title="${escapeHtml(fullTooltip)}">
+                            <span class="recent-item-icon">
+                                ${item.iconHtml}
+                                <span class="recent-pin-dot"></span>
+                            </span>
+                            <span class="recent-item-content">
+                                <span class="recent-item-title">${escapeHtml(item.title)}</span>
+                                ${parentSubtitleHtml}
+                            </span>
+                            <span class="recent-item-actions">
+                                <button type="button"
+                                        class="btn-recent-item-action btn-recent-pin ${isPinned ? 'is-pinned' : ''}"
+                                        title="${isPinned ? 'Bỏ ghim khỏi đầu danh sách' : 'Ghim cố định lên đầu'}">
+                                    <i class="ti ${isPinned ? 'ti-pinned-filled' : 'ti-pin'}"></i>
+                                </button>
+                                <button type="button"
+                                        class="btn-recent-item-action btn-recent-remove"
+                                        title="Xóa khỏi danh sách gần đây">
+                                    <i class="ti ti-x"></i>
+                                </button>
+                            </span>
+                        </a>
+                    </li>
+                `);
+
+                $recentList.append($li);
+            });
+        }
+
+        renderRecentSidebarItems();
+
+        // Ghi nhận ngay khi click vào mục menu bất kỳ trên Sidebar
+        $('#accordionSidebar').on('click', '.submenu-link, .menu-link', function () {
+            const href = $(this).attr('href');
+            if (href && href !== '#') {
+                recordSidebarVisit(href);
+            }
+        });
+
+        // Xử lý Ghim / Bỏ ghim một mục
+        $recentList.on('click', '.btn-recent-pin', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const normUrl = $(this).closest('.recent-menu-item').attr('data-norm-url');
+            const items = loadRecentItems();
+            const now = Date.now();
+
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].normUrl === normUrl) {
+                    items[i].pinned = !items[i].pinned;
+                    items[i].pinnedAt = items[i].pinned ? now : 0;
+                    break;
+                }
+            }
+
+            saveRecentItems(items);
+            renderRecentSidebarItems();
+        });
+
+        // Xử lý Xóa từng mục khỏi danh sách
+        $recentList.on('click', '.btn-recent-remove', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const normUrl = $(this).closest('.recent-menu-item').attr('data-norm-url');
+            const items = loadRecentItems().filter(function (x) {
+                return x.normUrl !== normUrl;
+            });
+
+            saveRecentItems(items);
+            renderRecentSidebarItems();
+        });
+
+        // Xử lý Xóa nhanh lịch sử gần đây (giữ lại các mục đã ghim)
+        $('#btnClearSidebarRecent').on('click', function (e) {
+            e.preventDefault();
+            const pinnedOnly = loadRecentItems().filter(function (x) {
+                return x.pinned;
+            });
+            saveRecentItems(pinnedOnly);
+            renderRecentSidebarItems();
+        });
+
+        // Xử lý Thu gọn / Mở rộng khối Truy cập gần đây
+        $('#btnToggleSidebarRecent').on('click', function (e) {
+            e.preventDefault();
+            $recentSection.toggleClass('is-collapsed');
+            const isCollapsed = $recentSection.hasClass('is-collapsed');
+            localStorage.setItem(RECENT_COLLAPSED_KEY, isCollapsed ? '1' : '0');
+            if (isCollapsed) {
+                $iconToggleRecent.removeClass('ti-chevron-up').addClass('ti-chevron-down');
+            } else {
+                $iconToggleRecent.removeClass('ti-chevron-down').addClass('ti-chevron-up');
+            }
+        });
 
         // Tự động cuộn sidebar đến đúng vị trí menu đang active (khắc phục bị nhảy lên đầu trang)
         function scrollToActiveMenu() {
