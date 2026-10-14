@@ -260,14 +260,11 @@
                 :back-title="__('Danh sách mốc tuổi')"
             >
                 <x-slot:actions>
-                    <form action="{{ route(RouteAdminSystem::IQ_NORM_RECALCULATE) }}" method="POST" class="d-inline"
-                          onsubmit="return confirm('Bạn có chắc chắn muốn tái chuẩn hóa lại Mean và StdDev cho toàn bộ các độ tuổi từ dữ liệu Ratings không?');">
-                        @csrf
-                        <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill d-inline-flex align-items-center gap-1 px-3">
-                            <i class="ti ti-rotate-clockwise"></i>
-                            <span>{{ __('Tái tính toán Ratings') }}</span>
-                        </button>
-                    </form>
+                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill d-inline-flex align-items-center gap-1 px-3"
+                            data-bs-toggle="modal" data-bs-target="#modalRecalculateGuide">
+                        <i class="ti ti-rotate-clockwise"></i>
+                        <span>{{ __('Tái tính toán Ratings') }}</span>
+                    </button>
                 </x-slot:actions>
             </x-admin.page-header>
 
@@ -368,6 +365,83 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Hướng dẫn & Xác nhận Tái chuẩn hóa chi tiết -->
+    <div class="modal modal-blur fade" id="modalRecalculateGuide" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+                        <i class="ti ti-rotate-clockwise fs-3"></i>
+                        <span>{{ __('Tái chuẩn hóa Bảng chuẩn IQ từ Ratings thực tế') }}</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body py-4">
+                    <h4 class="fw-bold text-dark mb-2">
+                        {{ __('Tính năng "Tái chuẩn hóa" hoạt động như thế nào?') }}
+                    </h4>
+                    <p class="text-muted fs-13 mb-3">
+                        Khi bạn xác nhận, hệ thống sẽ thực hiện tác vụ tự động quét toàn bộ dữ liệu trong bảng <strong>Ratings</strong> (kết quả bài kiểm tra IQ thực tế của các bé trên ứng dụng) và xử lý:
+                    </p>
+
+                    <div class="list-group list-group-flush border rounded-3 mb-3">
+                        <div class="list-group-item d-flex align-items-start gap-2 py-2">
+                            <i class="ti ti-check text-success fs-4 mt-1"></i>
+                            <div class="fs-13">
+                                <strong>{{ __('Gom nhóm theo độ tuổi:') }}</strong>
+                                <span class="text-muted">{{ __('Tách riêng bài làm của trẻ theo từng độ tuổi (từ 1 đến 20 tuổi).') }}</span>
+                            </div>
+                        </div>
+
+                        <div class="list-group-item d-flex align-items-start gap-2 py-2">
+                            <i class="ti ti-check text-success fs-4 mt-1"></i>
+                            <div class="fs-13">
+                                <strong>{{ __('Tính toán thống kê mới:') }}</strong>
+                                <span class="text-muted">{{ __('Tính Cỡ mẫu (N), Điểm trung bình (Mean μ), Độ lệch chuẩn (StdDev σ), Điểm Min và Max.') }}</span>
+                            </div>
+                        </div>
+
+                        <div class="list-group-item d-flex align-items-start gap-2 py-2">
+                            <i class="ti ti-check text-success fs-4 mt-1"></i>
+                            <div class="fs-13">
+                                <strong>{{ __('Cập nhật tự động:') }}</strong>
+                                <span class="text-muted">{{ __('Lưu đè bộ tham số mới vào bảng chuẩn IQ này và xóa bộ nhớ đệm (Cache).') }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Callout Lưu ý quan trọng -->
+                    <div class="alert alert-warning border border-warning-subtle d-flex align-items-start gap-2 p-3 mb-0 rounded-3">
+                        <i class="ti ti-alert-triangle text-warning fs-3 flex-shrink-0 mt-1"></i>
+                        <div class="fs-12">
+                            <strong class="d-block mb-1 text-dark">{{ __('Lưu ý quan trọng trước khi thực hiện:') }}</strong>
+                            <ul class="mb-0 ps-3 text-muted">
+                                <li>{{ __('Chỉ nên thực hiện khi hệ thống đã có thêm lượng bài test mới đủ lớn (khuyến nghị mỗi độ tuổi ≥ 30 - 50 bài test).') }}</li>
+                                <li>{{ __('Các bài test đã hoàn thành trong quá khứ vẫn giữ nguyên điểm IQ lịch sử đã chấm.') }}</li>
+                                <li>{{ __('Các bài test mới làm sau thời điểm này sẽ áp dụng bộ tham số mới.') }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-link text-muted me-auto" data-bs-dismiss="modal">
+                        {{ __('Hủy bỏ') }}
+                    </button>
+
+                    <form action="{{ route('admin.iq_norm.recalculate') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                            <i class="ti ti-rotate-clockwise fs-4"></i>
+                            <span>{{ __('Tiến hành quét & Tái chuẩn hóa ngay') }}</span>
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

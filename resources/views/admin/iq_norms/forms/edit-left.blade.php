@@ -12,6 +12,17 @@
             </span>
         </div>
         <div class="card-body p-4">
+            {{-- Quick Context Alert --}}
+            <div class="alert alert-info border border-info-subtle d-flex align-items-start gap-2 p-3 mb-3 rounded-3 bg-info-subtle">
+                <i class="ti ti-info-circle text-azure fs-3 flex-shrink-0 mt-1"></i>
+                <div class="fs-12 text-dark">
+                    <strong>{{ __('Hướng dẫn điều chỉnh thông số chuẩn:') }}</strong>
+                    <div class="text-muted mt-1">
+                        {{ __('Hệ thống sử dụng các thông số này để quy đổi điểm thô của bài test thành chỉ số IQ Wechsler theo chuẩn phân phối đối xứng. Nếu vừa được tái chuẩn hóa từ dữ liệu bài test thực tế, bạn vẫn có thể tinh chỉnh thủ công Mean và StdDev theo đánh giá của chuyên gia tâm lý.') }}
+                    </div>
+                </div>
+            </div>
+
             <div class="row g-3">
                 {{-- Group 1: Age & Sample Size --}}
                 <div class="col-12 col-md-6">
@@ -25,7 +36,7 @@
                         <span class="input-group-text bg-light text-muted fw-semibold">tuổi</span>
                     </div>
                     <small class="form-hint text-muted mt-1">
-                        <i class="ti ti-info-circle me-1"></i>{{ __('Độ tuổi của trẻ khi làm bài test IQ (1 - 20 tuổi)') }}
+                        <i class="ti ti-info-circle me-1"></i>{{ __('Độ tuổi của trẻ khi làm bài test IQ (hệ thống sẽ lấy bảng chuẩn theo tuổi này để tính IQ)') }}
                     </small>
                 </div>
 
@@ -39,7 +50,7 @@
                         <span class="input-group-text bg-light text-muted fw-semibold">trẻ</span>
                     </div>
                     <small class="form-hint text-muted mt-1">
-                        <i class="ti ti-info-circle me-1"></i>{{ __('Số lượng trẻ trong tập mẫu dùng để chuẩn hóa mốc tuổi này') }}
+                        <i class="ti ti-info-circle me-1"></i>{{ __('Số lượng trẻ trong mẫu thống kê (cỡ mẫu N càng lớn, bảng chuẩn càng có ý nghĩa thống kê cao)') }}
                     </small>
                 </div>
 
@@ -62,7 +73,8 @@
                                     <x-input type="number" step="0.01" min="0" name="mean_score" :value="$response->mean_score" :required="true" class="fw-bold fs-15 text-primary border-primary-subtle" />
                                 </div>
                                 <small class="form-hint text-muted mt-1">
-                                    {{ __('Kỳ vọng điểm thô thực tế của nhóm tuổi này') }}
+                                    <i class="ti ti-help me-1 text-primary"></i>
+                                    {{ __('Điểm số trung bình các trẻ ở tuổi này thường đạt được. Khi một bé đạt đúng điểm thô này, điểm IQ sẽ tương đương mốc 100.') }}
                                 </small>
                             </div>
 
@@ -77,14 +89,15 @@
                                     <x-input type="number" step="0.01" min="0.01" name="sd_score" :value="$response->sd_score" :required="true" class="fw-bold fs-15 text-azure border-info-subtle" />
                                 </div>
                                 <small class="form-hint text-muted mt-1">
-                                    {{ __('Độ phân tán chuẩn của nhóm tuổi (bắt buộc > 0)') }}
+                                    <i class="ti ti-help me-1 text-azure"></i>
+                                    {{ __('Độ phân tán của bài test xung quanh điểm trung bình. Trong thang Wechsler, 1 độ lệch chuẩn thực tế (σ) sẽ tương đương với 15 điểm IQ.') }}
                                 </small>
                             </div>
                         </div>
 
                         <div class="d-flex align-items-center gap-2 mt-2 pt-2 border-top border-blue-subtle text-muted fs-12">
-                            <i class="ti ti-bulb text-warning fs-4"></i>
-                            <span>{{ __('Quy chuẩn Wechsler: 1 độ lệch chuẩn thực tế (σ) sẽ tương đương 15 điểm trên thang IQ chuẩn (Mean 100).') }}</span>
+                            <i class="ti ti-bulb text-warning fs-4 flex-shrink-0"></i>
+                            <span>{{ __('Công thức Wechsler: Điểm IQ = 100 + 15 × (Điểm thô của trẻ - Mean μ) / StdDev σ. Kết quả được làm tròn thành số nguyên.') }}</span>
                         </div>
                     </div>
                 </div>
@@ -96,7 +109,7 @@
                         <span>{{ __('Điểm thô thấp nhất (Min)') }}:</span>
                     </label>
                     <x-input type="number" step="0.01" name="min_raw_score" :value="$response->min_raw_score" placeholder="vd: 0" />
-                    <small class="form-hint text-muted">{{ __('Mức điểm thô nhỏ nhất từng ghi nhận') }}</small>
+                    <small class="form-hint text-muted">{{ __('Mức điểm thô nhỏ nhất từng ghi nhận ở độ tuổi này') }}</small>
                 </div>
 
                 <div class="col-12 col-md-6">
@@ -105,7 +118,7 @@
                         <span>{{ __('Điểm thô cao nhất (Max)') }}:</span>
                     </label>
                     <x-input type="number" step="0.01" name="max_raw_score" :value="$response->max_raw_score" placeholder="vd: 30" />
-                    <small class="form-hint text-muted">{{ __('Mức điểm thô lớn nhất từng ghi nhận') }}</small>
+                    <small class="form-hint text-muted">{{ __('Mức điểm thô lớn nhất từng ghi nhận ở độ tuổi này') }}</small>
                 </div>
 
                 {{-- Group 4: Version & Clinical Notes --}}
@@ -115,7 +128,7 @@
                         <span>{{ __('Phiên bản bảng chuẩn') }}:</span>
                     </label>
                     <x-input type="text" name="version" :value="$response->version" placeholder="vd: baseline_v1, wechsler_vietnam_2026" />
-                    <small class="form-hint text-muted">{{ __('Mã định danh phiên bản dữ liệu chuẩn hóa') }}</small>
+                    <small class="form-hint text-muted">{{ __('Mã định danh phiên bản dữ liệu chuẩn hóa (giúp theo dõi lịch sử cập nhật bảng chuẩn)') }}</small>
                 </div>
 
                 <div class="col-12">
