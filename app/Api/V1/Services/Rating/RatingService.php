@@ -147,24 +147,32 @@ class RatingService implements RatingServiceInterface
         }
 
         $correctCount = min($totalCount, $correctCount);
-        $scoreValue = $correctCount * 10;
-        $totalValue = $totalCount * 10;
-        $result = $totalCount > 0 ? "{$scoreValue}/{$totalValue}" : "0/0";
-        $data['score'] = min(10, floor($correctCount / 1.5));
+        $result = $totalCount > 0 ? "{$correctCount}/{$totalCount}" : "0/0";
+
+        // Xác định độ tuổi của bé để tra cứu bảng chuẩn Wechsler (Gaussian Norm)
+        $childAge = $child->birthday ? \Carbon\Carbon::parse($child->birthday)->age : (int) ($quiz->age ?? 5);
+        if ($childAge < 1) {
+            $childAge = 1;
+        }
+
+        $iqNorm = \App\Models\IqNorm::getNormForAge($childAge);
+        $wechslerIq = $iqNorm ? $iqNorm->calculateIq((float) $correctCount) : (int) round(100 + 15 * (($correctCount - 15) / 5));
+
+        $data['score'] = $wechslerIq;
         $data['result'] = $result;
         $data['type'] = $type;
 
         // Lưu snapshot điểm chi tiết các nhóm năng lực IQ
         $data['category_scores'] = \App\Services\Assessment\CategoryScoreCalculator::calculateIq($groupTotals, $groupCorrects);
 
-        // Phân bậc điểm, nhãn, nhận định và hành động cho bố mẹ
-        $band = \App\Services\Assessment\AssessmentBandResolver::resolve($type, $data['score']);
+        // Phân bậc điểm, nhãn, nhận định và hành động cho bố mẹ theo chuẩn Wechsler
+        $band = \App\Services\Assessment\AssessmentBandResolver::resolve($type, $wechslerIq);
         $data['description'] = $band['description'];
         $data['label'] = $band['label'];
         $data['parent_action'] = $band['parent_action'];
 
         $description = "Đã xuất sắc nhận được kết quả đánh giá trực tuyến\nbằng cách hoàn thành Bài kiểm tra IQ nâng cao của\nCHAMCON360.";
-        $path = $this->createCertificate($childName, $result, $description, now());
+        $path = $this->createCertificate($childName, "IQ: {$wechslerIq}", $description, now());
         $data['badge_image'] = $path;
         $data['status'] = VerifiedStatus::Active;
         return $this->repository->update($ratingId, $data);

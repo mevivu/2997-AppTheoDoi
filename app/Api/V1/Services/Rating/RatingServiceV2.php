@@ -123,17 +123,23 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
             $data[$gk] = $tot > 0 ? "{$cor}/{$tot}" : null;
         }
 
-        // Công thức tính điểm IQ V2:
+        // Công thức tính điểm IQ V2 chuẩn hóa Wechsler:
         // Tổng số mục đánh giá = số câu hỏi trắc nghiệm + số lần chơi game ($gamePlays)
-        // Tổng số đúng = correctCount (của quiz hiện tại) + gameScore
+        // Điểm thô X = correctCount (của quiz hiện tại) + gameScore
         $totalItems = $totalQuestionCount + $gamePlays;
         $totalCorrect = min($totalItems, $correctCount + $gameScore);
-        $scoreValue = $totalCorrect * 10;
-        $totalValue = $totalItems * 10;
-        $result = "{$scoreValue}/{$totalValue}";
+        $result = "{$totalCorrect}/{$totalItems}";
 
-        $divisor = $totalItems > 0 ? ($totalItems / 10.0) : 1.5;
-        $data['score'] = min(10, (int) round($totalCorrect / $divisor));
+        // Xác định độ tuổi của bé để tra cứu bảng chuẩn Wechsler (Gaussian Norm)
+        $childAge = $child->birthday ? \Carbon\Carbon::parse($child->birthday)->age : (int) ($quiz->age ?? 5);
+        if ($childAge < 1) {
+            $childAge = 1;
+        }
+
+        $iqNorm = \App\Models\IqNorm::getNormForAge($childAge);
+        $wechslerIq = $iqNorm ? $iqNorm->calculateIq((float) $totalCorrect) : (int) round(100 + 15 * (($totalCorrect - 15) / 5));
+
+        $data['score'] = $wechslerIq;
         $data['result'] = $result;
         $data['type'] = $type;
         $data['version'] = 'v2';
@@ -147,14 +153,14 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
         // Lưu snapshot điểm chi tiết các nhóm năng lực IQ V2 (đã gồm Memo Game trong Memory)
         $data['category_scores'] = \App\Services\Assessment\CategoryScoreCalculator::calculateIq($groupTotals, $groupCorrects);
 
-        // Phân bậc điểm, nhãn, nhận định và hành động cho bố mẹ
-        $band = \App\Services\Assessment\AssessmentBandResolver::resolve($type, $data['score']);
+        // Phân bậc điểm, nhãn, nhận định và hành động cho bố mẹ theo chuẩn Wechsler
+        $band = \App\Services\Assessment\AssessmentBandResolver::resolve($type, $wechslerIq);
         $data['description'] = $band['description'];
         $data['label'] = $band['label'];
         $data['parent_action'] = $band['parent_action'];
 
         $certDescription = "Đã xuất sắc nhận được kết quả đánh giá trực tuyến\nbằng cách hoàn thành Bài kiểm tra IQ nâng cao V2 của\nCHAMCON360.";
-        $path = $this->createCertificate($childName, $result, $certDescription, now());
+        $path = $this->createCertificate($childName, "IQ: {$wechslerIq}", $certDescription, now());
         $data['badge_image'] = $path;
         $data['status'] = VerifiedStatus::Active;
 

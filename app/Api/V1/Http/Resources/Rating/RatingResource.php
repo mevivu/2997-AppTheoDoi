@@ -55,6 +55,8 @@ class RatingResource extends JsonResource
             'game_duration_spent' => $this->game_duration_spent,
             'game_pairs_matched' => $this->game_pairs_matched,
             'game_mistakes' => $this->game_mistakes,
+            'wechsler_iq' => ($this->type === 'iq' || $this->type === \App\Enums\Question\QuestionType::IQ || (is_object($this->type) && property_exists($this->type, 'value') && $this->type->value === 'iq')) && floatval($this->score) > 10.0 ? (int) round((float) $this->score) : null,
+            'wechsler_classification' => ($this->type === 'iq' || $this->type === \App\Enums\Question\QuestionType::IQ || (is_object($this->type) && property_exists($this->type, 'value') && $this->type->value === 'iq')) && floatval($this->score) > 10.0 ? ($this->label ?: $this->description) : null,
             'created_at' => format_datetime($this->created_at),
             'updated_at' => format_datetime($this->updated_at),
         ];

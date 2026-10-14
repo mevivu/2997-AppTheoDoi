@@ -16,8 +16,32 @@ class AssessmentBandResolver
     public static function resolve(string|QuestionType $type, float|int|string|null $score): array
     {
         $typeKey = $type instanceof QuestionType ? $type->value : strtolower((string) $type);
-        $numericScore = is_null($score) ? 0.0 : max(0.0, min(10.0, (float) $score));
+        $rawNumericScore = is_null($score) ? 0.0 : (float) $score;
 
+        // Nếu là bài test IQ và điểm số > 10 -> Áp dụng Thang phân loại Wechsler quốc tế (Thang điểm 100)
+        if ($typeKey === 'iq' && $rawNumericScore > 10.0) {
+            $wechslerBands = config('assessment.wechsler_bands', []);
+            foreach ($wechslerBands as $wBand) {
+                $maxScore = (float) ($wBand['max_score'] ?? 999.0);
+                if ($rawNumericScore <= $maxScore) {
+                    return [
+                        'band' => $wBand['band'] ?? 'W4',
+                        'label' => $wBand['label'] ?? '',
+                        'description' => $wBand['description'] ?? '',
+                        'parent_action' => $wBand['parent_action'] ?? '',
+                    ];
+                }
+            }
+            $lastWBand = end($wechslerBands);
+            return [
+                'band' => $lastWBand['band'] ?? 'W7',
+                'label' => $lastWBand['label'] ?? '',
+                'description' => $lastWBand['description'] ?? '',
+                'parent_action' => $lastWBand['parent_action'] ?? '',
+            ];
+        }
+
+        $numericScore = max(0.0, min(10.0, $rawNumericScore));
         $bands = config("assessment.bands.{$typeKey}", []);
 
         if (empty($bands)) {

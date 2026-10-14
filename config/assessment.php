@@ -276,4 +276,64 @@ return [
             ],
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Thang phân loại trí tuệ Wechsler chuẩn quốc tế (Deviation IQ)
+    |--------------------------------------------------------------------------
+    | Áp dụng cho các bài kiểm tra IQ chuẩn hóa theo phân phối chuẩn Gaussian:
+    | IQ = 100 + 15 * (Raw - Mean) / StdDev.
+    | Mean = 100, StdDev = 15.
+    */
+    'wechsler_bands' => [
+        [
+            'band' => 'W1',
+            'max_score' => 69,
+            'label' => 'Rất thấp (Extremely Low)',
+            'description' => 'Trẻ gặp nhiều khó khăn trong các nhiệm vụ tư duy, nhận thức và xử lý thông tin so với các bạn cùng độ tuổi (thuộc nhóm dưới 2.2% dân số).',
+            'parent_action' => 'Bố mẹ nên kiên nhẫn đồng hành cùng con từ những bước cơ bản nhất, chia nhỏ từng nhiệm vụ và lặp lại thường xuyên. Nên tham khảo ý kiến chuyên gia tâm lý hoặc bác sĩ nhi để có lộ trình can thiệp và hỗ trợ phát triển phù hợp.',
+        ],
+        [
+            'band' => 'W2',
+            'max_score' => 79,
+            'label' => 'Ranh giới (Borderline)',
+            'description' => 'Trẻ có biểu hiện phát triển chậm hơn mức trung bình của lứa tuổi ở một số lĩnh vực nhận thức (khoảng 6.7% dân số).',
+            'parent_action' => 'Dành nhiều thời gian hướng dẫn con trực quan, sử dụng đồ chơi giáo dục và hình ảnh sinh động. Khích lệ mỗi tiến bộ nhỏ của con và tạo môi trường học tập không áp lực.',
+        ],
+        [
+            'band' => 'W3',
+            'max_score' => 89,
+            'label' => 'Dưới trung bình (Low Average)',
+            'description' => 'Trẻ có khả năng nhận thức ở mức dưới trung bình một chút so với nhóm tuổi, cần thêm thời gian để củng cố kỹ năng nền tảng (khoảng 16.1% dân số).',
+            'parent_action' => 'Thường xuyên cùng con ôn tập kiến thức, đọc sách và chơi các trò chơi rèn luyện trí nhớ, tư duy logic hàng ngày. Kiên nhẫn giải thích và động viên con tự tin hơn.',
+        ],
+        [
+            'band' => 'W4',
+            'max_score' => 109,
+            'label' => 'Trung bình (Average)',
+            'description' => 'Trẻ có mức độ phát triển trí tuệ và tư duy nhận thức hoàn toàn bình thường, tương đương với đa số các bạn cùng trang lứa (khoảng 50.0% dân số).',
+            'parent_action' => 'Duy trì các hoạt động học tập, đọc sách và vui chơi lành mạnh. Khuyến khích con tò mò, khám phá các chủ đề mới và phát triển đều các nhóm kỹ năng ngôn ngữ, logic và hình ảnh.',
+        ],
+        [
+            'band' => 'W5',
+            'max_score' => 119,
+            'label' => 'Trên trung bình (High Average)',
+            'description' => 'Trẻ thể hiện năng lực nhận thức và tư duy tốt hơn mức trung bình của lứa tuổi, tiếp thu nhanh và nhạy bén (khoảng 16.1% dân số).',
+            'parent_action' => 'Cung cấp cho con những tài liệu, câu đố và bài tập mang tính thử thách cao hơn. Khuyến khích con tự suy nghĩ nhiều cách giải quyết vấn đề và phát triển tư duy phản biện.',
+        ],
+        [
+            'band' => 'W6',
+            'max_score' => 129,
+            'label' => 'Ưu tú (Superior)',
+            'description' => 'Trẻ có trí tuệ phát triển vượt trội, khả năng logic, ngôn ngữ và ghi nhớ xuất sắc so với độ tuổi (thuộc nhóm Top 6.7% dân số).',
+            'parent_action' => 'Tạo điều kiện để con thỏa sức khám phá những lĩnh vực chuyên sâu con yêu thích như khoa học, toán học, nghệ thuật. Đồng thời chú trọng rèn luyện kỹ năng cảm xúc (EQ) và vượt khó (AQ) để con phát triển toàn diện.',
+        ],
+        [
+            'band' => 'W7',
+            'max_score' => 999,
+            'label' => 'Rất ưu tú (Very Superior)',
+            'description' => 'Trẻ sở hữu tiềm năng trí tuệ đặc biệt xuất sắc, tiếp thu và xử lý thông tin vượt xa các bạn đồng trang lứa (thuộc nhóm Top 2.2% cao nhất của dân số).',
+            'parent_action' => 'Khuyến khích con theo đuổi đam mê, tạo cơ hội cho con tiếp xúc với các bài toán mở và dự án sáng tạo. Đồng hành cùng con giữ vững sự khiêm tốn, biết lắng nghe và cân bằng giữa trí tuệ và đời sống tinh thần.',
+        ],
+    ],
 ];
