@@ -77,6 +77,43 @@ class RatingIQDatable extends BaseDataTable
     {
         $this->customEditColumns = [
             'checkbox' => $this->view['checkbox'],
+            'wechsler_iq' => function ($rating) {
+                $iq = null;
+                if (!empty($rating->wechsler_iq)) {
+                    $iq = (int) $rating->wechsler_iq;
+                } else {
+                    $age = (int) ($rating->age ?: ($rating->child?->age ?: 5));
+                    $rawScore = 0;
+                    if (!empty($rating->result) && str_contains($rating->result, '/')) {
+                        $rawScore = (float) explode('/', $rating->result)[0];
+                    } else {
+                        $rawScore = (float) ($rating->score ?? 0) * 15;
+                    }
+                    $norm = \App\Models\IqNorm::getNormForAge($age);
+                    $iq = $norm ? $norm->calculateIq($rawScore) : 100;
+                }
+                return '<span class="badge bg-purple-lt text-purple fs-13 fw-bold px-2 py-0.5 rounded-pill">' . $iq . '</span>';
+            },
+            'wechsler_classification' => function ($rating) {
+                if (!empty($rating->wechsler_classification)) {
+                    $class = $rating->wechsler_classification;
+                    $badgeClass = 'bg-blue-lt text-blue';
+                } else {
+                    $age = (int) ($rating->age ?: ($rating->child?->age ?: 5));
+                    $rawScore = 0;
+                    if (!empty($rating->result) && str_contains($rating->result, '/')) {
+                        $rawScore = (float) explode('/', $rating->result)[0];
+                    } else {
+                        $rawScore = (float) ($rating->score ?? 0) * 15;
+                    }
+                    $norm = \App\Models\IqNorm::getNormForAge($age);
+                    $iq = $norm ? $norm->calculateIq($rawScore) : 100;
+                    $class = \App\Models\IqNorm::getClassification($iq);
+                    $badgeClass = \App\Models\IqNorm::getClassificationBadgeClass($iq);
+                }
+                return '<span class="badge ' . $badgeClass . ' px-2 py-0.5 fs-11">' . e($class) . '</span>';
+            },
+
             'updated_at' => '{{ format_datetime($updated_at) }}',
             'child_id' => function ($rating) {
                 return view($this->view['name'], [
@@ -195,6 +232,34 @@ class RatingIQDatable extends BaseDataTable
                     return ($row->child && $row->child->user) ? 'CM' . $row->child->user->id : '';
                 case 'game_info':
                     return ($row->game_score !== null) ? "{$row->game_score} ván thắng ({$row->game_duration_spent}s)" : '';
+                case 'wechsler_iq':
+                    if (!empty($row->wechsler_iq)) {
+                        return (int) $row->wechsler_iq;
+                    }
+                    $age = (int) ($row->age ?: ($row->child?->age ?: 5));
+                    $rawScore = 0;
+                    if (!empty($row->result) && str_contains($row->result, '/')) {
+                        $rawScore = (float) explode('/', $row->result)[0];
+                    } else {
+                        $rawScore = (float) ($row->score ?? 0) * 15;
+                    }
+                    $norm = \App\Models\IqNorm::getNormForAge($age);
+                    return $norm ? $norm->calculateIq($rawScore) : 100;
+                case 'wechsler_classification':
+                    if (!empty($row->wechsler_classification)) {
+                        return $row->wechsler_classification;
+                    }
+                    $age = (int) ($row->age ?: ($row->child?->age ?: 5));
+                    $rawScore = 0;
+                    if (!empty($row->result) && str_contains($row->result, '/')) {
+                        $rawScore = (float) explode('/', $row->result)[0];
+                    } else {
+                        $rawScore = (float) ($row->score ?? 0) * 15;
+                    }
+                    $norm = \App\Models\IqNorm::getNormForAge($age);
+                    $iq = $norm ? $norm->calculateIq($rawScore) : 100;
+                    return \App\Models\IqNorm::getClassification($iq);
+
             }
         } catch (\Throwable $e) {
             return '';

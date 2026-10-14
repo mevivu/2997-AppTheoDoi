@@ -313,6 +313,16 @@ return [
             'addClass' => 'text-center align-middle',
             'orderable' => false,
         ],
+        'wechsler_iq' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-chart-arrows-vertical"></i><span>IQ Chuẩn</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
+        'wechsler_classification' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-star"></i><span>Xếp loại IQ</span></div>',
+            'addClass' => 'text-center align-middle',
+            'orderable' => false,
+        ],
         'description' => [
             'title' => '<div class="header-cell-content"><i class="ti ti-file-text"></i><span>Mô tả</span></div>',
             'addClass' => 'text-center align-middle',
@@ -3107,7 +3117,61 @@ return [
             'addClass' => 'text-center align-middle',
         ],
     ],
+    'iq_norms' => [
+        'checkbox' => [
+            'title' => 'choose',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'align-middle text-center',
+            'footer' => '<input type="checkbox" class="form-check-input check-all" />',
+        ],
+        'age' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-timeline"></i><span>Độ tuổi</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'mean_score' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-math-function"></i><span>Điểm thô TB (Mean μ)</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'sd_score' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-chart-arrows"></i><span>Độ lệch chuẩn (StdDev σ)</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'sample_size' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-users"></i><span>Cỡ mẫu (N)</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'score_range' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-arrows-horizontal"></i><span>Khoảng điểm (Min - Max)</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'version' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-git-branch"></i><span>Phiên bản</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'note' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-notes"></i><span>Ghi chú</span></div>',
+            'orderable' => false,
+            'addClass' => 'align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
 ];
-
-
-

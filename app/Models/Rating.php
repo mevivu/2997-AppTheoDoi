@@ -82,6 +82,12 @@ class Rating extends Model
         'parent_action',
         /** Snapshot điểm danh mục */
         'category_scores',
+        /** Điểm IQ chuẩn hóa độ lệch Wechsler */
+        'wechsler_iq',
+        /** Phân loại trí tuệ theo chuẩn Wechsler */
+        'wechsler_classification',
+        /** Thứ bậc phân vị chuẩn (%) */
+        'wechsler_percentile',
     ];
     protected $casts = [
         'type' => QuestionType::class,

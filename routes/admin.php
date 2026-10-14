@@ -169,6 +169,23 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
         });
 
+    //IQ Wechsler Norms
+    Route::controller(\App\Admin\Http\Controllers\IqNorm\IqNormController::class)
+        ->prefix('/iq-norms')
+        ->as('iq_norm.')
+        ->group(function () {
+            Route::group(['middleware' => ['permission:viewIQ', 'auth:admin']], function () {
+                Route::get('/', 'index')->name('index');
+                Route::get('/create', 'create')->name('create');
+                Route::post('/store', 'store')->name('store');
+                Route::get('/edit/{id}', 'edit')->name('edit');
+                Route::put('/update', 'update')->name('update');
+                Route::delete('/delete/{id}', 'delete')->name('delete');
+                Route::post('/multiple', 'actionMultipleRecords')->name('multiple');
+                Route::post('/recalculate', 'recalculate')->name('recalculate');
+            });
+        });
+
     //Rating
     Route::controller(\App\Admin\Http\Controllers\Rating\RatingController::class)
         ->prefix('/ratings')

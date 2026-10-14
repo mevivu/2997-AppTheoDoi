@@ -157,6 +157,13 @@ return [
                 'roles' => [],
                 'permissions' => ['viewAQ'],
             ],
+            [
+                'title' => 'Bảng chuẩn IQ (Wechsler)',
+                'routeName' => RouteAdminSystem::IQ_NORM_INDEX,
+                'icon' => '<i class="ti ti-chart-bar"></i>',
+                'roles' => [],
+                'permissions' => ['viewIQ'],
+            ],
         ]
     ],
     [

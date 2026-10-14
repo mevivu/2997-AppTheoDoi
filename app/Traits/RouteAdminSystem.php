@@ -96,6 +96,15 @@ class RouteAdminSystem
     const RATING_IQ = 'admin.rating.iq';
     const RATING_AQ = 'admin.rating.aq';
 
+    /** IQ WECHSLER NORMS */
+    const IQ_NORM_INDEX = 'admin.iq_norm.index';
+    const IQ_NORM_CREATE = 'admin.iq_norm.create';
+    const IQ_NORM_EDIT = 'admin.iq_norm.edit';
+    const IQ_NORM_STORE = 'admin.iq_norm.store';
+    const IQ_NORM_UPDATE = 'admin.iq_norm.update';
+    const IQ_NORM_DELETE = 'admin.iq_norm.delete';
+    const IQ_NORM_RECALCULATE = 'admin.iq_norm.recalculate';
+
     /** JOURNAL */
     const JOURNAL_INDEX = 'admin.journal.index';
     const JOURNAL_CREATE = 'admin.journal.create';
