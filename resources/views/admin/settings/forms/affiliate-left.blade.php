@@ -57,6 +57,15 @@
                     <span class="badge bg-primary-lt ms-1">Chính sách</span>
                 </button>
             </li>
+
+            {{-- Tab Bài viết hướng dẫn --}}
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold" id="guide-tab" data-bs-toggle="tab" data-bs-target="#tab-guide" type="button" role="tab" aria-controls="tab-guide" aria-selected="false">
+                    <i class="ti ti-book-2 me-1 text-teal"></i>
+                    <span class="text-teal">{{ __('Bài viết hướng dẫn') }}</span>
+                    <span class="badge bg-teal-lt ms-1">Hướng dẫn</span>
+                </button>
+            </li>
         </ul>
     </div>
 
@@ -175,7 +184,7 @@
                             'affiliate_users_bronze', 'affiliate_users_silver', 'affiliate_users_gold', 'affiliate_users_diamond',
                             'affiliate_commission_bronze', 'affiliate_commission_silver', 'affiliate_commission_gold', 'affiliate_commission_diamond',
                             'affiliate_reward_user_bronze', 'affiliate_reward_user_silver', 'affiliate_reward_user_gold', 'affiliate_reward_user_diamond',
-                            'affiliate_terms',
+                            'affiliate_terms', 'affiliate_guide',
                         ];
                         $otherSettings = $settings->whereNotIn('setting_key', $knownKeys);
                     @endphp
@@ -529,6 +538,45 @@
                             'setting' => $settingsByKey->get('affiliate_terms'),
                             'label' => __('Soạn thảo nội dung Quy định tham gia Affiliate'),
                             'hint' => __('Hỗ trợ thanh công cụ CKEditor đầy đủ. Bạn có thể chèn tiêu đề H2, H3, bảng biểu so sánh cấp bậc, danh sách gạch đầu dòng và lưu ý cho đối tác.')
+                        ])
+                    </div>
+                </div>
+            </div>
+
+            {{-- ========================================================================= --}}
+            {{-- TAB 7: BÀI VIẾT HƯỚNG DẪN AFFILIATE --}}
+            {{-- ========================================================================= --}}
+            <div class="tab-pane fade" id="tab-guide" role="tabpanel" aria-labelledby="guide-tab">
+                <div class="d-flex align-items-center justify-content-between mb-3 p-3 rounded" style="background-color: #F0FDFA; border: 1px solid #99F6E4;">
+                    <div class="d-flex align-items-center">
+                        <span class="avatar avatar-md rounded-circle me-3" style="background-color: #CCFBF1; color: #0F766E;">
+                            <i class="ti ti-book-2 fs-2"></i>
+                        </span>
+                        <div>
+                            <h3 class="card-title mb-0 fw-bold" style="color: #0F766E;">{{ __('Bài viết hướng dẫn tham gia & kiếm tiền Affiliate') }}</h3>
+                            <div class="text-muted small">{{ __('Soạn thảo hướng dẫn từng bước cách chia sẻ mã giới thiệu, mẹo tăng thu nhập và quy trình rút tiền hoa hồng cho đối tác') }}</div>
+                        </div>
+                    </div>
+                    <span class="badge bg-teal text-white fs-6 px-3 py-2 shadow-sm">
+                        <i class="ti ti-device-mobile me-1"></i>{{ __('Hiển thị trên Mobile App') }}
+                    </span>
+                </div>
+
+                <div class="alert bg-white py-2 mb-3" style="border: 1px solid #99F6E4;" role="alert">
+                    <div class="d-flex align-items-center">
+                        <i class="ti ti-bulb fs-3 text-teal me-2"></i>
+                        <span class="text-dark small">
+                            {{ __('Bài viết hướng dẫn này giúp đối tác nắm rõ quy trình 4 bước giới thiệu bạn bè, cách tính thưởng theo cấp bậc và mẹo chia sẻ hiệu quả. Hỗ trợ đầy đủ định dạng văn bản nâng cao (Tiêu đề H2/H3, Danh sách bước, In đậm, Hình ảnh minh họa, Đường link,...).') }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card affiliate-tier-card shadow-sm">
+                    <div class="card-body">
+                        @include('admin.settings.forms.partials.setting-field', [
+                            'setting' => $settingsByKey->get('affiliate_guide'),
+                            'label' => __('Soạn thảo nội dung Bài viết hướng dẫn Affiliate'),
+                            'hint' => __('Sử dụng trình soạn thảo CKEditor để trình bày các bước hướng dẫn trực quan, dễ hiểu cho người dùng trên ứng dụng di động.')
                         ])
                     </div>
                 </div>

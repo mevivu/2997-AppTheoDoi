@@ -321,9 +321,9 @@ class SettingController extends Controller
     }
 
     /**
-     * Quy định & Điều khoản tham gia Affiliate
+     * Quy định, Điều khoản & Bài viết hướng dẫn tham gia Affiliate
      *
-     * Lấy nội dung quy định, điều khoản và các thông số chi trả của chương trình tiếp thị liên kết (Affiliate)
+     * Lấy nội dung quy định, bài viết hướng dẫn và các thông số chi trả của chương trình tiếp thị liên kết (Affiliate)
      *
      * @response 200 {
      *      "status": 200,
@@ -331,6 +331,7 @@ class SettingController extends Controller
      *      "data": {
      *          "affiliate_active": "1",
      *          "affiliate_terms": "<div class=\"affiliate-policy-content\">...</div>",
+     *          "affiliate_guide": "<div class=\"affiliate-guide-content\">...</div>",
      *          "withdraw_min_balance": 1000000,
      *          "withdraw_step_multiple": 1000000,
      *          "withdraw_payout_day": "Thứ 5 hàng tuần",
@@ -349,6 +350,7 @@ class SettingController extends Controller
             $data = [
                 'affiliate_active' => (string) $settingsMap->get('affiliate_active', '1'),
                 'affiliate_terms' => (string) $settingsMap->get('affiliate_terms', ''),
+                'affiliate_guide' => (string) $settingsMap->get('affiliate_guide', ''),
                 'withdraw_min_balance' => (int) ($settingsMap->get('affiliate_withdraw_min_balance', 1000000)),
                 'withdraw_step_multiple' => (int) ($settingsMap->get('affiliate_withdraw_step_multiple', 1000000)),
                 'withdraw_payout_day' => (string) $settingsMap->get('affiliate_withdraw_payout_day', 'Thứ 5 hàng tuần'),

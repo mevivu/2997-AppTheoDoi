@@ -115,11 +115,13 @@
         }
 
         /* CKEditor min-height in Affiliate Settings */
-        #tab-terms .cke_contents {
+        #tab-terms .cke_contents,
+        #tab-guide .cke_contents {
             min-height: 450px !important;
         }
 
-        #tab-terms .cke_wysiwyg_frame {
+        #tab-terms .cke_wysiwyg_frame,
+        #tab-guide .cke_wysiwyg_frame {
             min-height: 450px !important;
         }
     </style>
@@ -186,14 +188,14 @@
                 });
             }
 
-            // Tự động điều chỉnh kích thước CKEditor đầy đủ khi mở tab Quy định tham gia
+            // Tự động điều chỉnh kích thước CKEditor đầy đủ khi mở tab Quy định tham gia hoặc Bài viết hướng dẫn
             $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
                 var targetTab = $(e.target).attr('data-bs-target');
                 if (targetTab) {
                     sessionStorage.setItem('affiliate_active_tab', targetTab);
                 }
 
-                if (targetTab === '#tab-terms' && typeof CKEDITOR !== 'undefined') {
+                if ((targetTab === '#tab-terms' || targetTab === '#tab-guide') && typeof CKEDITOR !== 'undefined') {
                     for (var instanceName in CKEDITOR.instances) {
                         var instance = CKEDITOR.instances[instanceName];
                         if (instance && instance.container) {
