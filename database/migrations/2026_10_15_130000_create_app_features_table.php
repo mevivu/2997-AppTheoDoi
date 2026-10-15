@@ -20,6 +20,7 @@ return new class extends Migration {
             // [code, name, group, disabled_mode]
             ['memo_game', 'Luyện trí nhớ (Trang chủ)', 'home', 'hide'],
             ['referral', 'Kiếm tiền cùng Chăm con 360', 'account', 'hide'],
+            ['expert_corner', 'Góc chuyên gia', 'account', 'hide'],
             ['video_education', 'Video giáo dục', 'education', 'maintenance'],
             ['pq', 'Chỉ số thể chất (PQ)', 'evaluation', 'maintenance'],
             ['iq', 'Chỉ số thông minh (IQ)', 'evaluation', 'maintenance'],

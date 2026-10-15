@@ -162,6 +162,26 @@ class FeatureStatisticsService
                 'color' => '#1F7A80',
                 'badge_class' => 'bg-teal-lt',
             ],
+
+            // Nhóm 4: Tài khoản
+            'referral' => [
+                'name' => 'Kiếm tiền cùng Chăm con 360',
+                'short_name' => 'Affiliate',
+                'category' => 'account',
+                'category_name' => 'Tài khoản',
+                'icon' => 'ti ti-affiliate',
+                'color' => '#10b981',
+                'badge_class' => 'bg-green-lt',
+            ],
+            'expert_corner' => [
+                'name' => 'Góc chuyên gia',
+                'short_name' => 'Góc chuyên gia',
+                'category' => 'account',
+                'category_name' => 'Tài khoản',
+                'icon' => 'ti ti-stethoscope',
+                'color' => '#0d9488',
+                'badge_class' => 'bg-teal-lt',
+            ],
         ];
     }
 
