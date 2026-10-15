@@ -109,17 +109,16 @@
                 :back-route="route('admin.dashboard')"
             />
 
-            <x-form :action="route('admin.app-feature.bulk-update')" type="post" id="appFeaturesForm">
-                <div class="alert alert-info d-flex gap-2 align-items-start mb-4" role="alert">
-                    <i class="ti ti-info-circle fs-3 mt-1"></i>
-                    <div>
-                        <div class="fw-semibold mb-1">{{ __('Cách hoạt động của chế độ khi tắt') }}</div>
-                        <ul class="mb-0 ps-3">
-                            <li><b>{{ __('Ẩn hẳn') }}</b>: {{ __('chức năng biến mất khỏi app.') }}</li>
-                            <li><b>{{ __('Hiện & báo bảo trì') }}</b>: {{ __('chức năng vẫn hiển thị nhưng khi bấm sẽ hiện thông báo thay vì mở.') }}</li>
-                        </ul>
-                    </div>
+            <div class="alert alert-info d-flex gap-2 align-items-start mb-4" role="alert">
+                <i class="ti ti-info-circle fs-3 mt-1"></i>
+                <div>
+                    <div class="fw-semibold mb-1">{{ __('Cách hoạt động của chế độ khi tắt') }}</div>
+                    <ul class="mb-0 ps-3">
+                        <li><b>{{ __('Ẩn hẳn') }}</b>: {{ __('chức năng biến mất khỏi app.') }}</li>
+                        <li><b>{{ __('Hiện & báo bảo trì') }}</b>: {{ __('chức năng vẫn hiển thị nhưng khi bấm sẽ hiện thông báo thay vì mở.') }}</li>
+                    </ul>
                 </div>
+            </div>
 
                 @foreach ($groups as $groupKey => $groupName)
                     @php
@@ -233,7 +232,6 @@
                         <span>{{ __('Bật tất cả') }}</span>
                     </button>
                 </x-admin.form-actions>
-            </x-form>
         </div>
     </div>
 
@@ -312,18 +310,38 @@
                 $el.data('orig', val);
             });
 
-            // Submit toàn bộ cấu hình từ Common Action Component (Lưu cấu hình)
-            $('#appFeaturesForm').on('submit', function (e) {
+            // Sự kiện CLICK trực tiếp trên nút Lưu cấu hình của Component Action
+            $(document).on('click', '.btn-save-settings', function (e) {
                 e.preventDefault();
-                const $form = $(this);
-                const $btn = $form.find('.btn-save-settings');
+                e.stopPropagation();
+
+                const $btn = $(this);
+                if ($btn.data('is-saving')) return;
+                $btn.data('is-saving', true);
+
                 const origHtml = $btn.html();
-                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> <span>{{ __('Đang lưu...') }}</span>');
+                $btn.prop('disabled', true).css('opacity', '0.75').html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> <span>{{ __('Đang lưu...') }}</span>');
+
+                // Thu thập cấu hình tất cả các chức năng
+                const features = {};
+                $('.af-row[data-id]').each(function () {
+                    const $row = $(this);
+                    const id = $row.data('id');
+                    features[id] = {
+                        enabled_android: $row.find('input[data-field="enabled_android"]').is(':checked') ? 1 : 0,
+                        enabled_ios: $row.find('input[data-field="enabled_ios"]').is(':checked') ? 1 : 0,
+                        disabled_mode: $row.find('select[data-field="disabled_mode"]').val(),
+                        disabled_message: $row.find('input[data-field="disabled_message"]').val(),
+                    };
+                });
 
                 $.ajax({
-                    url: $form.attr('action'),
+                    url: '{{ route('admin.app-feature.bulk-update') }}',
                     type: 'POST',
-                    data: $form.serialize(),
+                    data: {
+                        _token: csrf,
+                        features: features,
+                    },
                     headers: {'X-CSRF-TOKEN': csrf, 'Accept': 'application/json'},
                 })
                     .done(function (res) {
@@ -334,28 +352,35 @@
                                         now.getFullYear() + ' ' +
                                         ('0' + now.getHours()).slice(-2) + ':' +
                                         ('0' + now.getMinutes()).slice(-2);
-                        $('.af-row').each(function () {
+                        $('.af-row[data-id]').each(function () {
                             const $row = $(this);
                             const aOn = $row.find('input[data-field="enabled_android"]').is(':checked');
                             const iOn = $row.find('input[data-field="enabled_ios"]').is(':checked');
                             $row.toggleClass('is-off', !aOn || !iOn);
                             $row.find('.js-updated').text('{{ __('Cập nhật') }}: ' + timeStr);
                         });
+
+                        // Hiển thị trạng thái thành công trên nút và phục hồi
+                        $btn.css('opacity', '1').html('<i class="ti ti-check fs-5"></i> <span>{{ __('Đã lưu!') }}</span>');
+                        setTimeout(function () {
+                            $btn.prop('disabled', false).html(origHtml);
+                            $btn.data('is-saving', false);
+                        }, 1200);
                     })
                     .fail(function (xhr) {
                         const msg = (xhr.responseJSON && xhr.responseJSON.message) || '{{ __('Lưu thất bại, vui lòng thử lại') }}';
                         toast(msg, false);
-                    })
-                    .always(function () {
-                        $btn.prop('disabled', false).html(origHtml);
+                        $btn.prop('disabled', false).css('opacity', '1').html(origHtml);
+                        $btn.data('is-saving', false);
                     });
             });
 
-            // Nút Bật tất cả
-            $('#btnEnableAll').on('click', function () {
+            // Sự kiện CLICK nút Bật tất cả
+            $(document).on('click', '#btnEnableAll', function (e) {
+                e.preventDefault();
                 $('.af-switch input[type="checkbox"]').prop('checked', true);
                 $('.af-row').removeClass('is-off');
-                $('#appFeaturesForm').trigger('submit');
+                $('.btn-save-settings').trigger('click');
             });
         });
     </script>
