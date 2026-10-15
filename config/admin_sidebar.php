@@ -1080,6 +1080,14 @@ return [
         ]
     ],
     [
+        'title' => 'Quản lý chức năng App',
+        'routeName' => RouteAdminSystem::APP_FEATURE_INDEX,
+        'icon' => '<i class="ti ti-toggle-right"></i>',
+        'roles' => [],
+        'permissions' => ['manageAppFeature'],
+        'sub' => []
+    ],
+    [
         'title' => 'Quản lý Phiên bản',
         'routeName' => RouteAdminSystem::APP_VERSION_INDEX,
         'icon' => '<i class="ti ti-versions"></i>',

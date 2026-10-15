@@ -1230,6 +1230,16 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             });
         });
 
+    // Quản lý chức năng App (bật/tắt theo nền tảng)
+    Route::controller(App\Admin\Http\Controllers\AppFeature\AppFeatureController::class)
+        ->prefix('/app-features')
+        ->as('app-feature.')
+        ->middleware(['permission:manageAppFeature', 'auth:admin'])
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::put('/{id}', 'update')->whereNumber('id')->name('update');
+        });
+
     //App Versions
     Route::controller(App\Admin\Http\Controllers\AppVersion\AppVersionController::class)
         ->prefix('/app-versions')

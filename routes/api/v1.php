@@ -413,6 +413,10 @@ Route::controller(App\Api\V1\Http\Controllers\Setting\SettingController::class)
         Route::get('/affiliate-terms', 'affiliateTerms');
     });
 
+//***** -- App Features (admin bật/tắt chức năng) -- ******* //
+Route::get('/app-features', [\App\Api\V1\Http\Controllers\AppFeature\AppFeatureController::class, 'index'])
+    ->name('app-feature.index');
+
 //***** -- Introduction (Giới thiệu nền tảng & Thương hiệu) -- ******* //
 Route::controller(\App\Api\V1\Http\Controllers\Introduction\IntroductionController::class)
     ->prefix('/introductions')
