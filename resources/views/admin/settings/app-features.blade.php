@@ -45,15 +45,35 @@
         .af-row.is-off .af-name { opacity: .6; }
         .af-row.is-saving { opacity: .6; pointer-events: none; }
 
-        .af-icon {
-            width: 38px;
-            height: 38px;
+        .af-avatar, .af-icon {
+            width: 42px;
+            height: 42px;
             border-radius: 10px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .af-avatar {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+
+        .af-row:hover .af-avatar {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .af-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .af-name { font-weight: 600; color: #0f172a; line-height: 1.3; }
@@ -144,14 +164,22 @@
                                 $color = $meta['color'] ?? '#64748b';
                                 $icon = $meta['icon'] ?? 'ti ti-apps';
                                 $off = !$feature->enabled_android || !$feature->enabled_ios;
+                                $avatarRel = 'assets/images/app-features/' . $feature->code . '.png';
+                                $hasAvatar = file_exists(public_path($avatarRel)) || file_exists(base_path('public/' . $avatarRel));
                             @endphp
                             <div class="af-row {{ $off ? 'is-off' : '' }}"
                                  data-id="{{ $feature->id }}"
                                  data-url="{{ route('admin.app-feature.update', $feature->id) }}">
                                 <div class="af-col-name d-flex align-items-center gap-3">
-                                    <span class="af-icon" style="background: {{ $color }}1a; color: {{ $color }};">
-                                        <i class="{{ $icon }}"></i>
-                                    </span>
+                                    @if ($hasAvatar)
+                                        <span class="af-avatar" title="{{ $feature->name }}">
+                                            <img src="{{ asset($avatarRel) }}" alt="{{ $feature->name }}" loading="lazy">
+                                        </span>
+                                    @else
+                                        <span class="af-icon" style="background: {{ $color }}1a; color: {{ $color }};">
+                                            <i class="{{ $icon }}"></i>
+                                        </span>
+                                    @endif
                                     <div class="min-w-0">
                                         <div class="af-name">{{ $feature->name }}</div>
                                         <div class="af-code">{{ $feature->code }}</div>
