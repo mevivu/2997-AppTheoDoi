@@ -652,7 +652,7 @@ class FeatureStatisticsService
 
             foreach ($fuCounts as $code => $cnt) {
                 if (isset($stats[$code])) {
-                    if (in_array($code, ['predict_height', 'develop', 'store', 'clinic', 'video_education', 'memo_game'])) {
+                    if (in_array($code, ['predict_height', 'develop', 'store', 'clinic', 'video_education', 'memo_game', 'expert_corner', 'referral'])) {
                         $stats[$code]['count'] += (int) $cnt;
                     }
                 }
@@ -794,7 +794,7 @@ class FeatureStatisticsService
                 ->groupBy('feature_code', 't_point')
                 ->get();
             foreach ($fuCounts as $fu) {
-                if (in_array($fu->feature_code, ['predict_height', 'develop', 'store', 'clinic', 'video_education', 'memo_game'])) {
+                if (in_array($fu->feature_code, ['predict_height', 'develop', 'store', 'clinic', 'video_education', 'memo_game', 'expert_corner', 'referral'])) {
                     $featureTimeCounts[$fu->feature_code][$fu->t_point] = ($featureTimeCounts[$fu->feature_code][$fu->t_point] ?? 0) + (int) $fu->cnt;
                 }
             }

@@ -194,6 +194,9 @@
                         <button type="button" class="category-tab-btn btn-category {{ $currentCategory === 'utility' ? 'active' : '' }}" data-category="utility">
                             <i class="ti ti-tool me-1"></i>Tiện ích
                         </button>
+                        <button type="button" class="category-tab-btn btn-category {{ $currentCategory === 'account' ? 'active' : '' }}" data-category="account">
+                            <i class="ti ti-stethoscope me-1"></i>Góc chuyên gia & Tài khoản
+                        </button>
                         <button type="button" class="category-tab-btn btn-category {{ $currentCategory === 'all' ? 'active' : '' }}" data-category="all">
                             <i class="ti ti-apps me-1"></i>Tất cả
                         </button>
@@ -689,6 +692,26 @@
                                         <td><code>feature_usages</code><br>+ Lượt xem video</td>
                                         <td>Đếm số lượt phụ huynh & bé xem video bài học giáo dục và truy cập thư viện.</td>
                                         <td>Ghi nhận trực tiếp <code>user_id</code> và <code>child_id</code> khi mở và phát video trên App.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-stethoscope text-teal me-1"></i>Góc chuyên gia</div>
+                                            <span class="text-muted fs-11">Mã: <code>expert_corner</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-teal-lt">Tài khoản</span></td>
+                                        <td><code>feature_usages</code><br>+ Lượt xem bài viết</td>
+                                        <td>Đếm số lượt phụ huynh xem Góc chuyên gia, tham khảo hội đồng cố vấn và đọc bài viết của bác sĩ.</td>
+                                        <td>Ghi nhận trực tiếp <code>user_id</code> khi phụ huynh truy cập Góc chuyên gia trên App.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="font-weight-bold text-dark"><i class="ti ti-affiliate text-success me-1"></i>Kiếm tiền cùng Chăm con 360</div>
+                                            <span class="text-muted fs-11">Mã: <code>referral</code></span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-green-lt">Tài khoản</span></td>
+                                        <td><code>feature_usages</code><br>+ Lượt mở tính năng</td>
+                                        <td>Đếm số lượt phụ huynh mở tính năng giới thiệu bạn bè, chia sẻ liên kết cộng tác viên.</td>
+                                        <td>Ghi nhận <code>user_id</code> của phụ huynh khi mở trang chương trình giới thiệu.</td>
                                     </tr>
                                 </tbody>
                             </table>

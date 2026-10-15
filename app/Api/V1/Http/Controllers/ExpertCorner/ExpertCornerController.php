@@ -93,6 +93,20 @@ class ExpertCornerController extends Controller
                 'latest_posts' => ExpertPostResource::collection($latestPosts),
             ];
 
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('feature_usages')) {
+                    \App\Models\FeatureUsage::create([
+                        'user_id' => auth('api')->id(),
+                        'feature_code' => 'expert_corner',
+                        'feature_name' => 'Góc chuyên gia',
+                        'category' => 'account',
+                        'action' => 'view_overview',
+                        'ip_address' => request()->ip(),
+                        'user_agent' => request()->userAgent(),
+                    ]);
+                }
+            } catch (\Throwable $e) {}
+
             return $this->jsonResponseSuccess($data);
         } catch (Exception $e) {
             $this->logError('Get expert corner overview failed: ', $e);
@@ -205,6 +219,21 @@ class ExpertCornerController extends Controller
                 ->get();
 
             $post->related_posts = $relatedPosts;
+
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('feature_usages')) {
+                    \App\Models\FeatureUsage::create([
+                        'user_id' => auth('api')->id(),
+                        'feature_code' => 'expert_corner',
+                        'feature_name' => 'Góc chuyên gia',
+                        'category' => 'account',
+                        'action' => 'view_post',
+                        'metadata' => json_encode(['post_id' => $post->id, 'title' => $post->title], JSON_UNESCAPED_UNICODE),
+                        'ip_address' => request()->ip(),
+                        'user_agent' => request()->userAgent(),
+                    ]);
+                }
+            } catch (\Throwable $e) {}
 
             return $this->jsonResponseSuccess(new ExpertPostDetailResource($post));
         } catch (Exception $e) {
