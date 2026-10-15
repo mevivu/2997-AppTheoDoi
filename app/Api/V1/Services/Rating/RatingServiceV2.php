@@ -137,7 +137,9 @@ class RatingServiceV2 extends RatingService implements RatingServiceV2Interface
         }
 
         $iqNorm = \App\Models\IqNorm::getNormForAge($childAge);
-        $wechslerIq = $iqNorm ? $iqNorm->calculateIq((float) $totalCorrect) : (int) round(100 + 15 * (($totalCorrect - 15) / 5));
+        $wechslerIq = $iqNorm
+            ? $iqNorm->calculateIqFromCounts((float) $totalCorrect, (float) $totalItems)
+            : \App\Models\IqNorm::fallbackIq((float) $totalCorrect, (float) $totalItems);
 
         $data['score'] = $wechslerIq;
         $data['result'] = $result;

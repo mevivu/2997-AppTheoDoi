@@ -128,8 +128,59 @@ class IqNorm extends Model
         return $closestAge ? $allNorms[$closestAge] : null;
     }
 
+    /** Chuẩn tạm thời (% đúng) khi chưa có bảng chuẩn theo tuổi */
+    public const DEFAULT_MEAN_PERCENT = 55.0;
+    public const DEFAULT_SD_PERCENT = 20.0;
+
     /**
-     * Tính chỉ số IQ độ lệch Wechsler từ điểm thô
+     * IQ dự phòng khi không có bảng chuẩn nào đang kích hoạt
+     */
+    public static function fallbackIq(float $correct, float $total): int
+    {
+        $norm = new self([
+            'mean_score' => self::DEFAULT_MEAN_PERCENT,
+            'sd_score' => self::DEFAULT_SD_PERCENT,
+        ]);
+
+        return $norm->calculateIqFromCounts($correct, $total);
+    }
+
+    /**
+     * Quy đổi chuỗi kết quả dạng "18/18" sang % câu đúng (null nếu không hợp lệ)
+     */
+    public static function percentFromResult(?string $result): ?float
+    {
+        if (empty($result) || !str_contains($result, '/')) {
+            return null;
+        }
+
+        [$correct, $total] = array_map('trim', explode('/', $result, 2));
+        if (!is_numeric($correct) || !is_numeric($total) || (float) $total <= 0) {
+            return null;
+        }
+
+        return max(0.0, min(100.0, ((float) $correct / (float) $total) * 100));
+    }
+
+
+    /**
+     * Tính IQ từ số câu đúng / tổng số câu (quy đổi sang % đúng trước khi chuẩn hóa).
+     * Đơn vị mean_score/sd_score trong bảng chuẩn là % câu đúng (0 - 100),
+     * nên kết quả không phụ thuộc vào số lượng câu hỏi của bài test.
+     */
+    public function calculateIqFromCounts(float $correct, float $total): int
+    {
+        if ($total <= 0) {
+            return 100;
+        }
+
+        $percent = max(0.0, min(100.0, ($correct / $total) * 100));
+
+        return $this->calculateIq($percent);
+    }
+
+    /**
+     * Tính chỉ số IQ độ lệch Wechsler từ điểm thô (đơn vị: % câu đúng)
      * Công thức: IQ = Round(100 + 15 * (rawScore - mean) / sd)
      */
     public function calculateIq(float $rawScore): int

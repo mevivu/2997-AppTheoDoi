@@ -93,14 +93,11 @@ class IqNormService implements IqNormServiceInterface
                 continue;
             }
 
-            // Trích xuất điểm thô: Ưu tiên lấy từ result (vd '90/150' -> 90) hoặc score * 15
-            $rawScore = null;
-            if (!empty($r->result) && str_contains($r->result, '/')) {
-                $parts = explode('/', $r->result);
-                $rawScore = (float) trim($parts[0]);
-            }
-            if ($rawScore === null || $rawScore <= 0) {
-                $rawScore = (float) $r->score * 15;
+            // Trích xuất điểm thô theo % câu đúng từ result (vd '18/18' -> 100). Bỏ qua bản ghi không có result hợp lệ
+            // (không dùng score vì score đã là IQ chuẩn hóa, dùng lại sẽ gây tính vòng).
+            $rawScore = IqNorm::percentFromResult($r->result);
+            if ($rawScore === null) {
+                continue;
             }
 
             $scoresByAge[$age][] = $rawScore;

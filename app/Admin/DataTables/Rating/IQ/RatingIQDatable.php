@@ -85,9 +85,9 @@ class RatingIQDatable extends BaseDataTable
                     $age = (int) ($rating->age ?: ($rating->child?->age ?: 5));
                     $rawScore = 0;
                     if (!empty($rating->result) && str_contains($rating->result, '/')) {
-                        $rawScore = (float) explode('/', $rating->result)[0];
+                        $rawScore = \App\Models\IqNorm::percentFromResult($rating->result) ?? 0.0;
                     } else {
-                        $rawScore = (float) ($rating->score ?? 0) * 15;
+                        $rawScore = (float) ($rating->score ?? 0) * 10;
                     }
                     $norm = \App\Models\IqNorm::getNormForAge($age);
                     $iq = $norm ? $norm->calculateIq($rawScore) : 100;
@@ -102,9 +102,9 @@ class RatingIQDatable extends BaseDataTable
                     $age = (int) ($rating->age ?: ($rating->child?->age ?: 5));
                     $rawScore = 0;
                     if (!empty($rating->result) && str_contains($rating->result, '/')) {
-                        $rawScore = (float) explode('/', $rating->result)[0];
+                        $rawScore = \App\Models\IqNorm::percentFromResult($rating->result) ?? 0.0;
                     } else {
-                        $rawScore = (float) ($rating->score ?? 0) * 15;
+                        $rawScore = (float) ($rating->score ?? 0) * 10;
                     }
                     $norm = \App\Models\IqNorm::getNormForAge($age);
                     $iq = $norm ? $norm->calculateIq($rawScore) : 100;
@@ -239,9 +239,9 @@ class RatingIQDatable extends BaseDataTable
                     $age = (int) ($row->age ?: ($row->child?->age ?: 5));
                     $rawScore = 0;
                     if (!empty($row->result) && str_contains($row->result, '/')) {
-                        $rawScore = (float) explode('/', $row->result)[0];
+                        $rawScore = \App\Models\IqNorm::percentFromResult($row->result) ?? 0.0;
                     } else {
-                        $rawScore = (float) ($row->score ?? 0) * 15;
+                        $rawScore = (float) ($row->score ?? 0) * 10;
                     }
                     $norm = \App\Models\IqNorm::getNormForAge($age);
                     return $norm ? $norm->calculateIq($rawScore) : 100;
@@ -252,9 +252,9 @@ class RatingIQDatable extends BaseDataTable
                     $age = (int) ($row->age ?: ($row->child?->age ?: 5));
                     $rawScore = 0;
                     if (!empty($row->result) && str_contains($row->result, '/')) {
-                        $rawScore = (float) explode('/', $row->result)[0];
+                        $rawScore = \App\Models\IqNorm::percentFromResult($row->result) ?? 0.0;
                     } else {
-                        $rawScore = (float) ($row->score ?? 0) * 15;
+                        $rawScore = (float) ($row->score ?? 0) * 10;
                     }
                     $norm = \App\Models\IqNorm::getNormForAge($age);
                     $iq = $norm ? $norm->calculateIq($rawScore) : 100;
