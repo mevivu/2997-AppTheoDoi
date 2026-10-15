@@ -15,7 +15,7 @@ class IqNormSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($age = 1; $age <= 16; $age++) {
+        for ($age = 1; $age <= 20; $age++) {
             IqNorm::updateOrCreate(
                 ['age' => $age],
                 [
