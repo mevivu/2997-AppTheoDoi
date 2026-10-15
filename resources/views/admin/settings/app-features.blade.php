@@ -2,7 +2,6 @@
 
 @push('libs-css')
     @include('admin.common.css.style')
-    @include('admin.common.css.action')
 @endpush
 
 @push('custom-css')
@@ -71,7 +70,7 @@
         .af-toast {
             position: fixed;
             right: 24px;
-            bottom: 85px;
+            bottom: 24px;
             z-index: 2000;
             padding: .65rem 1rem;
             border-radius: 10px;
@@ -100,7 +99,7 @@
 
 @section('content')
     <div class="page-body">
-        <div class="container-fluid pb-5">
+        <div class="container-fluid">
             <x-admin.page-header
                 class="mb-4"
                 icon="toggle-right"
@@ -219,19 +218,6 @@
                         <p class="empty-subtitle text-muted">{{ __('Chạy migration để khởi tạo danh mục chức năng.') }}</p>
                     </div>
                 @endif
-
-                {{-- Common Action Component (Floating Bottom Bar) --}}
-                <x-admin.form-actions
-                    :submit-title="__('Lưu cấu hình')"
-                    submit-icon="ti ti-device-floppy"
-                    :back-route="route('admin.dashboard')"
-                    :back-title="__('Dashboard')"
-                >
-                    <button type="button" class="btn btn-save-exit-settings d-inline-flex align-items-center gap-1 text-success" id="btnEnableAll" title="{{ __('Bật tất cả chức năng cho Android & iOS') }}">
-                        <i class="ti ti-checks fs-5"></i>
-                        <span>{{ __('Bật tất cả') }}</span>
-                    </button>
-                </x-admin.form-actions>
         </div>
     </div>
 
@@ -308,79 +294,6 @@
                     $el.val($el.data('orig'));
                 });
                 $el.data('orig', val);
-            });
-
-            // Sự kiện CLICK trực tiếp trên nút Lưu cấu hình của Component Action
-            $(document).on('click', '.btn-save-settings', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const $btn = $(this);
-                if ($btn.data('is-saving')) return;
-                $btn.data('is-saving', true);
-
-                const origHtml = $btn.html();
-                $btn.prop('disabled', true).css('opacity', '0.75').html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> <span>{{ __('Đang lưu...') }}</span>');
-
-                // Thu thập cấu hình tất cả các chức năng
-                const features = {};
-                $('.af-row[data-id]').each(function () {
-                    const $row = $(this);
-                    const id = $row.data('id');
-                    features[id] = {
-                        enabled_android: $row.find('input[data-field="enabled_android"]').is(':checked') ? 1 : 0,
-                        enabled_ios: $row.find('input[data-field="enabled_ios"]').is(':checked') ? 1 : 0,
-                        disabled_mode: $row.find('select[data-field="disabled_mode"]').val(),
-                        disabled_message: $row.find('input[data-field="disabled_message"]').val(),
-                    };
-                });
-
-                $.ajax({
-                    url: '{{ route('admin.app-feature.bulk-update') }}',
-                    type: 'POST',
-                    data: {
-                        _token: csrf,
-                        features: features,
-                    },
-                    headers: {'X-CSRF-TOKEN': csrf, 'Accept': 'application/json'},
-                })
-                    .done(function (res) {
-                        toast(res.message || '{{ __('Đã lưu cấu hình thành công') }}', true);
-                        const now = new Date();
-                        const timeStr = ('0' + now.getDate()).slice(-2) + '/' +
-                                        ('0' + (now.getMonth() + 1)).slice(-2) + '/' +
-                                        now.getFullYear() + ' ' +
-                                        ('0' + now.getHours()).slice(-2) + ':' +
-                                        ('0' + now.getMinutes()).slice(-2);
-                        $('.af-row[data-id]').each(function () {
-                            const $row = $(this);
-                            const aOn = $row.find('input[data-field="enabled_android"]').is(':checked');
-                            const iOn = $row.find('input[data-field="enabled_ios"]').is(':checked');
-                            $row.toggleClass('is-off', !aOn || !iOn);
-                            $row.find('.js-updated').text('{{ __('Cập nhật') }}: ' + timeStr);
-                        });
-
-                        // Hiển thị trạng thái thành công trên nút và phục hồi
-                        $btn.css('opacity', '1').html('<i class="ti ti-check fs-5"></i> <span>{{ __('Đã lưu!') }}</span>');
-                        setTimeout(function () {
-                            $btn.prop('disabled', false).html(origHtml);
-                            $btn.data('is-saving', false);
-                        }, 1200);
-                    })
-                    .fail(function (xhr) {
-                        const msg = (xhr.responseJSON && xhr.responseJSON.message) || '{{ __('Lưu thất bại, vui lòng thử lại') }}';
-                        toast(msg, false);
-                        $btn.prop('disabled', false).css('opacity', '1').html(origHtml);
-                        $btn.data('is-saving', false);
-                    });
-            });
-
-            // Sự kiện CLICK nút Bật tất cả
-            $(document).on('click', '#btnEnableAll', function (e) {
-                e.preventDefault();
-                $('.af-switch input[type="checkbox"]').prop('checked', true);
-                $('.af-row').removeClass('is-off');
-                $('.btn-save-settings').trigger('click');
             });
         });
     </script>
