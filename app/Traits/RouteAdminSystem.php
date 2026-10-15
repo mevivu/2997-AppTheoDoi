@@ -385,6 +385,7 @@ class RouteAdminSystem
     const SETTING_UPDATE = 'admin.setting.update';
     const APP_FEATURE_INDEX = 'admin.app-feature.index';
     const APP_FEATURE_UPDATE = 'admin.app-feature.update';
+    const APP_FEATURE_BULK_UPDATE = 'admin.app-feature.bulk-update';
     const APP_VERSION_INDEX = 'admin.app-version.index';
     const APP_VERSION_CREATE = 'admin.app-version.create';
     const APP_VERSION_EDIT = 'admin.app-version.edit';

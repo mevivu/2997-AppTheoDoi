@@ -1237,6 +1237,7 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
         ->middleware(['permission:manageAppFeature', 'auth:admin'])
         ->group(function () {
             Route::get('/', 'index')->name('index');
+            Route::post('/bulk-update', 'bulkUpdate')->name('bulk-update');
             Route::put('/{id}', 'update')->whereNumber('id')->name('update');
         });
 

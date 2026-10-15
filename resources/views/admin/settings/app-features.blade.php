@@ -71,7 +71,7 @@
         .af-toast {
             position: fixed;
             right: 24px;
-            bottom: 24px;
+            bottom: 85px;
             z-index: 2000;
             padding: .65rem 1rem;
             border-radius: 10px;
@@ -100,7 +100,7 @@
 
 @section('content')
     <div class="page-body">
-        <div class="container-fluid">
+        <div class="container-fluid pb-5">
             <x-admin.page-header
                 class="mb-4"
                 icon="toggle-right"
@@ -109,109 +109,131 @@
                 :back-route="route('admin.dashboard')"
             />
 
-            <div class="alert alert-info d-flex gap-2 align-items-start mb-4" role="alert">
-                <i class="ti ti-info-circle fs-3 mt-1"></i>
-                <div>
-                    <div class="fw-semibold mb-1">{{ __('Cách hoạt động của chế độ khi tắt') }}</div>
-                    <ul class="mb-0 ps-3">
-                        <li><b>{{ __('Ẩn hẳn') }}</b>: {{ __('chức năng biến mất khỏi app.') }}</li>
-                        <li><b>{{ __('Hiện & báo bảo trì') }}</b>: {{ __('chức năng vẫn hiển thị nhưng khi bấm sẽ hiện thông báo thay vì mở.') }}</li>
-                    </ul>
+            <x-form :action="route('admin.app-feature.bulk-update')" type="post" id="appFeaturesForm">
+                <div class="alert alert-info d-flex gap-2 align-items-start mb-4" role="alert">
+                    <i class="ti ti-info-circle fs-3 mt-1"></i>
+                    <div>
+                        <div class="fw-semibold mb-1">{{ __('Cách hoạt động của chế độ khi tắt') }}</div>
+                        <ul class="mb-0 ps-3">
+                            <li><b>{{ __('Ẩn hẳn') }}</b>: {{ __('chức năng biến mất khỏi app.') }}</li>
+                            <li><b>{{ __('Hiện & báo bảo trì') }}</b>: {{ __('chức năng vẫn hiển thị nhưng khi bấm sẽ hiện thông báo thay vì mở.') }}</li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
 
-            @foreach ($groups as $groupKey => $groupName)
-                @php
-                    $items = $features->get($groupKey, collect());
-                @endphp
-                @if ($items->isNotEmpty())
-                <div class="af-group-card card mb-4">
-                    <div class="af-group-header d-flex justify-content-between align-items-center">
-                        <div class="fw-bold fs-4">{{ $groupName }}</div>
-                        <span class="badge bg-secondary-lt">{{ $items->count() }} {{ __('chức năng') }}</span>
-                    </div>
+                @foreach ($groups as $groupKey => $groupName)
+                    @php
+                        $items = $features->get($groupKey, collect());
+                    @endphp
+                    @if ($items->isNotEmpty())
+                    <div class="af-group-card card mb-4">
+                        <div class="af-group-header d-flex justify-content-between align-items-center">
+                            <div class="fw-bold fs-4">{{ $groupName }}</div>
+                            <span class="badge bg-secondary-lt">{{ $items->count() }} {{ __('chức năng') }}</span>
+                        </div>
 
-                    <div class="af-row is-head">
-                        <div>{{ __('Chức năng') }}</div>
-                        <div>Android</div>
-                        <div>iOS</div>
-                        <div>{{ __('Khi tắt') }}</div>
-                        <div>{{ __('Thông báo bảo trì') }}</div>
-                    </div>
+                        <div class="af-row is-head">
+                            <div>{{ __('Chức năng') }}</div>
+                            <div>Android</div>
+                            <div>iOS</div>
+                            <div>{{ __('Khi tắt') }}</div>
+                            <div>{{ __('Thông báo bảo trì') }}</div>
+                        </div>
 
-                    @foreach ($items as $feature)
-                        @php
-                            $meta = $catalog[$feature->code] ?? [];
-                            $color = $meta['color'] ?? '#64748b';
-                            $icon = $meta['icon'] ?? 'ti ti-apps';
-                            $off = !$feature->enabled_android || !$feature->enabled_ios;
-                        @endphp
-                        <div class="af-row {{ $off ? 'is-off' : '' }}"
-                             data-id="{{ $feature->id }}"
-                             data-url="{{ route('admin.app-feature.update', $feature->id) }}">
-                            <div class="af-col-name d-flex align-items-center gap-3">
-                                <span class="af-icon" style="background: {{ $color }}1a; color: {{ $color }};">
-                                    <i class="{{ $icon }}"></i>
-                                </span>
-                                <div class="min-w-0">
-                                    <div class="af-name">{{ $feature->name }}</div>
-                                    <div class="af-code">{{ $feature->code }}</div>
-                                    <div class="af-meta js-updated">
-                                        @if ($feature->updated_by)
-                                            {{ __('Cập nhật') }}: {{ $feature->updated_at?->format('d/m/Y H:i') }}
-                                        @endif
+                        @foreach ($items as $feature)
+                            @php
+                                $meta = $catalog[$feature->code] ?? [];
+                                $color = $meta['color'] ?? '#64748b';
+                                $icon = $meta['icon'] ?? 'ti ti-apps';
+                                $off = !$feature->enabled_android || !$feature->enabled_ios;
+                            @endphp
+                            <div class="af-row {{ $off ? 'is-off' : '' }}"
+                                 data-id="{{ $feature->id }}"
+                                 data-url="{{ route('admin.app-feature.update', $feature->id) }}">
+                                <div class="af-col-name d-flex align-items-center gap-3">
+                                    <span class="af-icon" style="background: {{ $color }}1a; color: {{ $color }};">
+                                        <i class="{{ $icon }}"></i>
+                                    </span>
+                                    <div class="min-w-0">
+                                        <div class="af-name">{{ $feature->name }}</div>
+                                        <div class="af-code">{{ $feature->code }}</div>
+                                        <div class="af-meta js-updated">
+                                            @if ($feature->updated_by)
+                                                {{ __('Cập nhật') }}: {{ $feature->updated_at?->format('d/m/Y H:i') }}
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="af-switch">
-                                <span class="af-cell-label">Android</span>
-                                <label class="form-check form-switch m-0">
-                                    <input class="form-check-input js-field" type="checkbox"
-                                           data-field="enabled_android" @checked($feature->enabled_android)
-                                           aria-label="Android - {{ $feature->name }}">
-                                </label>
-                            </div>
+                                <div class="af-switch">
+                                    <span class="af-cell-label">Android</span>
+                                    <label class="form-check form-switch m-0">
+                                        <input type="hidden" name="features[{{ $feature->id }}][enabled_android]" value="0">
+                                        <input class="form-check-input js-field" type="checkbox"
+                                               name="features[{{ $feature->id }}][enabled_android]" value="1"
+                                               data-field="enabled_android" @checked($feature->enabled_android)
+                                               aria-label="Android - {{ $feature->name }}">
+                                    </label>
+                                </div>
 
-                            <div class="af-switch">
-                                <span class="af-cell-label">iOS</span>
-                                <label class="form-check form-switch m-0">
-                                    <input class="form-check-input js-field" type="checkbox"
-                                           data-field="enabled_ios" @checked($feature->enabled_ios)
-                                           aria-label="iOS - {{ $feature->name }}">
-                                </label>
-                            </div>
+                                <div class="af-switch">
+                                    <span class="af-cell-label">iOS</span>
+                                    <label class="form-check form-switch m-0">
+                                        <input type="hidden" name="features[{{ $feature->id }}][enabled_ios]" value="0">
+                                        <input class="form-check-input js-field" type="checkbox"
+                                               name="features[{{ $feature->id }}][enabled_ios]" value="1"
+                                               data-field="enabled_ios" @checked($feature->enabled_ios)
+                                               aria-label="iOS - {{ $feature->name }}">
+                                    </label>
+                                </div>
 
-                            <div>
-                                <span class="af-cell-label">{{ __('Khi tắt') }}</span>
-                                <select class="form-select form-select-sm js-field" data-field="disabled_mode"
-                                        aria-label="{{ __('Chế độ khi tắt') }} - {{ $feature->name }}">
-                                    <option value="hide" @selected($feature->disabled_mode === 'hide')>{{ __('Ẩn hẳn') }}</option>
-                                    <option value="maintenance" @selected($feature->disabled_mode === 'maintenance')>{{ __('Hiện & báo bảo trì') }}</option>
-                                </select>
-                            </div>
+                                <div>
+                                    <span class="af-cell-label">{{ __('Khi tắt') }}</span>
+                                    <select class="form-select form-select-sm js-field"
+                                            name="features[{{ $feature->id }}][disabled_mode]"
+                                            data-field="disabled_mode"
+                                            aria-label="{{ __('Chế độ khi tắt') }} - {{ $feature->name }}">
+                                        <option value="hide" @selected($feature->disabled_mode === 'hide')>{{ __('Ẩn hẳn') }}</option>
+                                        <option value="maintenance" @selected($feature->disabled_mode === 'maintenance')>{{ __('Hiện & báo bảo trì') }}</option>
+                                    </select>
+                                </div>
 
-                            <div class="af-col-msg">
-                                <span class="af-cell-label">{{ __('Thông báo bảo trì') }}</span>
-                                <input type="text" class="form-control form-control-sm js-field js-text"
-                                       data-field="disabled_message" maxlength="255"
-                                       value="{{ $feature->disabled_message }}"
-                                       placeholder="{{ __('Mặc định: Chức năng đang bảo trì') }}"
-                                       aria-label="{{ __('Thông báo bảo trì') }} - {{ $feature->name }}">
+                                <div class="af-col-msg">
+                                    <span class="af-cell-label">{{ __('Thông báo bảo trì') }}</span>
+                                    <input type="text" class="form-control form-control-sm js-field js-text"
+                                           name="features[{{ $feature->id }}][disabled_message]"
+                                           data-field="disabled_message" maxlength="255"
+                                           value="{{ $feature->disabled_message }}"
+                                           placeholder="{{ __('Mặc định: Chức năng đang bảo trì') }}"
+                                           aria-label="{{ __('Thông báo bảo trì') }} - {{ $feature->name }}">
+                                </div>
                             </div>
-                        </div>
-                    @endforeach
-                </div>
+                        @endforeach
+                    </div>
+                    @endif
+                @endforeach
+
+                @if ($total === 0)
+                    <div class="empty">
+                        <div class="empty-icon"><i class="ti ti-toggle-right fs-1"></i></div>
+                        <p class="empty-title">{{ __('Chưa có chức năng nào') }}</p>
+                        <p class="empty-subtitle text-muted">{{ __('Chạy migration để khởi tạo danh mục chức năng.') }}</p>
+                    </div>
                 @endif
-            @endforeach
 
-            @if ($total === 0)
-                <div class="empty">
-                    <div class="empty-icon"><i class="ti ti-toggle-right fs-1"></i></div>
-                    <p class="empty-title">{{ __('Chưa có chức năng nào') }}</p>
-                    <p class="empty-subtitle text-muted">{{ __('Chạy migration để khởi tạo danh mục chức năng.') }}</p>
-                </div>
-            @endif
+                {{-- Common Action Component (Floating Bottom Bar) --}}
+                <x-admin.form-actions
+                    :submit-title="__('Lưu cấu hình')"
+                    submit-icon="ti ti-device-floppy"
+                    :back-route="route('admin.dashboard')"
+                    :back-title="__('Dashboard')"
+                >
+                    <button type="button" class="btn btn-save-exit-settings d-inline-flex align-items-center gap-1 text-success" id="btnEnableAll" title="{{ __('Bật tất cả chức năng cho Android & iOS') }}">
+                        <i class="ti ti-checks fs-5"></i>
+                        <span>{{ __('Bật tất cả') }}</span>
+                    </button>
+                </x-admin.form-actions>
+            </x-form>
         </div>
     </div>
 
@@ -288,6 +310,52 @@
                     $el.val($el.data('orig'));
                 });
                 $el.data('orig', val);
+            });
+
+            // Submit toàn bộ cấu hình từ Common Action Component (Lưu cấu hình)
+            $('#appFeaturesForm').on('submit', function (e) {
+                e.preventDefault();
+                const $form = $(this);
+                const $btn = $form.find('.btn-save-settings');
+                const origHtml = $btn.html();
+                $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> <span>{{ __('Đang lưu...') }}</span>');
+
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: 'POST',
+                    data: $form.serialize(),
+                    headers: {'X-CSRF-TOKEN': csrf, 'Accept': 'application/json'},
+                })
+                    .done(function (res) {
+                        toast(res.message || '{{ __('Đã lưu cấu hình thành công') }}', true);
+                        const now = new Date();
+                        const timeStr = ('0' + now.getDate()).slice(-2) + '/' +
+                                        ('0' + (now.getMonth() + 1)).slice(-2) + '/' +
+                                        now.getFullYear() + ' ' +
+                                        ('0' + now.getHours()).slice(-2) + ':' +
+                                        ('0' + now.getMinutes()).slice(-2);
+                        $('.af-row').each(function () {
+                            const $row = $(this);
+                            const aOn = $row.find('input[data-field="enabled_android"]').is(':checked');
+                            const iOn = $row.find('input[data-field="enabled_ios"]').is(':checked');
+                            $row.toggleClass('is-off', !aOn || !iOn);
+                            $row.find('.js-updated').text('{{ __('Cập nhật') }}: ' + timeStr);
+                        });
+                    })
+                    .fail(function (xhr) {
+                        const msg = (xhr.responseJSON && xhr.responseJSON.message) || '{{ __('Lưu thất bại, vui lòng thử lại') }}';
+                        toast(msg, false);
+                    })
+                    .always(function () {
+                        $btn.prop('disabled', false).html(origHtml);
+                    });
+            });
+
+            // Nút Bật tất cả
+            $('#btnEnableAll').on('click', function () {
+                $('.af-switch input[type="checkbox"]').prop('checked', true);
+                $('.af-row').removeClass('is-off');
+                $('#appFeaturesForm').trigger('submit');
             });
         });
     </script>

@@ -76,4 +76,53 @@ class AppFeatureController extends Controller
             ],
         ]);
     }
+
+    /**
+     * Cập nhật toàn bộ chức năng (khi submit từ form hoặc bấm nút Lưu trên form-actions).
+     */
+    public function bulkUpdate(Request $request)
+    {
+        $validated = $request->validate([
+            'features' => ['required', 'array'],
+            'features.*.enabled_android' => ['nullable'],
+            'features.*.enabled_ios' => ['nullable'],
+            'features.*.disabled_mode' => ['nullable', Rule::in([AppFeature::MODE_HIDE, AppFeature::MODE_MAINTENANCE])],
+            'features.*.disabled_message' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $adminId = auth('admin')->id();
+        $updatedCount = 0;
+
+        foreach ($validated['features'] as $id => $item) {
+            $feature = AppFeature::find($id);
+            if (!$feature) {
+                continue;
+            }
+
+            $feature->enabled_android = !empty($item['enabled_android']);
+            $feature->enabled_ios = !empty($item['enabled_ios']);
+            if (isset($item['disabled_mode'])) {
+                $feature->disabled_mode = $item['disabled_mode'];
+            }
+            if (array_key_exists('disabled_message', $item)) {
+                $feature->disabled_message = $item['disabled_message'];
+            }
+
+            if ($feature->isDirty()) {
+                $feature->updated_by = $adminId;
+                $feature->save();
+                $updatedCount++;
+            }
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 200,
+                'message' => __('notifySuccess'),
+                'updated_count' => $updatedCount,
+            ]);
+        }
+
+        return redirect()->back()->with('success', __('notifySuccess'));
+    }
 }
