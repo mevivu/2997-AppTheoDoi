@@ -23,7 +23,8 @@ class AppFeatureController extends Controller
      * API public (khách chưa đăng nhập cũng gọi được). Chỉ trả các chức năng ĐANG TẮT
      * trên nền tảng yêu cầu; chức năng không có trong danh sách = đang bật.
      *
-     * @queryParam platform string Nền tảng: ios | android. Default: android. Example: ios
+     * @queryParam platform string Nền tảng: ios | android | dev. Default: android. Example: dev
+     * @queryParam env string Môi trường tùy chọn: dev | prod. Default: null. Example: dev
      *
      * @response 200 {
      *     "status": 200,
@@ -39,7 +40,10 @@ class AppFeatureController extends Controller
     public function index(Request $request): JsonResponse
     {
         try {
-            $platform = AppFeature::normalizePlatform($request->query('platform', $request->header('X-Platform')));
+            $platform = AppFeature::normalizePlatform(
+                $request->query('platform', $request->header('X-Platform')),
+                $request->query('env', $request->header('X-App-Env'))
+            );
             $all = AppFeature::allCached();
 
             $features = $all

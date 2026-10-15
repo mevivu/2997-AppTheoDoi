@@ -17,6 +17,7 @@ class AppFeature extends Model
 
     public const PLATFORM_ANDROID = 'android';
     public const PLATFORM_IOS = 'ios';
+    public const PLATFORM_DEV = 'dev';
 
     public const GROUPS = [
         'home' => 'Trang chủ',
@@ -33,6 +34,7 @@ class AppFeature extends Model
     protected $casts = [
         'enabled_android' => 'boolean',
         'enabled_ios' => 'boolean',
+        'enabled_dev' => 'boolean',
     ];
 
     protected static function booted(): void
@@ -58,12 +60,21 @@ class AppFeature extends Model
 
     public function isEnabledFor(string $platform): bool
     {
-        return $platform === self::PLATFORM_IOS ? $this->enabled_ios : $this->enabled_android;
+        return match ($platform) {
+            self::PLATFORM_IOS => (bool) $this->enabled_ios,
+            self::PLATFORM_DEV => (bool) $this->enabled_dev,
+            default => (bool) $this->enabled_android,
+        };
     }
 
-    public static function normalizePlatform(?string $platform): string
+    public static function normalizePlatform(?string $platform, ?string $env = null): string
     {
-        return strtolower((string) $platform) === self::PLATFORM_IOS
+        $target = strtolower((string) ($env ?: $platform));
+        if ($target === self::PLATFORM_DEV || in_array($target, ['development', 'debug', 'local', 'staging'])) {
+            return self::PLATFORM_DEV;
+        }
+
+        return $target === self::PLATFORM_IOS
             ? self::PLATFORM_IOS
             : self::PLATFORM_ANDROID;
     }

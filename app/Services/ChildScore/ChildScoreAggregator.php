@@ -63,12 +63,36 @@ class ChildScoreAggregator implements ChildScoreAggregatorInterface
         $pqScore = $this->calculatePQScore($childId);
 
         return [
-            'iq' => $latestIq ? max(0.0, min(10.0, (float) $latestIq->score)) : null,
+            'iq' => $this->resolveIqScoreOnTenScale($latestIq),
             'eq' => $latestEq ? max(0.0, min(10.0, (float) $latestEq->score)) : null,
             'aq' => $latestAq ? max(0.0, min(10.0, (float) $latestAq->score)) : null,
             'gpa' => $latestGpa ? max(0.0, min(10.0, (float) $latestGpa->full_year_grade)) : null,
             'pq' => $pqScore !== null ? max(0.0, min(10.0, (float) $pqScore)) : null,
         ];
+    }
+
+    /**
+     * Chuẩn hóa điểm IQ về thang điểm 10 (0 - 10)
+     */
+    protected function resolveIqScoreOnTenScale(?Rating $rating): ?float
+    {
+        if (!$rating || $rating->score === null || $rating->score === '') {
+            return null;
+        }
+
+        $rawScore = (float) $rating->score;
+        if ($rawScore <= 10.0) {
+            return max(0.0, round($rawScore, 1));
+        }
+
+        if (!empty($rating->result) && str_contains((string) $rating->result, '/')) {
+            [$correct, $total] = array_map('trim', explode('/', (string) $rating->result, 2));
+            if (is_numeric($correct) && is_numeric($total) && (float) $total > 0) {
+                return max(0.0, min(10.0, round(((float) $correct / (float) $total) * 10, 1)));
+            }
+        }
+
+        return max(0.0, min(10.0, round($rawScore / 10, 1)));
     }
 
     /**

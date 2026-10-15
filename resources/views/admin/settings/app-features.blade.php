@@ -21,7 +21,7 @@
 
         .af-row {
             display: grid;
-            grid-template-columns: minmax(220px, 2fr) 90px 90px minmax(170px, 1.2fr) minmax(200px, 2fr);
+            grid-template-columns: minmax(220px, 2fr) 80px 80px 80px minmax(160px, 1.2fr) minmax(200px, 2fr);
             gap: 1rem;
             align-items: center;
             padding: .85rem 1.25rem;
@@ -85,6 +85,13 @@
             border-color: #16a34a;
         }
         .af-switch .form-check-input:focus-visible { box-shadow: 0 0 0 3px rgba(22, 163, 74, .25); }
+        .af-switch .form-check-input.is-dev-switch:checked {
+            background-color: #8b5cf6;
+            border-color: #8b5cf6;
+        }
+        .af-switch .form-check-input.is-dev-switch:focus-visible {
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, .25);
+        }
         .af-cell-label { display: none; font-size: .7rem; color: #64748b; font-weight: 600; text-transform: uppercase; }
 
         .af-toast {
@@ -109,7 +116,7 @@
 
         @media (max-width: 991.98px) {
             .af-row.is-head { display: none; }
-            .af-row { grid-template-columns: 1fr 1fr; gap: .75rem 1rem; }
+            .af-row { grid-template-columns: 1fr 1fr 1fr; gap: .75rem 1rem; }
             .af-row > .af-col-name { grid-column: 1 / -1; }
             .af-row > .af-col-msg { grid-column: 1 / -1; }
             .af-cell-label { display: block; margin-bottom: .25rem; }
@@ -124,7 +131,7 @@
                 class="mb-4"
                 icon="toggle-right"
                 :title="__('Quản lý chức năng App')"
-                :subtitle="__('Bật/tắt từng chức năng hiển thị trong app theo nền tảng Android / iOS. Thay đổi có hiệu lực ngay khi app tải lại cấu hình.')"
+                :subtitle="__('Bật/tắt từng chức năng hiển thị trong app theo nền tảng Android / iOS / Dev. Thay đổi có hiệu lực ngay khi app tải lại cấu hình.')"
                 :back-route="route('admin.dashboard')"
             />
 
@@ -135,6 +142,7 @@
                     <ul class="mb-0 ps-3">
                         <li><b>{{ __('Ẩn hẳn') }}</b>: {{ __('chức năng biến mất khỏi app.') }}</li>
                         <li><b>{{ __('Hiện & báo bảo trì') }}</b>: {{ __('chức năng vẫn hiển thị nhưng khi bấm sẽ hiện thông báo thay vì mở.') }}</li>
+                        <li><b><span class="badge bg-purple-lt me-1">DEV</span>{{ __('Môi trường Dev') }}</b>: {{ __('Chỉ ảnh hưởng khi app chạy debug/test (không ảnh hưởng người dùng thật trên Store).') }}</li>
                     </ul>
                 </div>
             </div>
@@ -154,6 +162,7 @@
                             <div>{{ __('Chức năng') }}</div>
                             <div>Android</div>
                             <div>iOS</div>
+                            <div>Dev <span class="badge bg-purple-lt ms-1" style="font-size: .65rem; padding: 2px 4px;">TEST</span></div>
                             <div>{{ __('Khi tắt') }}</div>
                             <div>{{ __('Thông báo bảo trì') }}</div>
                         </div>
@@ -193,7 +202,7 @@
 
                                 <div class="af-switch">
                                     <span class="af-cell-label">Android</span>
-                                    <label class="form-check form-switch m-0">
+                                    <label class="form-check form-switch m-0" title="Android (Production)">
                                         <input type="hidden" name="features[{{ $feature->id }}][enabled_android]" value="0">
                                         <input class="form-check-input js-field" type="checkbox"
                                                name="features[{{ $feature->id }}][enabled_android]" value="1"
@@ -204,12 +213,23 @@
 
                                 <div class="af-switch">
                                     <span class="af-cell-label">iOS</span>
-                                    <label class="form-check form-switch m-0">
+                                    <label class="form-check form-switch m-0" title="iOS (Production)">
                                         <input type="hidden" name="features[{{ $feature->id }}][enabled_ios]" value="0">
                                         <input class="form-check-input js-field" type="checkbox"
                                                name="features[{{ $feature->id }}][enabled_ios]" value="1"
                                                data-field="enabled_ios" @checked($feature->enabled_ios)
                                                aria-label="iOS - {{ $feature->name }}">
+                                    </label>
+                                </div>
+
+                                <div class="af-switch">
+                                    <span class="af-cell-label">Dev</span>
+                                    <label class="form-check form-switch m-0" title="{{ __('Môi trường Dev / Lập trình viên') }}">
+                                        <input type="hidden" name="features[{{ $feature->id }}][enabled_dev]" value="0">
+                                        <input class="form-check-input js-field is-dev-switch" type="checkbox"
+                                               name="features[{{ $feature->id }}][enabled_dev]" value="1"
+                                               data-field="enabled_dev" @checked($feature->enabled_dev)
+                                               aria-label="Dev - {{ $feature->name }}">
                                     </label>
                                 </div>
 

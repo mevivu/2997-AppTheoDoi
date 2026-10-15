@@ -40,6 +40,7 @@ class AppFeatureController extends Controller
         $data = $request->validate([
             'enabled_android' => ['sometimes', 'boolean'],
             'enabled_ios' => ['sometimes', 'boolean'],
+            'enabled_dev' => ['sometimes', 'boolean'],
             'disabled_mode' => ['sometimes', Rule::in([AppFeature::MODE_HIDE, AppFeature::MODE_MAINTENANCE])],
             'disabled_message' => ['sometimes', 'nullable', 'string', 'max:255'],
         ]);
@@ -70,6 +71,7 @@ class AppFeatureController extends Controller
                 'id' => $feature->id,
                 'enabled_android' => $feature->enabled_android,
                 'enabled_ios' => $feature->enabled_ios,
+                'enabled_dev' => $feature->enabled_dev,
                 'disabled_mode' => $feature->disabled_mode,
                 'disabled_message' => $feature->disabled_message,
                 'updated_at' => $feature->updated_at?->format('d/m/Y H:i'),
@@ -86,6 +88,7 @@ class AppFeatureController extends Controller
             'features' => ['required', 'array'],
             'features.*.enabled_android' => ['nullable'],
             'features.*.enabled_ios' => ['nullable'],
+            'features.*.enabled_dev' => ['nullable'],
             'features.*.disabled_mode' => ['nullable', Rule::in([AppFeature::MODE_HIDE, AppFeature::MODE_MAINTENANCE])],
             'features.*.disabled_message' => ['nullable', 'string', 'max:255'],
         ]);
@@ -101,6 +104,9 @@ class AppFeatureController extends Controller
 
             $feature->enabled_android = !empty($item['enabled_android']);
             $feature->enabled_ios = !empty($item['enabled_ios']);
+            if (array_key_exists('enabled_dev', $item)) {
+                $feature->enabled_dev = !empty($item['enabled_dev']);
+            }
             if (isset($item['disabled_mode'])) {
                 $feature->disabled_mode = $item['disabled_mode'];
             }
