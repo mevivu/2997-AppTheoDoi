@@ -186,8 +186,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         if ($increasedHeight <= 0) {
             $whoCurrent = $this->getWho(round($currentAge * 12), $gender);
-            $rawFallback = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
-            $effectiveSpeed = max(0.0, min(6.5, $rawFallback));
+            $effectiveSpeed = $this->resolveFallbackSpeed($whoCurrent, $currentAge, round($currentAge * 12));
         } else {
             $effectiveSpeed = $increasedHeight;
         }
@@ -254,6 +253,34 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         }
 
         return $finalMatureHeight;
+    }
+
+    /**
+     * Xác định tốc độ tăng trưởng fallback (cm/năm) từ chuẩn WHO khi trẻ chưa có lịch sử đo 1 năm.
+     * Xử lý các điểm dị thường tại các mốc chuyển tiếp dữ liệu của WHO:
+     * - Tháng 24: Chuyển từ đo chiều dài nằm sang đo chiều cao đứng (độ lệch kỹ thuật ~0.7cm làm delta tháng 24 chỉ còn 0.18-0.20cm).
+     * - Tháng 61: Chuyển tiếp giữa dataset WHO 0-5 tuổi và WHO 5-19 tuổi.
+     *
+     * @param object|null $whoCurrent
+     * @param float $currentAge
+     * @param int|float $month
+     * @return float
+     */
+    private function resolveFallbackSpeed(?object $whoCurrent, float $currentAge, int|float $month): float
+    {
+        $rawSpeed = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
+
+        // Mốc tháng 24: Tốc độ tăng trưởng tự nhiên thực tế của trẻ 24 tháng là ~0.88 - 0.90 cm/tháng (10.5 - 10.8 cm/năm, cap ở 6.5)
+        if ((int)$month === 24) {
+            return 6.5;
+        }
+
+        // Nếu tốc độ từ bảng WHO sụt giảm bất thường (< 4.5 cm/năm) ở trẻ trước 11 tuổi
+        if ($currentAge < 11.0 && $rawSpeed < 4.5) {
+            return 5.5;
+        }
+
+        return max(0.0, min(6.5, $rawSpeed));
     }
 
 
@@ -366,8 +393,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         // Nếu tốc độ tăng = 0, fallback theo mức tăng trung bình WHO của lứa tuổi hiện tại
         if ($increasedHeight <= 0) {
             $whoCurrent = $this->getWho(round($currentAge * 12), $gender);
-            $rawFallback = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
-            $effectiveSpeed = max(0.0, min(6.5, $rawFallback));
+            $effectiveSpeed = $this->resolveFallbackSpeed($whoCurrent, $currentAge, round($currentAge * 12));
         } else {
             $effectiveSpeed = $increasedHeight;
         }
@@ -616,8 +642,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         // Nếu tốc độ tăng = 0, fallback theo mức tăng trung bình WHO của lứa tuổi hiện tại
         if ($increasedHeight <= 0) {
             $whoCurrent = $this->getWho(round($currentAge * 12), $gender);
-            $rawFallback = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
-            $effectiveSpeed = max(0.0, min(6.5, $rawFallback));
+            $effectiveSpeed = $this->resolveFallbackSpeed($whoCurrent, $currentAge, round($currentAge * 12));
         } else {
             $effectiveSpeed = $increasedHeight;
         }
@@ -999,11 +1024,11 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         $whoCurrent = $this->getWho($currentAgeMonth, $gender);
         $whoCurrentHeight = $whoCurrent ? (float)$whoCurrent->height : $currentHeight;
-        $whoCurrentSpeed = $whoCurrent && $whoCurrent->height_change ? (float)$whoCurrent->height_change * 12 : 5.5;
+        $whoCurrentSpeed = $this->resolveFallbackSpeed($whoCurrent, $currentAge, $currentAgeMonth);
 
         $isFallbackUsed = false;
         if ($clampedSpeed <= 0) {
-            $effectiveSpeed = max(0.0, min(6.5, $whoCurrentSpeed));
+            $effectiveSpeed = $whoCurrentSpeed;
             $isFallbackUsed = true;
         } else {
             $effectiveSpeed = $clampedSpeed;
