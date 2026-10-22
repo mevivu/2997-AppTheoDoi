@@ -61,7 +61,7 @@
         <div class="card-body p-4">
             <div class="mb-3">
                 <label class="control-label mb-1">{{ __('Thời gian đọc') }}:</label>
-                <x-input name="reading_time" :value="old('reading_time', '3 phút đọc')" placeholder="VD: 3 phút đọc" />
+                <x-input name="reading_time" :value="old('reading_time')" placeholder="VD: 3 phút đọc" />
             </div>
 
             <div class="mb-3">

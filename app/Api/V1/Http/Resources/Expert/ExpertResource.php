@@ -19,16 +19,16 @@ class ExpertResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'council_type' => $this->council_type?->value ?? (int) $this->council_type,
-            'council_name' => $this->council_type?->label() ?? 'Hội đồng Tư vấn Chuyên môn',
+            'council_type' => $this->council_type?->value ?? ($this->council_type !== null ? (int) $this->council_type : null),
+            'council_name' => $this->council_type?->label(),
             'name' => $this->name,
             'title' => $this->title,
-            'hospital' => $this->hospital ?? '',
-            'workplace' => $this->workplace ?? $this->hospital ?? '',
+            'hospital' => $this->hospital,
+            'workplace' => $this->workplace ?? $this->hospital,
             'avatar' => formatImageUrl($this->avatar),
-            'bio' => $this->bio ?? '',
-            'contact_link' => $this->contact_link ?? '',
-            'contact_phone' => $this->contact_phone ?? '',
+            'bio' => $this->bio,
+            'contact_link' => $this->contact_link,
+            'contact_phone' => $this->contact_phone,
             'is_verified' => (bool) $this->is_verified,
             'qualifications' => ExpertQualificationResource::collection($this->qualifications ?? []),
         ];
