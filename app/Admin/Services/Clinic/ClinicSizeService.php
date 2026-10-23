@@ -63,8 +63,10 @@ class ClinicSizeService implements ClinicServiceInterface
      */
     public function update(Request $request): object|bool
     {
-
         $data = $request->validated();
+        if (isset($data['schedule']) && is_array($data['schedule'])) {
+            $data['schedule'] = json_encode($data['schedule']);
+        }
         return $this->repository->update($data['id'], $data);
     }
 
@@ -74,7 +76,6 @@ class ClinicSizeService implements ClinicServiceInterface
     public function delete($id): object
     {
         return $this->repository->delete($id);
-
     }
 
     /**
@@ -97,7 +98,7 @@ class ClinicSizeService implements ClinicServiceInterface
                 return true;
             case ActiveStatus::Deleted->value:
                 foreach ($this->data['id'] as $value) {
-                   $response = $this->repository->findOrFail($value);
+                    $response = $this->repository->findOrFail($value);
                     $response->delete();
                 }
                 return true;

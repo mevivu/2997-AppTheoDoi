@@ -24,6 +24,7 @@ class ClinicRequest extends BaseRequest
             'district_id' => ['nullable', 'exists:App\Models\District,id'],
             'ward_id' => ['required', 'exists:App\Models\Ward,id'],
             'clinic_type_id' => ['required', 'exists:App\Models\ClinicType,id'],
+            'status' => ['required', new Enum(ActiveStatus::class)],
             'closing_time' => ['required', 'date_format:H:i'],
             'opening_time' => ['required', 'date_format:H:i'],
             'avatar' => ['nullable'],
@@ -33,7 +34,6 @@ class ClinicRequest extends BaseRequest
 
     protected function methodPut(): array
     {
-
         return [
             'id' => ['required', 'exists:App\Models\Clinic,id'],
             'name' => ['required', 'string'],
@@ -48,7 +48,6 @@ class ClinicRequest extends BaseRequest
             'closing_time' => ['required'],
             'avatar' => ['nullable'],
             'schedule' => ['required', 'array'],
-
         ];
     }
 }

@@ -19,13 +19,32 @@
     <div class="card border-0 custom-shadow rounded-3 mb-4">
         <div class="card-header bg-white border-bottom px-4 py-3">
             <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.05rem;">
+                <i class="ti ti-calendar-event text-primary me-2 fs-4"></i>
+                {{ __('Lịch làm việc') }} <span class="text-danger ms-1">*</span>
+            </h5>
+        </div>
+        <div class="card-body p-4 wrap-list-checkbox d-flex flex-column gap-2">
+            @foreach ($dayOfWeek as $day)
+                <x-input-checkbox
+                    :checked="old('schedule', [])"
+                    :value="$day->value"
+                    name="schedule[]"
+                    :label="$day->label()"
+                />
+            @endforeach
+        </div>
+    </div>
+
+    <div class="card border-0 custom-shadow rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom px-4 py-3">
+            <h5 class="mb-0 fw-bold text-dark d-flex align-items-center" style="font-size: 1.05rem;">
                 <i class="ti ti-photo-heart text-primary me-2 fs-4"></i>
                 {{ __('Ảnh đại diện') }}
             </h5>
         </div>
         <div class="card-body p-4 text-center">
             <div class="settings-logo-upload-wrapper text-center my-2 p-3">
-                <x-input-image-ckfinder name="image" showImage="image" />
+                <x-input-image-ckfinder name="avatar" showImage="avatar" :value="old('avatar')" />
             </div>
             <p class="text-muted fs-12 mb-0">{{ __('Hỗ trợ định dạng JPG, PNG, WEBP. Nhấp vào ảnh để thay đổi qua CKFinder.') }}</p>
         </div>
