@@ -3117,6 +3117,45 @@ return [
             'addClass' => 'text-center align-middle',
         ],
     ],
+    'app_feedbacks' => [
+        'user' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-user"></i><span>Người dùng (User ID & Email)</span></div>',
+            'orderable' => false,
+            'addClass' => 'align-middle',
+        ],
+        'rating' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-star"></i><span>Câu 1: Mức độ hài lòng</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'favorite_feature' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-sparkles"></i><span>Câu 2: Tính năng hài lòng nhất</span></div>',
+            'orderable' => false,
+            'addClass' => 'align-middle',
+        ],
+        'improvement_feedback' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-message-dots"></i><span>Câu 3: Mong muốn cải thiện</span></div>',
+            'orderable' => false,
+            'addClass' => 'align-middle',
+        ],
+        'created_at' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-clock"></i><span>Thời gian gửi</span></div>',
+            'orderable' => true,
+            'addClass' => 'text-center align-middle',
+        ],
+        'status' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-info-circle"></i><span>Trạng thái & Lịch sử cấp VIP</span></div>',
+            'orderable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+        'action' => [
+            'title' => '<div class="header-cell-content"><i class="ti ti-settings"></i><span>Thao tác</span></div>',
+            'orderable' => false,
+            'exportable' => false,
+            'printable' => false,
+            'addClass' => 'text-center align-middle',
+        ],
+    ],
     'iq_norms' => [
         'checkbox' => [
             'title' => 'choose',

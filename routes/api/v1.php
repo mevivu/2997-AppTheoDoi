@@ -499,6 +499,16 @@ Route::controller(\App\Api\V1\Http\Controllers\Tracking\TrackingController::clas
         Route::post('/app-session', 'logAppSession')->middleware(['auth:api', 'throttle:30,1']);
     });
 
+// Form Đánh Giá Chăm Con 360 - Chia sẻ trải nghiệm & Nhận ưu đãi VIP
+Route::controller(\App\Api\V1\Http\Controllers\AppFeedback\AppFeedbackController::class)
+    ->prefix('/app-feedbacks')
+    ->as('app_feedback.')
+    ->middleware('auth:api')
+    ->group(function () {
+        Route::get('/my-status', 'myStatus');
+        Route::post('/', 'store');
+    });
+
 //***** -- Parent Rank -- ******* //
 Route::controller(\App\Api\V1\Http\Controllers\ParentRank\ParentRankController::class)
     ->prefix('/parent-rank')

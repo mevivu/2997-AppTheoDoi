@@ -64,6 +64,13 @@ return [
                 'roles' => [],
                 'permissions' => ['viewTransaction'],
             ],
+            [
+                'title' => 'Đánh giá & Cấp VIP 360',
+                'routeName' => RouteAdminSystem::APP_FEEDBACK_INDEX,
+                'icon' => '<i class="ti ti-id-badge-2"></i>',
+                'roles' => [],
+                'permissions' => ['viewTransaction'],
+            ],
         ]
     ],
     [

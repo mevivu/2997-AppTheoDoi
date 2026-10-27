@@ -52,6 +52,12 @@ class RouteAdminSystem
     const KYC_APPROVE = 'admin.kyc.approve';
     const KYC_REJECT = 'admin.kyc.reject';
 
+    /** APP FEEDBACK (FORM ĐÁNH GIÁ CHĂM CON 360) */
+    const APP_FEEDBACK_INDEX = 'admin.app_feedback.index';
+    const APP_FEEDBACK_UPDATE_REWARD_PACKAGE = 'admin.app_feedback.update_reward_package';
+    const APP_FEEDBACK_UPDATE_STATUS = 'admin.app_feedback.update_status';
+    const APP_FEEDBACK_GRANT_VIP = 'admin.app_feedback.grant_vip';
+
     /** DEVELOP GUIDE */
     const DEVELOP_INDEX = 'admin.develop.index';
     const DEVELOP_CREATE = 'admin.develop.create';

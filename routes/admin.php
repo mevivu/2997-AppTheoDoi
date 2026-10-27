@@ -1149,6 +1149,17 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
 
     Route::get('/dashboard', [App\Admin\Http\Controllers\Dashboard\DashboardController::class, 'index'])->name('dashboard');
 
+    // Form Đánh Giá Chăm Con 360 & Nâng cấp gói VIP
+    Route::controller(App\Admin\Http\Controllers\AppFeedback\AppFeedbackController::class)
+        ->prefix('/danh-gia-ung-dung')
+        ->as('app_feedback.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/reward-package', 'updateRewardPackage')->name('update_reward_package');
+            Route::post('/grant-vip/{id}', 'grantVip')->name('grant_vip');
+            Route::post('/status/{id}', 'updateStatus')->name('update_status');
+        });
+
     //auth
     Route::controller(App\Admin\Http\Controllers\Auth\ProfileController::class)
         ->prefix('/thong-tin-ca-nhan')
@@ -1446,6 +1457,17 @@ Route::group(['middleware' => 'admin.auth.admin:admin'], function () {
             Route::group(['middleware' => ['permission:deleteFetalGrowthStandard', 'auth:admin']], function () {
                 Route::delete('/xoa/{id}', 'delete')->name('delete');
             });
+        });
+
+    // Form Đánh Giá Chăm Con 360 & Nâng cấp gói VIP
+    Route::controller(App\Admin\Http\Controllers\AppFeedback\AppFeedbackController::class)
+        ->prefix('/danh-gia-ung-dung')
+        ->as('app_feedback.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/reward-package', 'updateRewardPackage')->name('update_reward_package');
+            Route::post('/grant-vip/{id}', 'grantVip')->name('grant_vip');
+            Route::post('/status/{id}', 'updateStatus')->name('update_status');
         });
 
     //auth
