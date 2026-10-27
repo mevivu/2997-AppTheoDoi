@@ -65,7 +65,7 @@ return [
                 'permissions' => ['viewTransaction'],
             ],
             [
-                'title' => 'Đánh giá & Cấp VIP 360',
+                'title' => 'Đánh giá ứng dụng',
                 'routeName' => RouteAdminSystem::APP_FEEDBACK_INDEX,
                 'icon' => '<i class="ti ti-id-badge-2"></i>',
                 'roles' => [],
@@ -74,7 +74,7 @@ return [
         ]
     ],
     [
-        'title' => 'Đánh giá ứng dụng (VIP 360)',
+        'title' => 'Đánh giá ứng dụng',
         'routeName' => RouteAdminSystem::APP_FEEDBACK_INDEX,
         'icon' => '<i class="ti ti-message-star"></i>',
         'roles' => [],
