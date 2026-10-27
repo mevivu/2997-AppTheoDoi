@@ -4,7 +4,6 @@ namespace App\Admin\DataTables\AppFeedback;
 
 use App\Admin\DataTables\BaseDataTable;
 use App\Admin\Traits\Roles;
-use App\Enums\Feedback\AppFeedbackFeature;
 use App\Enums\Feedback\AppFeedbackStatus;
 use App\Models\AppFeedback;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,6 +13,8 @@ class AppFeedbackDatatable extends BaseDataTable
     use Roles;
 
     protected $nameTable = 'AppFeedbackTable';
+
+    protected array $actions = ['reload', 'pageLength'];
 
     public function setView(): void
     {
@@ -26,37 +27,48 @@ class AppFeedbackDatatable extends BaseDataTable
 
     public function setColumnSearch(): void
     {
-        $this->columnAllSearch = [0, 1, 2, 3, 4, 5];
-        $this->columnSearchDate = [4];
-        $this->columnSearchSelect = [
-            [
-                'column' => 1,
-                'data' => [
-                    '5' => '5 sao',
-                    '4' => '4 sao',
-                    '3' => '3 sao',
-                    '2' => '2 sao',
-                    '1' => '1 sao',
-                ],
-            ],
-            [
-                'column' => 2,
-                'data' => AppFeedbackFeature::asSelectArray(),
-            ],
-            [
-                'column' => 5,
-                'data' => AppFeedbackStatus::asSelectArray(),
-            ],
-        ];
+        // Đã sử dụng Thanh Bộ Lọc Tập Trung (Unified Filter Bar) phía trên bảng
+        $this->columnAllSearch = [];
+        $this->columnSearchDate = [];
+        $this->columnSearchSelect = [];
     }
 
     public function query(): Builder
     {
         $query = AppFeedback::query()->with(['user', 'grantedPackage', 'grantedByAdmin']);
 
+        // 1. Lọc theo Trạng thái
         $status = request('feedback_status') ?: request('status');
         if ($status && $status !== 'all') {
             $query->where('status', $status);
+        }
+
+        // 2. Lọc theo Câu 1: Số sao (1-5)
+        $rating = request('filter_rating');
+        if ($rating !== null && $rating !== '' && $rating !== 'all') {
+            $query->where('rating', (int) $rating);
+        }
+
+        // 3. Lọc theo Câu 2: Tính năng hài lòng nhất
+        $feature = request('filter_feature');
+        if ($feature !== null && $feature !== '' && $feature !== 'all') {
+            $query->where('favorite_feature', $feature);
+        }
+
+        // 4. Lọc theo Từ khóa (User ID, Email, Họ tên, hoặc Nội dung góp ý)
+        $keyword = trim((string) request('filter_keyword', ''));
+        if ($keyword !== '') {
+            $cleanId = ltrim($keyword, '#');
+            $query->where(function ($sub) use ($keyword, $cleanId) {
+                if (is_numeric($cleanId)) {
+                    $sub->orWhere('user_id', (int) $cleanId);
+                }
+                $sub->orWhere('email', 'like', "%{$keyword}%")
+                    ->orWhere('improvement_feedback', 'like', "%{$keyword}%")
+                    ->orWhereHas('user', function ($uQuery) use ($keyword) {
+                        $uQuery->where('fullname', 'like', "%{$keyword}%");
+                    });
+            });
         }
 
         $query->orderByRaw("
@@ -144,26 +156,6 @@ class AppFeedbackDatatable extends BaseDataTable
             'created_at',
             'status',
             'action',
-        ];
-    }
-
-    public function setCustomFilterColumns(): void
-    {
-        $this->customFilterColumns = [
-            'user' => function ($query, $keyword) {
-                $keyword = trim($keyword);
-                $cleanId = ltrim($keyword, '#');
-
-                $query->where(function ($sub) use ($keyword, $cleanId) {
-                    if (is_numeric($cleanId)) {
-                        $sub->orWhere('user_id', (int) $cleanId);
-                    }
-                    $sub->orWhere('email', 'like', "%{$keyword}%")
-                        ->orWhereHas('user', function ($uQuery) use ($keyword) {
-                            $uQuery->where('fullname', 'like', "%{$keyword}%");
-                        });
-                });
-            },
         ];
     }
 }
