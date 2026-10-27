@@ -129,7 +129,7 @@
                                 <span class="fw-bold text-dark fs-12">
                                     <i class="ti ti-versions me-1 text-primary"></i>{{ __('Link đánh giá cửa hàng (Lấy từ Quản lý phiên bản):') }}
                                 </span>
-                                <a href="{{ route('admin.app_version.index') }}" class="fs-12 text-decoration-none fw-semibold" style="color: #1F7A80;">
+                                <a href="{{ route(\App\Traits\RouteAdminSystem::APP_VERSION_INDEX) }}" class="fs-12 text-decoration-none fw-semibold" style="color: #1F7A80;">
                                     <i class="ti ti-settings me-0.5"></i>{{ __('Quản lý phiên bản') }}
                                 </a>
                             </div>

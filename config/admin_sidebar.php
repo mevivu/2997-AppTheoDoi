@@ -74,6 +74,14 @@ return [
         ]
     ],
     [
+        'title' => 'Đánh giá ứng dụng (VIP 360)',
+        'routeName' => RouteAdminSystem::APP_FEEDBACK_INDEX,
+        'icon' => '<i class="ti ti-message-star"></i>',
+        'roles' => [],
+        'permissions' => [],
+        'sub' => []
+    ],
+    [
         'title' => 'Quá trình phát triển',
         'routeName' => null,
         'icon' => '<i class="ti ti-writing"></i>',
