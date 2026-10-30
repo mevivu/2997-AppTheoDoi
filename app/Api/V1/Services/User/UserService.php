@@ -74,6 +74,7 @@ class UserService implements UserServiceInterface
             }
             $data['status'] = UserStatus::Active;
             $data['service_type'] = UserServiceType::Email;
+            $data['email_verified_at'] = now();
 
             // Xử lý kiểm tra và liên kết mã giới thiệu khi đăng ký
             if (!empty($data['referral_code'])) {
@@ -206,21 +207,57 @@ class UserService implements UserServiceInterface
     public function validateOtp(Request $request): bool
     {
         $data = $request->validated();
-        $email = $data['email'];
-        $otpCode = $data['otp'];
+        $rawEmail = trim((string) $data['email']);
+        $otpCode = (string) $data['otp'];
 
-        $this->validateOtpCode($email, $otpCode);
+        $this->validateOtpCode($rawEmail, $otpCode);
 
-        $email = AESHelper::encrypt($email);
-        $user = $this->repository->findByField('email', $email);
-        $userData = [
-            'status' => UserStatus::Active,
-            'email_verified_at' => now()
-        ];
-        $this->repository->update($user->id, $userData);
-        $this->deleteOtpWithEmail($email);
+        $encryptedEmail = AESHelper::encrypt($rawEmail);
+        $user = $this->repository->findByField('email', $encryptedEmail);
+        if ($user) {
+            $userData = [
+                'status' => UserStatus::Active,
+                'email_verified_at' => now()
+            ];
+            $this->repository->update($user->id, $userData);
+        }
+
+        $this->deleteOtpWithEmail($rawEmail);
 
         return true;
+    }
+
+    /**
+     * Kiểm tra email và số điện thoại đã tồn tại chưa (Chuẩn luồng 3314)
+     */
+    public function checkEmailOrPhoneExist(Request $request): array
+    {
+        $email = $request->input('email') ? trim((string) $request->input('email')) : null;
+        $phone = $request->input('phone') ? trim((string) $request->input('phone')) : null;
+
+        $existsEmail = false;
+        $existsPhone = false;
+        $type = null;
+
+        if ($email && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $type = 'email';
+            $emailEncrypted = AESHelper::encrypt($email);
+            $existsEmail = User::where('email', $emailEncrypted)->exists();
+        }
+
+        if ($phone) {
+            if (!$type) {
+                $type = 'phone';
+            }
+            $phoneEncrypted = AESHelper::encrypt($phone);
+            $existsPhone = User::where('phone', $phoneEncrypted)->exists();
+        }
+
+        return [
+            'email_exists' => $existsEmail,
+            'phone_exists' => $existsPhone,
+            'type' => $type,
+        ];
     }
 
     /**

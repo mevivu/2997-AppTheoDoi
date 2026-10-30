@@ -20,6 +20,8 @@ interface UserServiceInterface
 
     public function resendOtp(Request $request);
 
+    public function checkEmailOrPhoneExist(Request $request): array;
+
 
     public function updateEmail(Request $request): bool|object;
 

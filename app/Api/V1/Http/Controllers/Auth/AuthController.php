@@ -11,6 +11,7 @@ use App\Api\V1\Http\Requests\Auth\ResetPasswordRequest;
 use App\Api\V1\Http\Requests\Auth\UpdateDeviceTokenRequest;
 use App\Api\V1\Http\Requests\Auth\UpdatePasswordRequest;
 use App\Api\V1\Http\Requests\Auth\UpdateEmailRequest;
+use App\Api\V1\Http\Requests\User\CheckEmailOrPhoneExistRequest;
 use App\Api\V1\Http\Requests\User\ResendOtpRequest;
 use App\Api\V1\Http\Requests\User\VerificationOtp;
 use App\Api\V1\Http\Resources\Auth\AuthResource;
@@ -57,6 +58,7 @@ class AuthController extends Controller
                 'register',
                 'verificationOtp',
                 'resendOtp',
+                'checkEmailOrPhoneExist',
                 'updatePassword',
                 'forgotPassword',
                 'checkToken'
@@ -423,6 +425,20 @@ class AuthController extends Controller
             return $this->jsonResponseError($e->getMessage(), 400);
         } catch (Throwable $e) {
             $this->logError('Failed to resend OTP:', $e);
+            return $this->jsonResponseError($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Kiểm tra email và số điện thoại đã tồn tại chưa
+     */
+    public function checkEmailOrPhoneExist(CheckEmailOrPhoneExistRequest $request): JsonResponse
+    {
+        try {
+            $data = $this->service->checkEmailOrPhoneExist($request);
+            return $this->jsonResponseSuccess($data);
+        } catch (Throwable $e) {
+            $this->logError('Failed to check email or phone exist:', $e);
             return $this->jsonResponseError($e->getMessage(), 500);
         }
     }

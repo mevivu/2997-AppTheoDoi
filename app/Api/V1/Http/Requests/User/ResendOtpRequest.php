@@ -13,17 +13,25 @@ class ResendOtpRequest extends BaseRequest
      *
      * @return array
      */
-
     protected function methodPost(): array
     {
         return [
+            'is_register' => ['nullable', 'boolean'],
             'email' => [
                 'required',
                 'email',
                 function ($attribute, $value, $fail) {
                     $email = AESHelper::encrypt($value);
-                    if (!User::where('email', $email)->exists()) {
-                        $fail('Email không tồn tại.');
+                    $isRegister = filter_var($this->input('is_register', false), FILTER_VALIDATE_BOOLEAN);
+
+                    if ($isRegister) {
+                        if (User::where('email', $email)->exists()) {
+                            $fail('Email này đã được đăng ký.');
+                        }
+                    } else {
+                        if (!User::where('email', $email)->exists()) {
+                            $fail('Email không tồn tại.');
+                        }
                     }
                 }
             ],

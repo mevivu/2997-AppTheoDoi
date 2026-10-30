@@ -182,6 +182,24 @@ class FeatureStatisticsService
                 'color' => '#0d9488',
                 'badge_class' => 'bg-teal-lt',
             ],
+            'app_feedback' => [
+                'name' => 'Chia sẻ trải nghiệm – Nhận ưu đãi VIP',
+                'short_name' => 'Đánh giá ứng dụng',
+                'category' => 'account',
+                'category_name' => 'Tài khoản',
+                'icon' => 'ti ti-message-star',
+                'color' => '#1F7A80',
+                'badge_class' => 'bg-teal-lt',
+            ],
+            'sale_package' => [
+                'name' => 'Ưu đãi & Quà tặng (Gói Sale)',
+                'short_name' => 'Ưu đãi & Quà tặng',
+                'category' => 'account',
+                'category_name' => 'Tài khoản',
+                'icon' => 'ti ti-gift',
+                'color' => '#f59e0b',
+                'badge_class' => 'bg-amber-lt',
+            ],
         ];
     }
 
