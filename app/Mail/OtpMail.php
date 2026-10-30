@@ -5,6 +5,7 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -30,6 +31,10 @@ class OtpMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: new Address(
+                (string) config('mail.from.address', 'chamcon360@gmail.com'),
+                'Chăm Con 360'
+            ),
             subject: 'Mã xác thực OTP - Chăm Con 360',
         );
     }
