@@ -90,30 +90,17 @@
                     <!-- Header -->
                     <tr>
                         <td align="center" class="header-padding" style="background: linear-gradient(135deg, #1F7A80 0%, #1695A3 100%); background-color: #1F7A80; padding: 36px 24px 30px 24px; text-align: center;">
-                            <table role="presentation" width="100%" align="center" border="0" cellpadding="0" cellspacing="0" style="width: 100%; margin: 0 auto; text-align: center;">
-                                <tr>
-                                    <td align="center" style="text-align: center; padding-bottom: 12px;">
-                                        <!-- Logo Badge -->
-                                        <table role="presentation" align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
-                                            <tr>
-                                                <td align="center" style="background-color: #ffffff; padding: 10px; border-radius: 18px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);">
-                                                    <img src="{{ $logoSrc }}" alt="Chăm Con 360" width="68" height="68" style="display: block; width: 68px; height: 68px; margin: 0 auto; object-fit: contain;" />
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td align="center" style="text-align: center;">
-                                        <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: 1px; text-transform: uppercase; text-align: center;">
-                                            CHĂM CON 360
-                                        </h1>
-                                        <p style="margin: 4px 0 0 0; font-size: 13px; color: #d8f3e7; font-weight: 500; text-align: center;">
-                                            Phát triển toàn diện
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
+                            <div style="text-align: center; width: 100%; margin: 0 auto 12px auto;">
+                                <div style="background-color: #ffffff; padding: 10px; border-radius: 18px; display: inline-block; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); margin: 0 auto;">
+                                    <img src="{{ $logoSrc }}" alt="Chăm Con 360" width="68" height="68" style="display: block; width: 68px; height: 68px; margin: 0 auto; object-fit: contain;" />
+                                </div>
+                            </div>
+                            <div style="margin: 0; font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: 1px; text-transform: uppercase; text-align: center; width: 100%;">
+                                CHĂM CON 360
+                            </div>
+                            <div style="margin: 4px 0 0 0; font-size: 13px; color: #d8f3e7; font-weight: 500; text-align: center; width: 100%;">
+                                Phát triển toàn diện
+                            </div>
                         </td>
                     </tr>
 
