@@ -105,7 +105,7 @@
                                             CHĂM CON 360
                                         </h1>
                                         <p style="margin: 4px 0 0 0; font-size: 13px; color: #d8f3e7; font-weight: 500;">
-                                            Đồng hành phát triển toàn diện cho bé
+                                            Phát triển toàn diện
                                         </p>
                                     </td>
                                 </tr>
@@ -183,7 +183,7 @@
                                 Theo dõi thể chất WHO • Đánh giá đa trí tuệ IQ/EQ/AQ • Sổ tiêm chủng & Nhật ký dinh dưỡng
                             </p>
                             <div style="font-size: 12px; color: #94a3b8; line-height: 1.6;">
-                                Website: <a href="{{ $appUrl }}" target="_blank" style="color: #1F7A80; text-decoration: none; font-weight: 600;">kids360growth.com</a>
+                                Website: <a href="https://www.chamcon360.com" target="_blank" style="color: #1F7A80; text-decoration: none; font-weight: 600;">www.chamcon360.com</a>
                                 <br>
                                 © {{ date('Y') }} Chăm Con 360. Bảo lưu mọi quyền.
                                 <br>
