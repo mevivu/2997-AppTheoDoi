@@ -253,10 +253,31 @@ class UserService implements UserServiceInterface
             $existsPhone = User::where('phone', $phoneEncrypted)->exists();
         }
 
+        $rawPlatform = strtolower((string) $request->input('platform', $request->header('X-Platform', 'android')));
+        $osPlatform = $rawPlatform === \App\Models\AppFeature::PLATFORM_IOS
+            ? \App\Models\AppFeature::PLATFORM_IOS
+            : \App\Models\AppFeature::PLATFORM_ANDROID;
+        $normalizedPlatform = \App\Models\AppFeature::normalizePlatform(
+            $request->input('platform', $request->header('X-Platform')),
+            $request->input('env', $request->header('X-App-Env'))
+        );
+
+        $otpFeature = \App\Models\AppFeature::allCached()->firstWhere('code', 'register_otp');
+        $requireOtp = true;
+        if ($otpFeature) {
+            if ($normalizedPlatform === \App\Models\AppFeature::PLATFORM_DEV) {
+                $requireOtp = $otpFeature->isEnabledFor(\App\Models\AppFeature::PLATFORM_DEV)
+                    && $otpFeature->isEnabledFor($osPlatform);
+            } else {
+                $requireOtp = $otpFeature->isEnabledFor($normalizedPlatform);
+            }
+        }
+
         return [
             'email_exists' => $existsEmail,
             'phone_exists' => $existsPhone,
             'type' => $type,
+            'require_otp' => $requireOtp,
         ];
     }
 

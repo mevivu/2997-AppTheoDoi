@@ -200,6 +200,15 @@ class FeatureStatisticsService
                 'color' => '#f59e0b',
                 'badge_class' => 'bg-amber-lt',
             ],
+            'register_otp' => [
+                'name' => 'Xác thực OTP khi đăng ký tài khoản',
+                'short_name' => 'OTP Đăng ký',
+                'category' => 'account',
+                'category_name' => 'Tài khoản',
+                'icon' => 'ti ti-shield-lock',
+                'color' => '#0d9488',
+                'badge_class' => 'bg-teal-lt',
+            ],
         ];
     }
 
