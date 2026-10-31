@@ -61,28 +61,108 @@ class RatingPQService implements RatingPQServiceInterface
     {
         $validated = $request->validated();
 
-        $childId = $validated['child_id'];
-//        $month = (int)$validated['month'];
+        $childId = (int)$validated['child_id'];
         $year = (int)$validated['year'];
 
+        return $this->buildYearlyChartStatistics($childId, $year);
+    }
+
+    /**
+     * Tổng hợp danh sách thống kê thể chất theo năm cho biểu đồ.
+     * Tự động kế thừa giá trị > 0 gần nhất trong cùng tháng cho bản ghi đại diện tháng
+     * để không bị mất chỉ số khi phụ huynh cập nhật lẻ từng chỉ số trong tháng,
+     * đồng thời giữ nguyên 100% cấu trúc dữ liệu cho bản App Production cũ.
+     */
+    private function buildYearlyChartStatistics(int $childId, int $year): array
+    {
         $records = $this->repository->getQueryBuilder()
             ->where('child_id', $childId)
-//            ->whereMonth('assessment_date', '=', $month)
             ->whereYear('assessment_date', '=', $year)
             ->orderBy('assessment_date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->get();
 
-        $result = [];
         $groupedRecords = [];
+        $monthCoalesced = [];
 
         foreach ($records as $record) {
+            if (!$record->assessment_date) {
+                continue;
+            }
             $date = $record->assessment_date->toDateString();
+            $month = (int)$record->assessment_date->format('n');
+
             if (!isset($groupedRecords[$date]) || $record->created_at > $groupedRecords[$date]->created_at) {
                 $groupedRecords[$date] = $record;
             }
+
+            if (!isset($monthCoalesced[$month])) {
+                $monthCoalesced[$month] = [
+                    'height' => null,
+                    'weight' => null,
+                    'strength' => null,
+                    'endurance' => null,
+                    'bmi' => null,
+                    'bmi_result' => null,
+                    'height_result' => null,
+                    'height_change' => null,
+                    'weight_change' => null,
+                ];
+            }
+
+            if ($monthCoalesced[$month]['height'] === null && (float)($record->height ?? 0) > 0) {
+                $monthCoalesced[$month]['height'] = (int)round((float)$record->height);
+                $monthCoalesced[$month]['height_result'] = $record->height_result;
+                $monthCoalesced[$month]['height_change'] = $record->height_change;
+            }
+            if ($monthCoalesced[$month]['weight'] === null && (float)($record->weight ?? 0) > 0) {
+                $monthCoalesced[$month]['weight'] = (float)$record->weight;
+                $monthCoalesced[$month]['weight_change'] = $record->weight_change;
+            }
+            if ($monthCoalesced[$month]['strength'] === null && (int)($record->strength ?? 0) > 0) {
+                $monthCoalesced[$month]['strength'] = (int)$record->strength;
+            }
+            if ($monthCoalesced[$month]['endurance'] === null && (int)($record->endurance ?? 0) > 0) {
+                $monthCoalesced[$month]['endurance'] = (int)$record->endurance;
+            }
+            if ($monthCoalesced[$month]['bmi'] === null && (float)($record->bmi ?? 0) > 0) {
+                $monthCoalesced[$month]['bmi'] = (float)$record->bmi;
+                $monthCoalesced[$month]['bmi_result'] = $record->bmi_result;
+            }
         }
 
+        $result = [];
+        $patchedMonths = [];
+
         foreach ($groupedRecords as $record) {
+            $month = (int)$record->assessment_date->format('n');
+            // Bản ghi đầu tiên của mỗi tháng (do đã sort assessment_date desc) là bản ghi đại diện tháng trên App
+            if (!isset($patchedMonths[$month]) && isset($monthCoalesced[$month])) {
+                $patchedMonths[$month] = true;
+                $coalesced = $monthCoalesced[$month];
+
+                if ((float)($record->height ?? 0) <= 0 && $coalesced['height'] !== null) {
+                    $record->height = $coalesced['height'];
+                    $record->height_result = $coalesced['height_result'];
+                    $record->height_change = $coalesced['height_change'];
+                }
+                if ((float)($record->weight ?? 0) <= 0 && $coalesced['weight'] !== null) {
+                    $record->weight = $coalesced['weight'];
+                    $record->weight_change = $coalesced['weight_change'];
+                }
+                if ((int)($record->strength ?? 0) <= 0 && $coalesced['strength'] !== null) {
+                    $record->strength = $coalesced['strength'];
+                }
+                if ((int)($record->endurance ?? 0) <= 0 && $coalesced['endurance'] !== null) {
+                    $record->endurance = $coalesced['endurance'];
+                }
+                if ((float)($record->bmi ?? 0) <= 0 && $coalesced['bmi'] !== null) {
+                    $record->bmi = $coalesced['bmi'];
+                    $record->bmi_result = $coalesced['bmi_result'];
+                }
+            }
+
             $result[] = new RatingPQMonthResource($record);
         }
 
@@ -289,24 +369,7 @@ class RatingPQService implements RatingPQServiceInterface
             $latestRecord = new RatingPQResource($ratingLasted);
         }
 
-        $records = $this->repository->getQueryBuilder()
-            ->where('child_id', $childId)
-            ->whereYear('assessment_date', '=', $year)
-            ->orderBy('assessment_date', 'desc')
-            ->get();
-
-        $groupedRecords = [];
-        foreach ($records as $record) {
-            $date = $record->assessment_date->toDateString();
-            if (!isset($groupedRecords[$date]) || $record->created_at > $groupedRecords[$date]->created_at) {
-                $groupedRecords[$date] = $record;
-            }
-        }
-
-        $statistics = [];
-        foreach ($groupedRecords as $record) {
-            $statistics[] = new RatingPQMonthResource($record);
-        }
+        $statistics = $this->buildYearlyChartStatistics((int)$childId, $year);
 
         return [
             'overall' => $overall,
