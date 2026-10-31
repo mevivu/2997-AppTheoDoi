@@ -288,10 +288,44 @@ class RatingPQService implements RatingPQServiceInterface
         $currentStrength = $ratingLasted->strength;
         $currentWeight = $ratingLasted->weight;
 
+        $strengthDateCopy = $latestRecordDateCopy->copy();
+        if ($currentStrength === null || (float)$currentStrength <= 0) {
+            $latestStrengthRecord = $this->repository->getQueryBuilder()
+                ->where('child_id', $childId)
+                ->whereNotNull('strength')
+                ->where('strength', '>', 0)
+                ->orderBy('assessment_date', 'desc')
+                ->orderBy('id', 'desc')
+                ->first();
+            if ($latestStrengthRecord) {
+                $currentStrength = $latestStrengthRecord->strength;
+                if ($latestStrengthRecord->assessment_date) {
+                    $strengthDateCopy = $latestStrengthRecord->assessment_date->copy();
+                }
+            }
+        }
+
+        $enduranceDateCopy = $latestRecordDateCopy->copy();
+        if ($currentEndurance === null || (float)$currentEndurance <= 0) {
+            $latestEnduranceRecord = $this->repository->getQueryBuilder()
+                ->where('child_id', $childId)
+                ->whereNotNull('endurance')
+                ->where('endurance', '>', 0)
+                ->orderBy('assessment_date', 'desc')
+                ->orderBy('id', 'desc')
+                ->first();
+            if ($latestEnduranceRecord) {
+                $currentEndurance = $latestEnduranceRecord->endurance;
+                if ($latestEnduranceRecord->assessment_date) {
+                    $enduranceDateCopy = $latestEnduranceRecord->assessment_date->copy();
+                }
+            }
+        }
+
         $predictingAdultHeight = $this->heightPredictionService->calculateMatureHeightAt19($child, $currenHeight, $latestRecordDateCopy);
         $bmiPercent = $this->getBmiPercent($bmi, $currentBmi, $child, $latestRecordDateCopy, $currentWeight);
-        $currentEndurancePercent = $this->getEndurance($childId, $currentEndurance, $latestRecordDateCopy);
-        $currentStrengthPercent = $this->getStrength($childId, $currentStrength, $latestRecordDateCopy);
+        $currentEndurancePercent = $this->getEndurance($childId, $currentEndurance, $enduranceDateCopy);
+        $currentStrengthPercent = $this->getStrength($childId, $currentStrength, $strengthDateCopy);
         $heightAdulthoodPercent = $this->getHeightAdulthoodChart($gender, $predictingAdultHeight);
         $heightWhoCurrent = $who ? round($currenHeight - $who->height, 2) : 0;
 
@@ -366,6 +400,14 @@ class RatingPQService implements RatingPQServiceInterface
 
         if ($ratingLasted) {
             $overall = $this->getOverallStats($request, $childId);
+            if ($overall) {
+                if ((int)($ratingLasted->strength ?? 0) <= 0 && !empty($overall['strength'])) {
+                    $ratingLasted->strength = $overall['strength'];
+                }
+                if ((int)($ratingLasted->endurance ?? 0) <= 0 && !empty($overall['endurance'])) {
+                    $ratingLasted->endurance = $overall['endurance'];
+                }
+            }
             $latestRecord = new RatingPQResource($ratingLasted);
         }
 
@@ -462,7 +504,15 @@ class RatingPQService implements RatingPQServiceInterface
         $ratingPQ = $this->repository->getRecordInDateRangeWithValidStrengthEndurance($childId, $oneYearAgo, $currentDate,true);
 
         if (!$ratingPQ) {
-            return $this->repository->getBy(['child_id' => $childId])->first();
+            return $this->repository->getQueryBuilder()
+                ->where('child_id', $childId)
+                ->where(function ($q) {
+                    $q->where('strength', '>', 0)
+                      ->orWhere('endurance', '>', 0);
+                })
+                ->orderBy('assessment_date', 'asc')
+                ->orderBy('id', 'asc')
+                ->first();
         }
 
         return $ratingPQ;
@@ -777,18 +827,51 @@ class RatingPQService implements RatingPQServiceInterface
 
         // 4. Sức mạnh cơ bắp
         $currentStrength = $ratingLasted->strength !== null ? (float)$ratingLasted->strength : null;
-        $oneYearAgo = $latestDate->copy()->subYear();
-        $pastRecordStrength = $this->findRatingPQ($childId, $latestDate, $oneYearAgo);
+        $strengthDate = $latestDate->copy();
+        if ($currentStrength === null || $currentStrength <= 0) {
+            $latestStrengthRec = $this->repository->getQueryBuilder()
+                ->where('child_id', $childId)
+                ->whereNotNull('strength')
+                ->where('strength', '>', 0)
+                ->orderBy('assessment_date', 'desc')
+                ->orderBy('id', 'desc')
+                ->first();
+            if ($latestStrengthRec) {
+                $currentStrength = (float)$latestStrengthRec->strength;
+                if ($latestStrengthRec->assessment_date) {
+                    $strengthDate = $latestStrengthRec->assessment_date->copy();
+                }
+            }
+        }
+        $oneYearAgo = $strengthDate->copy()->subYear();
+        $pastRecordStrength = $this->findRatingPQ($childId, $strengthDate, $oneYearAgo);
         $pastStrength = ($pastRecordStrength && $pastRecordStrength->strength !== null) ? (float)$pastRecordStrength->strength : null;
-        $scoreStrength = $this->getStrength($childId, $currentStrength, $latestDate);
+        $scoreStrength = $this->getStrength($childId, $currentStrength, $strengthDate);
         $expectedStrength = $pastStrength ? round($pastStrength * 1.25, 2) : null;
 
         // 5. Sức bền vận động
         $currentEndurance = $ratingLasted->endurance !== null ? (float)$ratingLasted->endurance : null;
-        $pastRecordEndurance = $this->findRatingPQ($childId, $latestDate, $oneYearAgo);
+        $enduranceDate = $latestDate->copy();
+        if ($currentEndurance === null || $currentEndurance <= 0) {
+            $latestEnduranceRec = $this->repository->getQueryBuilder()
+                ->where('child_id', $childId)
+                ->whereNotNull('endurance')
+                ->where('endurance', '>', 0)
+                ->orderBy('assessment_date', 'desc')
+                ->orderBy('id', 'desc')
+                ->first();
+            if ($latestEnduranceRec) {
+                $currentEndurance = (float)$latestEnduranceRec->endurance;
+                if ($latestEnduranceRec->assessment_date) {
+                    $enduranceDate = $latestEnduranceRec->assessment_date->copy();
+                }
+            }
+        }
+        $oneYearAgoEndurance = $enduranceDate->copy()->subYear();
+        $pastRecordEndurance = $this->findRatingPQ($childId, $enduranceDate, $oneYearAgoEndurance);
         $pastEndurance = ($pastRecordEndurance && $pastRecordEndurance->endurance !== null) ? (float)$pastRecordEndurance->endurance : null;
-        $scoreEndurance = $this->getEndurance($childId, $currentEndurance, $latestDate);
-        $daysBetween = $oneYearAgo->startOfDay()->diffInDays($latestDate->startOfDay());
+        $scoreEndurance = $this->getEndurance($childId, $currentEndurance, $enduranceDate);
+        $daysBetween = $oneYearAgoEndurance->startOfDay()->diffInDays($enduranceDate->startOfDay());
         $performanceRatio = round($daysBetween / 365.3, 3);
         $denominatorEndurance = $pastEndurance ? round($pastEndurance * 1.25 * ($daysBetween / 365.3), 2) : 0;
 
