@@ -183,7 +183,7 @@
                     <div class="stat-slim-card">
                         <div class="d-flex align-items-center justify-content-between mb-1">
                             <span class="stat-slim-label">{{ __('Tốc độ tăng trưởng') }}</span>
-                            <span class="badge-soft-amber">Max 6.5 cm</span>
+                            <span class="badge-soft-amber">Max 6 cm</span>
                         </div>
                         <div class="d-flex align-items-baseline gap-1">
                             <span class="stat-slim-val text-amber" id="display-speed-change">{{ number_format($speedChange, 1) }}</span>

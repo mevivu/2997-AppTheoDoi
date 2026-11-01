@@ -684,8 +684,8 @@
                                     <div>• Khoảng cách giữa 2 lần đo: <strong>${s.count_days} ngày</strong> | Mức tăng thô: <strong>${s.raw_height_diff} cm</strong></div>
                                     <div>• Công thức tốc độ tăng trưởng/năm: <code class="text-amber">${s.speed_formula}</code></div>
                                     <div>• Tốc độ tính toán thô: <strong>${s.raw_speed_annualized} cm/năm</strong></div>
-                                    <div>• Áp dụng luật giới hạn trần: <strong>Max = 6.5 cm/năm</strong> -> Tốc độ sau chặn: <strong>${s.clamped_speed} cm/năm</strong></div>
-                                    ${s.is_fallback_used ? `<div class="text-amber mt-1"><i class="ti ti-alert-circle me-1"></i>Tốc độ thô <= 0 -> Áp dụng Fallback theo chuẩn WHO lứa tuổi: <strong>${s.who_current_speed} cm/năm</strong></div>` : ''}
+                                    <div>• Áp dụng luật giới hạn trần: <strong>Max = 6 cm/năm</strong> -> Tốc độ sau chặn: <strong>${s.clamped_speed} cm/năm</strong></div>
+                                    ${s.is_fallback_used ? `<div class="text-amber mt-1"><i class="ti ti-alert-circle me-1"></i>Tốc độ thô <= 0 -> Áp dụng Fallback mặc định: <strong>${s.who_current_speed} cm/năm</strong></div>` : ''}
                                 </div>
                                 <div class="fs-13 fw-semibold text-slate">
                                     ==> Tốc độ tăng trưởng áp dụng (Effective Speed): <strong class="text-amber fs-15">${s.effective_speed} cm/năm</strong>
