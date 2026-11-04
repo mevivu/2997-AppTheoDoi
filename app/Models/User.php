@@ -264,23 +264,24 @@ class User extends Authenticatable implements JWTSubject
 
     /**
      * Xác định số ngày hiệu lực thực tế của gói dịch vụ
+     * (Bảo vệ trường hợp Admin nhập nhầm Số ngày = 1 cho gói 1 năm thay vì 365 ngày)
      */
     public static function resolveEffectiveDays(Package $package): int
     {
         $days = (int) ($package->days ?? 0);
-        if ($days > 0) {
-            return $days;
-        }
-
         $effectiveType = self::resolveEffectiveVipType($package);
-        return match ($effectiveType) {
+
+        $minDaysByType = match ($effectiveType) {
             PackageType::TwoYear => 730,
             PackageType::OneYear => 365,
             PackageType::SixMonths => 180,
             PackageType::ThreeMonths => 90,
+            PackageType::OneMonth => 30,
             PackageType::Trial => 14,
             default => 30,
         };
+
+        return max($days, $minDaysByType);
     }
 
     /**
