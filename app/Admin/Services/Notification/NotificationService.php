@@ -327,31 +327,9 @@ class NotificationService implements NotificationServiceInterface
     {
         $package = $notification->package;
         $user = $this->userRepository->findOrFail($notification->user_id_attribute);
-        $startDate = now();
-        $additionalDays = 0;
 
-        // Lấy gói hiện tại nếu còn hiệu lực
-        $currentUserPackage = $user->userPackages->first();
-
-
-        // Nếu còn hạn thì tính số ngày dư
-        if ($currentUserPackage) {
-            $additionalDays = $startDate->diffInDays($currentUserPackage->end_date);
-        }
-
-        // Gộp ngày còn lại và số ngày của gói mới
-        $endDate = $startDate->copy()->addDays($package->days + $additionalDays);
-
-        // Cập nhật hoặc tạo mới user_package
-        $userPackage = $currentUserPackage;
-
-        $userPackage->update([
-            'package_id' => $package->id,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'status' => PackageUserStatus::Active,
-            'current_type' => $package->type
-        ]);
+        // Kích hoạt gói dịch vụ (chỉ cộng dồn ngày dư khi gói VIP hiện tại còn hạn > now)
+        $user->activatePackage($package);
 
         // Cập nhật trạng thái thông báo
         $notifications = $this->repository->getByQueryBuilder([

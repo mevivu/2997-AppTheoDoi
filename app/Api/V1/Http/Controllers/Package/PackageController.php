@@ -147,13 +147,12 @@ class PackageController extends Controller
 
     public function getCurrentUserPackage(): JsonResponse
     {
-
         try {
             $user = $this->getCurrentUser();
-            $package = $user->userPackages->first();
+            $package = $user->reconcileActivePackage();
             $response = [
-                'type' => $package->current_type,
-                'end_date' => format_datetime($package->end_date),
+                'type' => $package?->current_type ?? PackageType::Normal,
+                'end_date' => $package?->end_date ? format_datetime($package->end_date) : null,
             ];
             return $this->jsonResponseSuccess($response);
         } catch (Exception $exception) {

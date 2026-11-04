@@ -69,7 +69,7 @@ class AuthResource extends JsonResource
                 'affiliate_code' => $this->referrer->affiliate_code,
             ] : null,
             'created_at' => format_date($this->created_at),
-            'package' => new AuthPackageResource($this->userPackages->first())
+            'package' => new AuthPackageResource($this->reconcileActivePackage() ?? $this->userPackages->first())
         ];
     }
 }

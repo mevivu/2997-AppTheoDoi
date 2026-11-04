@@ -127,17 +127,29 @@ class UserService implements UserServiceInterface
                 $this->logError('Failed to send lock notification', $e);
             }
         }
-        $package = $this->packageRepository->findOrFail($packageId);
-        $currentType = $package->type;
-        $currentUserPackage = $user->userPackages()->where('status', PackageUserStatus::Active)->first();
-        if ($currentUserPackage) {
-            $oldType = $currentUserPackage->current_type;
-            $currentUserPackage->update([
-                'package_id' => $packageId,
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'current_type' => $currentType
-            ]);
+        if ($packageId) {
+            $package = $this->packageRepository->findOrFail($packageId);
+            $currentType = User::resolveEffectiveVipType($package);
+            $currentUserPackage = $user->userPackages()->where('status', PackageUserStatus::Active)->first()
+                ?? $user->userPackages()->orderByDesc('id')->first();
+
+            if ($currentUserPackage) {
+                $currentUserPackage->update([
+                    'package_id' => $packageId,
+                    'start_date' => $startDate ?: now(),
+                    'end_date' => $endDate ?: now()->addDays(User::resolveEffectiveDays($package)),
+                    'status' => PackageUserStatus::Active,
+                    'current_type' => $currentType,
+                ]);
+            } else {
+                $user->userPackages()->create([
+                    'package_id' => $packageId,
+                    'start_date' => $startDate ?: now(),
+                    'end_date' => $endDate ?: now()->addDays(User::resolveEffectiveDays($package)),
+                    'status' => PackageUserStatus::Active,
+                    'current_type' => $currentType,
+                ]);
+            }
 
             // Thu hồi các thiết bị dư thừa nếu số thiết bị đang hoạt động vượt quá hạn mức gói mới
             $allowed = $user->getMaxDevicesAllowed();

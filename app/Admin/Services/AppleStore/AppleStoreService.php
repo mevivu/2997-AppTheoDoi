@@ -149,7 +149,8 @@ class AppleStoreService implements AppleStoreServiceInterface
                 'success' => true,
                 'data' => [
                     'subscriptionState' => $subscriptionState,
-                    'orderId' => $decodedTransaction['originalTransactionId'] ?? $decodedTransaction['transactionId'] ?? null,
+                    'orderId' => $decodedTransaction['transactionId'] ?? $decodedTransaction['originalTransactionId'] ?? null,
+                    'originalTransactionId' => $decodedTransaction['originalTransactionId'] ?? null,
                     'lineItem' => [
                         'productId' => $decodedTransaction['productId'],
                         'expiryTime' => $expiresDateMs, // Nullable for Non-Renewing

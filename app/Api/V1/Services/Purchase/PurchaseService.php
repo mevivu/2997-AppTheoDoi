@@ -87,6 +87,9 @@ class PurchaseService implements PurchaseServiceInterface
         $productId = $data['product_id'];
         $purchaseToken = $data['purchase_token'];
         $package = $this->packageRepository->findByField('code', $productId);
+        if (!$package) {
+            throw new BadRequestException('Không tìm thấy gói dịch vụ với mã: ' . $productId);
+        }
 
         $verificationResult = $this->googlePlayService->verifyPurchase($productId, $purchaseToken, true);
 
@@ -97,7 +100,7 @@ class PurchaseService implements PurchaseServiceInterface
         $purchaseData = $verificationResult['data'];
         $statusValue = $purchaseData['subscriptionState'];
         $statusEnum = SubscriptionState::tryFrom($statusValue);
-        $isActive = $statusEnum->isActive();
+        $isActive = $statusEnum ? $statusEnum->isActive() : ($statusValue === 'SUBSCRIPTION_STATE_ACTIVE');
 
         $purchased = false;
         if ($isActive) {
@@ -110,9 +113,12 @@ class PurchaseService implements PurchaseServiceInterface
         if ($purchased) {
             $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
         }
+
+        $activeUserPackage = $user->reconcileActivePackage();
+
         return [
             'package' => new PackageResource($package),
-            'user_package' => new AuthPackageResource($user->userPackages->first()),
+            'user_package' => $activeUserPackage ? new AuthPackageResource($activeUserPackage) : null,
             'product_id' => $productId,
             'order_id' => $purchaseData['orderId'] ?? null,
             'expiry_time' => $purchaseData['lineItem']['expiryTime'] ?? null,
@@ -128,6 +134,9 @@ class PurchaseService implements PurchaseServiceInterface
         $productId = $data['product_id'];
         $transactionId = $data['transaction_id'];
         $package = $this->packageRepository->findByField('code', $productId);
+        if (!$package) {
+            throw new BadRequestException('Không tìm thấy gói dịch vụ với mã: ' . $productId);
+        }
 
         $verificationResult = $this->appleStoreService->verifyPurchase($productId, $transactionId, true);
 
@@ -150,9 +159,12 @@ class PurchaseService implements PurchaseServiceInterface
         if ($purchased) {
             $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
         }
+
+        $activeUserPackage = $user->reconcileActivePackage();
+
         return [
             'package' => new PackageResource($package),
-            'user_package' => new AuthPackageResource($user->userPackages->first()),
+            'user_package' => $activeUserPackage ? new AuthPackageResource($activeUserPackage) : null,
             'product_id' => $productId,
             'order_id' => $purchaseData['orderId'] ?? null,
             'expiry_time' => $purchaseData['lineItem']['expiryTime'] ?? null,
@@ -165,29 +177,31 @@ class PurchaseService implements PurchaseServiceInterface
     private function handlePurchase($user, $package, $purchaseData, $purchaseToken, TransactionEnumService $serviceType = TransactionEnumService::GOOGLE_PLAY): bool
     {
         $orderId = $purchaseData['orderId'] ?? null;
+        $originalOrderId = $purchaseData['originalTransactionId'] ?? null;
+
         if ($orderId && $this->transactionRepository->existsByOrderIdAndService($orderId, $serviceType)) {
+            // Nếu giao dịch đã tồn tại trong bảng transactions, đảm bảo user_packages đã được đồng bộ lên VIP
+            $user->reconcileActivePackage();
             return false;
         }
+
+        if ($originalOrderId && $originalOrderId !== $orderId && $this->transactionRepository->existsByOrderIdAndService($originalOrderId, $serviceType)) {
+            $existingByToken = $purchaseToken ? $this->transactionRepository->findByField('purchase_token', $purchaseToken) : null;
+            if ($existingByToken) {
+                $user->reconcileActivePackage();
+                return false;
+            }
+        }
+
         $this->updateOrCreateUserPackage($user, $package);
         $this->transactionService->store($user, $package, $serviceType, $orderId, $purchaseToken);
+        $user->reconcileActivePackage();
         return true;
     }
 
     private function updateOrCreateUserPackage($user, $package): void
     {
-        $currentType = $package->type;
-        $currentUserPackage = $user->userPackages()->where('status', PackageUserStatus::Active)->first();
-        $startDate = $currentUserPackage
-            ? Carbon::parse($currentUserPackage->end_date)
-            : now();
-        $endDate = Carbon::parse($startDate)->addDays($package->days);
-        if ($currentUserPackage) {
-            $currentUserPackage->update([
-                'package_id' => $package->id,
-                'end_date' => $endDate,
-                'current_type' => $currentType,
-            ]);
-        }
+        $user->activatePackage($package);
     }
 
 

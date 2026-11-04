@@ -223,10 +223,239 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
+     * Xác định loại gói VIP thực tế từ Package (phòng trường hợp gói trả phí/sale bị cấu hình nhầm type = normal hoặc trial)
+     */
+    public static function resolveEffectiveVipType(Package $package): PackageType
+    {
+        $type = $package->type instanceof PackageType
+            ? $package->type
+            : PackageType::tryFrom((string) $package->type);
+
+        $isPaidOrSale = ((float) ($package->price ?? 0) > 0)
+            || ((float) ($package->final_price ?? 0) > 0)
+            || (bool) ($package->is_sale ?? false);
+
+        if ($type && !in_array($type, [PackageType::Normal, PackageType::Trial], true)) {
+            return $type;
+        }
+
+        if (!$isPaidOrSale && $type) {
+            return $type;
+        }
+
+        $days = (int) ($package->days ?? 0);
+        $nameLower = mb_strtolower((string) ($package->name ?? '') . ' ' . (string) ($package->code ?? ''));
+
+        if ($days >= 700 || str_contains($nameLower, '2 năm') || str_contains($nameLower, '24')) {
+            return PackageType::TwoYear;
+        }
+        if ($days >= 300 || str_contains($nameLower, '1 năm') || str_contains($nameLower, '12') || str_contains($nameLower, 'year')) {
+            return PackageType::OneYear;
+        }
+        if ($days >= 150 || str_contains($nameLower, '6 tháng') || str_contains($nameLower, '6month')) {
+            return PackageType::SixMonths;
+        }
+        if ($days >= 80 || str_contains($nameLower, '3 tháng') || str_contains($nameLower, '3month')) {
+            return PackageType::ThreeMonths;
+        }
+
+        return PackageType::OneMonth;
+    }
+
+    /**
+     * Xác định số ngày hiệu lực thực tế của gói dịch vụ
+     */
+    public static function resolveEffectiveDays(Package $package): int
+    {
+        $days = (int) ($package->days ?? 0);
+        if ($days > 0) {
+            return $days;
+        }
+
+        $effectiveType = self::resolveEffectiveVipType($package);
+        return match ($effectiveType) {
+            PackageType::TwoYear => 730,
+            PackageType::OneYear => 365,
+            PackageType::SixMonths => 180,
+            PackageType::ThreeMonths => 90,
+            PackageType::Trial => 14,
+            default => 30,
+        };
+    }
+
+    /**
+     * Kích hoạt / Gia hạn gói dịch vụ cho người dùng (chỉ cộng dồn ngày khi gói VIP hiện tại còn hạn > now)
+     */
+    public function activatePackage(Package $package, ?\Carbon\Carbon $purchaseTime = null): UserPackage
+    {
+        $now = $purchaseTime ? \Carbon\Carbon::parse($purchaseTime) : now();
+        $effectiveType = self::resolveEffectiveVipType($package);
+        $days = self::resolveEffectiveDays($package);
+
+        $currentUserPackage = $this->userPackages()
+            ->where('status', \App\Enums\Package\PackageUserStatus::Active)
+            ->orderByDesc('end_date')
+            ->first() ?? $this->userPackages()->orderByDesc('id')->first();
+
+        $hasActiveVipRemaining = $currentUserPackage
+            && $currentUserPackage->status === \App\Enums\Package\PackageUserStatus::Active
+            && $currentUserPackage->end_date
+            && \Carbon\Carbon::parse($currentUserPackage->end_date)->gt($now)
+            && !in_array($currentUserPackage->current_type, [
+                PackageType::Normal,
+                PackageType::Trial,
+                PackageType::Normal->value,
+                PackageType::Trial->value,
+            ], true);
+
+        if ($hasActiveVipRemaining) {
+            $startDate = $currentUserPackage->start_date
+                ? \Carbon\Carbon::parse($currentUserPackage->start_date)
+                : $now;
+            $endDate = \Carbon\Carbon::parse($currentUserPackage->end_date)->addDays($days);
+        } else {
+            $startDate = $now->copy();
+            $endDate = $now->copy()->addDays($days);
+        }
+
+        if ($currentUserPackage) {
+            $currentUserPackage->update([
+                'package_id' => $package->id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'status' => \App\Enums\Package\PackageUserStatus::Active,
+                'current_type' => $effectiveType,
+            ]);
+            $userPackage = $currentUserPackage->fresh();
+        } else {
+            $userPackage = $this->userPackages()->create([
+                'package_id' => $package->id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'status' => \App\Enums\Package\PackageUserStatus::Active,
+                'current_type' => $effectiveType,
+            ]);
+        }
+
+        // Đồng bộ các bản ghi dư thừa (nếu có) để tránh lấy nhầm dòng cũ khi gọi first()
+        $this->userPackages()
+            ->where('id', '!=', $userPackage->id)
+            ->update([
+                'package_id' => $package->id,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'status' => \App\Enums\Package\PackageUserStatus::Active,
+                'current_type' => $effectiveType,
+            ]);
+
+        $this->unsetRelation('userPackages');
+
+        return $userPackage;
+    }
+
+    /**
+     * Tự động đối soát & bảo chứng gói VIP từ bảng giao dịch (transactions):
+     * Nếu user có giao dịch thanh toán thành công (Confirmed) còn trong thời hạn hiệu lực,
+     * đảm bảo user_packages luôn được nâng cấp VIP và có end_date chính xác.
+     */
+    public function reconcileActivePackage(): ?UserPackage
+    {
+        $now = now();
+        $userPackage = $this->userPackages()
+            ->where('status', \App\Enums\Package\PackageUserStatus::Active)
+            ->orderByDesc('end_date')
+            ->first() ?? $this->userPackages()->orderByDesc('id')->first();
+
+        $latestConfirmedTx = $this->transactions()
+            ->where('status', \App\Enums\Transaction\TransactionStatus::Confirmed)
+            ->where('type', \App\Enums\Transaction\TransactionType::Payment)
+            ->where('is_deleted', \App\Enums\DeleteStatus::NotDeleted)
+            ->with('package')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->first();
+
+        if ($latestConfirmedTx && $latestConfirmedTx->package) {
+            $txPackage = $latestConfirmedTx->package;
+            $days = self::resolveEffectiveDays($txPackage);
+            $effectiveType = self::resolveEffectiveVipType($txPackage);
+            $txCreatedAt = $latestConfirmedTx->created_at
+                ? \Carbon\Carbon::parse($latestConfirmedTx->created_at)
+                : $now;
+            $expectedEndDate = $txCreatedAt->copy()->addDays($days);
+
+            if ($expectedEndDate->gt($now)) {
+                $currentEndDate = ($userPackage && $userPackage->end_date)
+                    ? \Carbon\Carbon::parse($userPackage->end_date)
+                    : null;
+
+                $isCurrentlyNonVip = !$userPackage
+                    || $userPackage->status !== \App\Enums\Package\PackageUserStatus::Active
+                    || in_array($userPackage->current_type, [
+                        PackageType::Normal,
+                        PackageType::Trial,
+                        PackageType::Normal->value,
+                        PackageType::Trial->value,
+                    ], true);
+
+                $isEndDateShort = !$currentEndDate
+                    || $currentEndDate->lt($expectedEndDate->copy()->subMinutes(5));
+
+                if ($isCurrentlyNonVip || $isEndDateShort) {
+                    $newEndDate = ($currentEndDate && $currentEndDate->gt($expectedEndDate))
+                        ? $currentEndDate
+                        : $expectedEndDate;
+
+                    if ($userPackage) {
+                        $userPackage->update([
+                            'package_id' => $txPackage->id,
+                            'start_date' => $txCreatedAt,
+                            'end_date' => $newEndDate,
+                            'status' => \App\Enums\Package\PackageUserStatus::Active,
+                            'current_type' => $effectiveType,
+                        ]);
+                        $userPackage = $userPackage->fresh();
+                    } else {
+                        $userPackage = $this->userPackages()->create([
+                            'package_id' => $txPackage->id,
+                            'start_date' => $txCreatedAt,
+                            'end_date' => $newEndDate,
+                            'status' => \App\Enums\Package\PackageUserStatus::Active,
+                            'current_type' => $effectiveType,
+                        ]);
+                    }
+
+                    $this->userPackages()
+                        ->where('id', '!=', $userPackage->id)
+                        ->update([
+                            'package_id' => $txPackage->id,
+                            'start_date' => $txCreatedAt,
+                            'end_date' => $newEndDate,
+                            'status' => \App\Enums\Package\PackageUserStatus::Active,
+                            'current_type' => $effectiveType,
+                        ]);
+
+                    $this->unsetRelation('userPackages');
+
+                    \Illuminate\Support\Facades\Log::info("Auto-reconciled VIP package for user {$this->id} from transaction {$latestConfirmedTx->code}", [
+                        'package_id' => $txPackage->id,
+                        'current_type' => $effectiveType->value,
+                        'end_date' => $newEndDate->toDateTimeString(),
+                    ]);
+                }
+            }
+        }
+
+        return $userPackage;
+    }
+
+    /**
      * Lấy số lượng thiết bị tối đa được phép đăng nhập theo gói cước hiện tại
      */
     public function getMaxDevicesAllowed(): int
     {
+        $this->reconcileActivePackage();
+
         // 1. Kiểm tra các gói đang hoạt động còn hạn, lấy số thiết bị lớn nhất
         $activeUserPackages = $this->userPackages()
             ->where('status', \App\Enums\Package\PackageUserStatus::Active)
@@ -236,7 +465,14 @@ class User extends Authenticatable implements JWTSubject
 
         if ($activeUserPackages->isNotEmpty()) {
             $maxAllowed = (int) $activeUserPackages->max(function ($up) {
-                return (int) ($up->package->max_devices ?? 1);
+                $pkgMax = (int) ($up->package->max_devices ?? 1);
+                $isVip = !in_array($up->current_type, [
+                    PackageType::Normal,
+                    PackageType::Trial,
+                    PackageType::Normal->value,
+                    PackageType::Trial->value,
+                ], true);
+                return $isVip ? max($pkgMax, 5) : $pkgMax;
             });
             if ($maxAllowed > 0) {
                 return $maxAllowed;

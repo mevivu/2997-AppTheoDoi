@@ -141,7 +141,8 @@
                 const selectedOption = $(this).find(':selected');
                 const pkgId = $(this).val();
                 const days = parseInt(selectedOption.data('days'));
-                const startDateVal = $('#startDate').val();
+                let startDateVal = $('#startDate').val();
+                const currentEndDateVal = $('#endDate').val();
 
                 const btn = $('#btnViewPackageDetail');
                 if (pkgId) {
@@ -149,6 +150,20 @@
                     btn.attr('href', editUrl).removeClass('d-none');
                 } else {
                     btn.attr('href', '#').addClass('d-none');
+                }
+
+                // Nếu gói trước đó đã hết hạn thì khi đổi sang gói mới sẽ lấy ngày bắt đầu là hôm nay
+                if (currentEndDateVal) {
+                    const currentEnd = new Date(currentEndDateVal);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    if (currentEnd < today) {
+                        const yyyyNow = today.getFullYear();
+                        const mmNow = String(today.getMonth() + 1).padStart(2, '0');
+                        const ddNow = String(today.getDate()).padStart(2, '0');
+                        startDateVal = `${yyyyNow}-${mmNow}-${ddNow}`;
+                        $('#startDate').val(startDateVal);
+                    }
                 }
 
                 if (days && startDateVal) {

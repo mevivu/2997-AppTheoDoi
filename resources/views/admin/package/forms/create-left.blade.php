@@ -237,7 +237,7 @@
                              id="max_devices_input"
                              type="number"
                              min="1"
-                             :value="old('max_devices', 1)"
+                             :value="old('max_devices', 5)"
                              :required="true"
                              :placeholder="__('Số thiết bị tối đa cho phép đăng nhập')" />
                     <div class="mt-2 d-flex align-items-center gap-1 flex-wrap">

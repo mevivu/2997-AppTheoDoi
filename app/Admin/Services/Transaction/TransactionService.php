@@ -40,7 +40,18 @@ class TransactionService implements TransactionServiceInterface
      */
     public function store($user, $package, $service = TransactionEnumService::NORMAL, $orderId = null, $purchaseToken = null): void
     {
-        $amount = (float) (($package->price_discount ?? 0) > 0 ? $package->price_discount : ($package->price ?? 0));
+        $finalPrice = $package->final_price ?? null;
+        $priceDiscount = $package->price_discount ?? null;
+        $basePrice = (float) ($package->price ?? 0);
+
+        if ($finalPrice !== null && (float) $finalPrice >= 0 && ((bool) ($package->has_discount ?? false) || (float) $finalPrice < $basePrice)) {
+            $amount = (float) $finalPrice;
+        } elseif ($priceDiscount !== null && (float) $priceDiscount > 0) {
+            $amount = (float) $priceDiscount;
+        } else {
+            $amount = $basePrice;
+        }
+
         $data = [
             'user_id' => $user->id,
             'package_id' => $package->id,

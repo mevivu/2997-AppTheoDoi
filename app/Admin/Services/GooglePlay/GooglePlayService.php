@@ -70,6 +70,43 @@ class GooglePlayService implements GooglePlayServiceInterface
             ];
 
         } catch (Google_Service_Exception $e) {
+            // Fallback kiểm tra sản phẩm mua 1 lần (In-App Product) nếu gói không phải Subscription
+            try {
+                $productPurchase = $this->service->purchases_products->get(
+                    $this->packageName,
+                    $productId,
+                    $purchaseToken
+                );
+
+                $purchaseState = $productPurchase->getPurchaseState(); // 0: Purchased, 1: Canceled, 2: Pending
+                $subscriptionState = ($purchaseState === 0)
+                    ? 'SUBSCRIPTION_STATE_ACTIVE'
+                    : 'SUBSCRIPTION_STATE_EXPIRED';
+
+                return [
+                    'success' => true,
+                    'data' => [
+                        'subscriptionState' => $subscriptionState,
+                        'regionCode' => $productPurchase->getRegionCode(),
+                        'orderId' => $productPurchase->getOrderId(),
+                        'lineItem' => [
+                            'productId' => $productId,
+                            'expiryTime' => null,
+                            'autoRenewing' => false,
+                            'isPrepaid' => true,
+                        ],
+                        'refundInfo' => [
+                            'is_refunded' => $purchaseState === 1,
+                            'refund_type' => $purchaseState === 1 ? 'canceled' : null,
+                            'cancel_time' => null,
+                            'cancel_reason' => null,
+                        ],
+                    ],
+                ];
+            } catch (\Throwable $fallbackEx) {
+                // Bỏ qua lỗi fallback để log lỗi gốc
+            }
+
             $errorData = json_decode($e->getMessage(), true);
 
             Log::error('Subscription API Error', [

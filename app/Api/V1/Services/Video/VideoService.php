@@ -44,6 +44,9 @@ class VideoService implements VideoServiceInterface
             return false;
         }
 
+        // Tự động đối soát giao dịch thành công để đảm bảo khách đã mua gói luôn được mở khóa VIP
+        $user->reconcileActivePackage();
+
         return $user->userPackages()
             ->where('status', PackageUserStatus::Active)
             ->where('end_date', '>=', now())

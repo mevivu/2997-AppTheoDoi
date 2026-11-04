@@ -45,6 +45,7 @@ jobs:
             cd /home/app2997/domains/kids360growth.com/public_html
             php artisan migrate --force
             php artisan optimize:clear
+            php artisan package:update-expired
           EOF
 
           echo "✅ Deployment Complete!"
