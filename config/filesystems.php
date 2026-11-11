@@ -70,8 +70,21 @@ return [
             'url' => env('CLOUDFLARE_R2_PUBLIC_URL'),
             'use_path_style_endpoint' => true,
             'throw' => true,
+            'retries' => [
+                'mode' => 'standard',
+                'max_attempts' => 5,
+            ],
             'http' => [
                 'verify' => false,
+                'expect' => false,
+                'connect_timeout' => 30,
+                'timeout' => 300,
+                'curl' => defined('CURLOPT_HTTP_VERSION') ? [
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                    CURLOPT_TCP_KEEPALIVE => 1,
+                    CURLOPT_HTTPHEADER => ['Expect:'],
+                ] : [],
             ],
         ],
 

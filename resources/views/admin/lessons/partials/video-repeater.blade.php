@@ -1048,7 +1048,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Hàm thực hiện upload Cloudflare R2 qua AJAX với thanh tiến trình trực quan (đồng bộ cả Page & Dialog)
+    // Hàm thực hiện upload Cloudflare R2 qua AJAX với thanh tiến trình trực quan (hỗ trợ Chunked Multipart 6MB/part cho video > 8MB)
     function executeR2Upload(callback = null, showDialog = true) {
         if (!r2FileInput.files || r2FileInput.files.length === 0) {
             if (callback) callback(false, '{{ __("Vui lòng chọn file video.") }}');
@@ -1057,15 +1057,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const file = r2FileInput.files[0];
         const isAutoSubmit = Boolean(callback);
+        const uploadEndpoint = '{{ route("admin.lesson.upload_r2_video") }}';
+        const csrfToken = '{{ csrf_token() }}';
 
         // Mở Dialog Popup hiển thị thanh Progress ngay lập tức
         if (showDialog) {
             openR2UploadProgressDialog(file, isAutoSubmit);
         }
-
-        const formData = new FormData();
-        formData.append('video_file', file);
-        formData.append('_token', '{{ csrf_token() }}');
 
         btnUploadR2.disabled = true;
         btnCancelFile.disabled = true;
@@ -1082,171 +1080,141 @@ document.addEventListener('DOMContentLoaded', function () {
         r2BytesStatus.textContent = '0 MB / ' + formatBytes(file.size);
         r2SpeedStatus.innerHTML = '<i class="ti ti-cloud-upload text-primary me-1"></i>{{ __("Đang kết nối Cloudflare...") }}';
 
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '{{ route("admin.lesson.upload_r2_video") }}', true);
-        xhr.setRequestHeader('Accept', 'application/json');
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        function updateProgressUI(loadedBytes, totalBytes, statusLabel) {
+            const percent = Math.min(Math.round((loadedBytes / totalBytes) * 100), 99);
+            const loadedStr = formatBytes(loadedBytes);
+            const totalStr = formatBytes(totalBytes);
 
-        xhr.upload.onprogress = function (e) {
-            if (e.lengthComputable) {
-                const percent = Math.min(Math.round((e.loaded / e.total) * 100), 99);
-                const loadedStr = formatBytes(e.loaded);
-                const totalStr = formatBytes(e.total);
+            // 1. Cập nhật Dropzone trên trang chính
+            r2ProgressBar.style.width = percent + '%';
+            r2ProgressBar.textContent = percent + '%';
+            r2ProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary';
+            r2UploadPercent.className = 'badge bg-primary text-white fw-bold fs-12 px-2 py-1';
+            r2UploadPercent.textContent = percent + '%';
+            r2BytesStatus.textContent = loadedStr + ' / ' + totalStr;
+            r2UploadStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-primary" role="status"></span> ' + (statusLabel || '{{ __("Đang tải lên Cloudflare R2: ") }}') + percent + '%';
+            r2SpeedStatus.innerHTML = '<i class="ti ti-arrow-up text-primary me-1"></i>{{ __("Đang đồng bộ dữ liệu lên CDN...") }}';
 
-                // 1. Cập nhật Dropzone trên trang chính
-                r2ProgressBar.style.width = percent + '%';
-                r2ProgressBar.textContent = percent + '%';
-                r2ProgressBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary';
-                r2UploadPercent.className = 'badge bg-primary text-white fw-bold fs-12 px-2 py-1';
-                r2UploadPercent.textContent = percent + '%';
-                r2BytesStatus.textContent = loadedStr + ' / ' + totalStr;
-                r2UploadStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-primary" role="status"></span> {{ __("Đang tải lên Cloudflare R2: ") }}' + percent + '%';
-                r2SpeedStatus.innerHTML = '<i class="ti ti-arrow-up text-primary me-1"></i>{{ __("Đang đồng bộ dữ liệu lên CDN...") }}';
+            // 2. CẬP NHẬT TRỰC TIẾP TRONG SWEETALERT DIALOG
+            const swalBar = document.getElementById('swal_progress_bar');
+            const swalPercent = document.getElementById('swal_percent_badge');
+            const swalBytes = document.getElementById('swal_bytes_text');
+            const swalStatus = document.getElementById('swal_status_text');
+            const swalSpeed = document.getElementById('swal_speed_text');
 
-                // 2. CẬP NHẬT TRỰC TIẾP TRONG SWEETALERT DIALOG
-                const swalBar = document.getElementById('swal_progress_bar');
-                const swalPercent = document.getElementById('swal_percent_badge');
-                const swalBytes = document.getElementById('swal_bytes_text');
-                const swalStatus = document.getElementById('swal_status_text');
-                const swalSpeed = document.getElementById('swal_speed_text');
-
-                if (swalBar) {
-                    swalBar.style.width = percent + '%';
-                    swalBar.textContent = percent + '%';
-                    swalBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary fw-bold text-white';
-                }
-                if (swalPercent) {
-                    swalPercent.className = 'badge bg-primary text-white fw-bold fs-12 px-2 py-1 shadow-xs';
-                    swalPercent.textContent = percent + '%';
-                }
-                if (swalBytes) {
-                    swalBytes.textContent = loadedStr + ' / ' + totalStr;
-                }
-                if (swalStatus) {
-                    swalStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-primary me-1" role="status"></span> {{ __("Đang tải lên R2: ") }}' + percent + '%';
-                }
-                if (swalSpeed) {
-                    swalSpeed.innerHTML = '<i class="ti ti-arrow-up text-primary me-1"></i>{{ __("Đang truyền dữ liệu...") }}';
-                }
+            if (swalBar) {
+                swalBar.style.width = percent + '%';
+                swalBar.textContent = percent + '%';
+                swalBar.className = 'progress-bar progress-bar-striped progress-bar-animated bg-primary fw-bold text-white';
             }
-        };
+            if (swalPercent) {
+                swalPercent.className = 'badge bg-primary text-white fw-bold fs-12 px-2 py-1 shadow-xs';
+                swalPercent.textContent = percent + '%';
+            }
+            if (swalBytes) {
+                swalBytes.textContent = loadedStr + ' / ' + totalStr;
+            }
+            if (swalStatus) {
+                swalStatus.innerHTML = '<span class="spinner-border spinner-border-sm text-primary me-1" role="status"></span> ' + (statusLabel || '{{ __("Đang tải lên R2: ") }}') + percent + '%';
+            }
+            if (swalSpeed) {
+                swalSpeed.innerHTML = '<i class="ti ti-arrow-up text-primary me-1"></i>{{ __("Đang truyền dữ liệu...") }}';
+            }
+        }
 
-        xhr.onload = function () {
+        function handleUploadSuccess(res) {
+            btnUploadR2.disabled = false;
+            btnCancelFile.disabled = false;
+            btnUploadR2.innerHTML = '<i class="ti ti-cloud-upload me-1"></i>{{ __("Tải lên Cloudflare R2 ngay") }}';
+            isR2Uploaded = true;
+
+            // 1. Cập nhật Dropzone trên trang chính sang màu xanh lá hoàn tất
+            r2ProgressBar.className = 'progress-bar bg-success';
+            r2ProgressBar.style.width = '100%';
+            r2ProgressBar.textContent = '100%';
+            r2UploadPercent.className = 'badge bg-success text-white fw-bold fs-12 px-2 py-1';
+            r2UploadPercent.textContent = 'Hoàn tất 100%';
+            r2UploadStatus.innerHTML = '<i class="ti ti-circle-check-filled text-success fs-3 me-1"></i> <strong>{{ __("Tải lên Cloudflare R2 thành công!") }}</strong>';
+            r2BytesStatus.textContent = formatBytes(file.size) + ' / ' + formatBytes(file.size);
+            r2SpeedStatus.innerHTML = '<i class="ti ti-check text-success me-1"></i>{{ __("Video đã sẵn sàng phát từ CDN") }}';
+
+            // 2. CẬP NHẬT TRỰC TIẾP TRONG DIALOG POPUP SANG MÀU XANH HOÀN TẤT 100%
+            const swalBar = document.getElementById('swal_progress_bar');
+            const swalPercent = document.getElementById('swal_percent_badge');
+            const swalStatus = document.getElementById('swal_status_text');
+            const swalSpeed = document.getElementById('swal_speed_text');
+            const swalBytes = document.getElementById('swal_bytes_text');
+
+            if (swalBar) {
+                swalBar.className = 'progress-bar bg-success fw-bold text-white';
+                swalBar.style.width = '100%';
+                swalBar.textContent = '100%';
+            }
+            if (swalPercent) {
+                swalPercent.className = 'badge bg-success text-white fw-bold fs-12 px-2 py-1';
+                swalPercent.textContent = 'Hoàn tất 100%';
+            }
+            if (swalStatus) {
+                swalStatus.innerHTML = '<i class="ti ti-circle-check-filled text-success fs-3 me-1"></i> <strong>' +
+                    (isAutoSubmit ? '{{ __("Tải lên R2 thành công! Đang lưu bài học...") }}' : '{{ __("Tải lên Cloudflare R2 thành công!") }}') + '</strong>';
+            }
+            if (swalBytes) {
+                swalBytes.textContent = formatBytes(file.size) + ' / ' + formatBytes(file.size);
+            }
+            if (swalSpeed) {
+                swalSpeed.innerHTML = '<i class="ti ti-check text-success me-1"></i>{{ __("File đã lưu trữ an toàn trên CDN") }}';
+            }
+
+            // Cập nhật Hidden inputs an toàn
+            if (r2ResultBox) r2ResultBox.classList.remove('d-none');
+            if (r2UrlInput) r2UrlInput.value = res.url;
+            if (finalVideoUrlInput) finalVideoUrlInput.value = res.url;
+            if (r2PathInput) r2PathInput.value = res.path;
+            if (r2UrlText) r2UrlText.textContent = res.url;
+            if (r2PreviewLink) r2PreviewLink.href = res.url;
+            const r2StatusDesc = document.getElementById('single_r2_status_desc');
+            if (r2StatusDesc) {
+                r2StatusDesc.textContent = '{{ __("Đã lưu trữ: ") }}' + (file.name || 'video.mp4') + ' (Cloudflare R2 CDN)';
+            }
+
+            // Chuyển sang Preview Stream CDN trực tiếp
+            try {
+                showR2VideoPreview(res.url, true, file.name);
+            } catch (previewErr) {
+                console.warn('Preview error:', previewErr);
+            }
+
+            if (isAutoSubmit) {
+                setTimeout(() => {
+                    if (typeof Swal !== 'undefined' && Swal.isVisible()) {
+                        Swal.close();
+                    }
+                    if (callback) callback(true, null);
+                }, 600);
+            } else {
+                if (typeof Swal !== 'undefined' && Swal.isVisible()) {
+                    Swal.update({
+                        showConfirmButton: true,
+                        confirmButtonText: '<i class="ti ti-check me-1"></i>{{ __("Hoàn tất / Đóng") }}',
+                        confirmButtonColor: '#206bc4',
+                        allowOutsideClick: true,
+                        allowEscapeKey: true
+                    });
+                }
+                setTimeout(() => {
+                    if (typeof Swal !== 'undefined' && Swal.isVisible()) {
+                        Swal.close();
+                    }
+                }, 1500);
+                if (callback) callback(true, null);
+            }
+        }
+
+        function handleUploadError(errMsg) {
             btnUploadR2.disabled = false;
             btnCancelFile.disabled = false;
             btnUploadR2.innerHTML = '<i class="ti ti-cloud-upload me-1"></i>{{ __("Tải lên Cloudflare R2 ngay") }}';
 
-            let res = null;
-            try {
-                res = JSON.parse(xhr.responseText);
-            } catch (e) {
-                console.error('Non-JSON response from server (HTTP ' + xhr.status + '):', xhr.responseText);
-            }
-
-            if (xhr.status === 200 && res && res.status) {
-                isR2Uploaded = true;
-
-                // 1. Cập nhật Dropzone trên trang chính sang màu xanh lá hoàn tất
-                r2ProgressBar.className = 'progress-bar bg-success';
-                r2ProgressBar.style.width = '100%';
-                r2ProgressBar.textContent = '100%';
-                r2UploadPercent.className = 'badge bg-success text-white fw-bold fs-12 px-2 py-1';
-                r2UploadPercent.textContent = 'Hoàn tất 100%';
-                r2UploadStatus.innerHTML = '<i class="ti ti-circle-check-filled text-success fs-3 me-1"></i> <strong>{{ __("Tải lên Cloudflare R2 thành công!") }}</strong>';
-                r2BytesStatus.textContent = formatBytes(file.size) + ' / ' + formatBytes(file.size);
-                r2SpeedStatus.innerHTML = '<i class="ti ti-check text-success me-1"></i>{{ __("Video đã sẵn sàng phát từ CDN") }}';
-
-                // 2. CẬP NHẬT TRỰC TIẾP TRONG DIALOG POPUP SANG MÀU XANH HOÀN TẤT 100%
-                const swalBar = document.getElementById('swal_progress_bar');
-                const swalPercent = document.getElementById('swal_percent_badge');
-                const swalStatus = document.getElementById('swal_status_text');
-                const swalSpeed = document.getElementById('swal_speed_text');
-                const swalBytes = document.getElementById('swal_bytes_text');
-
-                if (swalBar) {
-                    swalBar.className = 'progress-bar bg-success fw-bold text-white';
-                    swalBar.style.width = '100%';
-                    swalBar.textContent = '100%';
-                }
-                if (swalPercent) {
-                    swalPercent.className = 'badge bg-success text-white fw-bold fs-12 px-2 py-1';
-                    swalPercent.textContent = 'Hoàn tất 100%';
-                }
-                if (swalStatus) {
-                    swalStatus.innerHTML = '<i class="ti ti-circle-check-filled text-success fs-3 me-1"></i> <strong>' +
-                        (isAutoSubmit ? '{{ __("Tải lên R2 thành công! Đang lưu bài học...") }}' : '{{ __("Tải lên Cloudflare R2 thành công!") }}') + '</strong>';
-                }
-                if (swalBytes) {
-                    swalBytes.textContent = formatBytes(file.size) + ' / ' + formatBytes(file.size);
-                }
-                if (swalSpeed) {
-                    swalSpeed.innerHTML = '<i class="ti ti-check text-success me-1"></i>{{ __("File đã lưu trữ an toàn trên CDN") }}';
-                }
-
-                // Cập nhật Hidden inputs an toàn
-                if (r2ResultBox) r2ResultBox.classList.remove('d-none');
-                if (r2UrlInput) r2UrlInput.value = res.url;
-                if (finalVideoUrlInput) finalVideoUrlInput.value = res.url;
-                if (r2PathInput) r2PathInput.value = res.path;
-                if (r2UrlText) r2UrlText.textContent = res.url;
-                if (r2PreviewLink) r2PreviewLink.href = res.url;
-                const r2StatusDesc = document.getElementById('single_r2_status_desc');
-                if (r2StatusDesc) {
-                    r2StatusDesc.textContent = '{{ __("Đã lưu trữ: ") }}' + (file.name || 'video.mp4') + ' (Cloudflare R2 CDN)';
-                }
-
-                // Chuyển sang Preview Stream CDN trực tiếp
-                try {
-                    showR2VideoPreview(res.url, true, file.name);
-                } catch (previewErr) {
-                    console.warn('Preview error:', previewErr);
-                }
-
-                if (isAutoSubmit) {
-                    // Khi người dùng bấm Lưu/Cập nhật form: hiển thị 100% rồi tự động đóng popup và lưu bài học
-                    setTimeout(() => {
-                        if (typeof Swal !== 'undefined' && Swal.isVisible()) {
-                            Swal.close();
-                        }
-                        if (callback) callback(true, null);
-                    }, 600);
-                } else {
-                    // Khi người dùng bấm nút "Tải lên Cloudflare R2 ngay" thủ công:
-                    // 1. Cập nhật nút Đóng/Hoàn tất trên dialog & cho phép click ngoài / phím Esc để đóng
-                    if (typeof Swal !== 'undefined' && Swal.isVisible()) {
-                        Swal.update({
-                            showConfirmButton: true,
-                            confirmButtonText: '<i class="ti ti-check me-1"></i>{{ __("Hoàn tất / Đóng") }}',
-                            confirmButtonColor: '#206bc4',
-                            allowOutsideClick: true,
-                            allowEscapeKey: true
-                        });
-                    }
-                    // 2. Tự động đóng popup sau 1.5 giây nếu người dùng không bấm
-                    setTimeout(() => {
-                        if (typeof Swal !== 'undefined' && Swal.isVisible()) {
-                            Swal.close();
-                        }
-                    }, 1500);
-                    if (callback) callback(true, null);
-                }
-            } else if (res && res.message) {
-                handleUploadError(res.message);
-            } else if (res && res.errors && res.errors.video_file) {
-                handleUploadError(res.errors.video_file[0]);
-            } else if (xhr.status === 413) {
-                handleUploadError('{{ __("Dung lượng video vượt quá giới hạn cấu hình của máy chủ (tối đa 200MB).") }}');
-            } else if (xhr.status === 419) {
-                handleUploadError('{{ __("Phiên làm việc đã hết hạn. Vui lòng tải lại trang và thử lại.") }}');
-            } else if (xhr.status === 422 && res && res.errors) {
-                const firstErr = Object.values(res.errors)[0];
-                handleUploadError(Array.isArray(firstErr) ? firstErr[0] : firstErr);
-            } else {
-                handleUploadError('{{ __("Lỗi máy chủ (HTTP ") }}' + xhr.status + '): ' + (xhr.statusText || '{{ __("Không thể xử lý file video.") }}'));
-            }
-        };
-
-        function handleUploadError(errMsg) {
             r2ProgressBar.className = 'progress-bar bg-danger';
             r2UploadStatus.textContent = errMsg;
 
@@ -1273,14 +1241,162 @@ document.addEventListener('DOMContentLoaded', function () {
             if (callback) callback(false, errMsg);
         }
 
-        xhr.onerror = function () {
-            btnUploadR2.disabled = false;
-            btnCancelFile.disabled = false;
-            btnUploadR2.innerHTML = '<i class="ti ti-cloud-upload me-1"></i>{{ __("Tải lên Cloudflare R2 ngay") }}';
-            handleUploadError('{{ __("Lỗi kết nối mạng khi tải lên R2.") }}');
-        };
+        // Gửi request XHR có Promise + hỗ trợ tiến trình upload
+        function sendFormDataRequest(formData, onProgressCb = null) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', uploadEndpoint, true);
+                xhr.setRequestHeader('Accept', 'application/json');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
-        xhr.send(formData);
+                if (onProgressCb) {
+                    xhr.upload.onprogress = function (e) {
+                        if (e.lengthComputable) {
+                            onProgressCb(e.loaded, e.total);
+                        }
+                    };
+                }
+
+                xhr.onload = function () {
+                    let res = null;
+                    try {
+                        res = JSON.parse(xhr.responseText);
+                    } catch (e) {
+                        console.error('Non-JSON response (HTTP ' + xhr.status + '):', xhr.responseText);
+                    }
+
+                    if (xhr.status === 200 && res && res.status) {
+                        resolve(res);
+                    } else if (res && res.message) {
+                        reject(new Error(res.message));
+                    } else if (res && res.errors) {
+                        const firstErr = Object.values(res.errors)[0];
+                        reject(new Error(Array.isArray(firstErr) ? firstErr[0] : firstErr));
+                    } else if (xhr.status === 413) {
+                        reject(new Error('{{ __("Dung lượng video vượt quá giới hạn cấu hình của máy chủ (tối đa 200MB).") }}'));
+                    } else if (xhr.status === 419) {
+                        reject(new Error('{{ __("Phiên làm việc đã hết hạn. Vui lòng tải lại trang và thử lại.") }}'));
+                    } else {
+                        reject(new Error('{{ __("Lỗi máy chủ (HTTP ") }}' + xhr.status + '): ' + (xhr.statusText || '{{ __("Không thể xử lý file video.") }}')));
+                    }
+                };
+
+                xhr.onerror = function () {
+                    reject(new Error('{{ __("Lỗi kết nối mạng khi tải lên R2.") }}'));
+                };
+
+                xhr.send(formData);
+            });
+        }
+
+        // Nếu file > 8MB -> dùng Chunked Multipart Upload (6MB / part) để không bao giờ bị giới hạn 20MB-30MB hay timeout
+        const CHUNK_SIZE = 6 * 1024 * 1024; // 6MB (>= 5MB theo chuẩn S3/R2 Multipart)
+        const MULTIPART_THRESHOLD = 8 * 1024 * 1024; // 8MB
+
+        if (file.size > MULTIPART_THRESHOLD) {
+            (async function runChunkedUpload() {
+                let uploadId = null;
+                let key = null;
+                try {
+                    // Bước 1: Khởi tạo phiên Multipart Upload
+                    const initFd = new FormData();
+                    initFd.append('_token', csrfToken);
+                    initFd.append('action', 'init');
+                    initFd.append('folder', 'videos/lessons');
+                    initFd.append('filename', file.name || 'video.mp4');
+                    initFd.append('file_size', file.size);
+                    initFd.append('mime_type', file.type || 'video/mp4');
+
+                    const initRes = await sendFormDataRequest(initFd);
+                    uploadId = initRes.upload_id;
+                    key = initRes.key;
+
+                    // Bước 2: Cắt file thành các phần 6MB và tải lên tuần tự (kèm tự động retry 3 lần mỗi phần)
+                    const totalParts = Math.ceil(file.size / CHUNK_SIZE);
+                    const uploadedParts = [];
+
+                    for (let partNumber = 1; partNumber <= totalParts; partNumber++) {
+                        const start = (partNumber - 1) * CHUNK_SIZE;
+                        const end = Math.min(start + CHUNK_SIZE, file.size);
+                        const chunkBlob = file.slice(start, end);
+
+                        let partRes = null;
+                        let lastErr = null;
+
+                        for (let attempt = 1; attempt <= 3; attempt++) {
+                            try {
+                                const partFd = new FormData();
+                                partFd.append('_token', csrfToken);
+                                partFd.append('action', 'part');
+                                partFd.append('folder', 'videos/lessons');
+                                partFd.append('upload_id', uploadId);
+                                partFd.append('key', key);
+                                partFd.append('part_number', partNumber);
+                                partFd.append('chunk', chunkBlob, file.name || 'chunk.part');
+
+                                partRes = await sendFormDataRequest(partFd, function (chunkLoaded) {
+                                    updateProgressUI(
+                                        Math.min(start + chunkLoaded, file.size),
+                                        file.size,
+                                        `{{ __("Đang tải lên R2 (phần ") }}${partNumber}/${totalParts}): `
+                                    );
+                                });
+                                break;
+                            } catch (err) {
+                                lastErr = err;
+                                if (attempt < 3) {
+                                    await new Promise(r => setTimeout(r, 800 * attempt));
+                                }
+                            }
+                        }
+
+                        if (!partRes) {
+                            throw lastErr || new Error('Không thể tải lên phần ' + partNumber);
+                        }
+
+                        uploadedParts.push({
+                            PartNumber: partNumber,
+                            ETag: partRes.etag
+                        });
+                    }
+
+                    // Bước 3: Hoàn tất ghép file trên Cloudflare R2
+                    const completeFd = new FormData();
+                    completeFd.append('_token', csrfToken);
+                    completeFd.append('action', 'complete');
+                    completeFd.append('folder', 'videos/lessons');
+                    completeFd.append('upload_id', uploadId);
+                    completeFd.append('key', key);
+                    completeFd.append('filename', file.name || 'video.mp4');
+                    completeFd.append('file_size', file.size);
+                    completeFd.append('parts', JSON.stringify(uploadedParts));
+
+                    const finalRes = await sendFormDataRequest(completeFd);
+                    handleUploadSuccess(finalRes);
+                } catch (err) {
+                    if (uploadId && key) {
+                        const abortFd = new FormData();
+                        abortFd.append('_token', csrfToken);
+                        abortFd.append('action', 'abort');
+                        abortFd.append('upload_id', uploadId);
+                        abortFd.append('key', key);
+                        sendFormDataRequest(abortFd).catch(() => {});
+                    }
+                    handleUploadError(err.message || '{{ __("Lỗi tải video lên Cloudflare R2.") }}');
+                }
+            })();
+        } else {
+            // File nhỏ <= 8MB: tải lên trực tiếp 1 bước
+            const formData = new FormData();
+            formData.append('video_file', file);
+            formData.append('_token', csrfToken);
+
+            sendFormDataRequest(formData, function (loaded, total) {
+                updateProgressUI(loaded, total, '{{ __("Đang tải lên Cloudflare R2: ") }}');
+            }).then(handleUploadSuccess).catch(err => {
+                handleUploadError(err.message || '{{ __("Lỗi tải video lên Cloudflare R2.") }}');
+            });
+        }
     }
 
     btnUploadR2.addEventListener('click', function (e) {

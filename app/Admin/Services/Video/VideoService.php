@@ -38,7 +38,10 @@ class VideoService implements VideoServiceInterface
                 }
             }
         } elseif ($videoType === 'r2') {
-            if ($request->hasFile('video_file')) {
+            if ($request->filled('r2_uploaded_url')) {
+                $data['video_url'] = $request->input('r2_uploaded_url');
+                $data['video_path'] = $request->input('r2_uploaded_path');
+            } elseif ($request->hasFile('video_file')) {
                 $uploadResult = $this->fileService->uploadVideoToR2(
                     $request->file('video_file'),
                     'videos/raw'
@@ -81,7 +84,13 @@ class VideoService implements VideoServiceInterface
                 }
             }
         } elseif ($videoType === 'r2') {
-            if ($request->hasFile('video_file')) {
+            if ($request->filled('r2_uploaded_url')) {
+                if (!empty($video->video_path) && $video->video_path !== $request->input('r2_uploaded_path')) {
+                    $this->fileService->deleteR2File($video->video_path);
+                }
+                $data['video_url'] = $request->input('r2_uploaded_url');
+                $data['video_path'] = $request->input('r2_uploaded_path');
+            } elseif ($request->hasFile('video_file')) {
                 // Upload file mới và tự động dọn dẹp file cũ trên R2
                 $uploadResult = $this->fileService->uploadVideoToR2(
                     $request->file('video_file'),

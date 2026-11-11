@@ -225,6 +225,58 @@ class FileService
     }
 
     /**
+     * Khởi tạo S3Client chuẩn cho Cloudflare R2 (tắt Expect: 100-continue, ép HTTP/1.1 & tự động retry)
+     */
+    public function getR2S3Client(): \Aws\S3\S3Client
+    {
+        $r2Config = config('filesystems.disks.r2', []);
+
+        return new \Aws\S3\S3Client([
+            'version' => 'latest',
+            'region' => $r2Config['region'] ?? 'auto',
+            'endpoint' => $r2Config['endpoint'] ?? env('CLOUDFLARE_R2_ENDPOINT'),
+            'use_path_style_endpoint' => $r2Config['use_path_style_endpoint'] ?? true,
+            'credentials' => [
+                'key' => $r2Config['key'] ?? env('CLOUDFLARE_R2_ACCESS_KEY_ID'),
+                'secret' => $r2Config['secret'] ?? env('CLOUDFLARE_R2_SECRET_ACCESS_KEY'),
+            ],
+            'retries' => [
+                'mode' => 'standard',
+                'max_attempts' => 5,
+            ],
+            'http' => [
+                'verify' => false,
+                'expect' => false,
+                'connect_timeout' => 30,
+                'timeout' => 300,
+                'curl' => defined('CURLOPT_HTTP_VERSION') ? [
+                    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                    CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                    CURLOPT_TCP_KEEPALIVE => 1,
+                    CURLOPT_HTTPHEADER => ['Expect:'],
+                ] : [],
+            ],
+        ]);
+    }
+
+    /**
+     * Lấy tên bucket Cloudflare R2
+     */
+    public function getR2Bucket(): string
+    {
+        return (string) (config('filesystems.disks.r2.bucket') ?: env('CLOUDFLARE_R2_BUCKET', ''));
+    }
+
+    /**
+     * Tạo Public URL từ đường dẫn tương đối trên R2
+     */
+    public function getR2PublicUrl(string $relativePath): string
+    {
+        $baseUrl = config('filesystems.disks.r2.url') ?: env('CLOUDFLARE_R2_PUBLIC_URL', '');
+        return rtrim($baseUrl, '/') . '/' . ltrim($relativePath, '/');
+    }
+
+    /**
      * Upload file (ảnh học bạ, tài liệu, media) lên Cloudflare R2
      *
      * @param UploadedFile $file File cần upload
@@ -235,23 +287,26 @@ class FileService
      */
     public function uploadFileToR2(UploadedFile $file, string $folder = 'uploads', ?string $oldPath = null, ?string $customFilename = null): array
     {
-        if ($oldPath) {
-            $this->deleteR2File($oldPath);
-        }
-
         $folder = trim($folder, '/');
         $filename = $customFilename ?: $file->hashName();
         $relativePath = $folder . '/' . $filename;
+        $mimeType = $file->getMimeType() ?: 'application/octet-stream';
 
-        // Lưu trực tiếp vào disk r2
-        Storage::disk('r2')->putFileAs($folder, $file, $filename);
+        // Sử dụng tuần tự (concurrency = 1) và part_size = 8MB để tránh lỗi cURL error 56 SSL_read reset trên R2
+        Storage::disk('r2')->putFileAs($folder, $file, $filename, [
+            'concurrency' => 1,
+            'mup_threshold' => 52428800, // 50MB
+            'part_size' => 8388608,      // 8MB
+            'ContentType' => $mimeType,
+        ]);
 
-        $baseUrl = config('filesystems.disks.r2.url') ?: env('CLOUDFLARE_R2_PUBLIC_URL', '');
-        $publicUrl = rtrim($baseUrl, '/') . '/' . ltrim($relativePath, '/');
+        if ($oldPath && $oldPath !== $relativePath) {
+            $this->deleteR2File($oldPath);
+        }
 
         return [
             'path' => $relativePath,
-            'url' => $publicUrl,
+            'url' => $this->getR2PublicUrl($relativePath),
         ];
     }
 
@@ -266,6 +321,143 @@ class FileService
     public function uploadVideoToR2(UploadedFile $file, string $folder = 'videos/raw', ?string $oldPath = null): array
     {
         return $this->uploadFileToR2($file, $folder, $oldPath);
+    }
+
+    /**
+     * Khởi tạo phiên Multipart Upload (Chunked Upload) trên Cloudflare R2 cho video dung lượng lớn
+     */
+    public function initMultipartUploadToR2(string $originalFilename, string $folder = 'videos/lessons', ?string $mimeType = 'video/mp4'): array
+    {
+        $folder = trim($folder, '/');
+        $ext = strtolower(pathinfo($originalFilename, PATHINFO_EXTENSION) ?: 'mp4');
+        $allowedExts = ['mp4', 'mov', 'webm', 'mkv', 'avi', 'm4v'];
+        if (!in_array($ext, $allowedExts, true)) {
+            $ext = 'mp4';
+        }
+
+        $filename = Str::random(40) . '.' . $ext;
+        $key = $folder . '/' . $filename;
+
+        $client = $this->getR2S3Client();
+        $result = $client->createMultipartUpload([
+            'Bucket' => $this->getR2Bucket(),
+            'Key' => $key,
+            'ContentType' => $mimeType ?: 'video/mp4',
+        ]);
+
+        return [
+            'upload_id' => (string) $result['UploadId'],
+            'key' => $key,
+            'url' => $this->getR2PublicUrl($key),
+        ];
+    }
+
+    /**
+     * Tải lên 1 phần (Part / Chunk >= 5MB, trừ part cuối) lên Cloudflare R2 với cơ chế tự động thử lại 3 lần
+     */
+    public function uploadPartToR2(string $key, string $uploadId, int $partNumber, UploadedFile $chunkFile): array
+    {
+        $client = $this->getR2S3Client();
+        $bucket = $this->getR2Bucket();
+        $realPath = $chunkFile->getRealPath();
+
+        $maxRetries = 3;
+        $lastException = null;
+
+        for ($attempt = 1; $attempt <= $maxRetries; $attempt++) {
+            $stream = null;
+            try {
+                $stream = fopen($realPath, 'rb');
+                $result = $client->uploadPart([
+                    'Bucket' => $bucket,
+                    'Key' => $key,
+                    'UploadId' => $uploadId,
+                    'PartNumber' => $partNumber,
+                    'Body' => $stream,
+                    'ContentLength' => filesize($realPath),
+                ]);
+
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+
+                $etag = (string) ($result['ETag'] ?? '');
+
+                return [
+                    'part_number' => $partNumber,
+                    'etag' => trim($etag, '"'),
+                ];
+            } catch (Throwable $e) {
+                if (is_resource($stream)) {
+                    fclose($stream);
+                }
+                $lastException = $e;
+                Log::warning("[FileService::uploadPartToR2] Part {$partNumber} attempt {$attempt}/{$maxRetries} failed: " . $e->getMessage());
+                if ($attempt < $maxRetries) {
+                    usleep(400000 * $attempt); // 0.4s, 0.8s
+                }
+            }
+        }
+
+        throw $lastException;
+    }
+
+    /**
+     * Hoàn tất Multipart Upload trên Cloudflare R2
+     */
+    public function completeMultipartUploadToR2(string $key, string $uploadId, array $parts, ?string $oldPath = null): array
+    {
+        $normalizedParts = [];
+        foreach ($parts as $part) {
+            $partNum = (int) ($part['PartNumber'] ?? $part['part_number'] ?? 0);
+            $etag = trim((string) ($part['ETag'] ?? $part['etag'] ?? ''), '"');
+            if ($partNum > 0 && $etag !== '') {
+                $normalizedParts[$partNum] = [
+                    'PartNumber' => $partNum,
+                    'ETag' => '"' . $etag . '"',
+                ];
+            }
+        }
+
+        ksort($normalizedParts);
+
+        $client = $this->getR2S3Client();
+        $client->completeMultipartUpload([
+            'Bucket' => $this->getR2Bucket(),
+            'Key' => $key,
+            'UploadId' => $uploadId,
+            'MultipartUpload' => [
+                'Parts' => array_values($normalizedParts),
+            ],
+        ]);
+
+        if ($oldPath && $oldPath !== $key) {
+            $this->deleteR2File($oldPath);
+        }
+
+        return [
+            'path' => $key,
+            'url' => $this->getR2PublicUrl($key),
+        ];
+    }
+
+    /**
+     * Hủy phiên Multipart Upload trên Cloudflare R2 khi hủy hoặc lỗi
+     */
+    public function abortMultipartUploadToR2(string $key, string $uploadId): bool
+    {
+        try {
+            $client = $this->getR2S3Client();
+            $client->abortMultipartUpload([
+                'Bucket' => $this->getR2Bucket(),
+                'Key' => $key,
+                'UploadId' => $uploadId,
+            ]);
+            return true;
+        } catch (Throwable $e) {
+            Log::warning('[FileService::abortMultipartUploadToR2] Failed: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**

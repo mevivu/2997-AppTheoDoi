@@ -489,7 +489,7 @@
             this.uploadToR2(type, file);
         },
 
-        // Upload trực tiếp lên R2 qua AJAX
+        // Upload trực tiếp lên R2 qua AJAX (hỗ trợ Chunked Multipart 6MB/part cho video lớn > 8MB)
         uploadToR2: function(type, file) {
             const self = this;
             const progressContainer = document.getElementById('r2_upload_progress_container_' + type);
@@ -502,6 +502,8 @@
             const mainKey = (type === 'common') ? 'evaluation_guide_video' : 'evaluation_guide_video_' + type;
             const mainInput = document.getElementById(mainKey);
             const customInput = document.getElementById('custom_video_url_input_' + type);
+            const uploadEndpoint = '{{ route("admin.setting.upload_video") }}';
+            const csrfToken = '{{ csrf_token() }}';
 
             if (!progressContainer) return;
 
@@ -520,60 +522,33 @@
             }
             if (errorMsg) errorMsg.style.display = 'none';
 
-            const formData = new FormData();
-            formData.append('video', file);
-            formData.append('_token', '{{ csrf_token() }}');
+            function updateProgress(loaded, total) {
+                const percentComplete = Math.min(Math.round((loaded / total) * 100), 99);
+                if (progressBar) progressBar.style.width = percentComplete + '%';
+                if (percentageText) percentageText.innerText = percentComplete + '%';
+            }
 
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '{{ route("admin.setting.upload_video") }}', true);
+            function handleSuccess(response) {
+                const publicUrl = (response.data && response.data.url) ? response.data.url : response.url;
+                if (publicUrl) {
+                    if (mainInput) mainInput.value = publicUrl;
+                    if (customInput) customInput.value = publicUrl;
 
-            xhr.upload.onprogress = function(e) {
-                if (e.lengthComputable) {
-                    const percentComplete = Math.round((e.loaded / e.total) * 100);
-                    if (progressBar) progressBar.style.width = percentComplete + '%';
-                    if (percentageText) percentageText.innerText = percentComplete + '%';
-                }
-            };
-
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        if (response.data && response.data.url) {
-                            const publicUrl = response.data.url;
-                            if (mainInput) mainInput.value = publicUrl;
-                            if (customInput) customInput.value = publicUrl;
-
-                            if (progressBar) {
-                                progressBar.style.width = '100%';
-                                progressBar.className = 'progress-bar bg-success';
-                            }
-                            if (percentageText) percentageText.innerText = '100%';
-                            if (badge) {
-                                badge.className = 'badge bg-success-subtle text-success fs-11';
-                                badge.innerText = 'Đã tải lên R2!';
-                            }
-
-                            self.renderPreview(type, publicUrl);
-                        }
-                    } catch (e) {
-                        handleErr('Không thể phân tích phản hồi từ máy chủ.');
+                    if (progressBar) {
+                        progressBar.style.width = '100%';
+                        progressBar.className = 'progress-bar bg-success';
                     }
+                    if (percentageText) percentageText.innerText = '100%';
+                    if (badge) {
+                        badge.className = 'badge bg-success-subtle text-success fs-11';
+                        badge.innerText = 'Đã tải lên R2!';
+                    }
+
+                    self.renderPreview(type, publicUrl);
                 } else {
-                    let msg = 'Lỗi upload lên Cloudflare R2.';
-                    try {
-                        const err = JSON.parse(xhr.responseText);
-                        if (err.message) msg = err.message;
-                    } catch(e) {}
-                    handleErr(msg);
+                    handleErr('Không nhận được đường dẫn video từ máy chủ.');
                 }
-            };
-
-            xhr.onerror = function() {
-                handleErr('Mất kết nối tới máy chủ khi upload video.');
-            };
-
-            xhr.send(formData);
+            }
 
             function handleErr(message) {
                 if (badge) {
@@ -587,6 +562,126 @@
                     errorMsg.innerText = message;
                     errorMsg.style.display = 'block';
                 }
+            }
+
+            function sendFormData(fd, onProgressCb = null) {
+                return new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', uploadEndpoint, true);
+                    xhr.setRequestHeader('Accept', 'application/json');
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                    if (onProgressCb) {
+                        xhr.upload.onprogress = function(e) {
+                            if (e.lengthComputable) onProgressCb(e.loaded, e.total);
+                        };
+                    }
+
+                    xhr.onload = function() {
+                        let res = null;
+                        try { res = JSON.parse(xhr.responseText); } catch (e) {}
+
+                        if (xhr.status === 200 && res && (res.status === 200 || res.status === true)) {
+                            resolve(res);
+                        } else if (res && res.message) {
+                            reject(new Error(res.message));
+                        } else {
+                            reject(new Error('Lỗi máy chủ (HTTP ' + xhr.status + '): Không thể xử lý file video.'));
+                        }
+                    };
+
+                    xhr.onerror = function() {
+                        reject(new Error('Mất kết nối tới máy chủ khi upload video.'));
+                    };
+
+                    xhr.send(fd);
+                });
+            }
+
+            const CHUNK_SIZE = 6 * 1024 * 1024;
+            const MULTIPART_THRESHOLD = 8 * 1024 * 1024;
+
+            if (file.size > MULTIPART_THRESHOLD) {
+                (async function() {
+                    let uploadId = null;
+                    let key = null;
+                    try {
+                        const initFd = new FormData();
+                        initFd.append('_token', csrfToken);
+                        initFd.append('action', 'init');
+                        initFd.append('filename', file.name || 'video.mp4');
+                        initFd.append('file_size', file.size);
+                        initFd.append('mime_type', file.type || 'video/mp4');
+
+                        const initRes = await sendFormData(initFd);
+                        uploadId = initRes.upload_id;
+                        key = initRes.key;
+
+                        const totalParts = Math.ceil(file.size / CHUNK_SIZE);
+                        const uploadedParts = [];
+
+                        for (let partNumber = 1; partNumber <= totalParts; partNumber++) {
+                            const start = (partNumber - 1) * CHUNK_SIZE;
+                            const end = Math.min(start + CHUNK_SIZE, file.size);
+                            const chunkBlob = file.slice(start, end);
+
+                            let partRes = null;
+                            let lastErr = null;
+
+                            for (let attempt = 1; attempt <= 3; attempt++) {
+                                try {
+                                    const partFd = new FormData();
+                                    partFd.append('_token', csrfToken);
+                                    partFd.append('action', 'part');
+                                    partFd.append('upload_id', uploadId);
+                                    partFd.append('key', key);
+                                    partFd.append('part_number', partNumber);
+                                    partFd.append('chunk', chunkBlob, file.name || 'chunk.part');
+
+                                    partRes = await sendFormData(partFd, function(chunkLoaded) {
+                                        updateProgress(Math.min(start + chunkLoaded, file.size), file.size);
+                                    });
+                                    break;
+                                } catch (err) {
+                                    lastErr = err;
+                                    if (attempt < 3) await new Promise(r => setTimeout(r, 800 * attempt));
+                                }
+                            }
+
+                            if (!partRes) throw lastErr || new Error('Không thể tải lên phần ' + partNumber);
+
+                            uploadedParts.push({ PartNumber: partNumber, ETag: partRes.etag });
+                        }
+
+                        const completeFd = new FormData();
+                        completeFd.append('_token', csrfToken);
+                        completeFd.append('action', 'complete');
+                        completeFd.append('upload_id', uploadId);
+                        completeFd.append('key', key);
+                        completeFd.append('parts', JSON.stringify(uploadedParts));
+
+                        const finalRes = await sendFormData(completeFd);
+                        handleSuccess(finalRes);
+                    } catch (err) {
+                        if (uploadId && key) {
+                            const abortFd = new FormData();
+                            abortFd.append('_token', csrfToken);
+                            abortFd.append('action', 'abort');
+                            abortFd.append('upload_id', uploadId);
+                            abortFd.append('key', key);
+                            sendFormData(abortFd).catch(() => {});
+                        }
+                        handleErr(err.message || 'Lỗi upload lên Cloudflare R2.');
+                    }
+                })();
+            } else {
+                const formData = new FormData();
+                formData.append('video', file);
+                formData.append('_token', csrfToken);
+
+                sendFormData(formData, updateProgress).then(handleSuccess).catch(err => {
+                    handleErr(err.message || 'Lỗi upload lên Cloudflare R2.');
+                });
             }
         },
 

@@ -410,110 +410,262 @@
 
         modal.style.display = 'flex';
 
-        // Chuẩn bị FormData
-        const formData = new FormData(form);
-        formData.append('submitter', 'save');
-
-        // Khởi tạo XHR
-        const xhr = new XMLHttpRequest();
-        currentXhr = xhr;
         uploadStartTime = Date.now();
         lastTime = uploadStartTime;
         lastLoadedBytes = 0;
 
-        xhr.upload.onprogress = function (e) {
-            if (e.lengthComputable) {
-                const now = Date.now();
-                const timeDiff = (now - lastTime) / 1000; // giây
-                const bytesDiff = e.loaded - lastLoadedBytes;
+        function updateProgressUI(loadedBytes, totalBytes) {
+            const now = Date.now();
+            const timeDiff = (now - lastTime) / 1000;
+            const bytesDiff = loadedBytes - lastLoadedBytes;
 
-                let currentSpeed = 0;
-                if (timeDiff >= 0.3) {
-                    currentSpeed = bytesDiff / timeDiff; // bytes/sec
-                    lastTime = now;
-                    lastLoadedBytes = e.loaded;
-                } else if (lastLoadedBytes === 0 && (now - uploadStartTime) > 0) {
-                    currentSpeed = e.loaded / ((now - uploadStartTime) / 1000);
-                }
+            let currentSpeed = 0;
+            if (timeDiff >= 0.3 && bytesDiff >= 0) {
+                currentSpeed = bytesDiff / timeDiff;
+                lastTime = now;
+                lastLoadedBytes = loadedBytes;
+            } else if ((now - uploadStartTime) > 0) {
+                currentSpeed = loadedBytes / ((now - uploadStartTime) / 1000);
+            }
 
-                const percent = Math.min(100, Math.round((e.loaded / e.total) * 100));
-                progressFill.style.width = percent + '%';
-                percentText.textContent = percent + '%';
-                bytesText.textContent = formatBytes(e.loaded) + ' / ' + formatBytes(e.total);
+            const percent = Math.min(99, Math.round((loadedBytes / totalBytes) * 100));
+            progressFill.style.width = percent + '%';
+            percentText.textContent = percent + '%';
+            bytesText.textContent = formatBytes(loadedBytes) + ' / ' + formatBytes(totalBytes);
 
-                if (currentSpeed > 0) {
-                    speedText.textContent = formatBytes(currentSpeed) + '/s';
-                    const remainingBytes = e.total - e.loaded;
-                    const remainingSec = Math.round(remainingBytes / currentSpeed);
-                    if (remainingSec > 60) {
-                        const m = Math.floor(remainingSec / 60);
-                        const s = remainingSec % 60;
-                        etaText.textContent = `Còn ~${m}p ${s}s`;
-                    } else {
-                        etaText.textContent = `Còn ~${remainingSec}s`;
-                    }
-                }
-
-                // Khi tải lên server xong 100% -> Chuyển sang Bước 2: Đồng bộ R2
-                if (percent >= 100 || e.loaded >= e.total) {
-                    step1.className = 'stepper-item completed d-flex align-items-center gap-2 flex-fill';
-                    step1Badge.innerHTML = '<i class="ti ti-check"></i>';
-                    step1Status.textContent = 'Hoàn thành';
-
-                    step2.className = 'stepper-item active d-flex align-items-center gap-2 flex-fill';
-                    step2Badge.innerHTML = '<span class="spinner-border spinner-border-sm" style="width: 14px; height: 14px;"></span>';
-                    step2Status.textContent = 'Đang chuyển sang R2...';
-
-                    modalTitle.textContent = 'Đang đồng bộ hóa sang Cloudflare R2...';
-                    r2Notice.style.setProperty('display', 'flex', 'important');
-                    speedText.textContent = 'Đang đồng bộ';
-                    etaText.textContent = '5 - 15 giây';
+            if (currentSpeed > 0) {
+                speedText.textContent = formatBytes(currentSpeed) + '/s';
+                const remainingBytes = Math.max(0, totalBytes - loadedBytes);
+                const remainingSec = Math.round(remainingBytes / currentSpeed);
+                if (remainingSec > 60) {
+                    const m = Math.floor(remainingSec / 60);
+                    const s = remainingSec % 60;
+                    etaText.textContent = `Còn ~${m}p ${s}s`;
+                } else {
+                    etaText.textContent = `Còn ~${remainingSec}s`;
                 }
             }
-        };
+        }
 
-        xhr.onload = function () {
-            currentXhr = null;
-            if (xhr.status >= 200 && xhr.status < 400) {
-                // Thành công
-                step2.className = 'stepper-item completed d-flex align-items-center gap-2 flex-fill';
-                step2Badge.innerHTML = '<i class="ti ti-check"></i>';
-                step2Status.textContent = 'Hoàn tất';
+        function submitFinalForm(formDataToSubmit) {
+            step1.className = 'stepper-item completed d-flex align-items-center gap-2 flex-fill';
+            step1Badge.innerHTML = '<i class="ti ti-check"></i>';
+            step1Status.textContent = 'Hoàn thành';
 
-                progressFill.style.width = '100%';
-                progressFill.classList.add('completed');
-                percentText.textContent = '100%';
-                r2Notice.style.setProperty('display', 'none', 'important');
-                successNotice.style.setProperty('display', 'flex', 'important');
-                modalTitle.textContent = 'Tải lên & Lưu video thành công!';
-                mainIcon.className = 'ti ti-check fs-1 text-white';
+            step2.className = 'stepper-item active d-flex align-items-center gap-2 flex-fill';
+            step2Badge.innerHTML = '<span class="spinner-border spinner-border-sm" style="width: 14px; height: 14px;"></span>';
+            step2Status.textContent = 'Đang lưu thông tin video...';
 
-                // Tự động chuyển hướng sau 700ms
-                setTimeout(function () {
-                    const redirectUrl = xhr.responseURL || form.getAttribute('data-redirect') || window.location.href;
-                    window.location.href = redirectUrl;
-                }, 700);
-            } else {
+            modalTitle.textContent = 'Đang lưu thông tin video...';
+            r2Notice.style.setProperty('display', 'flex', 'important');
+            speedText.textContent = 'Đang lưu';
+            etaText.textContent = '1 - 3 giây';
+
+            const xhr = new XMLHttpRequest();
+            currentXhr = xhr;
+
+            xhr.onload = function () {
+                currentXhr = null;
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    step2.className = 'stepper-item completed d-flex align-items-center gap-2 flex-fill';
+                    step2Badge.innerHTML = '<i class="ti ti-check"></i>';
+                    step2Status.textContent = 'Hoàn tất';
+
+                    progressFill.style.width = '100%';
+                    progressFill.classList.add('completed');
+                    percentText.textContent = '100%';
+                    r2Notice.style.setProperty('display', 'none', 'important');
+                    successNotice.style.setProperty('display', 'flex', 'important');
+                    modalTitle.textContent = 'Tải lên & Lưu video thành công!';
+                    mainIcon.className = 'ti ti-check fs-1 text-white';
+
+                    setTimeout(function () {
+                        const redirectUrl = xhr.responseURL || form.getAttribute('data-redirect') || window.location.href;
+                        window.location.href = redirectUrl;
+                    }, 700);
+                } else {
+                    hideUploadModal();
+                    handleUploadError(xhr);
+                }
+            };
+
+            xhr.onerror = function () {
+                currentXhr = null;
                 hideUploadModal();
-                handleUploadError(xhr);
-            }
-        };
+                showErrorToast('Lỗi kết nối mạng trong quá trình lưu video.');
+            };
 
-        xhr.onerror = function () {
-            currentXhr = null;
-            hideUploadModal();
-            showErrorToast('Lỗi kết nối mạng trong quá trình upload. Vui lòng kiểm tra lại đường truyền internet.');
-        };
+            xhr.open('POST', form.action);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.send(formDataToSubmit);
+        }
 
-        xhr.ontimeout = function () {
-            currentXhr = null;
-            hideUploadModal();
-            showErrorToast('Quá thời gian kết nối (Timeout). Vui lòng thử lại.');
-        };
+        const chunkEndpoint = '{{ route("admin.lesson.upload_r2_video") }}';
+        const csrfToken = '{{ csrf_token() }}';
+        const CHUNK_SIZE = 6 * 1024 * 1024;
 
-        xhr.open('POST', form.action);
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        xhr.send(formData);
+        function sendChunkRequest(fd, onProgressCb = null) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                currentXhr = xhr;
+                xhr.open('POST', chunkEndpoint, true);
+                xhr.setRequestHeader('Accept', 'application/json');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                if (onProgressCb) {
+                    xhr.upload.onprogress = function (e) {
+                        if (e.lengthComputable) onProgressCb(e.loaded, e.total);
+                    };
+                }
+
+                xhr.onload = function () {
+                    let res = null;
+                    try { res = JSON.parse(xhr.responseText); } catch (e) {}
+                    if (xhr.status === 200 && res && res.status) {
+                        resolve(res);
+                    } else if (res && res.message) {
+                        reject(new Error(res.message));
+                    } else {
+                        reject(new Error(`Lỗi máy chủ (HTTP ${xhr.status}): Không thể xử lý file video.`));
+                    }
+                };
+
+                xhr.onerror = function () {
+                    reject(new Error('Lỗi kết nối mạng khi tải video lên R2.'));
+                };
+
+                xhr.send(fd);
+            });
+        }
+
+        // Luôn sử dụng Chunked Upload (6MB/part) cho file > 8MB để tránh giới hạn máy chủ 20MB-30MB
+        if (file.size > 8 * 1024 * 1024) {
+            (async function () {
+                let uploadId = null;
+                let key = null;
+                try {
+                    const initFd = new FormData();
+                    initFd.append('_token', csrfToken);
+                    initFd.append('action', 'init');
+                    initFd.append('folder', 'videos/raw');
+                    initFd.append('filename', file.name || 'video.mp4');
+                    initFd.append('file_size', file.size);
+                    initFd.append('mime_type', file.type || 'video/mp4');
+
+                    const initRes = await sendChunkRequest(initFd);
+                    uploadId = initRes.upload_id;
+                    key = initRes.key;
+
+                    const totalParts = Math.ceil(file.size / CHUNK_SIZE);
+                    const uploadedParts = [];
+
+                    for (let partNumber = 1; partNumber <= totalParts; partNumber++) {
+                        const start = (partNumber - 1) * CHUNK_SIZE;
+                        const end = Math.min(start + CHUNK_SIZE, file.size);
+                        const chunkBlob = file.slice(start, end);
+
+                        step1Status.textContent = `Đang truyền phần ${partNumber}/${totalParts}...`;
+
+                        let partRes = null;
+                        let lastErr = null;
+
+                        for (let attempt = 1; attempt <= 3; attempt++) {
+                            try {
+                                const partFd = new FormData();
+                                partFd.append('_token', csrfToken);
+                                partFd.append('action', 'part');
+                                partFd.append('folder', 'videos/raw');
+                                partFd.append('upload_id', uploadId);
+                                partFd.append('key', key);
+                                partFd.append('part_number', partNumber);
+                                partFd.append('chunk', chunkBlob, file.name || 'chunk.part');
+
+                                partRes = await sendChunkRequest(partFd, function (chunkLoaded) {
+                                    updateProgressUI(Math.min(start + chunkLoaded, file.size), file.size);
+                                });
+                                break;
+                            } catch (err) {
+                                lastErr = err;
+                                if (attempt < 3) await new Promise(r => setTimeout(r, 800 * attempt));
+                            }
+                        }
+
+                        if (!partRes) throw lastErr || new Error('Không thể tải lên phần ' + partNumber);
+                        uploadedParts.push({ PartNumber: partNumber, ETag: partRes.etag });
+                    }
+
+                    const completeFd = new FormData();
+                    completeFd.append('_token', csrfToken);
+                    completeFd.append('action', 'complete');
+                    completeFd.append('folder', 'videos/raw');
+                    completeFd.append('upload_id', uploadId);
+                    completeFd.append('key', key);
+                    completeFd.append('parts', JSON.stringify(uploadedParts));
+
+                    const finalRes = await sendChunkRequest(completeFd);
+
+                    const formData = new FormData(form);
+                    formData.delete('video_file');
+                    formData.append('r2_uploaded_url', finalRes.url);
+                    formData.append('r2_uploaded_path', finalRes.path);
+                    formData.append('submitter', 'save');
+
+                    submitFinalForm(formData);
+                } catch (err) {
+                    if (uploadId && key) {
+                        const abortFd = new FormData();
+                        abortFd.append('_token', csrfToken);
+                        abortFd.append('action', 'abort');
+                        abortFd.append('upload_id', uploadId);
+                        abortFd.append('key', key);
+                        sendChunkRequest(abortFd).catch(() => {});
+                    }
+                    hideUploadModal();
+                    showErrorToast(err.message || 'Lỗi tải video lên Cloudflare R2.');
+                }
+            })();
+        } else {
+            const formData = new FormData(form);
+            formData.append('submitter', 'save');
+
+            const xhr = new XMLHttpRequest();
+            currentXhr = xhr;
+            xhr.upload.onprogress = function (e) {
+                if (e.lengthComputable) {
+                    updateProgressUI(e.loaded, e.total);
+                }
+            };
+            xhr.onload = function () {
+                currentXhr = null;
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    step2.className = 'stepper-item completed d-flex align-items-center gap-2 flex-fill';
+                    step2Badge.innerHTML = '<i class="ti ti-check"></i>';
+                    step2Status.textContent = 'Hoàn tất';
+                    progressFill.style.width = '100%';
+                    progressFill.classList.add('completed');
+                    percentText.textContent = '100%';
+                    r2Notice.style.setProperty('display', 'none', 'important');
+                    successNotice.style.setProperty('display', 'flex', 'important');
+                    modalTitle.textContent = 'Tải lên & Lưu video thành công!';
+                    mainIcon.className = 'ti ti-check fs-1 text-white';
+                    setTimeout(function () {
+                        const redirectUrl = xhr.responseURL || form.getAttribute('data-redirect') || window.location.href;
+                        window.location.href = redirectUrl;
+                    }, 700);
+                } else {
+                    hideUploadModal();
+                    handleUploadError(xhr);
+                }
+            };
+            xhr.onerror = function () {
+                currentXhr = null;
+                hideUploadModal();
+                showErrorToast('Lỗi kết nối mạng trong quá trình upload. Vui lòng kiểm tra lại đường truyền internet.');
+            };
+            xhr.open('POST', form.action);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.send(formData);
+        }
     }
 
     function hideUploadModal() {

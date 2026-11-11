@@ -49,7 +49,9 @@ class VideoRequest extends BaseRequest
 
         if ($isVideoR2) {
             $rules['video_url'] = ['nullable', 'string'];
-            $rules['video_file'] = array_merge(['required'], $videoRule);
+            $rules['r2_uploaded_url'] = ['nullable', 'string'];
+            $rules['r2_uploaded_path'] = ['nullable', 'string'];
+            $rules['video_file'] = array_merge(['required_without:r2_uploaded_url', 'nullable'], $videoRule);
         } else {
             $rules['video_url'] = [
                 'required',
@@ -102,6 +104,8 @@ class VideoRequest extends BaseRequest
 
         if ($isVideoR2) {
             $rules['video_url'] = ['nullable', 'string'];
+            $rules['r2_uploaded_url'] = ['nullable', 'string'];
+            $rules['r2_uploaded_path'] = ['nullable', 'string'];
             // Khi cập nhật video R2: file là optional (nếu không chọn file mới thì giữ file cũ)
             $rules['video_file'] = array_merge(['nullable'], $videoRule);
         } else {

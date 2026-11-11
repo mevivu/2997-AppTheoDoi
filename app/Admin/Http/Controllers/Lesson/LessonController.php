@@ -217,28 +217,131 @@ class LessonController extends Controller
     }
 
     /**
-     * API AJAX upload trực tiếp file video lên Cloudflare R2 (hỗ trợ thanh tiến trình % upload cho từng video trong repeater)
+     * API AJAX upload trực tiếp file video lên Cloudflare R2
+     * Hỗ trợ cả Chunked Multipart Upload (5MB/part cho video lớn > 8MB) và Single Upload (cho file nhỏ)
      */
     public function uploadR2Video(Request $request): JsonResponse
     {
-        // Tăng giới hạn thời gian thực thi và bộ nhớ để hỗ trợ upload video dung lượng lớn (tối đa 200MB)
         set_time_limit(600);
         ini_set('max_execution_time', '600');
         ini_set('memory_limit', '512M');
 
-        $request->validate([
-            'video_file' => 'required|file|max:204800|mimes:mp4,mov,webm,mkv,avi,m4v',
-        ], [
-            'video_file.required' => 'Vui lòng chọn file video.',
-            'video_file.file' => 'Dữ liệu tải lên phải là file video hợp lệ.',
-            'video_file.max' => 'Dung lượng video tối đa là 200MB.',
-            'video_file.mimes' => 'Định dạng video hợp lệ: mp4, mov, webm, mkv, avi, m4v.',
-        ]);
+        $action = $request->input('action');
+        $allowedFolders = ['videos/lessons', 'videos/evaluations', 'videos/raw'];
+        $folder = in_array($request->input('folder'), $allowedFolders, true)
+            ? $request->input('folder')
+            : 'videos/lessons';
 
         try {
+            if ($action === 'init') {
+                $filename = (string) $request->input('filename', 'video.mp4');
+                $fileSize = (int) $request->input('file_size', 0);
+                $mimeType = (string) $request->input('mime_type', 'video/mp4');
+
+                $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                if (!in_array($ext, ['mp4', 'mov', 'webm', 'mkv', 'avi', 'm4v'], true)) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Định dạng video hợp lệ: mp4, mov, webm, mkv, avi, m4v.',
+                    ], 422);
+                }
+
+                if ($fileSize > 200 * 1024 * 1024) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Dung lượng video tối đa là 200MB.',
+                    ], 422);
+                }
+
+                $initData = $this->fileService->initMultipartUploadToR2($filename, $folder, $mimeType);
+
+                return response()->json([
+                    'status' => true,
+                    'upload_id' => $initData['upload_id'],
+                    'key' => $initData['key'],
+                    'url' => $initData['url'],
+                ]);
+            }
+
+            if ($action === 'part') {
+                $request->validate([
+                    'upload_id' => 'required|string',
+                    'key' => 'required|string',
+                    'part_number' => 'required|integer|min:1|max:10000',
+                    'chunk' => 'required|file|max:25600',
+                ]);
+
+                $partData = $this->fileService->uploadPartToR2(
+                    (string) $request->input('key'),
+                    (string) $request->input('upload_id'),
+                    (int) $request->input('part_number'),
+                    $request->file('chunk')
+                );
+
+                return response()->json([
+                    'status' => true,
+                    'part_number' => $partData['part_number'],
+                    'etag' => $partData['etag'],
+                ]);
+            }
+
+            if ($action === 'complete') {
+                $uploadId = (string) $request->input('upload_id');
+                $key = (string) $request->input('key');
+                $partsInput = $request->input('parts', []);
+                $parts = is_string($partsInput) ? (json_decode($partsInput, true) ?: []) : (array) $partsInput;
+
+                if (empty($uploadId) || empty($key) || empty($parts)) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Thiếu thông tin hoàn tất quá trình tải video lên R2.',
+                    ], 422);
+                }
+
+                $uploadResult = $this->fileService->completeMultipartUploadToR2(
+                    $key,
+                    $uploadId,
+                    $parts,
+                    $request->input('old_path')
+                );
+
+                $fileSize = (int) $request->input('file_size', 0);
+
+                return response()->json([
+                    'status' => true,
+                    'url' => $uploadResult['url'],
+                    'path' => $uploadResult['path'],
+                    'filename' => (string) $request->input('filename', basename($uploadResult['path'])),
+                    'size_mb' => $fileSize > 0 ? round($fileSize / (1024 * 1024), 2) : 0,
+                    'data' => [
+                        'url' => $uploadResult['url'],
+                        'path' => $uploadResult['path'],
+                    ],
+                ]);
+            }
+
+            if ($action === 'abort') {
+                $uploadId = (string) $request->input('upload_id');
+                $key = (string) $request->input('key');
+                if ($uploadId && $key) {
+                    $this->fileService->abortMultipartUploadToR2($key, $uploadId);
+                }
+                return response()->json(['status' => true]);
+            }
+
+            // Fallback: Upload trực tiếp 1 lần cho file nhỏ
+            $request->validate([
+                'video_file' => 'required|file|max:204800|mimes:mp4,mov,webm,mkv,avi,m4v',
+            ], [
+                'video_file.required' => 'Vui lòng chọn file video.',
+                'video_file.file' => 'Dữ liệu tải lên phải là file video hợp lệ.',
+                'video_file.max' => 'Dung lượng video tối đa là 200MB.',
+                'video_file.mimes' => 'Định dạng video hợp lệ: mp4, mov, webm, mkv, avi, m4v.',
+            ]);
+
             $uploadResult = $this->fileService->uploadVideoToR2(
                 $request->file('video_file'),
-                'videos/lessons'
+                $folder
             );
 
             return response()->json([
@@ -247,8 +350,12 @@ class LessonController extends Controller
                 'path' => $uploadResult['path'],
                 'filename' => $request->file('video_file')->getClientOriginalName(),
                 'size_mb' => round($request->file('video_file')->getSize() / (1024 * 1024), 2),
+                'data' => [
+                    'url' => $uploadResult['url'],
+                    'path' => $uploadResult['path'],
+                ],
             ]);
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             \Log::error('Upload R2 Video failed: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return response()->json([
                 'status' => false,
