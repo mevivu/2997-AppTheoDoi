@@ -253,7 +253,6 @@ class FileService
                     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                     CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
                     CURLOPT_TCP_KEEPALIVE => 1,
-                    CURLOPT_HTTPHEADER => ['Expect:'],
                 ] : [],
             ],
         ]);
