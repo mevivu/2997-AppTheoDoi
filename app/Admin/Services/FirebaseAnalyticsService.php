@@ -29,8 +29,8 @@ class FirebaseAnalyticsService
 
         try {
             $guzzleClient = new \GuzzleHttp\Client([
-                'connect_timeout' => 5,
-                'timeout' => 10,
+                'connect_timeout' => 3,
+                'timeout' => 4,
                 'http_errors' => true,
             ]);
 
@@ -79,25 +79,35 @@ class FirebaseAnalyticsService
     }
 
     /**
-     * Fetch active users over time (1d, 7d, 30d).
+     * Fetch active users over time (1d, 7d, 30d, 90d) với cơ chế tự động fallback sang dữ liệu thiết bị thực tế khi Google API quá tải.
      */
     public function getActiveUsersOverTime(string $period = '30d'): array
     {
-        if (empty($this->propertyId)) {
-            throw new \Exception('Chưa cấu hình FIREBASE_ANALYTICS_PROPERTY_ID trong file .env');
-        }
-
         $freshCacheKey = 'firebase_active_users_fresh_' . $period;
         $backupCacheKey = 'firebase_active_users_backup_' . $period;
+        $gaCooldownKey = 'firebase_ga_runreport_cooldown';
 
         $cachedFresh = \Illuminate\Support\Facades\Cache::get($freshCacheKey);
         if (is_array($cachedFresh) && !empty($cachedFresh)) {
             return $cachedFresh;
         }
 
+        // Nếu Google Analytics API vừa gặp lỗi 502/Timeout trong 5 phút gần đây, trả ngay dữ liệu backup hoặc fallback thực tế để không bị chờ
+        if (empty($this->propertyId) || \Illuminate\Support\Facades\Cache::get($gaCooldownKey)) {
+            $backup = \Illuminate\Support\Facades\Cache::get($backupCacheKey);
+            if (is_array($backup) && !empty($backup)) {
+                return $backup;
+            }
+            return $this->getFallbackActiveUsersOverTime($period);
+        }
+
         $httpClient = $this->getAuthorizedClient();
         if (!$httpClient) {
-            throw new \Exception('Không thể xác thực Google Client. Vui lòng kiểm tra file firebase_credentials.json ở thư mục gốc.');
+            $backup = \Illuminate\Support\Facades\Cache::get($backupCacheKey);
+            if (is_array($backup) && !empty($backup)) {
+                return $backup;
+            }
+            return $this->getFallbackActiveUsersOverTime($period);
         }
 
         try {
@@ -118,8 +128,8 @@ class FirebaseAnalyticsService
             }
 
             $response = $httpClient->post($url, [
-                'connect_timeout' => 5,
-                'timeout' => 10,
+                'connect_timeout' => 3,
+                'timeout' => 4,
                 'json' => [
                     'dateRanges' => [
                         ['startDate' => "{$days}daysAgo", 'endDate' => 'today']
@@ -148,38 +158,22 @@ class FirebaseAnalyticsService
             }
             
             $errorBody = $response->getBody()->getContents();
-            Log::error('Google Analytics API error: ' . $errorBody);
-
-            $backup = \Illuminate\Support\Facades\Cache::get($backupCacheKey);
-            if (is_array($backup) && !empty($backup)) {
-                return $backup;
-            }
-            
-            $errMsg = $this->formatGoogleApiError($errorBody, $response->getStatusCode());
-            throw new \Exception($errMsg);
-        } catch (\GuzzleHttp\Exception\RequestException $e) {
-            $response = $e->getResponse();
-            $statusCode = $response ? $response->getStatusCode() : null;
-            $errorMsg = $response ? $response->getBody()->getContents() : $e->getMessage();
-            Log::error('RequestException in getActiveUsersOverTime: ' . $errorMsg);
-
-            $backup = \Illuminate\Support\Facades\Cache::get($backupCacheKey);
-            if (is_array($backup) && !empty($backup)) {
-                return $backup;
-            }
-            
-            $cleanMsg = $this->formatGoogleApiError($errorMsg, $statusCode);
-            throw new \Exception($cleanMsg);
-        } catch (\Exception $e) {
-            Log::error('Exception in getActiveUsersOverTime: ' . $e->getMessage());
-
-            $backup = \Illuminate\Support\Facades\Cache::get($backupCacheKey);
-            if (is_array($backup) && !empty($backup)) {
-                return $backup;
-            }
-
-            throw new \Exception($this->formatGoogleApiError($e->getMessage()));
+            Log::warning('Google Analytics API non-200, falling back to user_devices: ' . substr(strip_tags($errorBody), 0, 200));
+        } catch (\Throwable $e) {
+            Log::warning('Google Analytics API timeout/502 in getActiveUsersOverTime, falling back to user_devices: ' . $e->getMessage());
         }
+
+        // Đặt cooldown 5 phút để các lần tải trang / chuyển tab tiếp theo phản hồi tức thì
+        \Illuminate\Support\Facades\Cache::put($gaCooldownKey, true, now()->addMinutes(5));
+
+        $backup = \Illuminate\Support\Facades\Cache::get($backupCacheKey);
+        if (is_array($backup) && !empty($backup)) {
+            return $backup;
+        }
+
+        $fallback = $this->getFallbackActiveUsersOverTime($period);
+        \Illuminate\Support\Facades\Cache::put($freshCacheKey, $fallback, now()->addMinutes(5));
+        return $fallback;
     }
 
     /**
@@ -290,6 +284,67 @@ class FirebaseAnalyticsService
         }
 
         return $result;
+    }
+
+    /**
+     * Lấy thống kê người dùng hoạt động thực tế từ bảng user_devices khi Google Analytics API quá tải (502/Timeout).
+     */
+    protected function getFallbackActiveUsersOverTime(string $period = '30d'): array
+    {
+        $result = [];
+
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('user_devices')) {
+                if ($period === '1d') {
+                    $startHour = now()->subHours(23)->startOfHour();
+                    $rows = \Illuminate\Support\Facades\DB::table('user_devices')
+                        ->selectRaw("DATE_FORMAT(COALESCE(last_active_at, updated_at, created_at), '%Y-%m-%d %H') as h, COUNT(DISTINCT user_id) as u")
+                        ->whereRaw('COALESCE(last_active_at, updated_at, created_at) >= ?', [$startHour])
+                        ->groupBy('h')
+                        ->pluck('u', 'h');
+
+                    for ($i = 0; $i < 24; $i++) {
+                        $dt = $startHour->copy()->addHours($i);
+                        $key = $dt->format('Y-m-d H');
+                        $result[] = [
+                            'date' => $dt->format('H') . 'h',
+                            'users' => (int) ($rows[$key] ?? 0),
+                        ];
+                    }
+
+                    return $result;
+                }
+
+                $days = 30;
+                if ($period === '7d') {
+                    $days = 7;
+                } elseif ($period === '90d' || $period === '3m') {
+                    $days = 90;
+                }
+
+                $startDate = now()->subDays($days - 1)->startOfDay();
+                $rows = \Illuminate\Support\Facades\DB::table('user_devices')
+                    ->selectRaw('DATE(COALESCE(last_active_at, updated_at, created_at)) as d, COUNT(DISTINCT user_id) as u')
+                    ->whereRaw('COALESCE(last_active_at, updated_at, created_at) >= ?', [$startDate])
+                    ->groupBy('d')
+                    ->pluck('u', 'd');
+
+                for ($i = 0; $i < $days; $i++) {
+                    $dt = $startDate->copy()->addDays($i);
+                    $key = $dt->format('Y-m-d');
+                    $result[] = [
+                        'date' => $dt->format('d/m'),
+                        'users' => (int) ($rows[$key] ?? 0),
+                    ];
+                }
+
+                return $result;
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Fallback getFallbackActiveUsersOverTime failed: ' . $e->getMessage());
+        }
+
+        return $this->getMockActiveUsersOverTime($period);
     }
 
     /**
