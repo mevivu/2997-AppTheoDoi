@@ -28,15 +28,54 @@ class FirebaseAnalyticsService
         }
 
         try {
+            $guzzleClient = new \GuzzleHttp\Client([
+                'connect_timeout' => 5,
+                'timeout' => 10,
+                'http_errors' => true,
+            ]);
+
             $client = new Client();
+            $client->setHttpClient($guzzleClient);
             $client->setAuthConfig($this->credentialsPath);
             $client->addScope('https://www.googleapis.com/auth/analytics.readonly');
             
-            return $client->authorize();
+            return $client->authorize($guzzleClient);
         } catch (\Exception $e) {
             Log::error('Failed to authorize Google Client for Analytics: ' . $e->getMessage());
             return null;
         }
+    }
+
+    /**
+     * Làm sạch thông báo lỗi từ Google API (tránh hiển thị nguyên chuỗi HTML 502/503 của Google ra giao diện)
+     */
+    protected function formatGoogleApiError(string $rawError, ?int $statusCode = null): string
+    {
+        $errData = json_decode($rawError, true);
+        if (is_array($errData) && !empty($errData['error']['message'])) {
+            return $errData['error']['message'];
+        }
+
+        if (
+            $statusCode === 502 ||
+            str_contains($rawError, 'Error 502') ||
+            str_contains($rawError, '<b>502.</b>') ||
+            str_contains($rawError, '<!DOCTYPE html>') ||
+            str_contains($rawError, '<html')
+        ) {
+            return 'Máy chủ Google Analytics (analyticsdata.googleapis.com) đang gặp sự cố quá tải tạm thời (Lỗi 502 Server Error từ phía Google). Vui lòng thử lại sau ít phút.';
+        }
+
+        if (
+            $statusCode === 503 ||
+            $statusCode === 504 ||
+            str_contains($rawError, 'cURL error 28') ||
+            str_contains($rawError, 'Operation timed out')
+        ) {
+            return 'Máy chủ Google Analytics phản hồi quá thời gian chờ (Timeout / 503 từ phía Google). Vui lòng thử lại sau ít phút.';
+        }
+
+        return trim(strip_tags($rawError)) ?: 'Không thể kết nối tới Google Analytics API.';
     }
 
     /**
@@ -46,6 +85,14 @@ class FirebaseAnalyticsService
     {
         if (empty($this->propertyId)) {
             throw new \Exception('Chưa cấu hình FIREBASE_ANALYTICS_PROPERTY_ID trong file .env');
+        }
+
+        $freshCacheKey = 'firebase_active_users_fresh_' . $period;
+        $backupCacheKey = 'firebase_active_users_backup_' . $period;
+
+        $cachedFresh = \Illuminate\Support\Facades\Cache::get($freshCacheKey);
+        if (is_array($cachedFresh) && !empty($cachedFresh)) {
+            return $cachedFresh;
         }
 
         $httpClient = $this->getAuthorizedClient();
@@ -71,6 +118,8 @@ class FirebaseAnalyticsService
             }
 
             $response = $httpClient->post($url, [
+                'connect_timeout' => 5,
+                'timeout' => 10,
                 'json' => [
                     'dateRanges' => [
                         ['startDate' => "{$days}daysAgo", 'endDate' => 'today']
@@ -92,26 +141,44 @@ class FirebaseAnalyticsService
 
             if ($response->getStatusCode() === 200) {
                 $data = json_decode($response->getBody()->getContents(), true);
-                return $this->parseOverTimeData($data);
+                $parsed = $this->parseOverTimeData($data);
+                \Illuminate\Support\Facades\Cache::put($freshCacheKey, $parsed, now()->addMinutes(15));
+                \Illuminate\Support\Facades\Cache::put($backupCacheKey, $parsed, now()->addHours(24));
+                return $parsed;
             }
             
             $errorBody = $response->getBody()->getContents();
             Log::error('Google Analytics API error: ' . $errorBody);
+
+            $backup = \Illuminate\Support\Facades\Cache::get($backupCacheKey);
+            if (is_array($backup) && !empty($backup)) {
+                return $backup;
+            }
             
-            $errData = json_decode($errorBody, true);
-            $errMsg = $errData['error']['message'] ?? $errorBody;
-            throw new \Exception('Google Analytics API Error: ' . $errMsg);
+            $errMsg = $this->formatGoogleApiError($errorBody, $response->getStatusCode());
+            throw new \Exception($errMsg);
         } catch (\GuzzleHttp\Exception\RequestException $e) {
             $response = $e->getResponse();
+            $statusCode = $response ? $response->getStatusCode() : null;
             $errorMsg = $response ? $response->getBody()->getContents() : $e->getMessage();
             Log::error('RequestException in getActiveUsersOverTime: ' . $errorMsg);
+
+            $backup = \Illuminate\Support\Facades\Cache::get($backupCacheKey);
+            if (is_array($backup) && !empty($backup)) {
+                return $backup;
+            }
             
-            $errData = json_decode($errorMsg, true);
-            $cleanMsg = $errData['error']['message'] ?? $errorMsg;
-            throw new \Exception('Google Analytics API Error: ' . $cleanMsg);
+            $cleanMsg = $this->formatGoogleApiError($errorMsg, $statusCode);
+            throw new \Exception($cleanMsg);
         } catch (\Exception $e) {
             Log::error('Exception in getActiveUsersOverTime: ' . $e->getMessage());
-            throw $e;
+
+            $backup = \Illuminate\Support\Facades\Cache::get($backupCacheKey);
+            if (is_array($backup) && !empty($backup)) {
+                return $backup;
+            }
+
+            throw new \Exception($this->formatGoogleApiError($e->getMessage()));
         }
     }
 
@@ -154,20 +221,17 @@ class FirebaseAnalyticsService
             $errorBody = $response->getBody()->getContents();
             Log::error('Google Analytics API version error: ' . $errorBody);
             
-            $errData = json_decode($errorBody, true);
-            $errMsg = $errData['error']['message'] ?? $errorBody;
-            throw new \Exception('Google Analytics API Error: ' . $errMsg);
+            throw new \Exception($this->formatGoogleApiError($errorBody, $response->getStatusCode()));
         } catch (\GuzzleHttp\Exception\RequestException $e) {
             $response = $e->getResponse();
+            $statusCode = $response ? $response->getStatusCode() : null;
             $errorMsg = $response ? $response->getBody()->getContents() : $e->getMessage();
             Log::error('RequestException in getActiveUsersByVersion: ' . $errorMsg);
             
-            $errData = json_decode($errorMsg, true);
-            $cleanMsg = $errData['error']['message'] ?? $errorMsg;
-            throw new \Exception('Google Analytics API Error: ' . $cleanMsg);
+            throw new \Exception($this->formatGoogleApiError($errorMsg, $statusCode));
         } catch (\Exception $e) {
             Log::error('Exception in getActiveUsersByVersion: ' . $e->getMessage());
-            throw $e;
+            throw new \Exception($this->formatGoogleApiError($e->getMessage()));
         }
     }
 
