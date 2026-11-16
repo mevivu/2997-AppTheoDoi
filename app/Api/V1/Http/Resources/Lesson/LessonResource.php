@@ -79,11 +79,7 @@ class LessonResource extends JsonResource
             'slug' => $this->slug,
             'thumbnail_url' => $this->thumbnail_url,
             'description' => $this->description,
-            'difficulty' => [
-                'key' => $difficultyKey,
-                'label' => $difficultyLabel,
-                'badge' => $difficultyBadge,
-            ],
+            'difficulty' => null,
             'frequency' => $this->frequency,
             'benefit' => $this->benefit,
             'tools' => $this->tools,
