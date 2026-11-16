@@ -790,7 +790,7 @@
                             <td><strong>${row.label}</strong></td>
                             <td><span class="${phaseClass}">${row.phase}</span></td>
                             <td class="text-start fs-11"><code class="text-muted">${row.formula}</code></td>
-                            <td>${row.growth_delta > 0 ? '<span class="text-amber fw-semibold">+' + row.growth_delta + ' cm</span>' : '--'}</td>
+                            <td>${row.is_current ? '--' : '<span class="text-amber fw-semibold">+' + row.growth_delta + ' cm</span>'}</td>
                             <td><strong style="color: #d97706;">${row.pred_height} cm</strong></td>
                             <td><span class="text-muted">${row.who_height} cm</span></td>
                             <td>${row.target_height ? '<strong style="color: #e05263;">' + row.target_height + ' cm</strong>' : '--'}</td>

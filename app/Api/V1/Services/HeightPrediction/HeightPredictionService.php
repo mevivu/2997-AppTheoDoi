@@ -211,7 +211,31 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             $whoHeights[$age] = $who ? (float)$who->height : ($whoHeights[$age - 1] ?? 0.0);
         }
 
-        $prevPredHeight = $currentHeight;
+        // Tính toán yếu tố di truyền 10% nếu có chiều cao cha mẹ
+        $parentUser = $child->user;
+        $fatherHeight = (float)($parentUser?->father_height ?? 0);
+        $motherHeight = (float)($parentUser?->mother_height ?? 0);
+        $genderVal = $gender instanceof Gender ? $gender->value : (int)$gender;
+        $midParentHeight = 0.0;
+
+        if ($fatherHeight > 0 && $motherHeight > 0) {
+            if ($genderVal == 1) {
+                $midParentHeight = round(($fatherHeight + $motherHeight + 13) / 2 + 5, 1);
+            } else {
+                $midParentHeight = round(($fatherHeight + $motherHeight - 13) / 2 + 3, 1);
+            }
+        }
+        $whoAdultHeight = $whoHeights[$maxAge] ?? ($genderVal == 1 ? 176.5 : 163.2);
+        if ($whoAdultHeight <= 0) {
+            $wAdult = $this->getWho(19 * 12, $gender);
+            $whoAdultHeight = $wAdult ? (float)$wAdult->height : ($genderVal == 1 ? 176.5 : 163.2);
+        }
+        $geneticRatio = ($midParentHeight > 0 && $whoAdultHeight > 0)
+            ? round($midParentHeight / $whoAdultHeight, 4)
+            : null;
+
+        $prevPredHeight = (float)$currentHeight;
+        $prevFinalPredHeight = round((float)$currentHeight, 1);
         for ($age = $startAge; $age <= $maxAge; $age++) {
             if ($age < $pubertyEndAge) {
                 $predH = $currentHeight + ($age - $currentAge) * $effectiveSpeed;
@@ -225,34 +249,20 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 }
                 $predH = $prevPredHeight + $whoDelta;
             }
+            $predH = max($predH, $prevPredHeight);
             $prevPredHeight = $predH;
+
+            $whoAtAge = $whoHeights[$age] ?? 0.0;
+            $geneticAtAge = $geneticRatio !== null ? round($whoAtAge * $geneticRatio, 1) : null;
+            $rawFinalPredH = $geneticAtAge !== null
+                ? round(($predH * 0.9) + ($geneticAtAge * 0.1), 1)
+                : round($predH, 1);
+
+            // Tối thiểu lấy bằng chiều cao năm liền trước: = Max(dự đoán ; CC năm liền trước)
+            $prevFinalPredHeight = max($rawFinalPredH, $prevFinalPredHeight);
         }
 
-        // Tính toán yếu tố di truyền 10% nếu có chiều cao cha mẹ
-        $parentUser = $child->user;
-        $fatherHeight = (float)($parentUser?->father_height ?? 0);
-        $motherHeight = (float)($parentUser?->mother_height ?? 0);
-        $genderVal = $gender instanceof Gender ? $gender->value : (int)$gender;
-
-        if ($fatherHeight > 0 && $motherHeight > 0) {
-            if ($genderVal == 1) {
-                $midParentHeight = round(($fatherHeight + $motherHeight + 13) / 2 + 5, 1);
-            } else {
-                $midParentHeight = round(($fatherHeight + $motherHeight - 13) / 2 + 3, 1);
-            }
-            $whoAdultHeight = $whoHeights[$maxAge] ?? ($genderVal == 1 ? 176.5 : 163.2);
-            if ($whoAdultHeight <= 0) {
-                $wAdult = $this->getWho(19 * 12, $gender);
-                $whoAdultHeight = $wAdult ? (float)$wAdult->height : ($genderVal == 1 ? 176.5 : 163.2);
-            }
-            $geneticRatio = ($whoAdultHeight > 0) ? round($midParentHeight / $whoAdultHeight, 4) : null;
-            $geneticAt19 = $geneticRatio !== null ? round($whoAdultHeight * $geneticRatio, 1) : $midParentHeight;
-            $finalMatureHeight = round(($prevPredHeight * 0.9) + ($geneticAt19 * 0.1), 1);
-        } else {
-            $finalMatureHeight = round($prevPredHeight, 1);
-        }
-
-        return $finalMatureHeight;
+        return $prevFinalPredHeight;
     }
 
     /**
@@ -737,6 +747,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         ];
         $predictionHeights = [];
         $prevPredHeight = $currentHeight;
+        $prevFinalPredHeight = round($currentHeight, 1);
         $predAtPubertyEnd = $currentHeight + max(0.0, $pubertyEndAge - $currentAge) * $effectiveSpeed;
 
         for ($age = $startAge; $age <= $maxAge; $age++) {
@@ -755,13 +766,18 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 }
                 $predH = $prevPredHeight + $whoDelta;
             }
+            $predH = max($predH, $prevPredHeight);
             $prevPredHeight = $predH;
 
             $whoAtAge = $whoHeights[$age] ?? 0.0;
             $geneticAtAge = $geneticRatio !== null ? round($whoAtAge * $geneticRatio, 1) : null;
-            $finalPredH = $geneticAtAge !== null
+            $rawFinalPredH = $geneticAtAge !== null
                 ? round(($predH * 0.9) + ($geneticAtAge * 0.1), 1)
                 : round($predH, 1);
+
+            // Tối thiểu lấy bằng chiều cao năm liền trước: = Max(dự đoán ; CC năm liền trước)
+            $finalPredH = max($rawFinalPredH, $prevFinalPredHeight);
+            $prevFinalPredHeight = $finalPredH;
 
             $predictionHeights[$age] = $finalPredH;
             $predictionLine[] = [
@@ -1055,6 +1071,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         $simulationMatrix = [];
         $prevPredH = $currentHeight;
+        $prevFinalPredH = round($currentHeight, 1);
         $predictionHeights = [];
 
         // Tỷ lệ di truyền so với chuẩn WHO trưởng thành (mốc 19 tuổi)
@@ -1101,15 +1118,23 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 $formula = round($prevPredH, 1) . " + Delta WHO(tuổi {$shiftedAge}: " . round($whoDelta, 2) . " cm)";
             }
 
-            $growthDelta = round($predH - $prevPredH, 1);
+            $predH = max($predH, $prevPredH);
             $prevPredH = $predH;
-            $predictionHeights[$age] = $predH;
 
             $whoAtAge = $whoHeights[$age] ?? 0.0;
             $geneticAtAge = $geneticRatio !== null ? round($whoAtAge * $geneticRatio, 1) : null;
-            $finalPredH = $geneticAtAge !== null
+            $rawFinalPredH = $geneticAtAge !== null
                 ? round(($predH * 0.9) + ($geneticAtAge * 0.1), 1)
                 : round($predH, 1);
+
+            // Tối thiểu lấy bằng chiều cao năm liền trước: = Max(dự đoán ; CC năm liền trước)
+            $finalPredH = max($rawFinalPredH, $prevFinalPredH);
+            if ($finalPredH > $rawFinalPredH) {
+                $formula .= " → Max({$rawFinalPredH}; {$prevFinalPredH}) = {$finalPredH}";
+            }
+            $growthDelta = round($finalPredH - $prevFinalPredH, 1);
+            $prevFinalPredH = $finalPredH;
+            $predictionHeights[$age] = $finalPredH;
 
             $simulationMatrix[] = [
                 'age' => (float)$age,
