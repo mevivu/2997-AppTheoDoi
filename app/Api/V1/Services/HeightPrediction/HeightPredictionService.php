@@ -132,7 +132,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         } else {
             $increasedHeight = ($currentHeight - $heightOneYearAgo) * (365.3 / $countDays);
         }
-        $increasedHeight = max(0.0, min(5.5, (float)$increasedHeight));
+        $maxSpeed = $this->resolveMaxSpeed((float)$currentAge);
+        $increasedHeight = max(0.0, min($maxSpeed, (float)$increasedHeight));
 
 
         $adultHeightPrediction = $predictAdulthood * $increasedHeight;
@@ -182,7 +183,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
 
         $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $child->id, $latestDate);
         $rawSpeed = (float)$resultSpeedHeightChange['height_change'];
-        $increasedHeight = max(0.0, min(5.5, $rawSpeed));
+        $maxSpeed = $this->resolveMaxSpeed($currentAge);
+        $increasedHeight = max(0.0, min($maxSpeed, $rawSpeed));
 
         if ($increasedHeight <= 0) {
             $whoCurrent = $this->getWho(round($currentAge * 12), $gender);
@@ -266,10 +268,19 @@ class HeightPredictionService implements HeightPredictionServiceInterface
     }
 
     /**
-     * Xác định tốc độ tăng trưởng fallback (cm/năm) từ chuẩn WHO khi trẻ chưa có lịch sử đo 1 năm.
-     * Xử lý các điểm dị thường tại các mốc chuyển tiếp dữ liệu của WHO:
-     * - Tháng 24: Chuyển từ đo chiều dài nằm sang đo chiều cao đứng (độ lệch kỹ thuật ~0.7cm làm delta tháng 24 chỉ còn 0.18-0.20cm).
-     * - Tháng 61: Chuyển tiếp giữa dataset WHO 0-5 tuổi và WHO 5-19 tuổi.
+     * Xác định giới hạn trần tốc độ tăng trưởng (Max cm/năm) theo độ tuổi:
+     * - Nếu tuổi > 5: Max = 5.5 cm/năm
+     * - Nếu tuổi <= 5: Max = 6.0 cm/năm
+     */
+    private function resolveMaxSpeed(float $currentAge): float
+    {
+        return $currentAge > 5.0 ? 5.5 : 6.0;
+    }
+
+    /**
+     * Xác định tốc độ tăng trưởng fallback (cm/năm) khi trẻ chưa có lịch sử đo 1 năm (tốc độ thô <= 0):
+     * - Nếu tuổi > 5: Fallback = 5.0 cm/năm
+     * - Nếu tuổi <= 5: Fallback = 5.5 cm/năm
      *
      * @param object|null $whoCurrent
      * @param float $currentAge
@@ -278,19 +289,7 @@ class HeightPredictionService implements HeightPredictionServiceInterface
      */
     private function resolveFallbackSpeed(?object $whoCurrent, float $currentAge, int|float $month): float
     {
-        return 5.0;
-
-        // Mặc định tăng 5.0 cm/năm khi không có dữ liệu để tính tốc độ
-        if ((int)$month === 24) {
-            return 5.0;
-        }
-
-        // Nếu tốc độ từ bảng WHO sụt giảm bất thường (< 4.5 cm/năm) ở trẻ trước 11 tuổi
-        if ($currentAge < 11.0 && $rawSpeed < 4.5) {
-            return 5.0;
-        }
-
-        return 5.0;
+        return $currentAge > 5.0 ? 5.0 : 5.5;
     }
 
 
@@ -398,7 +397,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         // Tính tốc độ tăng trưởng hiện tại
         $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $childId, $latestDate);
         $rawSpeed = (float)$resultSpeedHeightChange['height_change'];
-        $increasedHeight = max(0.0, min(5.5, $rawSpeed));
+        $maxSpeed = $this->resolveMaxSpeed($currentAge);
+        $increasedHeight = max(0.0, min($maxSpeed, $rawSpeed));
 
         // Nếu tốc độ tăng = 0, fallback theo mức tăng trung bình WHO của lứa tuổi hiện tại
         if ($increasedHeight <= 0) {
@@ -647,7 +647,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
         // Tính tốc độ tăng trưởng hiện tại
         $resultSpeedHeightChange = $this->calculateSpeedHeightChange($currentHeight, $childId, $latestDate);
         $rawSpeed = (float)$resultSpeedHeightChange['height_change'];
-        $increasedHeight = max(0.0, min(5.5, $rawSpeed));
+        $maxSpeed = $this->resolveMaxSpeed($currentAge);
+        $increasedHeight = max(0.0, min($maxSpeed, $rawSpeed));
 
         // Nếu tốc độ tăng = 0, fallback theo mức tăng trung bình WHO của lứa tuổi hiện tại
         if ($increasedHeight <= 0) {
@@ -1036,7 +1037,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
             $speedFormula = "Chưa có bản ghi PQ cách 1 năm -> Tốc độ = 0 cm/năm";
         }
 
-        $clampedSpeed = max(0.0, min(5.5, $rawSpeedAnnualized));
+        $maxSpeed = $this->resolveMaxSpeed($currentAge);
+        $clampedSpeed = max(0.0, min($maxSpeed, $rawSpeedAnnualized));
 
         $whoCurrent = $this->getWho($currentAgeMonth, $gender);
         $whoCurrentHeight = $whoCurrent ? (float)$whoCurrent->height : $currentHeight;
@@ -1247,7 +1249,8 @@ class HeightPredictionService implements HeightPredictionServiceInterface
                 'raw_height_diff' => $rawHeightDiff,
                 'raw_speed_annualized' => $rawSpeedAnnualized,
                 'speed_formula' => $speedFormula,
-                'clamped_rule' => 'Max 5.5 cm/năm',
+                'max_speed' => $maxSpeed,
+                'clamped_rule' => 'Max ' . $maxSpeed . ' cm/năm (' . ($currentAge > 5.0 ? 'Tuổi > 5' : 'Tuổi <= 5') . ')',
                 'clamped_speed' => $clampedSpeed,
                 'is_fallback_used' => $isFallbackUsed,
                 'who_current_speed' => round($whoCurrentSpeed, 1),
