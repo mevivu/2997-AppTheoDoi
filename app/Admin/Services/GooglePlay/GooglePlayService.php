@@ -53,12 +53,20 @@ class GooglePlayService implements GooglePlayServiceInterface
             $lineItems = $purchase->getLineItems();
             $lineItem = $lineItems[0] ?? null;
             $refundInfo = $this->checkRefundStatus($purchase, $lineItem);
+            $obfuscatedAccountId = method_exists($purchase, 'getExternalAccountIdentifiers')
+                ? $purchase->getExternalAccountIdentifiers()?->getObfuscatedExternalAccountId()
+                : null;
+            $linkedPurchaseToken = method_exists($purchase, 'getLinkedPurchaseToken')
+                ? $purchase->getLinkedPurchaseToken()
+                : null;
             return [
                 'success' => true,
                 'data' => [
                     'subscriptionState' => $purchase->getSubscriptionState(),
                     'regionCode' => $purchase->getRegionCode(),
                     'orderId' => $purchase->getLatestOrderId(),
+                    'obfuscatedExternalAccountId' => $obfuscatedAccountId,
+                    'linkedPurchaseToken' => $linkedPurchaseToken,
                     'lineItem' => $lineItem ? [
                         'productId' => $lineItem->getProductId(),
                         'expiryTime' => $lineItem->getExpiryTime(),

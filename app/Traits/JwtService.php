@@ -483,6 +483,22 @@ trait JwtService
                     'max_allowed' => $maxAllowed,
                 ]);
 
+                $upgradeToken = null;
+                try {
+                    $upgradeToken = \Illuminate\Support\Facades\Crypt::encryptString(json_encode([
+                        'purpose' => 'device_limit_upgrade',
+                        'user_id' => $user->id,
+                        'device_id' => $deviceId,
+                        'device_name' => $deviceName,
+                        'device_token' => $deviceToken,
+                        'platform' => $platform,
+                        'ip_address' => $request->ip(),
+                        'exp' => time() + 1800,
+                    ], JSON_UNESCAPED_UNICODE));
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Failed to generate upgrade_token: ' . $e->getMessage());
+                }
+
                 return response()->json([
                     'status' => 403,
                     'code' => 'DEVICE_LIMIT_EXCEEDED',
@@ -490,7 +506,9 @@ trait JwtService
                     'data' => [
                         'max_devices' => $maxAllowed,
                         'current_devices' => $activeCount,
-                        'can_upgrade' => true
+                        'can_upgrade' => true,
+                        'user_id' => $user->id,
+                        'upgrade_token' => $upgradeToken,
                     ]
                 ], 403);
             }

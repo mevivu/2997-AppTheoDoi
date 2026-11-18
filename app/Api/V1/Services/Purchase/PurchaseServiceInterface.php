@@ -12,5 +12,9 @@ interface PurchaseServiceInterface
 
     public function verifyPurchaseAppleStore(AppleStoreRequest $request);
 
+    public function verifyUpgradeGooglePlay(GooglePlayRequest $request): array;
+
+    public function verifyUpgradeAppleStore(AppleStoreRequest $request): array;
+
     public function handleWebhookNotification($data): void;
 }

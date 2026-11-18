@@ -3,6 +3,7 @@
 namespace App\Api\V1\Http\Controllers\Purchase;
 
 use App\Admin\Http\Controllers\Controller;
+use App\Api\V1\Exception\BadRequestException;
 use App\Api\V1\Http\Requests\Purchase\AppleStoreRequest;
 use App\Api\V1\Http\Requests\Purchase\GooglePlayRequest;
 use App\Api\V1\Http\Requests\Purchase\WebhookGooglePlayRequest;
@@ -18,6 +19,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * @group Thanh toán
@@ -37,6 +39,8 @@ class PurchaseController extends Controller
             'except' => [
                 'login',
                 'googlePlayWebhook',
+                'verifyUpgradeGooglePlay',
+                'verifyUpgradeAppleStore',
             ]
         ]);
     }
@@ -83,7 +87,9 @@ class PurchaseController extends Controller
             $response = $this->purchaseService->verifyPurchaseGooglePlay($request);
 
             return $this->jsonResponseSuccess($response);
-        } catch (Exception $exception) {
+        } catch (BadRequestException $exception) {
+            return $this->jsonResponseError($exception->getMessage(), 400);
+        } catch (Throwable $exception) {
             $this->logError(MessageSystem::SERVER_ERROR, $exception);
             return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }
@@ -101,7 +107,43 @@ class PurchaseController extends Controller
             $response = $this->purchaseService->verifyPurchaseAppleStore($request);
 
             return $this->jsonResponseSuccess($response);
-        } catch (Exception $exception) {
+        } catch (BadRequestException $exception) {
+            return $this->jsonResponseError($exception->getMessage(), 400);
+        } catch (Throwable $exception) {
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
+        }
+    }
+
+    /**
+     * Xác minh giao dịch nâng cấp Google Play khi tài khoản bị chặn giới hạn thiết bị
+     */
+    public function verifyUpgradeGooglePlay(GooglePlayRequest $request): JsonResponse
+    {
+        try {
+            $response = $this->purchaseService->verifyUpgradeGooglePlay($request);
+
+            return $this->jsonResponseSuccess($response);
+        } catch (BadRequestException $exception) {
+            return $this->jsonResponseError($exception->getMessage(), 400);
+        } catch (Throwable $exception) {
+            $this->logError(MessageSystem::SERVER_ERROR, $exception);
+            return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
+        }
+    }
+
+    /**
+     * Xác minh giao dịch nâng cấp Apple Store khi tài khoản bị chặn giới hạn thiết bị
+     */
+    public function verifyUpgradeAppleStore(AppleStoreRequest $request): JsonResponse
+    {
+        try {
+            $response = $this->purchaseService->verifyUpgradeAppleStore($request);
+
+            return $this->jsonResponseSuccess($response);
+        } catch (BadRequestException $exception) {
+            return $this->jsonResponseError($exception->getMessage(), 400);
+        } catch (Throwable $exception) {
             $this->logError(MessageSystem::SERVER_ERROR, $exception);
             return $this->jsonResponseError(MessageSystem::SERVER_ERROR, 500);
         }

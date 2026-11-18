@@ -134,6 +134,8 @@ Route::controller(App\Api\V1\Http\Controllers\Purchase\PurchaseController::class
     ->group(function () {
         Route::post('/google-play', 'verifyPurchaseGooglePlay');
         Route::post('/apple-store', 'verifyPurchaseAppleStore');
+        Route::post('/google-play/upgrade', 'verifyUpgradeGooglePlay');
+        Route::post('/apple-store/upgrade', 'verifyUpgradeAppleStore');
         Route::post('/google-play/webhook', 'googlePlayWebhook');
     });
 

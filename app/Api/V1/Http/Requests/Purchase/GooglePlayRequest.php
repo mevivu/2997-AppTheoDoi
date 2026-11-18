@@ -18,6 +18,7 @@ class GooglePlayRequest extends BaseRequest
 
             'product_id' => 'required|string|exists:packages,code',
             'purchase_token' => 'required|string',
+            'upgrade_token' => 'nullable|string',
         ];
     }
 

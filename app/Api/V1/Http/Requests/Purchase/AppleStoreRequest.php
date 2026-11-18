@@ -17,6 +17,7 @@ class AppleStoreRequest extends BaseRequest
         return [
             'product_id' => 'required|string|exists:packages,code',
             'transaction_id' => 'required|string',
+            'upgrade_token' => 'nullable|string',
         ];
     }
 

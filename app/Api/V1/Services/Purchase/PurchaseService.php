@@ -16,16 +16,23 @@ use App\Api\V1\Services\Notification\NotificationServiceInterface;
 use App\Admin\Services\AppleStore\AppleStoreServiceInterface;
 use App\Api\V1\Support\AuthServiceApi;
 use App\Api\V1\Support\AuthSupport;
+use App\Enums\DeleteStatus;
 use App\Enums\GooglePlay\SubscriptionState;
 use App\Enums\Package\PackageType;
 use App\Enums\Package\PackageUserStatus;
 use App\Enums\Transaction\TransactionEnumService;
 use App\Enums\Transaction\TransactionStatus;
+use App\Enums\User\UserStatus;
 use App\Models\User;
+use App\Models\UserDevice;
 use App\Traits\MessageSystem;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Throwable;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 class PurchaseService implements PurchaseServiceInterface
@@ -84,8 +91,60 @@ class PurchaseService implements PurchaseServiceInterface
     {
         $data = $request->validated();
         $user = $this->getCurrentUser();
-        $productId = $data['product_id'];
-        $purchaseToken = $data['purchase_token'];
+        if (!$user) {
+            throw new BadRequestException('Vui lòng đăng nhập trước khi thực hiện giao dịch.');
+        }
+
+        return $this->executeGooglePlayVerification($user, $data['product_id'], $data['purchase_token']);
+    }
+
+    public function verifyPurchaseAppleStore(AppleStoreRequest $request): array
+    {
+        $data = $request->validated();
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            throw new BadRequestException('Vui lòng đăng nhập trước khi thực hiện giao dịch.');
+        }
+
+        return $this->executeAppleStoreVerification($user, $data['product_id'], $data['transaction_id']);
+    }
+
+    public function verifyUpgradeGooglePlay(GooglePlayRequest $request): array
+    {
+        $data = $request->validated();
+        $upgradeContext = $this->decodeAndValidateUpgradeToken($data['upgrade_token'] ?? null);
+        /** @var User $user */
+        $user = $upgradeContext['user'];
+
+        $result = $this->executeGooglePlayVerification($user, $data['product_id'], $data['purchase_token']);
+
+        $authSession = $this->issuePostUpgradeSession($user->fresh(), $upgradeContext['payload'], $request);
+        if ($authSession) {
+            $result['auth'] = $authSession;
+        }
+
+        return $result;
+    }
+
+    public function verifyUpgradeAppleStore(AppleStoreRequest $request): array
+    {
+        $data = $request->validated();
+        $upgradeContext = $this->decodeAndValidateUpgradeToken($data['upgrade_token'] ?? null);
+        /** @var User $user */
+        $user = $upgradeContext['user'];
+
+        $result = $this->executeAppleStoreVerification($user, $data['product_id'], $data['transaction_id']);
+
+        $authSession = $this->issuePostUpgradeSession($user->fresh(), $upgradeContext['payload'], $request);
+        if ($authSession) {
+            $result['auth'] = $authSession;
+        }
+
+        return $result;
+    }
+
+    private function executeGooglePlayVerification($user, string $productId, string $purchaseToken): array
+    {
         $package = $this->packageRepository->findByField('code', $productId);
         if (!$package) {
             throw new BadRequestException('Không tìm thấy gói dịch vụ với mã: ' . $productId);
@@ -98,23 +157,27 @@ class PurchaseService implements PurchaseServiceInterface
         }
 
         $purchaseData = $verificationResult['data'];
-        $statusValue = $purchaseData['subscriptionState'];
-        $statusEnum = SubscriptionState::tryFrom($statusValue);
+        $statusValue = $purchaseData['subscriptionState'] ?? null;
+        $statusEnum = $statusValue ? SubscriptionState::tryFrom($statusValue) : null;
         $isActive = $statusEnum ? $statusEnum->isActive() : ($statusValue === 'SUBSCRIPTION_STATE_ACTIVE');
 
         $purchased = false;
         if ($isActive) {
             $purchased = DB::transaction(function () use ($user, $package, $purchaseData, $purchaseToken) {
-                User::where('id', $user->id)->lockForUpdate()->first();
-                return $this->handlePurchase($user, $package, $purchaseData, $purchaseToken);
+                $lockedUser = User::where('id', $user->id)->lockForUpdate()->first() ?? $user;
+                return $this->handlePurchase($lockedUser, $package, $purchaseData, $purchaseToken);
             });
         }
 
         if ($purchased) {
-            $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
+            try {
+                $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
+            } catch (Throwable $e) {
+                Log::warning('Failed to send Google Play payment notification: ' . $e->getMessage());
+            }
         }
 
-        $activeUserPackage = $user->reconcileActivePackage();
+        $activeUserPackage = $user->fresh()->reconcileActivePackage();
 
         return [
             'package' => new PackageResource($package),
@@ -127,12 +190,8 @@ class PurchaseService implements PurchaseServiceInterface
         ];
     }
 
-    public function verifyPurchaseAppleStore(AppleStoreRequest $request): array
+    private function executeAppleStoreVerification($user, string $productId, string $transactionId): array
     {
-        $data = $request->validated();
-        $user = $this->getCurrentUser();
-        $productId = $data['product_id'];
-        $transactionId = $data['transaction_id'];
         $package = $this->packageRepository->findByField('code', $productId);
         if (!$package) {
             throw new BadRequestException('Không tìm thấy gói dịch vụ với mã: ' . $productId);
@@ -145,22 +204,26 @@ class PurchaseService implements PurchaseServiceInterface
         }
 
         $purchaseData = $verificationResult['data'];
-        $statusValue = $purchaseData['subscriptionState'];
+        $statusValue = $purchaseData['subscriptionState'] ?? null;
         $isActive = $statusValue === 'SUBSCRIPTION_STATE_ACTIVE';
 
         $purchased = false;
         if ($isActive) {
             $purchased = DB::transaction(function () use ($user, $package, $purchaseData, $transactionId) {
-                User::where('id', $user->id)->lockForUpdate()->first();
-                return $this->handlePurchase($user, $package, $purchaseData, $transactionId, TransactionEnumService::APPLE);
+                $lockedUser = User::where('id', $user->id)->lockForUpdate()->first() ?? $user;
+                return $this->handlePurchase($lockedUser, $package, $purchaseData, $transactionId, TransactionEnumService::APPLE);
             });
         }
 
         if ($purchased) {
-            $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
+            try {
+                $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
+            } catch (Throwable $e) {
+                Log::warning('Failed to send Apple Store payment notification: ' . $e->getMessage());
+            }
         }
 
-        $activeUserPackage = $user->reconcileActivePackage();
+        $activeUserPackage = $user->fresh()->reconcileActivePackage();
 
         return [
             'package' => new PackageResource($package),
@@ -173,21 +236,145 @@ class PurchaseService implements PurchaseServiceInterface
         ];
     }
 
+    private function decodeAndValidateUpgradeToken(?string $upgradeToken): array
+    {
+        if (empty($upgradeToken)) {
+            throw new BadRequestException('Phiên nâng cấp không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại để đồng bộ gói VIP.');
+        }
+
+        try {
+            $decodedJson = Crypt::decryptString($upgradeToken);
+            $payload = json_decode($decodedJson, true);
+        } catch (Throwable $e) {
+            throw new BadRequestException('Mã xác thực nâng cấp không hợp lệ. Vui lòng đăng nhập lại.');
+        }
+
+        if (!is_array($payload)
+            || ($payload['purpose'] ?? '') !== 'device_limit_upgrade'
+            || empty($payload['user_id'])
+            || empty($payload['exp'])
+            || (int) $payload['exp'] < time()
+        ) {
+            throw new BadRequestException('Phiên nâng cấp đã hết hạn. Vui lòng đăng nhập lại để kích hoạt gói VIP.');
+        }
+
+        $user = User::find((int) $payload['user_id']);
+        if (!$user || $user->status === UserStatus::Lock || $user->status === UserStatus::Inactive) {
+            throw new BadRequestException('Tài khoản không khả dụng hoặc đã bị khóa.');
+        }
+
+        return [
+            'user' => $user,
+            'payload' => $payload,
+        ];
+    }
+
+    private function issuePostUpgradeSession(User $user, array $payload, Request $request): ?array
+    {
+        try {
+            $deviceId = $payload['device_id'] ?? ('web_' . md5($request->ip() . ($request->userAgent() ?? '')));
+            $deviceName = $payload['device_name'] ?? 'Thiết bị di động';
+            $deviceToken = $payload['device_token'] ?? null;
+            $platform = $payload['platform'] ?? 'other';
+
+            $userDevice = UserDevice::where('user_id', $user->id)
+                ->where('device_id', $deviceId)
+                ->first();
+
+            if ($userDevice && $userDevice->is_active) {
+                $userDevice->update([
+                    'device_name' => $deviceName ?: $userDevice->device_name,
+                    'device_token' => $deviceToken ?: $userDevice->device_token,
+                    'platform' => $platform ?: $userDevice->platform,
+                    'ip_address' => $request->ip(),
+                    'last_active_at' => now(),
+                ]);
+            } else {
+                $activeCount = UserDevice::where('user_id', $user->id)
+                    ->where('is_active', true)
+                    ->count();
+                $maxAllowed = $user->getMaxDevicesAllowed();
+                if ($activeCount >= $maxAllowed) {
+                    return null;
+                }
+
+                if ($userDevice) {
+                    $userDevice->update([
+                        'is_active' => true,
+                        'device_name' => $deviceName ?: $userDevice->device_name,
+                        'device_token' => $deviceToken ?: $userDevice->device_token,
+                        'platform' => $platform ?: $userDevice->platform,
+                        'ip_address' => $request->ip(),
+                        'last_active_at' => now(),
+                    ]);
+                } else {
+                    UserDevice::create([
+                        'user_id' => $user->id,
+                        'device_id' => $deviceId,
+                        'device_name' => $deviceName ?: 'Thiết bị di động',
+                        'platform' => $platform,
+                        'device_token' => $deviceToken,
+                        'ip_address' => $request->ip(),
+                        'is_active' => true,
+                        'last_active_at' => now(),
+                    ]);
+                }
+            }
+
+            $accessToken = JWTAuth::fromUser($user);
+            $refreshToken = JWTAuth::getJWTProvider()->encode([
+                'user_id' => $user->id,
+                'random' => rand() . time(),
+                'is_refresh_token' => true,
+                'exp' => time() + config('jwt.refresh_ttl'),
+            ]);
+
+            $this->userSessionRepository->create([
+                'user_id' => $user->id,
+                'access_token' => $accessToken,
+                'device_token' => $deviceId,
+                'status' => DeleteStatus::NotDeleted,
+            ]);
+
+            if (!empty($deviceToken)) {
+                $user->update(['device_token' => $deviceToken]);
+            }
+
+            return [
+                'access_token' => $accessToken,
+                'refresh_token' => $refreshToken,
+                'user_id' => $user->id,
+            ];
+        } catch (Throwable $e) {
+            Log::warning('Failed to issue post-upgrade session: ' . $e->getMessage());
+            return null;
+        }
+    }
+
     // Xử lý giao dịch mua thành công
     private function handlePurchase($user, $package, $purchaseData, $purchaseToken, TransactionEnumService $serviceType = TransactionEnumService::GOOGLE_PLAY): bool
     {
         $orderId = $purchaseData['orderId'] ?? null;
         $originalOrderId = $purchaseData['originalTransactionId'] ?? null;
 
-        if ($orderId && $this->transactionRepository->existsByOrderIdAndService($orderId, $serviceType)) {
-            // Nếu giao dịch đã tồn tại trong bảng transactions, đảm bảo user_packages đã được đồng bộ lên VIP
-            $user->reconcileActivePackage();
-            return false;
+        if ($orderId) {
+            $existingByOrder = $this->transactionRepository->findByOrderIdAndService($orderId, $serviceType);
+            if ($existingByOrder) {
+                if ((int) $existingByOrder->user_id !== (int) $user->id) {
+                    throw new BadRequestException('Giao dịch này đã được kích hoạt trên một tài khoản khác.');
+                }
+                // Nếu giao dịch đã tồn tại trong bảng transactions của chính user này, đảm bảo user_packages đã được đồng bộ lên VIP
+                $user->reconcileActivePackage();
+                return false;
+            }
         }
 
-        if ($originalOrderId && $originalOrderId !== $orderId && $this->transactionRepository->existsByOrderIdAndService($originalOrderId, $serviceType)) {
-            $existingByToken = $purchaseToken ? $this->transactionRepository->findByField('purchase_token', $purchaseToken) : null;
-            if ($existingByToken) {
+        if ($purchaseToken) {
+            $existingByToken = $this->transactionRepository->findByField('purchase_token', $purchaseToken);
+            if ($existingByToken && (int) $existingByToken->user_id !== (int) $user->id) {
+                throw new BadRequestException('Giao dịch này đã được kích hoạt trên một tài khoản khác.');
+            }
+            if ($originalOrderId && $originalOrderId !== $orderId && $this->transactionRepository->existsByOrderIdAndService($originalOrderId, $serviceType) && $existingByToken) {
                 $user->reconcileActivePackage();
                 return false;
             }
@@ -229,17 +416,97 @@ class PurchaseService implements PurchaseServiceInterface
             12 => 'SUBSCRIPTION_REVOKED',
             13 => 'SUBSCRIPTION_EXPIRED',
         ];
-        $typeName = $typeNames[$notificationType];
+        $typeName = $typeNames[$notificationType] ?? 'UNKNOWN';
 
         switch ($notificationType) {
+            case 1:
+            case 2:
+            case 4:
+            case 7:
+                $this->processWebhookActiveSubscription($productId, $purchaseToken, $typeName);
+                break;
+
             case 12:
                 $this->processRefund($productId, $purchaseToken);
                 break;
 
             default:
-                Log::info("Unhandled notification type: {$notificationType}");
+                Log::info("Unhandled notification type: {$notificationType} ({$typeName})");
         }
 
+    }
+
+    private function processWebhookActiveSubscription(?string $productId, ?string $purchaseToken, string $typeName): void
+    {
+        if (empty($productId) || empty($purchaseToken)) {
+            Log::warning("Webhook {$typeName}: Missing productId or purchaseToken");
+            return;
+        }
+
+        $package = $this->packageRepository->findByField('code', $productId);
+        if (!$package) {
+            Log::warning("Webhook {$typeName}: Package not found for code {$productId}");
+            return;
+        }
+
+        $verificationResult = $this->googlePlayService->verifyPurchase($productId, $purchaseToken, true);
+        if (!$verificationResult['success']) {
+            Log::warning("Webhook {$typeName}: Google Play verify failed", [
+                'error' => $verificationResult['error'] ?? null,
+            ]);
+            return;
+        }
+
+        $purchaseData = $verificationResult['data'];
+        $statusValue = $purchaseData['subscriptionState'] ?? null;
+        $statusEnum = $statusValue ? SubscriptionState::tryFrom($statusValue) : null;
+        $isActive = $statusEnum ? $statusEnum->isActive() : ($statusValue === 'SUBSCRIPTION_STATE_ACTIVE');
+        if (!$isActive) {
+            Log::info("Webhook {$typeName}: Subscription is not active ({$statusValue})");
+            return;
+        }
+
+        $user = null;
+        $existingTx = $this->transactionRepository->findByField('purchase_token', $purchaseToken);
+        if ($existingTx && $existingTx->user) {
+            $user = $existingTx->user;
+        }
+
+        if (!$user && !empty($purchaseData['linkedPurchaseToken'])) {
+            $linkedTx = $this->transactionRepository->findByField('purchase_token', $purchaseData['linkedPurchaseToken']);
+            if ($linkedTx && $linkedTx->user) {
+                $user = $linkedTx->user;
+            }
+        }
+
+        $obfuscatedAccountId = $purchaseData['obfuscatedExternalAccountId'] ?? null;
+        if (!$user && !empty($obfuscatedAccountId) && ctype_digit((string) $obfuscatedAccountId)) {
+            $user = User::find((int) $obfuscatedAccountId);
+        }
+
+        if (!$user) {
+            Log::warning("Webhook {$typeName}: Cannot map purchaseToken to user yet", [
+                'order_id' => $purchaseData['orderId'] ?? null,
+                'obfuscated_account_id' => $obfuscatedAccountId,
+            ]);
+            return;
+        }
+
+        $purchased = DB::transaction(function () use ($user, $package, $purchaseData, $purchaseToken) {
+            $lockedUser = User::where('id', $user->id)->lockForUpdate()->first() ?? $user;
+            return $this->handlePurchase($lockedUser, $package, $purchaseData, $purchaseToken, TransactionEnumService::GOOGLE_PLAY);
+        });
+
+        if ($purchased) {
+            Log::info("Webhook {$typeName}: Recorded purchase/renewal for user {$user->id}", [
+                'order_id' => $purchaseData['orderId'] ?? null,
+            ]);
+            try {
+                $this->notificationService->sendPaymentSuccessNotification($user, $package->name);
+            } catch (Throwable $e) {
+                Log::warning('Webhook notification send failed: ' . $e->getMessage());
+            }
+        }
     }
 
     private function processRefund($productId, $purchaseToken): void
