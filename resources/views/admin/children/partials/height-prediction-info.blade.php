@@ -320,7 +320,7 @@
                             <thead>
                                 <tr>
                                     <th style="width: 100px;">{{ __('Độ tuổi') }}</th>
-                                    <th style="width: 130px; color: #d97706;" title="Dự đoán tăng trưởng có kết hợp 10% yếu tố di truyền">{{ __('Dự đoán') }}</th>
+                                    <th style="width: 130px; color: #d97706;" title="Dự đoán tăng trưởng kết hợp yếu tố di truyền (>4t: 90% + 10% | <=4t: 0% + 100%)">{{ __('Dự đoán') }}</th>
                                     <th style="width: 110px;">{{ __('Mức tăng/năm') }}</th>
                                     <th style="width: 120px; color: #64748b;">{{ __('Chuẩn WHO') }}</th>
                                     <th style="width: 120px; color: #e05263;">{{ __('Mục tiêu') }}</th>
@@ -483,11 +483,11 @@
                                         <th style="width: 140px;">{{ __('Giai đoạn') }}</th>
                                         <th>{{ __('Công thức áp dụng') }}</th>
                                         <th style="width: 90px;">{{ __('Mức tăng') }}</th>
-                                        <th style="width: 110px; color: #d97706;" title="Dự đoán tăng trưởng V2 (Trọng số 0.9)">{{ __('Dự đoán') }}</th>
+                                        <th style="width: 110px; color: #d97706;" title="Dự đoán tăng trưởng V2 (>4t: Trọng số 90% | <=4t: Trọng số 0%)">{{ __('Dự đoán') }}</th>
                                         <th style="width: 110px; color: #64748b;">{{ __('Chuẩn WHO') }}</th>
                                         <th style="width: 110px; color: #e05263;">{{ __('Mục tiêu') }}</th>
-                                        <th style="width: 110px; color: #0891b2;" title="Chiều cao theo tiềm năng di truyền (Trọng số 0.1)">{{ __('Di truyền') }}</th>
-                                        <th style="width: 120px; color: #059669;" title="Kết hợp: 0.9 x Dự đoán + 0.1 x Di truyền">{{ __('Dự đoán cuối') }}</th>
+                                        <th style="width: 110px; color: #0891b2;" title="Chiều cao theo tiềm năng di truyền (>4t: Trọng số 10% | <=4t: Trọng số 100%)">{{ __('Di truyền') }}</th>
+                                        <th style="width: 120px; color: #059669;" title="Kết hợp theo tuổi (>4t: 0.9 x Dự đoán + 0.1 x Di truyền | <=4t: 0 x Dự đoán + 1.0 x Di truyền)">{{ __('Dự đoán cuối') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody id="debug-tbody-sim">

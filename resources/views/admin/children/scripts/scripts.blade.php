@@ -653,7 +653,7 @@
                                     • Tỷ lệ Di truyền / WHO: <strong style="color: #0891b2;">${p.genetic_ratio}</strong> (${p.mid_parent_height} cm / ${p.who_adult_height} cm WHO 19t)
                                 </div>
                                 <div class="fs-11 text-muted">
-                                    • Trọng số kết hợp: <span class="fw-semibold text-amber">90% Dự đoán thực tế</span> + <span class="fw-semibold" style="color: #0891b2;">10% Tiềm năng di truyền</span>
+                                    • Trọng số kết hợp (${c.current_age_years > 4 ? 'Tuổi > 4' : 'Tuổi <= 4'}): <span class="fw-semibold text-amber">${Math.round((p.pred_weight !== undefined ? p.pred_weight : (c.current_age_years > 4 ? 0.9 : 0)) * 100)}% Dự đoán thực tế</span> + <span class="fw-semibold" style="color: #0891b2;">${Math.round((p.genetic_weight !== undefined ? p.genetic_weight : (c.current_age_years > 4 ? 0.1 : 1.0)) * 100)}% Tiềm năng di truyền</span>
                                 </div>
                                 ` : ''}
                             </div>
